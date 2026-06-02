@@ -68,7 +68,7 @@
     
 - **Faceted Visual Search Taxonomy:** Lowers the barrier to entry for early stage researchers by offering iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
 
-# UX/UI Adoptation
+# UX/UI Adoption
 
 - **The In-Box Mode Toggle:** Place tab controls or crisp radio toggles right inside or directly above the primary search box. This lets users change the underlying target database (e.g., searching for _local catalog entries_ vs. _all external database connections_) without switching pages.
     
@@ -128,6 +128,33 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
 - Book issues and Returning
 ![](PapyIssue.png.png)
 ![](PapyReturn.png)
+
+### [Accessit Library](https://www.accessitlibrary.com/)
+
+- Log in page:
+![](A_Login.png)
+
+- Home page:
+![](A_HomePage.png)
+
+- Searching system:
+![](A_SearchSystem.png)
+
+- Display result with sort and search filter:
+![](A_Display.png)
+
+- Visual search:
+![](A_visualSearch.png)
+
+- Quick list reading:
+![](A_QuickList.png)
+
+- Dashboard:
+![](A_Dashboard.png)
+
+- Circulation:
+![](A_Circulation.png)
+
 
 ## Proposed app ideas
 Besides efforts to implement and reuse existing features, we propose some potential improvement that may be remarkable reasons for choosing our approach.
