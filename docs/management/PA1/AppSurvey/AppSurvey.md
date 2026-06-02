@@ -2,21 +2,26 @@
 ### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
 - Searching tools: text query for available work
 ![](SearchUI.png)
+
 `Search` -> `Library Catalog` -> `Basic / Advanced Search` 
 
 - Citation Management:extracts bibliographic attributes (Author, Publisher, Year, Page Ranges) and instantly serializes them into standardized files (like .bib or .ris) that sync directly into software tools like Zotero or Mendeley.
+  
 ![](CitationUI.png)
 `Research & Teaching` -> `Citation Management` 
 
-- Subject guide: an overrall instruction on a specific topic in text and online resources, each subject goes with instructor contact info for further need.    
+- Subject guide: an overrall instruction on a specific topic in text and online resources, each subject goes with instructor contact info for further need. 
+    
 ![](SubjectGuideUI.png)
 `Research & Teaching` -> `Subject Guide` 
 
 - Booking room: A time-slot booking engine that tracks spatial availability in real time. It allows patrons to reserve specific rooms, manages maximum reservation durations, enforces library policies, and prevents overlapping booking conflicts.
+  
 ![](RoomBookingUI.png)
 `Visit & Study` -> `Book a room` 
 
 - Library spaces: Description of study corner including capacity, resources availability...
+  
 ![](LibrarySpaceUI.png)
 `Visit & Study` -> `Spaces to study` 
 
@@ -36,6 +41,7 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
   - Select a **Member Type** from the dropdown menu.
   - Fill in auxiliary contact points, prioritizing the **Email Address** for automated system notifications.
   - *Saving:* Click the **ADD** button to commit the core record. 
+  
 ![](PapyrusMember.png)
 
 ![](PapyrusMember2.png)
@@ -63,6 +69,7 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
     In case of returning:
   - **Scan directly:** Take the physical book being returned and scan its barcode straight into the main entry field.
   - **System Evaluation:** Papyrus identifies that the item status is currently "On Issue," automatically loads the corresponding borrower's liability parameters, marks the asset as returned safely to stock, and stops loan counters.
+  
 ![](PapyIssue.png.png)
 ![](PapyReturn.png)
 
@@ -161,29 +168,6 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
 - **Interactive Fluid Carousels:** Display resource offerings using 3D visual book-jacket sliders that users can scroll through on the home screen to increase click-through interactions.
     
 - **Color-Coded Numerical Availability Badging:** Attach explicit green (available) or red (unavailable) counters directly to the thumbnail layout matrices to broadcast asset states straight from the database machine without clicking the item page.
-
-## Existing app UI 
-### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
-- Searching tools:
-![](SearchUI.png)
-
-- Citation Management
-![](CitationUI.png)
-
-- Library subject guide
-![](SubjectGuideUI.png)
-
-- Booking room
-![](RoomBookingUI.png)
-
-- Library spaces:
-![](LibrarySpaceUI.png)
-
-### [Papyrus Library Cloud](https://www.papyruscloud.org/)
-The images in this section are take from [this link](https://papyruscloud.org/cloud/HelpV2/papyrus-quickstart-guide) 
-
-- Home page:
-![](PapyrusHomePage.png)
 
 ## The difference proposed app can do
 Besides efforts to implement and reuse existing features, we propose some potential improvement that may be remarkable reasons for choosing our approach.
