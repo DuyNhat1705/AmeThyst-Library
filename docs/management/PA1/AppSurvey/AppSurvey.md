@@ -36,12 +36,12 @@
     
 ## Comparison on existing apps
 
-| **Entity**                            | **Deployment Model**      | **Target Audience**                              |
-| ------------------------------------- | ------------------------- | ------------------------------------------------ |
-| **FOLIO Platform**                    | Distributed / Cloud       | Library IT Administrators & System Developers    |
-| **Papyrus Library Cloud**             | Multi-Tenant / Cloud      | Library IT Administrators & Operations Personnel |
-| **UC Berkeley Library**               | Distributed               | End-User Students, Researchers, & Staff          |
-| **The University of Chicago Library** | On-Premises / Distributed | Researchers & End-User Students                  |
+| **Entity**                            | **Deployment Model**                                                                                 | **Target Audience**                                                     |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **The University of Chicago Library** | **On-Premises / Distributed** (Central campus data nodes paired with localized physical collections) | **Researchers** & End-User Students                                     |
+| **FOLIO Platform**                    | **Distributed / Cloud** (Containerized microservices managed via Kubernetes clusters)                | **Library IT Administrators** & System Developers                       |
+| **Papyrus Library Cloud**             | **Multi-Tenant / Cloud** (Centralized, vendor-managed commercial cloud environment)                  | **Library IT Administrators** & Operations Personnel                    |
+| **Accessit Library**                  | **Cloud SaaS / Hybrid** (Vendor-hosted cloud environment with multi-tier web apps)                   | **End-User Students**, K-12/Tertiary Learners, & Operational Librarians |
 
 ### FOLIO Platform
 
@@ -82,3 +82,4 @@
 - **High-Frequency Utility Blocks:** Create a specific section on your home dashboard for the most common user workflows.
   
 ## Proposed app ideas
+
