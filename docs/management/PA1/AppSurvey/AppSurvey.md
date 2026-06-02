@@ -1,5 +1,3 @@
-
-
 ## Common features of existing products
 
 - **Identity and Access Management (IAM)**
@@ -36,12 +34,13 @@
     
 ## Comparison on existing apps
 
-| **Entity**                            | **Deployment Model**                                                                                 | **Target Audience**                                                     |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **The University of Chicago Library** | **On-Premises / Distributed** (Central campus data nodes paired with localized physical collections) | **Researchers** & End-User Students                                     |
-| **FOLIO Platform**                    | **Distributed / Cloud** (Containerized microservices managed via Kubernetes clusters)                | **Library IT Administrators** & System Developers                       |
-| **Papyrus Library Cloud**             | **Multi-Tenant / Cloud** (Centralized, vendor-managed commercial cloud environment)                  | **Library IT Administrators** & Operations Personnel                    |
-| **Accessit Library**                  | **Cloud SaaS / Hybrid** (Vendor-hosted cloud environment with multi-tier web apps)                   | **End-User Students**, K-12/Tertiary Learners, & Operational Librarians |
+| **Entity**                            | **Deployment Model**      | **Target Audience**                              |
+| ------------------------------------- | ------------------------- | ------------------------------------------------ |
+| **FOLIO Platform**                    | Distributed / Cloud       | Library IT Administrators & System Developers    |
+| **Papyrus Library Cloud**             | Multi-Tenant / Cloud      | Library IT Administrators & Operations Personnel |
+| **UC Berkeley Library**               | Distributed               | End-User Students, Researchers, & Staff          |
+| **The University of Chicago Library** | On-Premises / Distributed | Researchers & End-User Students                  |
+|**Accessit Library**                   | Cloud SaaS / Hybrid (Multi-tier web application) | End-User Students, K-12/Tertiary Learners, & Operational Librarians |
 
 ### FOLIO Platform
 
@@ -60,6 +59,14 @@
 - **Vendor-Managed Paradigm:** Incorporates an integrated, client-facing _Price List_ and corporate service-tier architecture natively within the platform ecosystem, targeting buyers who want to outsource infrastructure overhead.
     
 - **Client Authentication Footprint:** Utilizes an account-gated, minimalist landing page optimized for secure tenant authentication and administrative workflows rather than functioning as an open public discovery portal.
+
+### Accessit Library
+
+- **Role-Gated Interface Profiling:** Uses an initial gateway path to filter users by their academic level, dynamically re-rendering the frontend layout, visual vocabulary, and data density to accommodate different learning age groups.
+    
+- **Component-Driven Educational Hub:** Replaces standard catalog tables with an asymmetric widget grid that embeds multimedia tutorials, citation advice, and external university research references directly into the user interface.
+    
+- **Faceted Visual Search Taxonomy:** Lowers the barrier to entry for early stage researchers by offering iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
 
 # UX/UI Adoptation
 
@@ -81,5 +88,44 @@
     
 - **High-Frequency Utility Blocks:** Create a specific section on your home dashboard for the most common user workflows.
   
-## Proposed app ideas
+- **Dynamic Role-Selection Route Dispatcher:** Provide an entry splash card that segregates layouts based on organizational standing, adapting data complexity seamlessly for younger vs. older user sets.
+    
+- **Interactive Fluid Carousels:** Display resource offerings using 3D visual book-jacket sliders that users can scroll through on the home screen to increase click-through interactions.
+    
+- **Color-Coded Numerical Availability Badging:** Attach explicit green (available) or red (unavailable) counters directly to the thumbnail layout matrices to broadcast asset states straight from the database machine without clicking the item page.
 
+## Existing app UI 
+### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
+- Searching tools:
+![](SearchUI.png)
+
+- Citation Management
+![](CitationUI.png)
+
+- Library subject guide
+![](SubjectGuideUI.png)
+
+- Booking room
+![](RoomBookingUI.png)
+
+- Library spaces:
+![](LibrarySpaceUI.png)
+
+### [Papyrus Library Cloud](https://www.papyruscloud.org/)
+
+- Home page:
+![](PapyrusHomePage.png)
+
+- Adding and maintaining member:
+![](PapyrusMember.png)
+
+![](PapyrusMember2.png)
+
+- Cataloguing books and Adding stock
+![](PapyCatalogue.png)
+
+- Book issues and Returning
+![](PapyIssue.png.png)
+![](PapyReturn.png)
+
+## Proposed app ideas
