@@ -1,48 +1,72 @@
-## Common features of existing products
+## Existing app UI 
+### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
+- Searching tools: text query for available work
+![](SearchUI.png)
+`Search` -> `Library Catalog` -> `Basic / Advanced Search` 
 
-- **Identity and Access Management (IAM)**
-    
-    - University Stack Implementation:_ Orchestrated via enterprise Single Sign-On (SSO) infrastructures such as Shibboleth or Central Authentication Service (CAS). This maps digital patron identities to physical security parameters, including building turnstiles, private study space resource schedulers, and off-campus proxies (e.g., EZproxy) for restricted publisher networks.
-        
-    - _Software Codebase Implementation:_ Expressed via web token verifiers, security filter middlewares, and strict Role-Based Access Control (RBAC) permission tables. The codebase acts as a digital gatekeeper, explicitly evaluating whether an authenticated system account possesses the specific cryptographic scopes required to alter ledger balances, invoke API endpoints, or modify a patron profile.
-        
-    - _Objectives_: Guarantees institutional data privacy compliance, prevents privilege escalation by unauthorized staff or external actors, and creates a frictionless user experience by removing multi-login barriers for researchers moving between disparate databases.
-        
-- **Metadata Management and Discovery Control**
-    
-    - _University Stack Implementation:_ Executed through active local cataloging, metadata curation, and database maintenance workflows. Staff verify and enrich bibliographic records (e.g., MARC schemas) and map them directly to physical shelf locations across a campus footprint, exposing these records to unified user-facing discovery networks like WorldCat or UC Library Search.
-        
-    - _Software Codebase Implementation:_ Managed via database storage configurations, ingestion pipelines, and search index mappings. In FOLIO, this manifests as specialized back-end inventory applications, QuickMARC editing modules, and data import/export engines that store abstract instance, holding, and item records independently of any physical building layout.
-        
-    - _Objectives:_ Delivers high-precision retrieval of complex academic resources, enforces cross-system data standardization across institutional boundaries, and provides real-time, accurate availability matching for physical and electronic items.
-        
-- **Fulfillment and Circulation Workflows**
-    
-    - _University Stack Implementation:_ The operational orchestration of logistics, personnel, and physical inventory. It relies on circulation desks, sorting equipment, physical drop-boxes, course reserve shelves, and regional courier transport vehicles moving items through the physical campus network.
-        
-    - _Software Codebase Implementation:_ Modeled as an abstract, deterministic state machine. Items are persisted as database records with changing status attributes (e.g., `Available`, `Checked Out`, `Missing`, `On Hold`). Code subroutines calculate loan rules, process renewals, trigger notices, and generate fine or fee entries when loan boundaries are violated.
-        
-    - _Objectives:_ Secures equitable access to high-demand materials through automated loan enforcement, provides workflow predictability for patrons tracking holds, and delivers unalterable transactional logs for administrative clarity.
-        
-- **External Integration Infrastructure**
-    
-    - _University Stack Implementation:_ The physical and institutional boundaries established with third-party networks. This includes configuring local network routing to external content providers (e.g., JSTOR, PubMed) and establishing secure data connections to book vendors (e.g., GOBI) and central campus enterprise resource planning (ERP) financial frameworks.
-        
-    - _Software Codebase Implementation:_ Expressed via programmatic interfaces, protocol adapters, and web standards. The system executes these integrations using RESTful web APIs, EDIFACT data parsers for automated acquisitions processing, OAI-PMH data-harvesting modules, and generic webhook configurations.
-        
-    - _Objectives:_ Consolidates access into a single search environment, cuts administrative labor via automated procurement pipelines, and ensures platform future-proofing by allowing developers to swap or upgrade modules cleanly.
-    
-## Comparison on existing apps
+- Citation Management:extracts bibliographic attributes (Author, Publisher, Year, Page Ranges) and instantly serializes them into standardized files (like .bib or .ris) that sync directly into software tools like Zotero or Mendeley.
+![](CitationUI.png)
+`Research & Teaching` -> `Citation Management` 
 
-| **Entity**                            | **Deployment Model**      | **Target Audience**                              |
-| ------------------------------------- | ------------------------- | ------------------------------------------------ |
-| **FOLIO Platform**                    | Distributed / Cloud       | Library IT Administrators & System Developers    |
-| **Papyrus Library Cloud**             | Multi-Tenant / Cloud      | Library IT Administrators & Operations Personnel |
-| **UC Berkeley Library**               | Distributed               | End-User Students, Researchers, & Staff          |
-| **The University of Chicago Library** | On-Premises / Distributed | Researchers & End-User Students                  |
-|**Accessit Library**                   | Cloud SaaS / Hybrid (Multi-tier web application) | End-User Students, K-12/Tertiary Learners, & Operational Librarians |
+- Subject guide: an overrall instruction on a specific topic in text and online resources, each subject goes with instructor contact info for further need.    
+![](SubjectGuideUI.png)
+`Research & Teaching` -> `Subject Guide` 
 
-### FOLIO Platform
+- Booking room: A time-slot booking engine that tracks spatial availability in real time. It allows patrons to reserve specific rooms, manages maximum reservation durations, enforces library policies, and prevents overlapping booking conflicts.
+![](RoomBookingUI.png)
+`Visit & Study` -> `Book a room` 
+
+- Library spaces: Description of study corner including capacity, resources availability...
+![](LibrarySpaceUI.png)
+`Visit & Study` -> `Spaces to study` 
+
+### [Papyrus Library Cloud](https://www.papyruscloud.org/)
+The images in this section are take from [this link](https://papyruscloud.org/cloud/HelpV2/papyrus-quickstart-guide) 
+
+- Home page:
+![](PapyrusHomePage.png)
+
+- Adding and maintaining member:
+  Every patron who borrows library materials must possess a unique operational record to track liabilities and privileges.
+
+  - *Initiation:* Click the **Members** icon on the main Tool Strip.
+  - *Creating the Form:* Click the **New** button. A popup form will appear.
+  - *Identifier Assignment:* Click **Next Member**.
+  - Enter the patron’s **Surname** and **First Names**.
+  - Select a **Member Type** from the dropdown menu.
+  - Fill in auxiliary contact points, prioritizing the **Email Address** for automated system notifications.
+  - *Saving:* Click the **ADD** button to commit the core record. 
+![](PapyrusMember.png)
+
+![](PapyrusMember2.png)
+
+- Cataloguing books and Adding stock
+
+  - Navigate to **Cataloguing** and launch the **EasyCAT** module workspace.
+  -  Click **New** to prompt a new master entry profile.
+  - The system assigns an internal **BRN (Bibliographic Record Number)** sequentially. Select the matching general publication format template.
+  - Complete the input fields. Click **UPDATE** to save the master schema.
+  
+  -  Within the same EasyCAT book record view, click on the **STOCK ITEMS** tab layout.
+  - Click the **ADD NEW STOCK ITEM** button.
+  - Assign an **Accession Number**.
+  - *Scan or Input Barcode:* Click into the Barcode field. Use a barcode scanner or keyboard to map the exact unique sticker barcode attached to that physical copy.
+  - *Physical Location Mapping:* Designate the spatial home for the item inside the three-tiered organizational architecture: **Location > Collection > Shelf**. At minimum, assign a distinct **Shelf** coordinate so patrons can find it.
+
+![](PapyCatalogue.png)
+
+- Book issues and Returning
+  - Open the **Front Desk** workspace view from the main ribbon.
+  - Identify the Patron:** The cursor sits by default in the `Member Number` field. Type or scan the user's library card barcode. The system instantly loads the profile information, checking for blocks or caps.
+  - *Identify the Asset:* The system automatically drops the terminal focus directly down into the  **AccNo / Accession Barcode** input field.
+  - **Commit the Loan:** Scan the barcode attached to the physical book. Press **Enter/Return**. The transaction executes instantly, binding the item to the user profile and displaying calculated custom due dates down in the action grid ledger.
+    In case of returning:
+  - **Scan directly:** Take the physical book being returned and scan its barcode straight into the main entry field.
+  - **System Evaluation:** Papyrus identifies that the item status is currently "On Issue," automatically loads the corresponding borrower's liability parameters, marks the asset as returned safely to stock, and stops loan counters.
+![](PapyIssue.png.png)
+![](PapyReturn.png)
+
+### Open-source: FOLIO Platform
 
 - **Microservice Architecture:** Architected as a decoupled ecosystem of containerized backend applications that utilize an API gateway to talk to one another over REST interfaces, allowing institutions to run only the services they need.
     
@@ -68,8 +92,43 @@
     
 - **Faceted Visual Search Taxonomy:** Lowers the barrier to entry for early stage researchers by offering iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
 
-# UX/UI Adoptation
 
+## Common features of existing products
+- **Identity and Access Management (IAM)**
+
+    - _Aproach:_  software acts as a digital gatekeeper, explicitly evaluating whether an account possesses the authorization to access specific resources.
+        
+    - _Objectives_: Guarantees institutional data privacy compliance, prevents privilege escalation by unauthorized staff or external actors, and creates a frictionless user experience by removing multi-login barriers for researchers moving between disparate databases.
+        
+- **Metadata Management and Discovery Control**
+        
+    - _Aproach:_  Managed via database storage configurations, ingestion pipelines, and search index mappings.
+        
+    - _Objectives:_ Delivers high-precision retrieval of complex academic resources, enforces cross-system data standardization across institutional boundaries, and provides real-time, accurate availability matching for physical and electronic items.
+        
+- **Fulfillment and Circulation Workflows**
+    
+    - _Aproach:_ Modeled as an abstract, deterministic state machine. Items are persisted as database records with changing status attributes. Code subroutines calculate loan rules, process renewals, trigger notices, and generate fine or fee entries when loan boundaries are violated.
+        
+    - _Objectives:_ Secures equitable access to high-demand materials through automated loan enforcement, provides workflow predictability for patrons tracking holds, and delivers unalterable transactional logs for administrative clarity.
+        
+- **External Integration Infrastructure**
+    
+    - _Aproach:_  Expressed via programmatic interfaces, protocol adapters, and web standards. The system executes these integrations using RESTful web APIs, EDIFACT data parsers for automated acquisitions processing and generic webhook configurations.
+        
+    - _Objectives:_ Consolidates access into a single search environment, cuts administrative labor via automated procurement pipelines, and ensures platform future-proofing by allowing developers to swap or upgrade modules cleanly.
+    
+## Comparison on existing apps
+
+| **Entity**                            | **Deployment Model**      | **Target Audience**                              |
+| ------------------------------------- | ------------------------- | ------------------------------------------------ |
+| **FOLIO Platform**                    | Distributed / Cloud       | Library IT Administrators & System Developers    |
+| **Papyrus Library Cloud**             | Multi-Tenant / Cloud      | Library IT Administrators & Operations Personnel |
+| **UC Berkeley Library**               | Distributed               | End-User Students, Researchers, & Staff          |
+| **The University of Chicago Library** | On-Premises / Distributed | Researchers & End-User Students                  |
+|**Accessit Library**                   | Cloud SaaS / Hybrid (Multi-tier web application) | End-User Students, K-12/Tertiary Learners, & Operational Librarians |
+
+# UX/UI Adoptation
 - **The In-Box Mode Toggle:** Place tab controls or crisp radio toggles right inside or directly above the primary search box. This lets users change the underlying target database (e.g., searching for _local catalog entries_ vs. _all external database connections_) without switching pages.
     
 - **Contextual Scoping Checkboxes:** filtering checkboxes directly beneath the text box. This keeps users from needing to navigate a complex advanced filter menu for common queries.
@@ -94,42 +153,8 @@
     
 - **Color-Coded Numerical Availability Badging:** Attach explicit green (available) or red (unavailable) counters directly to the thumbnail layout matrices to broadcast asset states straight from the database machine without clicking the item page.
 
-## Existing app UI 
-### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
-- Searching tools:
-![](SearchUI.png)
 
-- Citation Management
-![](CitationUI.png)
-
-- Library subject guide
-![](SubjectGuideUI.png)
-
-- Booking room
-![](RoomBookingUI.png)
-
-- Library spaces:
-![](LibrarySpaceUI.png)
-
-### [Papyrus Library Cloud](https://www.papyruscloud.org/)
-The images in this section are take from [this link](https://papyruscloud.org/cloud/HelpV2/papyrus-quickstart-guide) 
-
-- Home page:
-![](PapyrusHomePage.png)
-
-- Adding and maintaining member:
-![](PapyrusMember.png)
-
-![](PapyrusMember2.png)
-
-- Cataloguing books and Adding stock
-![](PapyCatalogue.png)
-
-- Book issues and Returning
-![](PapyIssue.png.png)
-![](PapyReturn.png)
-
-## Proposed app ideas
+## The difference proposed app can do
 Besides efforts to implement and reuse existing features, we propose some potential improvement that may be remarkable reasons for choosing our approach.
 
 ### Semantic Search with AI Support
@@ -189,7 +214,7 @@ Besides efforts to implement and reuse existing features, we propose some potent
     - Provide accessibility toggles in the CSS framework: a **Dyslexia-friendly font choice** (like OpenDyslexic), a high-contrast mode, and dynamic text scaling layout reflows.
     
 - **Physical Space Accessibility:**
-    
+
     - **Metadata Fields for Physical Accessibility:** Add attributes to your book record schema indicating if a title has a matching physical Braille edition or large-print copy available on shelves.
         
     - **ADA/Ergonomic Layout Integration:** If your app links with smart self-checkout kiosks or digital library lockers, the UI elements must dynamically shift down to an ergonomic lower height profile ($45\text{--}125\text{ cm}$) if a patron switches their account settings to "Wheelchair/Accessible Mode."
