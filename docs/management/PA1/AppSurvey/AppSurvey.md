@@ -94,27 +94,36 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
 
 
 ## Common features of existing products
-- **Identity and Access Management (IAM)**
 
-    - _Aproach:_  software acts as a digital gatekeeper, explicitly evaluating whether an account possesses the authorization to access specific resources.
+- **Identity and Access Management (IAM)**
+    
+    - University Stack Implementation:_ Orchestrated via enterprise Single Sign-On (SSO) infrastructures such as Shibboleth or Central Authentication Service (CAS). This maps digital patron identities to physical security parameters, including building turnstiles, private study space resource schedulers, and off-campus proxies (e.g., EZproxy) for restricted publisher networks.
+        
+    - _Software Codebase Implementation:_ Expressed via web token verifiers, security filter middlewares, and strict Role-Based Access Control (RBAC) permission tables. The codebase acts as a digital gatekeeper, explicitly evaluating whether an authenticated system account possesses the specific cryptographic scopes required to alter ledger balances, invoke API endpoints, or modify a patron profile.
         
     - _Objectives_: Guarantees institutional data privacy compliance, prevents privilege escalation by unauthorized staff or external actors, and creates a frictionless user experience by removing multi-login barriers for researchers moving between disparate databases.
         
 - **Metadata Management and Discovery Control**
+    
+    - _University Stack Implementation:_ Executed through active local cataloging, metadata curation, and database maintenance workflows. Staff verify and enrich bibliographic records (e.g., MARC schemas) and map them directly to physical shelf locations across a campus footprint, exposing these records to unified user-facing discovery networks like WorldCat or UC Library Search.
         
-    - _Aproach:_  Managed via database storage configurations, ingestion pipelines, and search index mappings.
+    - _Software Codebase Implementation:_ Managed via database storage configurations, ingestion pipelines, and search index mappings. In FOLIO, this manifests as specialized back-end inventory applications, QuickMARC editing modules, and data import/export engines that store abstract instance, holding, and item records independently of any physical building layout.
         
     - _Objectives:_ Delivers high-precision retrieval of complex academic resources, enforces cross-system data standardization across institutional boundaries, and provides real-time, accurate availability matching for physical and electronic items.
         
 - **Fulfillment and Circulation Workflows**
     
-    - _Aproach:_ Modeled as an abstract, deterministic state machine. Items are persisted as database records with changing status attributes. Code subroutines calculate loan rules, process renewals, trigger notices, and generate fine or fee entries when loan boundaries are violated.
+    - _University Stack Implementation:_ The operational orchestration of logistics, personnel, and physical inventory. It relies on circulation desks, sorting equipment, physical drop-boxes, course reserve shelves, and regional courier transport vehicles moving items through the physical campus network.
+        
+    - _Software Codebase Implementation:_ Modeled as an abstract, deterministic state machine. Items are persisted as database records with changing status attributes (e.g., `Available`, `Checked Out`, `Missing`, `On Hold`). Code subroutines calculate loan rules, process renewals, trigger notices, and generate fine or fee entries when loan boundaries are violated.
         
     - _Objectives:_ Secures equitable access to high-demand materials through automated loan enforcement, provides workflow predictability for patrons tracking holds, and delivers unalterable transactional logs for administrative clarity.
         
 - **External Integration Infrastructure**
     
-    - _Aproach:_  Expressed via programmatic interfaces, protocol adapters, and web standards. The system executes these integrations using RESTful web APIs, EDIFACT data parsers for automated acquisitions processing and generic webhook configurations.
+    - _University Stack Implementation:_ The physical and institutional boundaries established with third-party networks. This includes configuring local network routing to external content providers (e.g., JSTOR, PubMed) and establishing secure data connections to book vendors (e.g., GOBI) and central campus enterprise resource planning (ERP) financial frameworks.
+        
+    - _Software Codebase Implementation:_ Expressed via programmatic interfaces, protocol adapters, and web standards. The system executes these integrations using RESTful web APIs, EDIFACT data parsers for automated acquisitions processing, OAI-PMH data-harvesting modules, and generic webhook configurations.
         
     - _Objectives:_ Consolidates access into a single search environment, cuts administrative labor via automated procurement pipelines, and ensures platform future-proofing by allowing developers to swap or upgrade modules cleanly.
     
@@ -153,6 +162,28 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
     
 - **Color-Coded Numerical Availability Badging:** Attach explicit green (available) or red (unavailable) counters directly to the thumbnail layout matrices to broadcast asset states straight from the database machine without clicking the item page.
 
+## Existing app UI 
+### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
+- Searching tools:
+![](SearchUI.png)
+
+- Citation Management
+![](CitationUI.png)
+
+- Library subject guide
+![](SubjectGuideUI.png)
+
+- Booking room
+![](RoomBookingUI.png)
+
+- Library spaces:
+![](LibrarySpaceUI.png)
+
+### [Papyrus Library Cloud](https://www.papyruscloud.org/)
+The images in this section are take from [this link](https://papyruscloud.org/cloud/HelpV2/papyrus-quickstart-guide) 
+
+- Home page:
+![](PapyrusHomePage.png)
 
 ## The difference proposed app can do
 Besides efforts to implement and reuse existing features, we propose some potential improvement that may be remarkable reasons for choosing our approach.
@@ -214,7 +245,7 @@ Besides efforts to implement and reuse existing features, we propose some potent
     - Provide accessibility toggles in the CSS framework: a **Dyslexia-friendly font choice** (like OpenDyslexic), a high-contrast mode, and dynamic text scaling layout reflows.
     
 - **Physical Space Accessibility:**
-
+    
     - **Metadata Fields for Physical Accessibility:** Add attributes to your book record schema indicating if a title has a matching physical Braille edition or large-print copy available on shelves.
         
     - **ADA/Ergonomic Layout Integration:** If your app links with smart self-checkout kiosks or digital library lockers, the UI elements must dynamically shift down to an ergonomic lower height profile ($45\text{--}125\text{ cm}$) if a patron switches their account settings to "Wheelchair/Accessible Mode."
