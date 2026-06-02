@@ -73,6 +73,44 @@ The images in this section are take from [this link](https://papyruscloud.org/cl
 ![](PapyIssue.png.png)
 ![](PapyReturn.png)
 
+### [Accessit Library](https://www.accessitlibrary.com/)
+
+- Log in page:
+  An initial account-gated gateway path used to authenticate users and dispatch them to specific UI profiles based on their role and academic level.
+![](A_Login.png)
+
+- Home page:
+  A component-driven educational hub that replaces standard, rigid catalog tables with an asymmetric widget grid. It embeds multimedia tutorials, announcement banners, and information blocks directly into the landing interface.
+![](A_HomePage.png)
+
+- Searching system:
+  An advanced, multi-parameter search layout allowing users to build complex queries with precise filtering rules across fields like author, title, collection, or media type.
+![](A_SearchSystem.png)
+
+- Display result with sort and search filter:
+  Displays query results with real-time dynamic sorting and sidebar facets to easily refine and narrow down library assets.
+![](A_Display.png)
+
+- Visual search:
+  A faceted visual search taxonomy designed to lower the barrier to entry for early-stage or K-12 researchers. It utilizes clean iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
+![](A_visualSearch.png)
+
+- Quick list reading:
+  A tool allowing users to quickly compile, save, and look back at a custom reading list of specific assets during a search session.
+![](A_QuickList.png)
+
+- Dashboard:
+  A dedicated administrative backend overview that gives operational librarians an instantly scannable, visual breakdown of daily system statistics and active operational alerts.
+![](A_Dashboard.png)
+
+- Circulation:
+  The core front-desk fulfillment interface that handles day-to-day asset logistics by binding item assets directly to member operational records.
+  
+  - *Identify the Borrower:* Input or scan the patron's library card barcode into the search utility. The system instantly loads the user's operational record on the left panel, highlighting outstanding loans, overdues, and administrative messages.
+  - *Processing Issues:* Toggle the operational mode to **Issue**. Focus the cursor on the barcode input field, and scan the unique asset barcode attached to the physical copy. The transaction executes instantly, updating the item state and listing it under the borrower's active ledger with calculated due dates.
+  - *Processing Returns:* Toggle the operational mode to **Return**. Scan the asset barcode directly into the interface. The system evaluates the loan profile, terminates the active loan state counters, and marks the book availability status back to "Available" on the shelf.
+![](A_Circulation.png)
+
 ### Open-source: FOLIO Platform
 
 - **Microservice Architecture:** Architected as a decoupled ecosystem of containerized backend applications that utilize an API gateway to talk to one another over REST interfaces, allowing institutions to run only the services they need.
