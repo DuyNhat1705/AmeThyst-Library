@@ -1,292 +1,254 @@
-## Existing app UI 
-### [The University of Chicago - Library](https://www.lib.uchicago.edu/)
-- Searching tools: text query for available work
+# APPLICATION SURVEY
+
+Performed by: Tran Le Hoang Gia, Phan Le Anh Minh
+
+Reviewed by: Vu Duy Nhat
+
+Edited by: Tran Le Hoang Gia, Phan Le Anh Minh
+
+
+## 1. [The University of Chicago - Library](https://www.lib.uchicago.edu/)
+
+### 1.1. Features Surveyed
+
+#### 1.1.0. GUI Layout
+
+Top navigation bar groups menus by user intent: *Search*, *Borrow & Request*, *Research & Teaching*, and *Visit & Study*. A large centralized search box dominates the homepage for immediate access to the collection.
+
+#### 1.1.1. Authentication
+
+- Campus-wide SSO — users log in with standard university credentials.
+- Unlocks personalization: borrowing history, online renewals, restricted journal access, and room booking.
+
+#### 1.1.2. Borrowing Book
+
+- Users submit a physical "Borrow Request" via the web interface and select a pickup location (front desk or locker).
+- An automated notification is sent when the item is ready.
+
+#### 1.1.3. Returning Book
+
+- Active loans and due dates are listed in the portal; users can renew online.
+- Physical returns go through campus drop-boxes; status updates after a librarian scans the item.
+
+#### 1.1.4. Searching
 ![](SearchUI.png)
 
 `Search` -> `Library Catalog` -> `Basic / Advanced Search` 
+- Homepage search box supports keywords, author names, and titles.
+- Advanced Search filters by year, language, material type, or campus collection.
 
-- Citation Management:extracts bibliographic attributes (Author, Publisher, Year, Page Ranges) and instantly serializes them into standardized files (like .bib or .ris) that sync directly into software tools like Zotero or Mendeley.
-  
+#### 1.1.5. Citation Support
+
+- Book/article detail pages automatically extract bibliographic data (Author, Publisher, Year, Page Ranges).
+- Users can copy APA/MLA/Chicago formats or export `.bib`/`.ris` files for Zotero or Mendeley.
+
 ![](CitationUI.png)
-`Research & Teaching` -> `Citation Management` 
+`Research & Teaching` → `Citation Management`
 
-- Subject guide: an overrall instruction on a specific topic in text and online resources, each subject goes with instructor contact info for further need. 
-    
-![](SubjectGuideUI.png)
-`Research & Teaching` -> `Subject Guide` 
+#### 1.1.6. Study Room Reservation
 
-- Booking room: A time-slot booking engine that tracks spatial availability in real time. It allows patrons to reserve specific rooms, manages maximum reservation durations, enforces library policies, and prevents overlapping booking conflicts.
-  
+- Real-time time-slot grid shows room availability.
+- Selecting an empty slot triggers instant policy checks and sends a confirmation email.
+
 ![](RoomBookingUI.png)
-`Visit & Study` -> `Book a room` 
+`Visit & Study` → `Book a room`
 
-- Library spaces: Description of study corner including capacity, resources availability...
-  
-![](LibrarySpaceUI.png)
-`Visit & Study` -> `Spaces to study` 
 
-### [Papyrus Library Cloud](https://www.papyruscloud.org/)
-The images in this section are take from [this link](https://papyruscloud.org/cloud/HelpV2/papyrus-quickstart-guide) 
+---
 
-- Home page:
-![](PapyrusHomePage.png)
+### 1.2. Workflow
 
-- Adding and maintaining member:
-  Every patron who borrows library materials must possess a unique operational record to track liabilities and privileges.
+```mermaid
+graph TD
+    A[1. Access Library Website] --> B[2. Log in via Campus SSO]
+    B --> C[3. Search for a book]
+    C --> D[4. View details & click Request]
+    D --> E[5. Select pickup location]
+    E --> F[6. Navigate to Visit & Study]
+    F --> G[7. Pick room & timeslot, Confirm]
+```
 
-  - *Initiation:* Click the **Members** icon on the main Tool Strip.
-  - *Creating the Form:* Click the **New** button. A popup form will appear.
-  - *Identifier Assignment:* Click **Next Member**.
-  - Enter the patron’s **Surname** and **First Names**.
-  - Select a **Member Type** from the dropdown menu.
-  - Fill in auxiliary contact points, prioritizing the **Email Address** for automated system notifications.
-  - *Saving:* Click the **ADD** button to commit the core record. 
-  
+1. Log in with school credentials to unlock access.
+2. Use the search box to find a book; open its detail page for citation or to place a hold.
+3. Go to room booking, pick an open slot on the grid, and confirm.
+
+---
+
+## 2. [Papyrus Library Cloud](https://www.papyruscloud.org/)
+
+### 2.1. Features Surveyed
+
+#### 2.1.0. GUI Layout
+
+Staff-facing administrative dashboard. A main ribbon contains large buttons: *Members*, *Cataloguing*, *Front Desk*. Data is managed through input forms and grid ledgers.
+
+#### 2.1.1. Authentication
+
+- Secure SaaS login gateway supporting multiple library organizations on the same platform.
+- Role-Based Access Control (RBAC): front-desk staff handle checkouts/returns; admins manage configuration and reporting.
+
+#### 2.1.2. Managing Members
+
+- Staff click **Members** → **New**, fill in name, member type, and email, and the system assigns a sequential ID automatically.
+
 ![](PapyrusMember.png)
 
-![](PapyrusMember2.png)
+#### 2.1.3. Cataloguing Books and Adding Stock
 
-- Cataloguing books and Adding stock
+- **Cataloguing:** Create a master book entry under *Cataloguing*; system generates a Bibliographic Record Number (BRN).
+- **Adding Stock:** Under the **STOCK ITEMS** tab, staff add individual copies by assigning an Accession Number, scanning the barcode, and setting **Location > Collection > Shelf**.
 
-  - Navigate to **Cataloguing** and launch the **EasyCAT** module workspace.
-  -  Click **New** to prompt a new master entry profile.
-  - The system assigns an internal **BRN (Bibliographic Record Number)** sequentially. Select the matching general publication format template.
-  - Complete the input fields. Click **UPDATE** to save the master schema.
-  
-  -  Within the same EasyCAT book record view, click on the **STOCK ITEMS** tab layout.
-  - Click the **ADD NEW STOCK ITEM** button.
-  - Assign an **Accession Number**.
-  - *Scan or Input Barcode:* Click into the Barcode field. Use a barcode scanner or keyboard to map the exact unique sticker barcode attached to that physical copy.
-  - *Physical Location Mapping:* Designate the spatial home for the item inside the three-tiered organizational architecture: **Location > Collection > Shelf**. At minimum, assign a distinct **Shelf** coordinate so patrons can find it.
+#### 2.1.4. Borrowing Book (Book Issues)
 
-![](PapyCatalogue.png)
+- Open **Front Desk** → scan patron's library card barcode to load their profile.
+- Scan the book's barcode → press **Enter** to commit the loan with an auto-calculated due date.
 
-- Book issues and Returning
-  - Open the **Front Desk** workspace view from the main ribbon.
-  - Identify the Patron:** The cursor sits by default in the `Member Number` field. Type or scan the user's library card barcode. The system instantly loads the profile information, checking for blocks or caps.
-  - *Identify the Asset:* The system automatically drops the terminal focus directly down into the  **AccNo / Accession Barcode** input field.
-  - **Commit the Loan:** Scan the barcode attached to the physical book. Press **Enter/Return**. The transaction executes instantly, binding the item to the user profile and displaying calculated custom due dates down in the action grid ledger.
-    In case of returning:
-  - **Scan directly:** Take the physical book being returned and scan its barcode straight into the main entry field.
-  - **System Evaluation:** Papyrus identifies that the item status is currently "On Issue," automatically loads the corresponding borrower's liability parameters, marks the asset as returned safely to stock, and stops loan counters.
-  
-![](PapyIssue.png.png)
-![](PapyReturn.png)
+#### 2.1.5. Returning Book
 
-### [Accessit Library](https://www.accessitlibrary.com/)
+- Scan the returned book's barcode directly — no need to look up the member first.
+- System closes the loan, checks for fines, and reverts item status to "Available."
 
-- Log in page:
-  An initial account-gated gateway path used to authenticate users and dispatch them to specific UI profiles based on their role and academic level.
-![](A_Login.png)
+#### 2.1.6. QR / Barcode Scanning
 
-- Home page:
-  A component-driven educational hub that replaces standard, rigid catalog tables with an asymmetric widget grid. It embeds multimedia tutorials, announcement banners, and information blocks directly into the landing interface.
+Two-scan pattern keeps each transaction under 10 seconds: one scan for the patron's card, one for the book. Used across all checkout and return operations.
+
+---
+
+### 2.2. Workflow
+
+```mermaid
+graph TD
+    A[1. Open Front Desk Workspace] --> B[2. Scan Patron Library Card]
+    B --> C[3. System checks profile & blocks]
+    C --> D[4. Scan Book Barcode]
+    D --> E[5. Press Enter to commit loan]
+    E --> F[6. System logs due date & updates inventory]
+```
+
+1. Open *Front Desk* terminal.
+2. Scan patron card → scan book barcode → press Enter.
+3. Transaction complete; item marked "Checked Out" in the database.
+
+---
+
+## 3. [Accessit Library](https://www.accessitlibrary.com/)
+
+### 3.1. Features Surveyed
+
+#### 3.1.0. GUI Layout
 ![](A_HomePage.png)
 
-- Searching system:
-  An advanced, multi-parameter search layout allowing users to build complex queries with precise filtering rules across fields like author, title, collection, or media type.
+Modern educational hub layout using an asymmetric widget grid. The landing page supports embedded video tutorials, announcements, and information blocks rather than plain text tables.
+
+#### 3.1.1. Authentication
+![](A_Login.png)
+- Account-gated login that acts as a routing gateway.
+- Interface complexity adjusts by role: young students get a visual, icon-heavy layout; librarians and older students get a full-featured data-dense view.
+
+#### 3.1.2. Borrowing Book
+
+- Students click **Borrow** on an item's detail page to request it.
+- Staff finalize the checkout at the circulation desk by scanning both the patron card and book barcode.
+
+#### 3.1.3. Returning Book
+
+- Staff toggle to **Return** mode at the circulation panel and scan the book barcode.
+- System ends the loan and updates item status to "Available" immediately.
+
+#### 3.1.4. Searching & Filters
 ![](A_SearchSystem.png)
 
-- Display result with sort and search filter:
-  Displays query results with real-time dynamic sorting and sidebar facets to easily refine and narrow down library assets.
-![](A_Display.png)
+- **Advanced Search:** Multi-parameter queries across author, title, format, and collection.
+- **Faceted Sidebar:** Real-time filter checkboxes (e.g., "Available on Shelf") to narrow results instantly.
+- **Visual Search:** Icon buttons for broad topics (e.g., soccer ball for *Sports*, T-Rex for *History*) — no typing required, ideal for younger users.
 
-- Visual search:
-  A faceted visual search taxonomy designed to lower the barrier to entry for early-stage or K-12 researchers. It utilizes clean iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
-![](A_visualSearch.png)
+#### 3.1.5. Circulation (Borrowing & Returning at the Desk)
 
-- Quick list reading:
-  A tool allowing users to quickly compile, save, and look back at a custom reading list of specific assets during a search session.
-![](A_QuickList.png)
+Split-panel front-desk workspace:
+- **Issue mode:** Scan patron card → scan book barcode → loan logged.
+- **Return mode:** Scan book barcode → loan closed, item set to "Available."
 
-- Dashboard:
-  A dedicated administrative backend overview that gives operational librarians an instantly scannable, visual breakdown of daily system statistics and active operational alerts.
-![](A_Dashboard.png)
+#### 3.1.6. Pay Fees
 
-- Circulation:
-  The core front-desk fulfillment interface that handles day-to-day asset logistics by binding item assets directly to member operational records.
-  
-  - *Identify the Borrower:* Input or scan the patron's library card barcode into the search utility. The system instantly loads the user's operational record on the left panel, highlighting outstanding loans, overdues, and administrative messages.
-  - *Processing Issues:* Toggle the operational mode to **Issue**. Focus the cursor on the barcode input field, and scan the unique asset barcode attached to the physical copy. The transaction executes instantly, updating the item state and listing it under the borrower's active ledger with calculated due dates.
-  - *Processing Returns:* Toggle the operational mode to **Return**. Scan the asset barcode directly into the interface. The system evaluates the loan profile, terminates the active loan state counters, and marks the book availability status back to "Available" on the shelf.
-![](A_Circulation.png)
+- Overdue fines are auto-calculated based on daily rate × days overdue.
+- Outstanding balance shown on the patron's profile; staff record cash payment and clear the fine directly in the interface.
 
-### Open-source: FOLIO Platform
+#### 3.1.7. Quick List
 
-- **Microservice Architecture:** Architected as a decoupled ecosystem of containerized backend applications that utilize an API gateway to talk to one another over REST interfaces, allowing institutions to run only the services they need.
-    
-- **Community Governance Councils:** Governed openly through a structured framework led by an independent Product Council, Technical Council, and Community Council, supplemented by domain-specific Special Interest Groups (SIGs).
-    
-- **Native ERM Capabilities:** Built from its inception with core electronic resource management (ERM) modules designed to ingest and process digital contract parameters, including native apps for _Agreements_, _Licenses_, _eHoldings_, and _eUsage_ data metrics.
-    
-- **Decoupled Data Analytics (Metadb):** Isolates operational reporting via a distinct analytics database layer (`Metadb`) that transforms highly variable, transactional JSON data from microservices into standard relational tables, avoiding performance degradation on production clusters.
+Users add items to a virtual tray while browsing (like a shopping cart) to save, review, or print a curated reading list within a session.
 
-### Papyrus Library Cloud
+#### 3.1.8. Dashboard
 
-- **Commercial SaaS Delivery Model:** Implements a pure software-as-a-service model hosted, maintained, and deployed entirely on vendor-managed cloud networks under a commercial operating structure.
-    
-- **Vendor-Managed Paradigm:** Incorporates an integrated, client-facing _Price List_ and corporate service-tier architecture natively within the platform ecosystem, targeting buyers who want to outsource infrastructure overhead.
-    
-- **Client Authentication Footprint:** Utilizes an account-gated, minimalist landing page optimized for secure tenant authentication and administrative workflows rather than functioning as an open public discovery portal.
+Admin overview with daily statistics, circulation counts, and outstanding alerts in a scannable visual layout.
 
-### Accessit Library
+---
 
-- **Role-Gated Interface Profiling:** Uses an initial gateway path to filter users by their academic level, dynamically re-rendering the frontend layout, visual vocabulary, and data density to accommodate different learning age groups.
-    
-- **Component-Driven Educational Hub:** Replaces standard catalog tables with an asymmetric widget grid that embeds multimedia tutorials, citation advice, and external university research references directly into the user interface.
-    
-- **Faceted Visual Search Taxonomy:** Lowers the barrier to entry for early stage researchers by offering iconographic category buttons that trigger automated background search parameters without requiring manual keyword drafting.
+### 3.2. Workflow
+
+```mermaid
+graph TD
+    A[1. Log in] --> B[2. System renders age-appropriate layout]
+    B --> C[3. Click topic icon under Visual Search]
+    C --> D[4. System pulls matching catalog titles]
+    D --> E[5. Filter sidebar for Available books]
+    E --> F[6. Add books to Quick List]
+    F --> G[7. Bring list to desk; staff scans to checkout]
+```
+
+1. Log in — gateway renders a layout suited to the user's age/role.
+2. Click a topic icon instead of typing; filter sidebar for available items.
+3. Add books to Quick List; bring to desk for physical checkout.
+
+---
+
+## 4. Summary and Proposed App Improvements
+
+### 4.1. Common Features Across Existing Products
+
+- **Identity & Access Management:** Role-separated authentication (students, librarians, admins).
+- **Catalog Discovery:** Bibliographic storage and keyword search.
+- **Circulation:** Loan/return processing via barcode, with due date and overdue tracking.
+
+---
+
+### 4.2. Proposed Features Our App Adds
+
+Existing platforms treat the library as a warehouse — strong on administration, weak on community, AI discovery, and spatial navigation. Our app addresses these gaps:
+
+#### 4.2.1. Semantic Search with AI Support
+
+- **Problem:** Typos or vague descriptions return zero results in traditional search.
+- **Solution:** Text-embedding AI converts catalog summaries to vectors (`pgvector`); queries are matched by meaning, not exact keywords.
+- **Benefit:** Users can search by concept or plot description in plain language — no exact title needed.
+
+#### 4.2.2. Finding a Study Partner or Group
+
+- **Problem:** Library portals are purely transactional; no way to connect with nearby students on the same topic.
+- **Solution:** A matching engine lets users toggle "Looking for a Study Partner" and select a subject when booking a room. The platform connects students in the same building with the same goal.
+- **Benefit:** Turns the library into a collaborative hub, helping students find accountability partners and reduce academic isolation.
+
+#### 4.2.3. 3D Spatial Simulation of Study Room Layouts
+
+- **Problem:** Room booking is blind — users can't tell if a room has a whiteboard, outlets, or accessible entry.
+- **Solution:** Interactive 2D/3D room map embedded in the reservation flow. Users inspect seating, windows, and outlet placement before booking.
+- **Benefit:** No more arriving to find a room unsuitable — users make informed choices upfront.
+
+#### 4.2.4. Personal AI Recommendation Engine
+
+- **Solution:** Collaborative Filtering maps checkout history, ratings, and search patterns to model each user's reading taste.
+- **Benefit:** A personalized "Recommended for You" feed on the homepage helps students discover relevant resources they wouldn't have searched for.
+
+#### 4.2.5. AI-Generated Meta-Reviews & Sentiment Analysis
+
+- **Solution:** All user reviews for a book are summarized by an AI in the background when the detail page is opened.
+- **Benefit:** Instead of reading dozens of reviews, users see one concise summary (e.g., *"85% praise the examples; 15% find Chapter 4 too advanced"*), saving vetting time.
 
 
-## Common features of existing products
+---
 
-- **Identity and Access Management (IAM)**
-    
-    - University Stack Implementation:_ Orchestrated via enterprise Single Sign-On (SSO) infrastructures such as Shibboleth or Central Authentication Service (CAS). This maps digital patron identities to physical security parameters, including building turnstiles, private study space resource schedulers, and off-campus proxies (e.g., EZproxy) for restricted publisher networks.
-        
-    - _Software Codebase Implementation:_ Expressed via web token verifiers, security filter middlewares, and strict Role-Based Access Control (RBAC) permission tables. The codebase acts as a digital gatekeeper, explicitly evaluating whether an authenticated system account possesses the specific cryptographic scopes required to alter ledger balances, invoke API endpoints, or modify a patron profile.
-        
-    - _Objectives_: Guarantees institutional data privacy compliance, prevents privilege escalation by unauthorized staff or external actors, and creates a frictionless user experience by removing multi-login barriers for researchers moving between disparate databases.
-        
-- **Metadata Management and Discovery Control**
-    
-    - _University Stack Implementation:_ Executed through active local cataloging, metadata curation, and database maintenance workflows. Staff verify and enrich bibliographic records (e.g., MARC schemas) and map them directly to physical shelf locations across a campus footprint, exposing these records to unified user-facing discovery networks like WorldCat or UC Library Search.
-        
-    - _Software Codebase Implementation:_ Managed via database storage configurations, ingestion pipelines, and search index mappings. In FOLIO, this manifests as specialized back-end inventory applications, QuickMARC editing modules, and data import/export engines that store abstract instance, holding, and item records independently of any physical building layout.
-        
-    - _Objectives:_ Delivers high-precision retrieval of complex academic resources, enforces cross-system data standardization across institutional boundaries, and provides real-time, accurate availability matching for physical and electronic items.
-        
-- **Fulfillment and Circulation Workflows**
-    
-    - _University Stack Implementation:_ The operational orchestration of logistics, personnel, and physical inventory. It relies on circulation desks, sorting equipment, physical drop-boxes, course reserve shelves, and regional courier transport vehicles moving items through the physical campus network.
-        
-    - _Software Codebase Implementation:_ Modeled as an abstract, deterministic state machine. Items are persisted as database records with changing status attributes (e.g., `Available`, `Checked Out`, `Missing`, `On Hold`). Code subroutines calculate loan rules, process renewals, trigger notices, and generate fine or fee entries when loan boundaries are violated.
-        
-    - _Objectives:_ Secures equitable access to high-demand materials through automated loan enforcement, provides workflow predictability for patrons tracking holds, and delivers unalterable transactional logs for administrative clarity.
-        
-- **External Integration Infrastructure**
-    
-    - _University Stack Implementation:_ The physical and institutional boundaries established with third-party networks. This includes configuring local network routing to external content providers (e.g., JSTOR, PubMed) and establishing secure data connections to book vendors (e.g., GOBI) and central campus enterprise resource planning (ERP) financial frameworks.
-        
-    - _Software Codebase Implementation:_ Expressed via programmatic interfaces, protocol adapters, and web standards. The system executes these integrations using RESTful web APIs, EDIFACT data parsers for automated acquisitions processing, OAI-PMH data-harvesting modules, and generic webhook configurations.
-        
-    - _Objectives:_ Consolidates access into a single search environment, cuts administrative labor via automated procurement pipelines, and ensures platform future-proofing by allowing developers to swap or upgrade modules cleanly.
-    
-## Comparison on existing apps
+### 4.3. UI/UX Patterns Adoption
 
-| **Entity**                            | **Deployment Model**      | **Target Audience**                              |
-| ------------------------------------- | ------------------------- | ------------------------------------------------ |
-| **FOLIO Platform**                    | Distributed / Cloud       | Library IT Administrators & System Developers    |
-| **Papyrus Library Cloud**             | Multi-Tenant / Cloud      | Library IT Administrators & Operations Personnel |
-| **UC Berkeley Library**               | Distributed               | End-User Students, Researchers, & Staff          |
-| **The University of Chicago Library** | On-Premises / Distributed | Researchers & End-User Students                  |
-|**Accessit Library**                   | Cloud SaaS / Hybrid (Multi-tier web application) | End-User Students, K-12/Tertiary Learners, & Operational Librarians |
-
-# UX/UI Adoptation
-- **The In-Box Mode Toggle:** Place tab controls or crisp radio toggles right inside or directly above the primary search box. This lets users change the underlying target database (e.g., searching for _local catalog entries_ vs. _all external database connections_) without switching pages.
-    
-- **Contextual Scoping Checkboxes:** filtering checkboxes directly beneath the text box. This keeps users from needing to navigate a complex advanced filter menu for common queries.
-    
-- **Fallback Redirect Anchors:** Place a clear secondary link below the search field (e.g., _"Not finding what you need? Search WorldCat"_). This guides the user to a fallback partner network or external integration.
-      
-- **Color-Coded Boolean State Indicators:** Group locations or service endpoints into a clean vertical list. Pair each item with a clear, color-coded state badge (e.g., a red background badge for `Closed`, a green one for `Open`) alongside current timestamp data (e.g., _"Hours today: 11 a.m. - 5 p.m."_).
-    
-- **"See Full Details" Contextual Drills:** Keep the main location dashboard clean by placing a uniform, low-emphasis action link (_"See full library details"_) beneath every entry. This prevents secondary data—like maps, floor plans, or staff contacts—from cluttering the high-level summary views.
-       
-- **Action-Oriented Intent Nesting:** Instead of naming the navigation items after the internal software modules , group the menus by user intent, such as **Borrow & Request**, **Research & Teaching**, or **Visit & Study**.
-    
-- **Categorized Functional Columns:** When a user opens a top-level menu category, split the submenu panel into distinct columns based on what the user wants to know versus what they want to do.
-      
-- **The "Account at a Glance" Header Link:** Keep a persistent **"My Library Account"** anchor link pinned to the global header. This gives users a 1-click path to view their active states, items checked out, and system notifications from anywhere in the app.
-    
-- **High-Frequency Utility Blocks:** Create a specific section on your home dashboard for the most common user workflows.
-  
-- **Dynamic Role-Selection Route Dispatcher:** Provide an entry splash card that segregates layouts based on organizational standing, adapting data complexity seamlessly for younger vs. older user sets.
-    
-- **Interactive Fluid Carousels:** Display resource offerings using 3D visual book-jacket sliders that users can scroll through on the home screen to increase click-through interactions.
-    
-- **Color-Coded Numerical Availability Badging:** Attach explicit green (available) or red (unavailable) counters directly to the thumbnail layout matrices to broadcast asset states straight from the database machine without clicking the item page.
-
-## The difference proposed app can do
-Besides efforts to implement and reuse existing features, we propose some potential improvement that may be remarkable reasons for choosing our approach.
-
-### Semantic Search with AI Support
-
-- **The Concept:** Traditional keyword search might break if a user searches a concept or description. Semantic search maps the underlying _meaning_ of the phrase.
-    
-- **The Architecture:**
-    
-    - When books are cataloged, combine the Title, Description, Subject Tags, and First Chapter/Blurb into a unified text block.
-        
-    - Pass this text block through an embedding model (like `text-embedding-3-small`) to generate a vector representation (a coordinate array of real numbers representing semantic meaning).
-        
-    - Store these inside a vector-supported database extension like **Pgvector** running inside AuraDB.
-        
-    - When a user searches, compute the mathematical distance (Cosine Similarity) between the search vector and your catalog vectors to return conceptual matches instantly.
-
-### Personal Recommendation
-- **The Concept:** Standard systems use basic genre matching. We aim to predict user taste dynamically.
-    
-- **The Architecture:**
-    
-    - Implement **Collaborative Filtering** paired with **Content-Based Embeddings**.
-        
-    - Track explicit events: checkouts, holds placed, and search history.
-        
-    - If a user checked out three books that cluster closely together in your vector space, calculate the centroid of those three vectors. Search the database for other books closest to that centroid that they haven't read yet.
-        
-### Reviews Comparison
-
-- **The Concept:** Instead of making a patron scroll through 50 contradictory reviews, provide an AI-generated meta-review summary alongside a comparison metric.
-    
-- **The Architecture:**
-    - When a user pulls up a book detail page, an asynchronous background task pulls user-submitted reviews.
-        
-    - Run an LLM-based map-reduce operation: _“Summarize what readers loved, what they disliked, and who this book is best for based on these 30 reviews.”_
-        
-    - **Sentiment Analysis:** Score reviews computationally ($+1.0$ for highly positive, $-1.0$ for negative). Display a clean UI widget showing a metric breakdown: "85% praise the plot pacing, but 40% found the ending rushed."
-        
-### Book Trend Prediction 
-
-- **The Concept:** Predict what books the library needs to buy _before_ they bottleneck or go out of stock.
-    
-- **The Architecture:**
-    
-    - Store checkout data with timestamp history and speacial occasion (semester exams, entrance exams...). Treat circulation velocity as a time-series regression problem.
-        
-    - If a book’s checkout frequency increases significantly week-over-week, flag it on the admin dashboard: _"Warning: 'Book X' is trending upward. Available copies: 2. Estimated bottleneck in 6 days. Recommend ordering 3 more licenses."_
-        
-### Disability Support
-
-- **Digital Accessibility (Screen Readers, Dyslexia, Blindness):**
-    
-    - Strict adherence to **WCAG 2.2 / 3.0** standards. Every image must have dynamic alt-text (generated by an image-to-text LLM if a librarian uploads a custom cover file).
-        
-    - Integrate native **Text-to-Speech (TTS)** audio streaming interfaces directly on e-book item views.
-        
-    - Provide accessibility toggles in the CSS framework: a **Dyslexia-friendly font choice** (like OpenDyslexic), a high-contrast mode, and dynamic text scaling layout reflows.
-    
-- **Physical Space Accessibility:**
-    
-    - **Metadata Fields for Physical Accessibility:** Add attributes to your book record schema indicating if a title has a matching physical Braille edition or large-print copy available on shelves.
-        
-    - **ADA/Ergonomic Layout Integration:** If your app links with smart self-checkout kiosks or digital library lockers, the UI elements must dynamically shift down to an ergonomic lower height profile ($45\text{--}125\text{ cm}$) if a patron switches their account settings to "Wheelchair/Accessible Mode."
-        
-    - **Micro-Location Routing:** When showing a user where a physical book is (e.g., Section B, Shelf 4), map an alternative "accessible path" route if the system detects that the destination requires navigating tight aisles or steps.
-
-### Gamification
-- **The "Library Visit" Streak Engine**: To encourage patrons to physically or digitally engage with the library
-
-  - Physical: Scanning an app-based QR code at a library kiosk, or completing a book check-out/return.
-
-  - Digital: Opening an integrated e-book inside the web client, submitting a book review, or completing a semantic research query.
-
-  - The Freeze/Grace Mechanic: To protect user motivation from dropping to zero if they miss a single day (which causes psychological burnout), build a "Streak Shield" mechanic. Patrons can spend points earned from writing reviews or returning books early to buy a protection item that freezes their streak for 24 hours.
-
-- **Achievement Tiers**:Create milestones that turn routine administrative actions into meaningful badges. 
-
-  - The Exploration Track: Earning badges for discovering new material types (e.g., "Polymath" for checking out books in 5 completely different vector embedding categories).
-
-  - The Social Track: Earning milestones for community contributions (e.g., "Literary Critic" for writing 10 highly-rated reviews).
-
-  - The Altruism/Operational Track: Rewarding good library citizenship (e.g., "Perfect Return" for bringing back 5 physical items sequentially before the due date).
+- **In-Box Mode Toggles:** Radio switches inside the search bar to swap between keyword and AI semantic search without changing pages.
+- **Intent-Based Navigation:** Menus named after user goals (*Collaborate*, *Research & Learn*, *Reserve Space*) instead of system modules.
+- **Color-Coded Availability Badges:** Green/red status badges on book cards — no need to click into a detail page to check availability.
+- **Fluid Carousels:** Swipeable book-jacket layouts for recommendations to encourage browsing and discovery.
