@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ignore IDE files and .gemini
+.idea/
+.gemini/
+!.gemini/commands/   # UN-IGNORE if your team shares custom QML/TOML slash commands
+!gemini.md
+!GEMINI.md
