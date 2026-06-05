@@ -60,7 +60,8 @@ As proposed, there are 8 function groups, with 3 roles: User, Librarian, Admin.
 *   **User Assistance:** Enhances user satisfaction by offering accessible online guidelines and a direct support channel for troubleshooting. It also provides practical resources like library floor plans and policies to ensure a seamless physical visit.
 
 ## 4. Integrated AI Feature
-### 4.1. AI-Powered Book Recommendations
+**AI-Powered Book Recommendations**
+
 The AI suggests books based on the user's reading and borrowing history. By analyzing past interactions, the system recommends new titles that align with the user's preferences. This provides real, practical value by significantly enhancing the experience for avid readers who want to discover new genres or books but are unsure where to start. Ultimately, this delivers a fresh and personalized experience, increasing user engagement and retaining them longer.
 * Input: The user's past borrowing history and reading interactions.
 * Output: Curated suggestions of books the user is highly likely to enjoy.
