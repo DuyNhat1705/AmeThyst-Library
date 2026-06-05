@@ -7,10 +7,21 @@ Editied by: Nguyễn Nhựt Huy
 ---
 
 ## 1. Team Roles and Responsibilities
-* **[Tên Thành Viên 1]**: Full-stack Engineer & [Vai trò chính, ví dụ: Project Manager / UI/UX Designer]
-  * *Trách nhiệm chính:* [Nhập các công việc và trách nhiệm chính tại đây]
-* **[Tên Thành Viên 2]**: Full-stack Engineer & [Vai trò chính, ví dụ: Lead Developer / Tester]
-  * *Trách nhiệm chính:* [Nhập các công việc và trách nhiệm chính tại đây]
+
+* **[Vũ Duy Nhất]**: Project Manager & Full-stack Engineer (Team Leader)
+  * *Main Responsibilities:* Manage project timelines, assign tasks, coordinate team communication, and take ownership of the overall system architecture. Participate in both Front-end and Back-end development for core features.
+
+* **[Nguyễn Nhựt Huy]**: UI/UX Designer & Front-end Engineer
+  * *Main Responsibilities:* Design user interfaces (Wireframes, Prototypes) and optimize user experience. Responsible for translating design mockups into clean, production-ready Front-end code, ensuring responsiveness and smooth user interactions.
+
+* **[Trần Lê Hoàng Gia]**: Technical Lead & Back-end Engineer
+  * *Main Responsibilities:* Design database schemas, build and optimize robust APIs, and handle server-side logic. Provide technical guidance, solve complex engineering challenges, and ensure system security and scalability.
+
+* **[Nguyễn Lê Hoàng Khải]**: Full-stack Engineer & DevOps Specialist
+  * *Main Responsibilities:* Flexibly develop both Front-end and Back-end features based on project needs. Responsible for environment configuration, setting up CI/CD pipelines, managing repositories, and deploying the application to cloud platforms.
+
+* **[Phan Lê Anh Minh]**: Full-stack Engineer & Quality Assurance (Tester)
+  * *Main Responsibilities:* Contribute to feature development and code implementation. Concurrently lead the QA process by writing test cases, executing manual/automated testing, tracking bugs, and ensuring product quality before final delivery.
 
 ## 2. Communication Plan
 * **Primary Communication Tools:** Messenger (for daily updates), Google Meet (for meetings), Jira (for task tracking)
@@ -104,3 +115,4 @@ Editied by: Nguyễn Nhựt Huy
   * **Documentation:** Once approved, the Project Manager will update this document directly on GitHub/Markdown repository, and all members must react or acknowledge the update in the Messenger group chat to confirm their commitment to the new terms.
 
 ## 9. Agreement
+![Signatures from all members](AppSurvey_Img/signatures.png)
