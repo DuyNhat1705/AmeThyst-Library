@@ -416,7 +416,7 @@ graph TD
 | **Papyrus Library Cloud**             | **Multi-Tenant / Cloud**      | **Library IT Administrators** & Operations Personnel                    |
 | **Accessit Library**                  | **Cloud SaaS / Hybrid**       | **End-User Students**, K-12/Tertiary Learners, & Operational Librarians |
 
-### 4.2. Proposed Different Features 
+### 4.2. Proposed Features Our App Adds
 
   
 
@@ -425,23 +425,46 @@ graph TD
 
 - **Problem:** Typos or vague descriptions return zero results in traditional search.
 
-- **Solution:** Text-embedding AI converts catalog summaries to vectors (`pgvector`); queries are matched by meaning, not exact keywords.
+- **Solution:** Text-embedding AI converts catalog summaries to vectors; queries are matched by meaning, not exact keywords.
+
+```
+[User Quote/Concept] ➔ [Ollama / OpenAI Embedding] ➔ [Vector DB Lookup] ➔ [Neo4j Work/Edition Fetch] ➔ [Display with OpenLibrary Cover]
+```
 
 - **Benefit:** Users can search by concept or plot description in plain language, no exact title needed.
 
-  
+  - **The Tools:** Ollama (`nomic-embed-text` model for local $0 development) or OpenAI API (`text-embedding-3-small`), **ChromaDB** (free local vector database), and the **Open Library Covers API**.
+    
+- **The Workflow:**
+    
+    1. **Ingestion:** Python loader saves the 20,000 `Work` titles, it passes the text string through the embedding model to get a vector array (e.g., a list of numbers like `[0.12, -0.43, ...]`). We this vector in ChromaDB using the `work_id` as the reference key.
+        
+    2. **Querying:** When a user types _"a book about animals taking over a farm"_ into the search bar,  `FastAPI` backend converts that string into a vector using the exact same embedding model.
+        
+    3. **Matching:** Query ChromaDB for the closest vector match (Cosine Similarity). Take the returned `work_id`, look it up instantly in **Neo4j** to grab the title and matching ISBN, and display it on the frontend with its Open Library cover string.
 
 #### 4.2.2. Study Companion or Group Matching
 
   
-
 - **Problem:** Library portals are purely transactional; no way to connect with nearby students on the same topic.
 
 - **Solution:** A matching engine lets users toggle "Looking for a Study Partner" and select a subject when booking a room. The platform connects students in the same building with the same goal.
 
+
 - **Benefit:** Turns the library into a collaborative hub, helping students find accountability partners and reduce academic isolation.
 
-  
+
+  - **The Tools:** **Neo4j, AuraDB** (utilizing Cypher pattern matching) and FastAPI WebSockets.
+    
+- **The Workflow:**
+    
+    1. **The Toggle:** When a student books a study room, they toggle a checkbox: `[x] Looking for a Study Partner` and select a `Topic` (e.g., _"Software Engineering"_).
+        
+    2. **The Graph Write:** `FastAPI` saves the room booking and adds a temporary state relationship to the user node: `(User)-[:LOOKING_FOR_PARTNER {topic: "Software Engineering"}]->(TimeSlot)`.
+        
+    3. **The Matching Engine:** The backend instantly fires a Cypher traversal query to find overlaps.
+        
+    4. **The Result:** The UI displays a list of matched peers right inside the booking flow, allowing the student to invite them to the room reservation.
 
 #### 4.2.3. Spatial Description of Study Room Layouts
   
@@ -457,17 +480,31 @@ graph TD
 #### 4.2.4. Personal AI Recommendation Engine
 
 
-
 - **Solution:** Collaborative Filtering maps checkout history, ratings, and search patterns to model each user's reading taste.
 
 - **Benefit:** A personalized "Recommended for You" feed on the homepage helps students discover relevant resources they wouldn't have searched for.
 
+- **The Tools:** **Neo4j AuraDB** (Collaborative Filtering via Cypher queries).
+    
+- **The Workflow:**
+    
+    1. **User History tracking:** Every time a user interacts with a book, your backend records it as a transaction: `(User)-[:BORROWED]->(BookCopy)` or `(User)-[:REVIEWED {rating: 5}]->(Work)`.
+        
+    2. **Graph Traversal Recommendation:** On the app homepage, the "Recommended for You" section executes an item-based collaborative filtering query over your RecKG network:
+        
+    3. **The Rendering:** `FastAPI` returns this array of raw book items to the frontend, which injects them straight into your swipeable book-jacket carousels.
   
 
 #### 4.2.5. AI-Generated Meta-Reviews & Sentiment Analysis
   
 
+- **Problem:** Reviews are crucial for people to choose the right book to spend time. However a great amount of comments with contradiction may cause readers overwhelming. 
+
 - **Solution:** All user reviews for a book are summarized by an AI in the background when the detail page is opened.
+
+```
+[Neo4j Review Text Collection] ➔ [FastAPI String Aggregation] ➔ [Ollama / Gemini Summary Prompt] ➔ [Frontend Tooltip]
+```
 
 - **Benefit:** Instead of reading dozens of reviews, users see one concise summary (e.g., *"85% praise the examples; 15% find Chapter 4 too advanced"*), saving vetting time.
 
