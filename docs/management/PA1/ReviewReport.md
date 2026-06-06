@@ -9,7 +9,7 @@ Editied by: Vũ Duy Nhất
 - We have detail documents including project proposal, application survey and team contract to submit for PA1 and orientate for future design and implementation.
 - The frontend framework-React NextJs and backend framework-ExpressJs have been completed and ready for coding.
 - The design of UI/UX was proposed and the implementation was also lauched based on this so we have the foundation of GUI before continuing to complete it with functional coding in next sprint.
-- The data of books was collected to identify the avaibility of the information that can be rendered on the GUI and design database schema to store these information before coding avoiding field's name confliction between members.
+- The data of books was collected to identify the availability of the information that can be rendered on the GUI and design database schema to store these information before coding avoiding field's name confliction between members.
 ## 2. Problems
 - **In Building Framework:**
   - Lack of knowledge about React NextJs and ExpressJs initially
@@ -36,5 +36,5 @@ Editied by: Vũ Duy Nhất
 - Understanding the code and fixing minor bugs manually to reduce unnecessary token consumption when using AI agents.
 ## 4. What lessons we could learn
 - Initial decribing documents like application surveys or proposals must be well-structured and use balanced language to better understand and set up for coding later more easily.
-- It is important to evaluate data avaibility, filter out raw data, and define schema limitations early on.
+- It is important to evaluate data availability, filter out raw data, and define schema limitations early on.
 - Aligning the UI/UX foundation, database schemas, and framework setups before jumping into functional coding is excellent practice helping reduce name confliction and poor code classification, modulization among team members.

@@ -29,7 +29,7 @@ Editied by: Vũ Duy Nhất
       - Finalize team's name
       - Finalize the project's name
     - To-do task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - Obstacles/Issues
       - There are many good topics team has brainstormed for the product, but there is only 1 topic is chosen, required to have at least 2 roles in that system and high feasibility to design, implement and document.
   - **Phan Lê Anh Minh**
@@ -38,7 +38,7 @@ Editied by: Vũ Duy Nhất
       - Finalize team's name
       - Finalize the project's name
     - To-do task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - Obstacles/Issues
       - There are many good topics team has brainstormed for the product, but there is only 1 topic is chosen, required to have at least 2 roles in that system and high feasibility to design, implement and document.
   - **Nguyễn Nhựt Huy**
@@ -47,7 +47,7 @@ Editied by: Vũ Duy Nhất
       - Finalize team's name
       - Finalize the project's name
     - To-do task
-      - Branstorm at least 2 functional group and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional group and decompose it to small usecases for building product
     - Obstacles/Issues
       - There are many good topics team has brainstormed for the product, but there is only 1 topic is chosen, required to have at least 2 roles in that system and high feasibility to design, implement and document.
   - **Nguyễn Lê Hoàng Khải**
@@ -56,7 +56,7 @@ Editied by: Vũ Duy Nhất
       - Finalize team's name
       - Finalize the project's name
     - To-do task
-      - Branstorm at least 2 functional group and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional group and decompose it to small usecases for building product
     - Obstacles/Issues
       - There are many good topics team has brainstormed for the product, but there is only 1 topic is chosen, required to have at least 2 roles in that system and high feasibility to design, implement and document.
 - **Action:**
@@ -83,41 +83,45 @@ Editied by: Vũ Duy Nhất
       - There are a lot of documents of React NextJs and ExpressJs, including text and video, needed to be referenced to set up environment, neccessary package and connect frontend and backend for running successfully whole system
   - **Trần Lê Hoàng Gia**
     - Completed task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - To-do task
       - Write application survey
       - Collect books data used for product
     - Obstacles/Issues
-      - The working procedure of librarian and admin is not clearly to see and explore so branstorming the functional groups for these 2 roles is based on prediction
+      - The working procedure of librarian and admin is not clearly to see and explore so brainstorming the functional groups for these 2 roles is based on prediction
       - No target websites identified yet; currently searching for suitable ones to survey
   - **Phan Lê Anh Minh**
     - Completed task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - To-do task
       - Write application survey
       - Design UI/UX for production
     - Obstacles/Issues
-      - The working procedure of librarian and admin is not clearly to see and explore so branstorming the functional groups for these 2 roles is based on prediction
+      - The working procedure of librarian and admin is not clearly to see and explore so brainstorming the functional groups for these 2 roles is based on prediction
       - No target websites identified yet; currently searching for suitable ones to survey
   - **Nguyễn Nhựt Huy**
     - Completed task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - To-do task
       - Write team contract
       - Implement the base of GUI based on design
     - Obstacles/Issues
-      - The working procedure of librarian and admin is not clearly to see and explore so branstorming the functional groups for these 2 roles is based on prediction
+      - The working procedure of librarian and admin is not clearly to see and explore so brainstorming the functional groups for these 2 roles is based on prediction
       - There is lots of information in each section the team contract need to discuss with team to finalize the most suitable options.
   - **Nguyễn Lê Hoàng Khải**
     - Completed task
-      - Branstorm at least 2 functional groups and decompose it to small usecases for building product
+      - Brainstorm at least 2 functional groups and decompose it to small usecases for building product
     - To-do task
       - Write project proposal
       - Take screenshot of required tools (Jira, Github Repository Structure, VS Code, SpecKit, AI Coding Account - Github Copilot Student)
     - Obstacles/Issues
-      - The working procedure of librarian and admin is not clearly to see and explore so branstorming the functional groups for these 2 roles is based on prediction
+      - The working procedure of librarian and admin is not clearly to see and explore so brainstorming the functional groups for these 2 roles is based on prediction
 - **Action:**
   - **Vũ Duy Nhất:** Need to check the requirements of PA1 and give feedback in time for the documentation team member proposes to let them fix it if necessary.
   - **Nguyễn Nhựt Huy:** Need to discuss with the team to get whole team agreement on the essential information like time meeting, criteria for measuring contribution and quality of work,... to fill in team contract.
   - **Trần Lê Hoàng Gia, Phan Lê Anh Minh:** Need to find at least 2 appropriate websites to reference for application survey.
-- **Summary of the meeting:** Firstly, the team leader, Duy Nhất, proposes about the PA1 document to get the entire of team understand the objectives and demands needed to be met to satisfy each section of PA1. Next, team discusses toghether to finalize 9 functional groups including 7 core functional groups and 2 innovative functional groups. Then, team leader introduces the framework he built for team coding specifically the syntax in JavaScript, general idea of frontend framework - React NextJs, general idea of backend framework ExpressJs, the API that these framework provides and run a demo.
+- **Summary of the meeting:** Firstly, the team leader, Duy Nhất, proposes about the PA1 document to get the entire of team understand the objectives and demands needed to be met to satisfy each section of PA1. Next, team discusses together to finalize 9 functional groups including 7 core functional groups and 2 innovative functional groups. Then, team leader introduces the framework he built for team coding specifically the syntax in JavaScript, general idea of frontend framework - React NextJs, general idea of backend framework ExpressJs, the API that these framework provides and run a demo.
+
+## 3. Task Screenshot on Jira
+![All Tasks on Jira](AppSurvey_Img/JiraTaskForWR1.png)
+![All Tasks on Jira](AppSurvey_Img/JiraTaskForWR2.png)
