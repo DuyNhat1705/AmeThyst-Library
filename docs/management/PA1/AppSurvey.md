@@ -1,15 +1,15 @@
 # APPLICATIONS SURVEY
   
 
-Performed by: Tran Le Hoang Gia, Phan Le Anh Minh
+Performed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
   
 
-Reviewed by: Vu Duy Nhat
+Reviewed by: Vũ Duy Nhất
 
   
 
-Edited by: Tran Le Hoang Gia, Phan Le Anh Minh
+Edited by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
   
   
@@ -495,20 +495,6 @@ graph TD
     3. **The Rendering:** `FastAPI` returns this array of raw book items to the frontend, which injects them straight into your swipeable book-jacket carousels.
   
 
-#### 4.2.5. AI-Generated Meta-Reviews & Sentiment Analysis
-  
-
-- **Problem:** Reviews are crucial for people to choose the right book to spend time. However a great amount of comments with contradiction may cause readers overwhelming. 
-
-- **Solution:** All user reviews for a book are summarized by an AI in the background when the detail page is opened.
-
-```
-[Neo4j Review Text Collection] ➔ [FastAPI String Aggregation] ➔ [Ollama / Gemini Summary Prompt] ➔ [Frontend Tooltip]
-```
-
-- **Benefit:** Instead of reading dozens of reviews, users see one concise summary (e.g., *"85% praise the examples; 15% find Chapter 4 too advanced"*), saving vetting time.
-
-  
 
 ---
 
