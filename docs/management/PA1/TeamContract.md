@@ -1,10 +1,9 @@
 # Team Contract
-
 Performed by: Nguyễn Nhựt Huy  
-Reviewed by: Vũ Duy Nhất  
-Editied by: Nguyễn Nhựt Huy  
 
----
+Reviewed by: Vũ Duy Nhất  
+
+Editied by: Nguyễn Nhựt Huy  
 
 ## 1. Team Roles and Responsibilities
 
