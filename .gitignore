@@ -37,7 +37,10 @@ next-env.d.ts
 
 # ignore IDE files and .gemini
 .idea/
+.vscode/
 .gemini/
 !.gemini/commands/   # UN-IGNORE if your team shares custom QML/TOML slash commands
 !gemini.md
 !GEMINI.md
+__pycache__/
+chroma_db/
