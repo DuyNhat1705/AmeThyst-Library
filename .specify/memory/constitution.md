@@ -18,10 +18,11 @@ System integrity and user security are non-negotiable and must be enforced at th
 - **Resource Locking**: Double-booking of physical study rooms or overlapping book reservations must be blocked at the database level using Memgraph's explicit transactional writes, constraint locks, or pessimistic Cypher locking strategies during scheduling updates.
 - **PIN Verification**: The 6-digit PIN verification system must use short-lived (10-minute expiry), cryptographically random, salted, and hashed PIN strings stored directly inside secure properties on the `(:User)` nodes in Memgraph.
 
-### IV. Tech Stack Boundaries & RBAC
-Clear separation of concerns ensures maintainability and security.
-- **Data Persistence**: A streamlined, unified database boundary is maintained. All core entities (Users, Works, Editions, BookCopies, and TimeSlots) exist solely inside Memgraph, while dense textual semantic vector embeddings reside in ChromaDB.
-- **Access Control**: Enforce strict Role-Based Access Control (RBAC). Users, Librarians, and Admins must have completely separated execution scopes and API permissions enforced at the FastAPI route guard layer.
+### IV. Amended Tech Stack Boundaries & Unified JS Core
+The architectural execution layer is unified under a JavaScript-centric runtime environment to maximize component reusability and team velocity.
+- **Unified JS Architecture**: The client-side presentation tier and core application backend API services must run entirely on JavaScript/Node.js (e.g., Next.js, Express, or native Node.js API layers).
+- **Access Control**: Enforce strict Role-Based Access Control (RBAC) scopes (User, Librarian, Admin) directly at the JavaScript middleware/route handler layer before queries hit the database.
+- **Python Isolation Boundary**: Python is strictly constrained to a secondary, headless background microservice wrapper. Its sole operational scope is performing local vector computations (ChromaDB interface) and deterministic data parsing (SpaCy/BERT pipelines).
 
 ## Security & Reliability Standards
 
