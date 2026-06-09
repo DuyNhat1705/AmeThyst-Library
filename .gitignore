@@ -39,8 +39,12 @@ next-env.d.ts
 .idea/
 .vscode/
 .gemini/
-!.gemini/commands/   # UN-IGNORE if your team shares custom QML/TOML slash commands
+!.gemini/commands/ 
 !gemini.md
 !GEMINI.md
 __pycache__/
 chroma_db/
+
+# Next.js build outputs
+.next/
+out/

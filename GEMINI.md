@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 # SpecKit Agent Workspace Instructions: AmeThyst-Library
 
-This document outlines the strict technical instructions and development constraints that the AI agent must follow when editing, generating, or refactoring code within this workspace.
+The components of websites must be placed in src folder, obliged the JavaScript framework suggested in README.md.
 
 ## 1. Core Stack & Machine Learning Environment Rules
 - **Application Core**: Node.js running an Express.js API server (`src/server/server.mjs`).

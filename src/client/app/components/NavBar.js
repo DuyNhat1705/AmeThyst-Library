@@ -8,6 +8,7 @@ export default function NavBar() {
     const navLinks = [
     { name: 'Home', path: '/' , id:1},
     { name: 'Library', path: '/library' , id:2},
+    { name: 'Surfing', path: '/surfing' , id:3},
   ];
 
   return (
