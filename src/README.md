@@ -20,6 +20,7 @@ Here, in the terminal with `server` folder, you use `npm run dev` to start **ser
 npm run dev
 ```
 The server runs on **PORT 5000**, and the client (GUI) runs on **PORT 3000** by default from **React js**. Therefore, we interact mainly with the web GUI at the endpoint (or you can consider it as URL) http://localhost:3000.
+
 # II. Introduct to Server Structure
 ## 1. Server.mjs
 This is the entry point of all system. It combines all components andstarts the server instance by calling `app.listen()`
@@ -143,3 +144,28 @@ The file must be followed the naming rule required by React NextJs. If not follo
 - layout.js: containing the markup code for the layout of corresponding page.
 - not-found.js: containing markup code of the page rendered when the error 404 - Not Found appears
 - others: you can find more naming convention in [NextJs File Conventions](https://nextjs.org/docs/app/api-reference/file-conventions)
+
+# IV. Hybrid Search Engine & AI Microservice
+The project now includes a hybrid search engine that combines traditional keyword matching with AI-powered semantic search.
+
+## 1. AI Microservice (Python)
+Located in `src/services/ai/`, this is a FastAPI application that handles vector embeddings and semantic similarity searches using ChromaDB.
+
+To run the AI service:
+```bash
+# In a new terminal
+cd src/services/ai
+# Activate your python environment (e.g., SE_env)
+python app.py
+```
+The service runs on **PORT 8000** and provides the following endpoint:
+- `GET /api/search/semantic?q={query}&limit=20`: Returns Book IDs ranked by semantic relevance.
+
+## 2. Hybrid Search API (Node.js)
+The Node.js server coordinates between Memgraph (for OPAC search) and the Python AI service (for Semantic search).
+- `GET /api/books/search?q={query}&mode={opac|semantic}`: The main search entry point.
+
+## 3. Scaling Considerations
+- **Memgraph**: As the catalog grows, ensure Full-Text Search (FTS) indexes are enabled for optimized OPAC searching.
+- **ChromaDB**: For massive datasets, consider moving from the current persistent client to a standalone ChromaDB server.
+- **Microservices**: The Python AI service is stateless and can be scaled horizontally behind a load balancer.

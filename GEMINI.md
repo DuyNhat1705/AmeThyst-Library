@@ -7,6 +7,12 @@ The components of websites must be placed in src folder, obliged the JavaScript 
 - **Application Core**: Node.js running an Express.js API server (`src/server/server.mjs`).
 - **Relational Integrity**: User authentication, profiles, and transactional check-out logs live in PostgreSQL.
 - **Knowledge Graph**: Core book networks and structural metadata live in Memgraph, queried via the `neo4j-driver` npm package.
+- **Hybrid Search Engine**: Combines keyword-based OPAC search (Memgraph) and vector-based Semantic search (ChromaDB via FastAPI).
+- **AI Microservice Integration**: 
+  1. The Node.js gateway routes search requests based on the `mode` parameter.
+  2. For `semantic` mode, it calls the Python microservice at `src/services/ai/app.py`.
+  3. The Python service vectorizes the query and retrieves matching Book IDs from ChromaDB.
+  4. Node.js enriches the resulting IDs with metadata from Memgraph and covers from OpenLibrary.
 - **TensorFlow Engine Core**: Housed inside `src/services/ai/`. Implements a TensorFlow Recommenders (TFRS) Two-Tower model trained using vectorized inputs.
 - **Recommendation Execution Flow**: 
   1. The Node.js server extracts user historical logs from PostgreSQL and candidate book IDs from Memgraph.

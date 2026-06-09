@@ -9,6 +9,7 @@ export default function NavBar() {
     { name: 'Home', path: '/' , id:1},
     { name: 'Library', path: '/library' , id:2},
     { name: 'Surfing', path: '/surfing' , id:3},
+    { name: 'Search', path: '/search' , id:4},
   ];
 
   return (

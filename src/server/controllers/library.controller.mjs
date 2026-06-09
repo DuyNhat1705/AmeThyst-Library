@@ -1,4 +1,11 @@
-import { Sum, getSurfingBooks, getBookDetails } from '../services/library.services.mjs';
+import { 
+  Sum, 
+  getSurfingBooks, 
+  getBookDetails, 
+  searchBooksOpac, 
+  searchBooksSemantic, 
+  enrichSearchResults 
+} from '../services/library.services.mjs';
 
 const calculateSum = (req, res) => {
   const { num1, num2 } = req.body;
@@ -30,4 +37,26 @@ const getBookDeepDive = async (req, res) => {
   }
 };
 
-export { calculateSum, getSurfingPage, getBookDeepDive };
+const searchBooks = async (req, res) => {
+  try {
+    const { q, mode } = req.query;
+    if (!q) {
+      return res.status(400).json({ error: 'Query parameter "q" is required' });
+    }
+    const limit = parseInt(req.query.limit) || 20;
+    
+    let bookIds = [];
+    if (mode === 'semantic') {
+      bookIds = await searchBooksSemantic(q, limit);
+    } else {
+      bookIds = await searchBooksOpac(q, limit);
+    }
+    
+    const books = await enrichSearchResults(bookIds);
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { calculateSum, getSurfingPage, getBookDeepDive, searchBooks };
