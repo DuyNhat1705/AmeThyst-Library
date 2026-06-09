@@ -1,36 +1,50 @@
-# AmeThyst-Library Constitution
-<!-- This document defines the foundational architectural and behavioral invariants for the AmeThyst-Library project. -->
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Graph-First Discovery
-Semantic Search and Discovery must prioritize structural and relational integrity over generative heuristics.
-- **Semantic Search**: Must utilize ChromaDB (for local vector space matching) integrated with Memgraph (Cypher) for graph metadata traversal. Conversational LLM text generation for search results is strictly prohibited to ensure factual accuracy.
-- **Personal Recommendations**: Must be derived from a Graph-Traversal or Personalized PageRank algorithm executing directly over the Memgraph RecKG topology, ensuring recommendations are grounded in established node relationships.
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### II. Deterministic Review Analysis
-Analysis of user feedback must yield structured, reproducible data rather than subjective summaries.
-- **User Review Summaries**: Must utilize an Aspect-Based Sentiment Analysis (ABSA) extraction pipeline. 
-- **Implementation**: Leveraging lightweight NLP libraries (e.g., SpaCy or BERT) to yield structured numeric data for sentiment scoring and aspect identification.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### III. Strict Concurrency & Security
-System integrity and user security are non-negotiable and must be enforced at the lowest possible layer.
-- **Resource Locking**: Double-booking of physical study rooms or overlapping book reservations must be blocked at the database level using Memgraph's explicit transactional writes, constraint locks, or pessimistic Cypher locking strategies during scheduling updates.
-- **PIN Verification**: The 6-digit PIN verification system must use short-lived (10-minute expiry), cryptographically random, salted, and hashed PIN strings stored directly inside secure properties on the `(:User)` nodes in Memgraph.
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-### IV. Tech Stack Boundaries & RBAC
-Clear separation of concerns ensures maintainability and security.
-- **Data Persistence**: A streamlined, unified database boundary is maintained. All core entities (Users, Works, Editions, BookCopies, and TimeSlots) exist solely inside Memgraph, while dense textual semantic vector embeddings reside in ChromaDB.
-- **Access Control**: Enforce strict Role-Based Access Control (RBAC). Users, Librarians, and Admins must have completely separated execution scopes and API permissions enforced at the FastAPI route guard layer.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-## Security & Reliability Standards
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-- **Zero-Chatbot Dependency**: AI features must be implemented using deterministic algorithms and graph theory, bypassing heavy LLM/chatbot dependencies.
-- **Data Integrity**: Database constraints and transactions are the primary line of defense for business logic consistency.
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
-- This Constitution supersedes all other documentation and individual project practices.
-- Any architectural change that deviates from these principles requires a formal amendment process and justification.
-- All code reviews must verify compliance with these principles.
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-**Version**: 1.0.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-04
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
