@@ -1,7 +1,7 @@
 
 "use client";
 import { usePathname } from 'next/navigation';
-import PointerPage from '@/components/PointerPage';
+import PointerPage from './PointerPage';
 
 export default function NavBar() {
     const pathname = usePathname();
