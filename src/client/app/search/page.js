@@ -1,6 +1,5 @@
 "use client";
 import { useState } from 'react';
-import NavBar from '../components/NavBar';
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -19,6 +18,9 @@ export default function SearchPage() {
     setBooks([]);
     try {
       const res = await fetch(`http://localhost:5000/api/books/search?q=${encodeURIComponent(query)}&mode=${mode}`);
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}`);
+      }
       const data = await res.json();
       if (Array.isArray(data)) {
         setBooks(data);
@@ -28,6 +30,7 @@ export default function SearchPage() {
       }
     } catch (error) {
       console.error("Search failed:", error);
+      alert("Search failed. Please ensure the backend server is running.");
     } finally {
       setLoading(false);
     }
@@ -55,7 +58,7 @@ export default function SearchPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      <NavBar />
+      {/* Redundant NavBar removed as it is provided by RootLayout */}
       
       <div className="search-container">
         <form onSubmit={handleSearch} className="search-form">
@@ -81,13 +84,19 @@ export default function SearchPage() {
       <div className="masonry-container">
         {books.map((book, index) => (
           <div key={`${book.id}-${index}`} className="masonry-item" onClick={() => handleBookClick(book)}>
-            <img src={book.coverUrl} alt={book.title} />
+            <img 
+              src={book.coverUrl} 
+              alt={book.title} 
+              onError={(e) => {
+                e.target.src = `https://via.placeholder.com/150x225?text=${encodeURIComponent(book.title)}`;
+              }}
+            />
           </div>
         ))}
       </div>
 
-      {loading && <p style={{ textAlign: 'center', marginTop: '2rem' }}>Searching...</p>}
-      {!loading && query && books.length === 0 && <p style={{ textAlign: 'center', marginTop: '2rem' }}>No books found for "{query}".</p>}
+      {loading && <p style={{ textAlign: 'center', marginTop: '2rem', color: 'gray' }}>Searching...</p>}
+      {!loading && query && books.length === 0 && <p style={{ textAlign: 'center', marginTop: '2rem', color: 'gray' }}>No books found for "{query}".</p>}
 
       {selectedBook && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -95,7 +104,13 @@ export default function SearchPage() {
             <button className="close-button" onClick={closeModal}>&times;</button>
             <div className="modal-body">
               <div className="modal-left">
-                <img src={selectedBook.coverUrl} alt={selectedBook.title} />
+                <img 
+                  src={selectedBook.coverUrl} 
+                  alt={selectedBook.title}
+                  onError={(e) => {
+                    e.target.src = `https://via.placeholder.com/150x225?text=${encodeURIComponent(selectedBook.title)}`;
+                  }}
+                />
               </div>
               <div className="modal-right">
                 <h2 style={{ color: 'black' }}>{selectedBook.title}</h2>
@@ -106,12 +121,12 @@ export default function SearchPage() {
                     <p><strong>Authors:</strong> {details.authors?.join(', ') || 'Unknown'}</p>
                     <p><strong>Genres:</strong> {details.genres?.join(', ') || 'None'}</p>
                     <hr />
-                    <h3>Description (ChromaDB)</h3>
+                    <h3>Description (AI Service)</h3>
                     <p>{details.vectorData?.description || 'No description available in vector store.'}</p>
                     <hr />
                     <h3>Graph Context (Memgraph)</h3>
                     <p>Book ID: {selectedBook.id}</p>
-                    <p>ISBN: {selectedBook.isbn13 || selectedBook.isbn || 'N/A'}</p>
+                    <p>ISBN: {selectedBook.isbn || 'N/A'}</p>
                   </div>
                 ) : (
                   <p style={{ color: 'red' }}>Could not load additional details.</p>

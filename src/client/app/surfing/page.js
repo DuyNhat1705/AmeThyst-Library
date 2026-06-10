@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from 'react';
-import NavBar from '../components/NavBar';
 
 export default function SurfingPage() {
   const [books, setBooks] = useState([]);
@@ -67,27 +66,31 @@ export default function SurfingPage() {
 
   return (
     <main>
-      <NavBar />
+      {/* Redundant NavBar removed as it is provided by RootLayout */}
       <div className="masonry-container">
         {books.map((book, index) => {
-          if (books.length === index + 1) {
-            return (
-              <div ref={lastBookElementRef} key={`${book.id}-${index}`} className="masonry-item" onClick={() => handleBookClick(book)}>
-                <img src={book.coverUrl} alt={book.title} />
-              </div>
-            );
-          } else {
-            return (
-              <div key={`${book.id}-${index}`} className="masonry-item" onClick={() => handleBookClick(book)}>
-                <img src={book.coverUrl} alt={book.title} />
-              </div>
-            );
-          }
+          const isLast = books.length === index + 1;
+          return (
+            <div 
+              ref={isLast ? lastBookElementRef : null} 
+              key={`${book.id}-${index}`} 
+              className="masonry-item" 
+              onClick={() => handleBookClick(book)}
+            >
+              <img 
+                src={book.coverUrl} 
+                alt={book.title} 
+                onError={(e) => {
+                  e.target.src = `https://via.placeholder.com/150x225?text=${encodeURIComponent(book.title)}`;
+                }}
+              />
+            </div>
+          );
         })}
       </div>
 
-      {loading && <p style={{ textAlign: 'center' }}>Loading more books...</p>}
-      {!hasMore && <p style={{ textAlign: 'center' }}>No more books found.</p>}
+      {loading && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>Loading more books...</p>}
+      {!hasMore && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>No more books found.</p>}
 
       {selectedBook && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -95,26 +98,32 @@ export default function SurfingPage() {
             <button className="close-button" onClick={closeModal}>&times;</button>
             <div className="modal-body">
               <div className="modal-left">
-                <img src={selectedBook.coverUrl} alt={selectedBook.title} />
+                <img 
+                  src={selectedBook.coverUrl} 
+                  alt={selectedBook.title}
+                  onError={(e) => {
+                    e.target.src = `https://via.placeholder.com/150x225?text=${encodeURIComponent(selectedBook.title)}`;
+                  }}
+                />
               </div>
               <div className="modal-right">
-                <h2>{selectedBook.title}</h2>
+                <h2 style={{ color: 'black' }}>{selectedBook.title}</h2>
                 {detailsLoading ? (
-                  <p>Loading deep dive data...</p>
+                  <p style={{ color: '#666' }}>Loading deep dive data...</p>
                 ) : details ? (
-                  <>
+                  <div style={{ color: 'black' }}>
                     <p><strong>Authors:</strong> {details.authors?.join(', ') || 'Unknown'}</p>
                     <p><strong>Genres:</strong> {details.genres?.join(', ') || 'None'}</p>
                     <hr />
-                    <h3>Description (ChromaDB)</h3>
+                    <h3>Description (AI Service)</h3>
                     <p>{details.vectorData?.description || 'No description available in vector store.'}</p>
                     <hr />
                     <h3>Graph Context (Memgraph)</h3>
                     <p>Book ID: {selectedBook.id}</p>
-                    <p>ISBN: {selectedBook.isbn13 || selectedBook.isbn || 'N/A'}</p>
-                  </>
+                    <p>ISBN: {selectedBook.isbn || 'N/A'}</p>
+                  </div>
                 ) : (
-                  <p>Could not load additional details.</p>
+                  <p style={{ color: 'red' }}>Could not load additional details.</p>
                 )}
               </div>
             </div>
@@ -129,7 +138,7 @@ export default function SurfingPage() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
+          background: rgba(0, 0, 0, 0.8);
           display: flex;
           justify-content: center;
           align-items: center;
@@ -144,7 +153,6 @@ export default function SurfingPage() {
           max-height: 90vh;
           overflow-y: auto;
           position: relative;
-          color: black;
         }
         .close-button {
           position: absolute;
@@ -154,6 +162,7 @@ export default function SurfingPage() {
           background: none;
           border: none;
           cursor: pointer;
+          color: black;
         }
         .modal-body {
           display: flex;
@@ -172,8 +181,8 @@ export default function SurfingPage() {
           flex: 2;
           min-width: 300px;
         }
-        h2 { margin-top: 0; }
         hr { margin: 1.5rem 0; border: 0; border-top: 1px solid #eee; }
+        h3 { margin-top: 1rem; color: #333; font-weight: bold; }
       `}</style>
     </main>
   );

@@ -1,8 +1,9 @@
 import neo4j from 'neo4j-driver';
-import { driver, chromaClient } from '../config/db.mjs';
+import { driver } from '../config/db.mjs';
 
 export function Sum(num1, num2) {
-  return num1 + num2;
+  // Convert to numbers to avoid string concatenation
+  return Number(num1) + Number(num2);
 }
 
 async function getCoverUrl(isbn13, isbn) {
@@ -15,10 +16,19 @@ async function getCoverUrl(isbn13, isbn) {
 
   if (coverUrl) {
     try {
-      const res = await fetch(coverUrl, { method: 'HEAD' });
+      // Add a 2-second timeout to the cover check
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2000);
+      
+      const res = await fetch(coverUrl, { 
+        method: 'HEAD',
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      
       if (res.ok) return coverUrl;
     } catch (e) {
-      // Ignore
+      // Ignore failures
     }
   }
   return null;
@@ -29,7 +39,7 @@ export async function getSurfingBooks(limit = 20, skip = 0) {
   try {
     const result = await session.run(
       `MATCH (b:Book) 
-       RETURN b.book_id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13
+       RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13
        SKIP $skip LIMIT $limit`,
       { skip: neo4j.int(skip), limit: neo4j.int(limit) }
     );
@@ -43,11 +53,13 @@ export async function getSurfingBooks(limit = 20, skip = 0) {
 
     const enrichedBooks = await Promise.all(books.map(async (book) => {
       const coverUrl = await getCoverUrl(book.isbn13, book.isbn);
-      if (coverUrl) return { ...book, coverUrl };
-      return null;
+      return { 
+        ...book, 
+        coverUrl: coverUrl || `https://via.placeholder.com/150x225?text=${encodeURIComponent(book.title)}` 
+      };
     }));
 
-    return enrichedBooks.filter(b => b !== null);
+    return enrichedBooks;
   } finally {
     await session.close();
   }
@@ -56,10 +68,15 @@ export async function getSurfingBooks(limit = 20, skip = 0) {
 export async function searchBooksOpac(query, limit = 20) {
   const session = driver.session();
   try {
+    // Search in title, isbn, or author name
     const result = await session.run(
       `MATCH (b:Book)
-       WHERE toLower(b.title) CONTAINS toLower($query) OR b.isbn CONTAINS $query OR b.isbn13 CONTAINS $query
-       RETURN b.book_id AS id
+       OPTIONAL MATCH (b)-[:WRITTEN_BY]->(a:Author)
+       WITH b, a, toLower($query) AS lowerQuery
+       WHERE toLower(b.title) CONTAINS lowerQuery 
+          OR b.isbn CONTAINS $query 
+          OR toLower(a.name) CONTAINS lowerQuery
+       RETURN DISTINCT b.id AS id
        LIMIT $limit`,
       { query, limit: neo4j.int(limit) }
     );
@@ -87,13 +104,12 @@ export async function enrichSearchResults(bookIds) {
   if (!bookIds || bookIds.length === 0) return [];
   const session = driver.session();
   try {
-    // Cast bookIds to strings just in case
     const ids = bookIds.map(id => id.toString());
     const result = await session.run(
       `MATCH (b:Book)
-       WHERE b.book_id IN $ids
+       WHERE b.id IN $ids
        OPTIONAL MATCH (b)-[:WRITTEN_BY]->(a:Author)
-       RETURN b.book_id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13, collect(DISTINCT a.name) AS authors`,
+       RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13, collect(DISTINCT a.name) AS authors`,
       { ids }
     );
 
@@ -105,18 +121,18 @@ export async function enrichSearchResults(bookIds) {
       authors: record.get('authors')
     }));
 
-    // Maintain order
     const bookMap = new Map(books.map(b => [b.id.toString(), b]));
     const orderedBooks = ids.map(id => bookMap.get(id)).filter(Boolean);
 
     const enrichedBooks = await Promise.all(orderedBooks.map(async (book) => {
       const coverUrl = await getCoverUrl(book.isbn13, book.isbn);
-      if (coverUrl) return { ...book, coverUrl };
-      return { ...book, coverUrl: null }; // Keep them but without cover for search results?
-      // Actually surfing page filters them. Let's stay consistent if we use masonry.
+      return { 
+        ...book, 
+        coverUrl: coverUrl || `https://via.placeholder.com/150x225?text=${encodeURIComponent(book.title)}` 
+      };
     }));
 
-    return enrichedBooks.filter(b => b.coverUrl !== null);
+    return enrichedBooks;
   } finally {
     await session.close();
   }
@@ -127,7 +143,7 @@ export async function getBookDetails(bookId) {
   try {
     // 1. Get Graph Relationships from Memgraph
     const graphResult = await session.run(
-      `MATCH (b:Book {book_id: $bookId})
+      `MATCH (b:Book {id: $bookId})
        OPTIONAL MATCH (b)-[:WRITTEN_BY]->(a:Author)
        OPTIONAL MATCH (b)-[:HAS_GENRE]->(g:Genre)
        RETURN b, collect(DISTINCT a.name) AS authors, collect(DISTINCT g.name) AS genres`,
@@ -141,23 +157,15 @@ export async function getBookDetails(bookId) {
     const authors = record.get('authors');
     const genres = record.get('genres');
 
-    // 2. Get Vector Data from ChromaDB
+    // 2. Get Vector Data from Python AI Microservice
     let vectorData = null;
     try {
-      const collection = await chromaClient.getCollection({ name: "book_descriptions" });
-      const chromaRes = await collection.get({
-        ids: [bookId.toString()],
-        include: ["embeddings", "metadatas", "documents"]
-      });
-      
-      if (chromaRes.ids.length > 0) {
-        vectorData = {
-          description: chromaRes.documents[0],
-          metadata: chromaRes.metadatas[0]
-        };
+      const response = await fetch(`http://127.0.0.1:8000/api/books/${bookId}/vector-data`);
+      if (response.ok) {
+        vectorData = await response.json();
       }
     } catch (e) {
-      console.error("ChromaDB retrieval error:", e);
+      console.error("AI service retrieval error:", e);
     }
 
     return {

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 import chromadb
 from chromadb.utils import embedding_functions
 import os
@@ -8,6 +8,7 @@ app = FastAPI(title="Amethyst AI Search Service")
 
 # Resolve Chroma path relative to project root
 # Assuming app.py is in src/services/ai/
+# 1. ai, 2. services, 3. src, 4. root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 CHROMA_DATA_PATH = os.path.join(BASE_DIR, "chroma_db")
 COLLECTION_NAME = "book_descriptions"
@@ -28,7 +29,6 @@ async def semantic_search(q: str = Query(...), limit: int = 20):
             include=["documents", "metadatas", "distances"]
         )
         
-        # Format results for Node.js
         formatted_results = []
         if results['ids'] and len(results['ids']) > 0:
             for i in range(len(results['ids'][0])):
@@ -41,6 +41,26 @@ async def semantic_search(q: str = Query(...), limit: int = 20):
         return {"results": formatted_results}
     except Exception as e:
         return {"error": str(e), "results": []}
+
+@app.get("/api/books/{book_id}/vector-data")
+async def get_book_vector_data(book_id: str):
+    try:
+        res = collection.get(
+            ids=[book_id],
+            include=["documents", "metadatas"]
+        )
+        if not res['ids'] or len(res['ids']) == 0:
+            raise HTTPException(status_code=404, detail="Book not found in vector store")
+            
+        return {
+            "book_id": res['ids'][0],
+            "description": res['documents'][0],
+            "metadata": res['metadatas'][0]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
 async def health():

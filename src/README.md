@@ -149,12 +149,12 @@ The file must be followed the naming rule required by React NextJs. If not follo
 The project now includes a hybrid search engine that combines traditional keyword matching with AI-powered semantic search.
 
 ## 1. AI Microservice (Python)
-Located in `src/services/ai/`, this is a FastAPI application that handles vector embeddings and semantic similarity searches using ChromaDB.
+Located in `src/server/ai-service/`, this is a FastAPI application that handles vector embeddings and semantic similarity searches using ChromaDB.
 
 To run the AI service:
 ```bash
 # In a new terminal
-cd src/services/ai
+cd src/server/ai-service
 # Activate your python environment (e.g., SE_env)
 python app.py
 ```
