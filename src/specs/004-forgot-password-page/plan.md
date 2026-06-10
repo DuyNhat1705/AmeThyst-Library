@@ -58,16 +58,15 @@ specs/004-forgot-password-page/
 ```text
 client/app/
 ├── login/
-│   └── page.js          # Will be updated to remove navbar
+│   └── page.js          # Updated (navbar removed)
 ├── library/
-│   └── page.js          # Will be updated to remove navbar
+│   └── page.js          # Updated (navbar removed)
 ├── register/
-│   └── page.js          # Will be updated to remove navbar
+│   └── page.js          # Updated (navbar removed)
 └── forgot-password/
-    └── page.js          # New page
-components/
-└── library/
-    └── ForgotPasswordCard.tsx # New component
+    ├── page.js          # Updated (imports from components/)
+    └── components/
+        └── ForgotPasswordCard.jsx # New component (JSX)
 ```
 
 **Structure Decision**: Using the existing Next.js App Router structure.
