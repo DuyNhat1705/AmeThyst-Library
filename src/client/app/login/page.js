@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import BrandPanel from './BrandPanel';
 import FormCard from './FormCard';
-import StateMockConsole from './StateMockConsole';
 
 const LoginPage = () => {
   const [state, setState] = useState({
@@ -32,9 +31,6 @@ const LoginPage = () => {
           </button>
         </div>
       )}
-
-      {/* Floating Mock Controls */}
-      <StateMockConsole state={state} setState={setState} />
 
       {/* Left Panel (Branding Illustration) */}
       <BrandPanel />

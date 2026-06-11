@@ -3,7 +3,14 @@
 ## Core Principles
 
 ### I. Component-Driven & Reusability
-All UI components must be built with an Atomic Design mindset. Components such as Buttons, Inputs, Cards, and Modals must be self-contained, receive data via `props`, possess a clear structure, and be highly reusable across different pages (e.g., Book Catalog, Borrowing Management, Reader Profiles).
+All UI components must be built with an Atomic Design mindset. Components such as Buttons, Inputs, Cards, and Modals must be self-contained, receive data via `props`, possess a clear structure, and be highly reusable across different pages.
+
+**MANDATORY UI/UX DESIGN FLOW:** All new UI/UX development must strictly comply with the Atomic Design system. The design process must follow a mandated, bottom-up flow: 
+1. **Atoms** (Basic indivisible elements) 
+2. **Molecules** (Functional groupings of atoms) 
+3. **Organisms** (Complex functional sections) 
+4. **Templates/Pages** (Page layout and composition)
+Prototyping or implementing higher-level components without first defining their underlying atomic building blocks is prohibited.
 
 ### II. State Management & Data Fetching
 Utilize appropriate React/Next.js state management solutions. Prefer React Context for simple global states (e.g., Theme, User Session). When fetching data from the Backend (Node.js/Express.js), it is mandatory to handle all lifecycle states explicitly: `loading`, `error`, and `success` to ensure a seamless user experience.

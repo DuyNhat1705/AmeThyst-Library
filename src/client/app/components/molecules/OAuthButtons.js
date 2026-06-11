@@ -1,13 +1,15 @@
 "use client";
 
 import React from 'react';
+import { Button } from '../atoms';
 
-const OAuthButtons = ({ label = "Sign in with Google" }) => {
+export const OAuthButtons = ({ label = "Sign in with Google" }) => {
   return (
     <div className="flex flex-col gap-6 w-full">
-      <button
+      <Button
         type="button"
-        className="w-full h-[52px] rounded-lg border border-[#C5C6CD] bg-white text-[#0B1C30] font-semibold flex items-center justify-center gap-4 hover:bg-gray-50 transition-colors"
+        variant="outline"
+        className="w-full h-[52px] gap-4"
       >
         <div className="w-5 h-5 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -18,9 +20,7 @@ const OAuthButtons = ({ label = "Sign in with Google" }) => {
           </svg>
         </div>
         {label}
-      </button>
+      </Button>
     </div>
   );
 };
-
-export default OAuthButtons;

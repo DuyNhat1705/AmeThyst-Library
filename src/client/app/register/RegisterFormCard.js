@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import InputField from '../login/InputField';
+import { FormField } from '../components/molecules';
+import { Button } from '../components/atoms';
 import RoleSelector from './RoleSelector';
 import SecurityIndicator from './SecurityIndicator';
-import OAuthButtons from '../components/OAuthButtons';
+import { OAuthButtons } from '../components/molecules';
 import Link from 'next/link';
 
 const RegisterFormCard = ({ 
@@ -26,7 +27,7 @@ const RegisterFormCard = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     setState(prev => ({ ...prev, isLoading: true }));
-    
+
     // Mock submission delay
     setTimeout(() => {
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
@@ -46,7 +47,7 @@ const RegisterFormCard = ({
       </header>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-        <InputField
+        <FormField
           label="Full Name"
           id="fullName"
           placeholder="Alex Johnson"
@@ -55,7 +56,7 @@ const RegisterFormCard = ({
           error={state.validationErrors.fullName}
         />
 
-        <InputField
+        <FormField
           label="Email Address"
           id="email"
           type="email"
@@ -71,7 +72,7 @@ const RegisterFormCard = ({
         />
 
         <div className="flex flex-col gap-2">
-          <InputField
+          <FormField
             label="Password"
             id="password"
             type="password"
@@ -83,20 +84,13 @@ const RegisterFormCard = ({
           <SecurityIndicator level={passwordStrength} />
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="cursor-pointer text-nowrap flex py-4 px-0 justify-center items-center rounded-lg bg-[#091426] w-full text-white font-semibold leading-5 tracking-[0.01em] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed h-[52px] mt-2"
-          disabled={state.isLoading}
+          className="w-full h-[52px] mt-2"
+          isLoading={state.isLoading}
         >
-          {state.isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            "Create Account"
-          )}
-        </button>
+          Create Account
+        </Button>
 
         <div className="flex pb-px flex-col items-center w-full relative my-2">
           <div className="absolute w-full h-[1px] bg-[#C5C6CD] top-1/2 -translate-y-1/2" />

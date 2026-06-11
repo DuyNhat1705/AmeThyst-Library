@@ -1,5 +1,6 @@
 import { Inter, Inder } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "./components/organisms";
 
 // 1. Define your Google fonts safely
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -11,7 +12,8 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${inter.variable} ${inder.variable} h-full`} // Cleaned up old Geist variables
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col pt-[72px]">
+        <NavBar />
         {children}
       </body>
     </html>
