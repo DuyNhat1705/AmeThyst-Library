@@ -121,8 +121,8 @@ export default function SearchPage() {
                     <p><strong>Authors:</strong> {details.authors?.join(', ') || 'Unknown'}</p>
                     <p><strong>Genres:</strong> {details.genres?.join(', ') || 'None'}</p>
                     <hr />
-                    <h3>Description (AI Service)</h3>
-                    <p>{details.vectorData?.description || 'No description available in vector store.'}</p>
+                    <h3>Description</h3>
+                    <p>{details.description || 'No description available in the library catalog.'}</p>
                     <hr />
                     <h3>Graph Context (Memgraph)</h3>
                     <p>Book ID: {selectedBook.id}</p>

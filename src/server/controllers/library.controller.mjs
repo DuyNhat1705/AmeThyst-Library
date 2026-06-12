@@ -4,7 +4,8 @@ import {
   getBookDetails, 
   searchBooksOpac, 
   searchBooksSemantic, 
-  enrichSearchResults 
+  enrichSearchResults,
+  getAllGenres
 } from '../services/library.services.mjs';
 
 const calculateSum = (req, res) => {
@@ -17,8 +18,18 @@ const getSurfingPage = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
     const skip = parseInt(req.query.skip) || 0;
-    const books = await getSurfingBooks(limit, skip);
+    const { genre } = req.query;
+    const books = await getSurfingBooks(limit, skip, genre);
     res.json(books);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getGenres = async (req, res) => {
+  try {
+    const genres = await getAllGenres();
+    res.json(genres);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -59,4 +70,4 @@ const searchBooks = async (req, res) => {
   }
 };
 
-export { calculateSum, getSurfingPage, getBookDeepDive, searchBooks };
+export { calculateSum, getSurfingPage, getBookDeepDive, searchBooks, getGenres };

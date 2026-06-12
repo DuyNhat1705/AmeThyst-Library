@@ -1,4 +1,4 @@
-# Tasks: Book Cover Surfing
+# Tasks: Book Cover Surfing (Extended)
 
 **Input**: Design documents from `/specs/002-book-cover-surfing/`
 
@@ -38,4 +38,14 @@
 - [x] T012 Refactor server folder structure to remove redundant `src/server/src` nesting
 - [x] T013 Update import paths and `package.json` for the refactored structure
 
-**Status**: All tasks completed.
+---
+
+## Phase 6: Genre-Filtered Discovery (P1)
+
+- [x] T014 **Service**: Implement `getAllGenres()` in `src/server/services/library.services.mjs`. Use Cypher: `MATCH (g:Genre) RETURN g.name AS name ORDER BY name`.
+- [x] T015 **Service**: Update `getSurfingBooks(limit, skip, genre)` in `src/server/services/library.services.mjs` to include `WHERE ($genre IS NULL OR (b)-[:HAS_GENRE]->(:Genre {name: $genre}))`.
+- [x] T016 **API**: Update `getSurfingPage` controller and create `getGenres` controller in `src/server/controllers/library.controller.mjs`. Register `GET /api/genres` in `src/server/routes/library.mjs`.
+- [x] T017 **UI**: Implement a CSS hover dropdown for the "Discovery" link in `src/client/app/components/NavBar.js`. Fetch genres from `/api/genres` on mount.
+- [x] T018 **UI**: Update `src/client/app/surfing/page.js` to use `useSearchParams` to detect genre changes and reset the book list/skip count when the genre changes.
+
+**Status**: Completed.

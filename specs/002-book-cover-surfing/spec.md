@@ -37,6 +37,22 @@ As a user, I want to click on a book cover to see its detailed description and r
 
 1. **Given** a book cover in the grid, **When** I click it, **Then** a modal should open displaying data from both Memgraph (authors/genres) and ChromaDB (description).
 
+---
+
+### User Story 3 - Genre-Filtered Discovery (Priority: P1)
+
+As a user, I want to hover over the "Discovery" link and select a specific genre so that I can see a feed of book covers restricted to that category.
+
+**Why this priority**: Enhances discovery by allowing users to narrow down the infinite feed to their interests.
+
+**Independent Test**: Hover over "Discovery" in the NavBar, select "Fantasy", and verify that the grid refreshes with only fantasy books.
+
+**Acceptance Scenarios**:
+
+1. **Given** the navigation bar, **When** I hover over "Discovery", **Then** a dropdown menu listing available genres should appear.
+2. **Given** the genre dropdown, **When** I click on a specific genre, **Then** the surfing grid should clear its current contents and load books belonging to the selected genre.
+3. **Given** a selected genre, **When** I scroll to the bottom, **Then** more books from *that same genre* should be fetched and appended.
+
 ## Requirements
 
 ### Functional Requirements
@@ -47,6 +63,9 @@ As a user, I want to click on a book cover to see its detailed description and r
 - **FR-004**: System MUST implement an infinite scroll mechanism on the frontend.
 - **FR-005**: System MUST provide a "Deep Dive" API endpoint to aggregate graph relationships and vector embeddings for a specific book.
 - **FR-006**: Frontend MUST display book details in a responsive modal.
+- **FR-007**: System MUST provide an API endpoint to retrieve all unique genres available in the database.
+- **FR-008**: Navigation Bar MUST include a dropdown on the "Discovery" link populated with genres.
+- **FR-009**: Surfing API MUST support a `genre` filter parameter to scope results.
 
 ### Key Entities
 

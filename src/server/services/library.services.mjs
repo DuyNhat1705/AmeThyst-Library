@@ -34,15 +34,21 @@ async function getCoverUrl(isbn13, isbn) {
   return null;
 }
 
-export async function getSurfingBooks(limit = 20, skip = 0) {
+export async function getSurfingBooks(limit = 20, skip = 0, genre = null) {
   const session = driver.session();
   try {
-    const result = await session.run(
-      `MATCH (b:Book) 
-       RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13
-       SKIP $skip LIMIT $limit`,
-      { skip: neo4j.int(skip), limit: neo4j.int(limit) }
-    );
+    const query = `
+      MATCH (b:Book)
+      ${genre ? 'MATCH (b)-[:HAS_GENRE]->(g:Genre {name: $genre})' : ''}
+      RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.isbn13 AS isbn13
+      SKIP $skip LIMIT $limit
+    `;
+
+    const result = await session.run(query, { 
+      skip: neo4j.int(skip), 
+      limit: neo4j.int(limit),
+      genre 
+    });
 
     const books = result.records.map(record => ({
       id: record.get('id'),
@@ -60,6 +66,18 @@ export async function getSurfingBooks(limit = 20, skip = 0) {
     }));
 
     return enrichedBooks;
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getAllGenres() {
+  const session = driver.session();
+  try {
+    const result = await session.run(
+      `MATCH (g:Genre) RETURN g.name AS name ORDER BY name`
+    );
+    return result.records.map(record => record.get('name'));
   } finally {
     await session.close();
   }

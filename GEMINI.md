@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 # SpecKit Agent Workspace Instructions: AmeThyst-Library
 
-The components of websites must be placed in src folder, obliged the JavaScript framework suggested in README.md.
+**Current Active Feature Plan**: [specs/002-book-cover-surfing/plan.md]
 
 ## 1. Core Stack & Machine Learning Environment Rules
 - **Application Core**: Node.js running an Express.js API server (`src/server/server.mjs`).
@@ -26,6 +26,5 @@ When generating new features, you must follow the strict `README.md` layout patt
 - **Controllers**: Handle request parameter extraction and JSON responses inside `src/server/controllers/`. Keep logic thin.
 - **Services**: Implement heavy business logic, database transactions, and Cypher executions inside `src/server/services/`.
 - **Client Pages**: Respect Next.js directory-based routing. Endpoints are created by folders containing a `page.js` file inside `src/client/app/`.
-
 
 <!-- SPECKIT END -->

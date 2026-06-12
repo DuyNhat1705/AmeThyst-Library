@@ -1,7 +1,11 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-export default function SurfingPage() {
+function SurfingContent() {
+  const searchParams = useSearchParams();
+  const genre = searchParams.get('genre');
+
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
@@ -9,6 +13,13 @@ export default function SurfingPage() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [details, setDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
+
+  // Reset state when genre changes
+  useEffect(() => {
+    setBooks([]);
+    setSkip(0);
+    setHasMore(true);
+  }, [genre]);
 
   const observer = useRef();
   const lastBookElementRef = useCallback(node => {
@@ -25,12 +36,13 @@ export default function SurfingPage() {
   const fetchBooks = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/books/surfing?limit=20&skip=${skip}`);
+      const genreParam = genre ? `&genre=${encodeURIComponent(genre)}` : '';
+      const res = await fetch(`http://localhost:5000/api/books/surfing?limit=20&skip=${skip}${genreParam}`);
       const data = await res.json();
       if (data.length === 0) {
         setHasMore(false);
       } else {
-        setBooks(prevBooks => [...prevBooks, ...data]);
+        setBooks(prevBooks => (skip === 0 ? data : [...prevBooks, ...data]));
       }
     } catch (error) {
       console.error("Failed to fetch books:", error);
@@ -38,7 +50,7 @@ export default function SurfingPage() {
     } finally {
       setLoading(false);
     }
-  }, [skip]);
+  }, [skip, genre]);
 
   useEffect(() => {
     fetchBooks();
@@ -66,7 +78,12 @@ export default function SurfingPage() {
 
   return (
     <main>
-      {/* Redundant NavBar removed as it is provided by RootLayout */}
+      <div style={{ padding: '1rem 2rem', background: '#222', color: 'white' }}>
+        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
+          Discovery {genre ? `> ${genre}` : ''}
+        </h1>
+      </div>
+
       <div className="masonry-container">
         {books.map((book, index) => {
           const isLast = books.length === index + 1;
@@ -89,8 +106,9 @@ export default function SurfingPage() {
         })}
       </div>
 
-      {loading && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>Loading more books...</p>}
-      {!hasMore && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>No more books found.</p>}
+      {loading && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>Loading books...</p>}
+      {!hasMore && books.length > 0 && <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>No more books found.</p>}
+      {!loading && books.length === 0 && <p style={{ textAlign: 'center', padding: '3rem', color: 'gray' }}>No books found in this category.</p>}
 
       {selectedBook && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -115,8 +133,8 @@ export default function SurfingPage() {
                     <p><strong>Authors:</strong> {details.authors?.join(', ') || 'Unknown'}</p>
                     <p><strong>Genres:</strong> {details.genres?.join(', ') || 'None'}</p>
                     <hr />
-                    <h3>Description (AI Service)</h3>
-                    <p>{details.vectorData?.description || 'No description available in vector store.'}</p>
+                    <h3>Description</h3>
+                    <p>{details.description || 'No description available in the library catalog.'}</p>
                     <hr />
                     <h3>Graph Context (Memgraph)</h3>
                     <p>Book ID: {selectedBook.id}</p>
@@ -185,5 +203,13 @@ export default function SurfingPage() {
         h3 { margin-top: 1rem; color: #333; font-weight: bold; }
       `}</style>
     </main>
+  );
+}
+
+export default function SurfingPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '5rem', color: 'gray' }}>Loading Discovery...</div>}>
+      <SurfingContent />
+    </Suspense>
   );
 }
