@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import ForgotPasswordCard from './ForgotPasswordCard';
 import loginPanelImg from '../assets/login_panel.png';
+import { NavBar, Footer } from '../components/organisms';
 
 export default function ForgotPasswordPage() {
   const [state, setState] = useState({
@@ -23,11 +24,12 @@ export default function ForgotPasswordPage() {
 
   return (
     <main 
-      className="min-h-screen flex items-center justify-center font-inter text-[#091426] overflow-x-hidden relative p-4 lg:p-8 bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex flex-col font-inter text-[#091426] overflow-x-hidden relative bg-cover bg-center bg-no-repeat"
       style={{ 
         backgroundImage: `url('${loginPanelImg.src}')` 
       }}
     >     
+      <NavBar />
       <div className="absolute inset-0 bg-black/10 pointer-events-none z-0" />
 
       {state.error && (
@@ -42,7 +44,7 @@ export default function ForgotPasswordPage() {
         </div>
       )}
 
-      <section className="w-full flex justify-center items-center relative z-10">
+      <section className="flex-grow w-full flex justify-center items-center relative z-10 p-4 lg:p-8">
         <div className="bg-[#FFF8EB] p-8 lg:p-12 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.15),-9px_4px_76px_0_rgba(0,0,0,0.2)] w-full max-w-[480px] flex justify-center items-center">
           <ForgotPasswordCard 
             onBackToSignIn={handleBackToSignIn} 
@@ -50,6 +52,7 @@ export default function ForgotPasswordPage() {
           />
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

@@ -5,7 +5,7 @@
 ### I. Component-Driven & Reusability
 All UI components must be built with an Atomic Design mindset. Components such as Buttons, Inputs, Cards, and Modals must be self-contained, receive data via `props`, possess a clear structure, and be highly reusable across different pages.
 
-**MANDATORY UI/UX DESIGN FLOW:** All new UI/UX development must strictly comply with the Atomic Design system. The design process must follow a mandated, bottom-up flow: 
+**MANDATORY UI/UX DESIGN FLOW:** All new UI/UX development must strictly comply with the Atomic Design system (do not create new folder, there is already existing folder lying in client/app/components). The design process must follow a mandated, bottom-up flow: 
 1. **Atoms** (Basic indivisible elements) 
 2. **Molecules** (Functional groupings of atoms) 
 3. **Organisms** (Complex functional sections) 

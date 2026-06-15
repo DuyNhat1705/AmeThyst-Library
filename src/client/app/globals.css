@@ -1,75 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8EFE6;
+  --foreground: #091426;
+  --primary: #091426;
+  --secondary: #006F66;
+  --accent: #FFB95F;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-navy: #091426;
+  --color-teal: #006F66;
+  --color-orange: #FFB95F;
   --font-inter: var(--font-inter);
-  --font-inder: var(--font-inder);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-manrope: var(--font-manrope);
+  --font-open-sans: var(--font-open-sans);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-.navBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #333;
-  color: #fff;
-}
-.navLinks {
-  display: flex;
-  list-style: none;
-  gap: 20px;
-  margin: 0;
-  padding: 0;
 }
 
-.pageName {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: color 0.2s ease;
-}
-
-.pageName:hover {
-  color: #facc15;
-}
-
-/*Library page*/
-.numCell{
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  border: 1px solid #ccc;
-  margin: 5px;
-}
-.equationCalculator {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.resultCell{
-  margin-left: 10px;
-  font-weight: bold;
+/* Custom Utilities if needed */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }

@@ -1,20 +1,18 @@
-import { Inter, Inder } from "next/font/google";
+import { Inter, Manrope, Open_Sans } from "next/font/google";
 import "./globals.css";
-import { NavBar } from "./components/organisms";
 
-// 1. Define your Google fonts safely
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const inder = Inder({ subsets: ["latin"], weight: "400", variable: "--font-inder" });
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-open-sans" });
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${inder.variable} h-full`} // Cleaned up old Geist variables
+      className={`${inter.variable} ${manrope.variable} ${openSans.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col pt-[72px]">
-        <NavBar />
-        {children}
+      <body className="min-h-full flex flex-col font-inter antialiased">
+        <main className="flex-grow">{children}</main>
       </body>
     </html>
   );

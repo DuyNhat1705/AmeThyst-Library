@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import BrandPanel from './BrandPanel';
 import FormCard from './FormCard';
+import { NavBar, Footer } from '../components/organisms';
 
 const LoginPage = () => {
   const [state, setState] = useState({
@@ -18,7 +19,9 @@ const LoginPage = () => {
   });
 
   return (
-    <main className="min-h-screen bg-[#FFF8EB] flex flex-col lg:flex-row font-inter text-[#091426] overflow-x-hidden relative">
+    <main className="min-h-screen bg-[#FFF8EB] flex flex-col font-inter text-[#091426] overflow-x-hidden relative">
+      <NavBar />
+      
       {/* Top-level Error Banner */}
       {state.error && (
         <div className="fixed top-0 left-0 w-full bg-red-500 text-white p-4 text-center z-[100] animate-in fade-in slide-in-from-top duration-300">
@@ -32,18 +35,21 @@ const LoginPage = () => {
         </div>
       )}
 
-      {/* Left Panel (Branding Illustration) */}
-      <BrandPanel />
+      <div className="flex flex-col lg:flex-row flex-grow">
+        {/* Left Panel (Branding Illustration) */}
+        <BrandPanel />
 
-      {/* Right Panel (Form Area) */}
-      <section className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 min-h-screen">
-        <FormCard 
-          credentials={credentials}
-          setCredentials={setCredentials}
-          isLoading={state.isLoading}
-          validationErrors={state.validationErrors}
-        />
-      </section>
+        {/* Right Panel (Form Area) */}
+        <section className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 min-h-screen">
+          <FormCard 
+            credentials={credentials}
+            setCredentials={setCredentials}
+            isLoading={state.isLoading}
+            validationErrors={state.validationErrors}
+          />
+        </section>
+      </div>
+      <Footer />
     </main>
   );
 };
