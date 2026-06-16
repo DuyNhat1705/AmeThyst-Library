@@ -5,7 +5,6 @@ interface HomeLayoutProps {
   hero: React.ReactNode;
   searchBar: React.ReactNode;
   popularPublishes: React.ReactNode;
-  studyGroup: React.ReactNode;
   footer: React.ReactNode;
 }
 
@@ -14,7 +13,6 @@ export default function HomeLayout({
   hero,
   searchBar,
   popularPublishes,
-  studyGroup,
   footer
 }: HomeLayoutProps) {
   return (
@@ -24,7 +22,6 @@ export default function HomeLayout({
         {hero}
         {searchBar}
         {popularPublishes}
-        {studyGroup}
       </div>
       {footer}
     </div>

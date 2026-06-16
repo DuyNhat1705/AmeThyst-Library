@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '../atoms/Button';
 
-export default function NavBar() {
+export default function NavBar({ userActions }: { userActions?: React.ReactNode }) {
   return (
     <nav className="w-full h-[84px] bg-[#F2E5D8] border-b border-[#EAEAEA] sticky top-0 z-50">
       <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
@@ -18,27 +18,31 @@ export default function NavBar() {
 
         {/* Nav Links */}
         <div className="hidden md:flex items-center gap-8">
-          {['Home', 'Library', 'Community', 'About'].map((item) => (
-            <a 
+          {['Library', 'Community', 'About'].map((item) => (
+            <Link 
               key={item} 
-              href="#" 
+              href={item === 'Library' ? '/library' : '#'} 
               className={`font-inter text-sm font-semibold transition-colors ${
-                item === 'Home' ? 'text-[#006F66]' : 'text-[#75777D] hover:text-[#091426]'
+                item === 'Library' ? 'text-[#006F66]' : 'text-[#75777D] hover:text-[#091426]'
               }`}
             >
               {item}
-            </a>
+            </Link>
           ))}
         </div>
 
-        {/* Auth Actions */}
+        {/* Auth Actions / Profile Actions */}
         <div className="flex items-center gap-4">
-          <Link href="/login" className="hidden sm:block font-inter text-sm font-semibold text-[#091426] hover:text-[#006F66] transition-colors">
-            Sign In
-          </Link>
-          <Link href="/register">
-            <Button variant="primary" className="px-6 py-2 h-auto rounded-lg">Join Now</Button>
-          </Link>
+          {userActions ? userActions : (
+            <>
+              <Link href="/login" className="hidden sm:block font-inter text-sm font-semibold text-[#091426] hover:text-[#006F66] transition-colors">
+                Sign In
+              </Link>
+              <Link href="/register">
+                <Button variant="primary" className="px-6 py-2 h-auto rounded-lg">Join Now</Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

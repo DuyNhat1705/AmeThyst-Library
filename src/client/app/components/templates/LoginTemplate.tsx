@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState } from 'react';
-import BrandPanel from './BrandPanel';
-import FormCard from './FormCard';
-import { NavBar, Footer } from '../components/organisms';
+import { NavBar, Footer } from '../organisms';
+import FormCard from '../../login/FormCard';
 
-const LoginPage = () => {
+interface LoginTemplateProps {
+  leftPanel: React.ReactNode;
+}
+
+export default function LoginTemplate({ leftPanel }: LoginTemplateProps) {
   const [state, setState] = useState({
     isLoading: false,
-    error: null,
+    error: null as string | null,
     validationErrors: {},
     isSuccess: false,
   });
@@ -36,8 +39,7 @@ const LoginPage = () => {
       )}
 
       <div className="flex flex-col lg:flex-row flex-grow">
-        {/* Left Panel (Branding Illustration) */}
-        <BrandPanel />
+        {leftPanel}
 
         {/* Right Panel (Form Area) */}
         <section className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 min-h-screen">
@@ -52,6 +54,4 @@ const LoginPage = () => {
       <Footer />
     </main>
   );
-};
-
-export default LoginPage;
+}

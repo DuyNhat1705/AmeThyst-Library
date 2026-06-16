@@ -31,11 +31,8 @@ All input forms (e.g., Add New Book, Reader Registration) must implement robust 
 ### VI. Directory Structure & Workspace Alignment (MANDATORY)
 Before creating any new files, modifying existing source code, or writing any import statements, the AI Agent MUST analyze and strictly adhere to the project's actual directory hierarchy. Do not alter the root architecture or make assumptions about file locations.
 
-### VII. Modular & Abstract Architecture (Backend - NEW)
-The backend source code must strictly follow the **Layered Architecture** pattern, ensures high abstraction, separation of concerns, and clear encapsulation of business logic.
-
-* **Abstract Request Handlers:** A route handler must be completely modularized and abstract. Routes should only act as a coordinator. For example: `route.post('/library', loginCheck, isCustomer, borrowBook);`. 
-* **Fat Services, Skinny Controllers:** Controllers must remain "skinny" (only handle extracting request data and returning JSON responses). All core business logic, database calculations, and complex transactions must live in the Service layer.
+### X. Import Path Verification (NEW)
+Before creating any new files, editing existing files, or writing import statements, the AI Agent MUST analyze the project directory structure to determine the exact relative path from the current file to the target file. Assumption-based imports are prohibited; all imports must be verified against the actual workspace file tree.
 ## Coding Conventions
 
 ### Tech Stack
