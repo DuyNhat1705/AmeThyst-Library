@@ -1,15 +1,17 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface BookCardProps {
+  id: string;
   title: string;
   author: string;
   image: string;
 }
 
-export default function BookCard({ title, author, image }: BookCardProps) {
+export default function BookCard({ id, title, author, image }: BookCardProps) {
   return (
-    <div className="flex flex-col gap-3 group cursor-pointer">
+    <Link href={`/library/${id}`} className="flex flex-col gap-3 group cursor-pointer block">
       {/* Book Cover Container */}
       <div className="relative w-full aspect-[3/4] bg-[#EAEAEA] rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
         <Image
@@ -29,6 +31,6 @@ export default function BookCard({ title, author, image }: BookCardProps) {
           {author}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }

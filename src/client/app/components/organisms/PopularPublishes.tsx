@@ -28,8 +28,9 @@ export default function PopularPublishes() {
       {/* Book Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {ALL_BOOKS.slice((currentPage - 1) * BOOKS_PER_PAGE, currentPage * BOOKS_PER_PAGE).map((book) => (
-          <BookCard 
+          <BookCard
             key={book.id}
+            id={book.id.toString()}
             title={book.title}
             author={book.author}
             image={book.image}
