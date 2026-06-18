@@ -1,10 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import passport from './config/passport.mjs';
 import libraryRoutes from './routes/library.mjs';
+import authRoutes from './routes/auth.routes.mjs';
+import userRoutes from './routes/user.routes.mjs';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 app.use(libraryRoutes);
 
 const PORT = 5000;

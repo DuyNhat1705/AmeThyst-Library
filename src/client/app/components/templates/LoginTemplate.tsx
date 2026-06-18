@@ -21,6 +21,38 @@ export default function LoginTemplate({ leftPanel }: LoginTemplateProps) {
     password: "",
   });
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Login failed');
+      }
+
+      const data = await res.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
+
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = '/library';
+      }, 500);
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setState(prev => ({ ...prev, isLoading: false, error: err.message }));
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#FFF8EB] flex flex-col font-inter text-[#091426] overflow-x-hidden relative">
       <NavBar />
@@ -48,6 +80,7 @@ export default function LoginTemplate({ leftPanel }: LoginTemplateProps) {
             setCredentials={setCredentials}
             isLoading={state.isLoading}
             validationErrors={state.validationErrors}
+            onSubmit={handleSubmit}
           />
         </section>
       </div>
