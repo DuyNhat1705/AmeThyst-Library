@@ -10,7 +10,8 @@ const FormCard = ({
   credentials, 
   setCredentials, 
   isLoading, 
-  validationErrors 
+  validationErrors,
+  onSubmit
 }) => {
   return (
     <div className="w-full max-w-[342px] flex flex-col gap-8">
@@ -18,7 +19,7 @@ const FormCard = ({
         <h2 className="text-3xl font-semibold tracking-[-0.01em]">Sign In</h2>
       </header>
 
-      <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
+      <form className="flex flex-col gap-6" onSubmit={onSubmit}>
         <FormField
           label="Email Address"
           id="email"
@@ -27,6 +28,7 @@ const FormCard = ({
           value={credentials.email}
           onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
           error={validationErrors.email}
+          disabled={isLoading}
         />
 
         <div className="flex flex-col gap-1.5">
@@ -42,6 +44,7 @@ const FormCard = ({
             value={credentials.password}
             onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
             error={validationErrors.password}
+            disabled={isLoading}
           />
         </div>
 
@@ -59,10 +62,10 @@ const FormCard = ({
           <div className="flex-1 h-px bg-[#C5C6CD]"></div>
         </div>
 
-        <OAuthButtons />
+        <OAuthButtons disabled={isLoading} />
 
         <div className="flex flex-col items-center gap-4 mt-2">
-          <p className="text-[#45474C] text-sm tracking-[-0.01em]">Don’t have an account? Create!</p>
+          <p className="text-[#45474C] text-sm tracking-[-0.01em]">Don’t have an account? Create one!</p>
           <Link href="/register" className="w-full h-[52px]">
             <Button variant="primary" className="w-full h-[52px]">
               Create Account

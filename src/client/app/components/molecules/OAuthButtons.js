@@ -3,13 +3,20 @@
 import React from 'react';
 import { Button } from '../atoms';
 
-export const OAuthButtons = ({ label = "Sign in with Google" }) => {
+export const OAuthButtons = ({ label = "Sign in with Google", disabled = false }) => {
+  const handleGoogleSignIn = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    window.location.href = `${apiUrl}/auth/google`;
+  };
+
   return (
     <div className="flex flex-col gap-6 w-full">
       <Button
         type="button"
         variant="outline"
         className="w-full h-[52px] gap-4"
+        onClick={handleGoogleSignIn}
+        disabled={disabled}
       >
         <div className="w-5 h-5 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

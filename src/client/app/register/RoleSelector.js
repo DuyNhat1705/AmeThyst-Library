@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const RoleSelector = ({ selectedRole, onChange }) => {
+const RoleSelector = ({ selectedRole, onChange, disabled = false }) => {
   return (
     <div className="flex flex-col items-start gap-1 w-full">
       <div className="flex flex-col items-start w-full">
@@ -11,19 +11,20 @@ const RoleSelector = ({ selectedRole, onChange }) => {
         </p>
       </div>
       <div 
-        className="inline-grid grid-cols-2 p-1 rounded-lg border border-[#C5C6CD] bg-[#EFF4FF] w-full relative h-[42px]"
+        className={`inline-grid grid-cols-2 p-1 rounded-lg border border-[#C5C6CD] bg-[#EFF4FF] w-full relative h-[42px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         role="tablist"
       >
         <button
           type="button"
           role="tab"
           aria-selected={selectedRole === 'student'}
-          onClick={() => onChange('student')}
+          onClick={() => !disabled && onChange('student')}
+          disabled={disabled}
           className={`cursor-pointer text-nowrap flex justify-center items-center rounded transition-all duration-200 h-full ${
             selectedRole === 'student' 
               ? 'bg-[#091426] text-white shadow-sm' 
               : 'text-[#45474C] hover:bg-[#D3E4FE]'
-          }`}
+          } ${disabled ? 'opacity-50' : ''}`}
         >
           <span className="font-inter text-sm font-semibold leading-5 tracking-[0.01em]">
             Student/General
@@ -33,12 +34,13 @@ const RoleSelector = ({ selectedRole, onChange }) => {
           type="button"
           role="tab"
           aria-selected={selectedRole === 'librarian'}
-          onClick={() => onChange('librarian')}
+          onClick={() => !disabled && onChange('librarian')}
+          disabled={disabled}
           className={`cursor-pointer text-nowrap flex justify-center items-center rounded transition-all duration-200 h-full ${
             selectedRole === 'librarian' 
               ? 'bg-[#091426] text-white shadow-sm' 
               : 'text-[#45474C] hover:bg-[#D3E4FE]'
-          }`}
+          } ${disabled ? 'opacity-50' : ''}`}
         >
           <span className="font-inter text-sm font-semibold leading-5 tracking-[0.01em]">
             Librarian

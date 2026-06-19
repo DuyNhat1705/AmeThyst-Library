@@ -24,7 +24,7 @@ const RegisterFormCard = ({
 
   const passwordStrength = useMemo(() => calculatePasswordStrength(formData.password), [formData.password]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setState(prev => ({ ...prev, error: "Passwords do not match" }));
@@ -32,10 +32,35 @@ const RegisterFormCard = ({
     }
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-    // Mock submission delay
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          username: formData.fullName,
+          phoneNumber: formData.phoneNumber || null,
+          avatar: formData.avatar || null
+        })
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Registration failed');
+      }
+
+      const data = await res.json();
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
-    }, 2000);
+      
+      // Redirect to login after success
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (err) {
+      console.error('Register error:', err);
+      setState(prev => ({ ...prev, isLoading: false, error: err.message }));
+    }
   };
 
   return (
@@ -58,6 +83,7 @@ const RegisterFormCard = ({
           value={formData.fullName}
           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
           error={state.validationErrors.fullName}
+          disabled={state.isLoading}
         />
 
         <FormField
@@ -68,11 +94,13 @@ const RegisterFormCard = ({
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           error={state.validationErrors.email}
+          disabled={state.isLoading}
         />
 
         <RoleSelector
           selectedRole={formData.role}
           onChange={(role) => setFormData({ ...formData, role })}
+          disabled={state.isLoading}
         />
 
         <div className="flex flex-col gap-2">
@@ -84,6 +112,7 @@ const RegisterFormCard = ({
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={state.validationErrors.password}
+            disabled={state.isLoading}
           />
           <FormField
             label="Confirm Password"
@@ -93,6 +122,7 @@ const RegisterFormCard = ({
             value={formData.confirmPassword || ""}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             error={state.validationErrors.confirmPassword}
+            disabled={state.isLoading}
           />
           <SecurityIndicator level={passwordStrength} />
         </div>

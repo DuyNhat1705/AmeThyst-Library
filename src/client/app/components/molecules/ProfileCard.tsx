@@ -1,16 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ProfileCardProps {
   label: string;
   value: string;
   onUpdate: (value: string) => void;
+  editable?: boolean;
 }
 
-export default function ProfileCard({ label, value, onUpdate }: ProfileCardProps) {
+export default function ProfileCard({ label, value, onUpdate, editable = true }: ProfileCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
+
+  useEffect(() => {
+    setTempValue(value);
+  }, [value]);
 
   const handleSave = () => {
     onUpdate(tempValue);
@@ -18,9 +23,9 @@ export default function ProfileCard({ label, value, onUpdate }: ProfileCardProps
   };
 
   return (
-    <div 
-      className="p-4 border border-transparent hover:border-[#486C7E] rounded-lg transition-all cursor-pointer bg-[#FFF] shadow-sm"
-      onClick={() => !isEditing && setIsEditing(true)}
+    <div
+      className={`p-4 border border-transparent ${editable ? 'hover:border-[#486C7E] cursor-pointer' : 'opacity-60'} rounded-lg transition-all bg-[#FFF] shadow-sm`}
+      onClick={() => editable && !isEditing && setIsEditing(true)}
     >
       <h3 className="text-sm text-[#45474C] font-semibold">{label}</h3>
       {isEditing ? (
