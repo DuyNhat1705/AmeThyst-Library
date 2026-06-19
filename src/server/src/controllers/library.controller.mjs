@@ -1,10 +1,5 @@
-import { Sum, getBookById, getRecommendations, createReservation, getBooksList } from '../services/library.services.mjs';
+import { getBookById, getRecommendations, createReservation, getBooksList } from '../services/library.services.mjs';
 
-const calculateSum = (req, res) =>{
-  const { num1, num2 } = req.body;
-  const result = Sum(num1, num2);
-  res.json({ result });
-}
 
 const getAllBooks = async (req, res) => {
   try {
@@ -57,4 +52,4 @@ const reserveBook = async (req, res) => {
   }
 };
 
-export { calculateSum, getAllBooks, getBookDetails, getBookRecommendations, reserveBook };
+export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook };

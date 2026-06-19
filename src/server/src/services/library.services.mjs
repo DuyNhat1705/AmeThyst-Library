@@ -1,8 +1,4 @@
-import pool from '../config/db.mjs';
-
-export function Sum(num1, num2) {
-  return num1 + num2;
-}
+import pool from '../config/postgres.mjs';
 
 /**
  * Hàm dọn dẹp các ký tự lỗi mã hóa UTF-8 thường gặp trong database

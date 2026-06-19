@@ -10,17 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(libraryRoutes);
 
-const PORT = 5000;
-
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello, World!' });
-});
-
-// app.post('/library/calculate', (req, res) => {
-//   const { num1, num2 } = req.body;
-//   const result = num1 + num2;
-//   res.json({ result });
-// });
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
