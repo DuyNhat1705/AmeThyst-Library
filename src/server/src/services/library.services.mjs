@@ -1,4 +1,156 @@
-export function Sum(num1,num2)
-{
-    return num1 + num2;
+import pool from '../config/db.mjs';
+
+export function Sum(num1, num2) {
+  return num1 + num2;
 }
+
+/**
+ * Hàm dọn dẹp các ký tự lỗi mã hóa UTF-8 thường gặp trong database
+ */
+function cleanText(text) {
+  if (!text) return '';
+  return text
+    .replace(/â”€Ã©â”¬âŒ/g, 'Ré')
+    .replace(/â”€Ã©â”¬Â¿/g, 'è')
+    .replace(/â”€Ã©â”¬Ã¡/g, 'à')
+    .replace(/â• Ã‡â•¦Ã¥/g, 'å')
+    .replace(/â”œÃ³Î“Ã©Â¼Î“Ã‡Â£/g, '"')
+    .replace(/â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥/g, '"')
+    .replace(/â”€Ã©â”¬â–“/g, 'ô')
+    .replace(/â”€Ã©â”¬â”‚/g, 'ó')
+    .replace(/\t/g, ' ')
+    .trim();
+}
+
+/**
+ * Lấy chi tiết một cuốn sách bằng ID
+ */
+export const getBookById = async (id) => {
+  const query = `
+    SELECT b.*, l.shelf, l.quantity, l.available_quantity
+    FROM public.books b
+    LEFT JOIN public.library l ON b.book_id = l.book_id
+    WHERE b.book_id = $1
+  `;
+  const result = await pool.query(query, [id]);
+  
+  if (result.rows.length === 0) return null;
+  
+  const book = result.rows[0];
+  return {
+    id: book.book_id,
+    title: cleanText(book.title),
+    author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
+    description: cleanText(book.description),
+    isbn: book.isbn,
+    language: book.language_code ? book.language_code.toUpperCase() : 'ENG',
+    publisher: cleanText(book.publisher) || 'N/A',
+    publicationYear: book.publication_year || 'N/A',
+    numPages: book.num_pages || 'N/A',
+    rating: book.rating ? `${book.rating} / 5` : 'N/A',
+    coverImage: book.isbn || book.book_id, // Ưu tiên ISBN cho ảnh bìa trực tuyến
+    inventory: {
+      floor: book.shelf ? book.shelf.split(',')[0] : '1',
+      wing: book.shelf ? book.shelf.split(',')[1] : 'Main',
+      shelfId: book.shelf || 'N/A',
+      availableCopies: book.available_quantity !== undefined ? book.available_quantity : 3
+    }
+  };
+};
+
+/**
+ * Lấy danh sách sách có phân trang
+ */
+export const getBooksList = async (page = 1, limit = 24) => {
+  const offset = (page - 1) * limit;
+  
+  const countQuery = 'SELECT COUNT(*) FROM public.books';
+  const booksQuery = `
+    SELECT book_id, title, author, isbn 
+    FROM public.books 
+    ORDER BY title ASC 
+    LIMIT $1 OFFSET $2
+  `;
+  
+  const [countRes, booksRes] = await Promise.all([
+    pool.query(countQuery),
+    pool.query(booksQuery, [limit, offset])
+  ]);
+  
+  const totalBooks = parseInt(countRes.rows[0].count);
+  
+  return {
+    books: booksRes.rows.map(book => ({
+      id: book.book_id,
+      title: cleanText(book.title),
+      author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
+      isbn: book.isbn,
+      coverImage: book.isbn || book.book_id // Truyền ISBN hoặc book_id để Frontend bóc tách
+    })),
+    totalBooks,
+    totalPages: Math.ceil(totalBooks / limit),
+    currentPage: page
+  };
+};
+
+/**
+ * Lấy gợi ý sách ngẫu nhiên từ database để tạo tính năng khám phá sách
+ */
+export const getRecommendations = async (id) => {
+  const recQuery = `
+    SELECT book_id, title, author, isbn 
+    FROM public.books 
+    WHERE book_id != $1
+    LIMIT 6
+  `;
+  const recRes = await pool.query(recQuery, [id]);
+  
+  return recRes.rows.map(book => ({
+    id: book.book_id,
+    title: cleanText(book.title),
+    author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
+    coverImage: book.isbn || book.book_id
+  }));
+};
+
+/**
+ * Xử lý đặt sách
+ */
+export const createReservation = async (userId, book_id) => {
+  // Kiểm tra tồn kho
+  const checkQuery = 'SELECT available_quantity FROM public.library WHERE book_id = $1 AND available_quantity > 0';
+  const checkRes = await pool.query(checkQuery, [book_id]);
+  
+  if (checkRes.rows.length === 0) {
+    return { error: 'Book currently unavailable for reservation' };
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    
+    // Giảm số lượng khả dụng
+    await client.query(
+      'UPDATE public.library SET available_quantity = available_quantity - 1 WHERE book_id = $1',
+      [book_id]
+    );
+    
+    // Giả lập lưu reservation (Database schema hiện tại chưa có bảng reservations riêng biệt rõ ràng như logic cũ, 
+    // chúng ta sẽ follow theo logic borrow_book nếu cần, nhưng tạm thời giữ logic response thành công)
+    
+    await client.query('COMMIT');
+    return { 
+      reservation: {
+        id: `res_${Math.random().toString(36).substr(2, 9)}`,
+        userId,
+        bookId: book_id,
+        status: 'confirmed'
+      }
+    };
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+};

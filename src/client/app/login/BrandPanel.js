@@ -5,7 +5,7 @@ import loginPanelImg from '../assets/login_panel.png';
 
 const BrandPanel = () => {
   return (
-    <div className="hidden lg:flex lg:w-3/5 xl:w-2/3 h-screen bg-black overflow-hidden relative">
+    <div className="hidden lg:flex lg:w-3/5 xl:w-2/3 min-h-screen bg-black overflow-hidden relative">
       <img
         src={loginPanelImg.src}
         className="absolute inset-0 w-full h-full object-cover opacity-80"

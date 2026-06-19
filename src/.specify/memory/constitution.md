@@ -5,7 +5,7 @@
 ### I. Component-Driven & Reusability
 All UI components must be built with an Atomic Design mindset. Components such as Buttons, Inputs, Cards, and Modals must be self-contained, receive data via `props`, possess a clear structure, and be highly reusable across different pages.
 
-**MANDATORY UI/UX DESIGN FLOW:** All new UI/UX development must strictly comply with the Atomic Design system. The design process must follow a mandated, bottom-up flow: 
+**MANDATORY UI/UX DESIGN FLOW:** All new UI/UX development must strictly comply with the Atomic Design system (do not create new folder, there is already existing folder lying in client/app/components). The design process must follow a mandated, bottom-up flow: 
 1. **Atoms** (Basic indivisible elements) 
 2. **Molecules** (Functional groupings of atoms) 
 3. **Organisms** (Complex functional sections) 
@@ -34,8 +34,8 @@ Before creating any new files, modifying existing source code, or writing any im
 ### VII. Modular & Abstract Architecture (Backend - NEW)
 The backend source code must strictly follow the **Layered Architecture** pattern, ensures high abstraction, separation of concerns, and clear encapsulation of business logic.
 
-* **Abstract Request Handlers:** A route handler must be completely modularized and abstract. Routes should only act as a coordinator. For example: `route.post('/library', loginCheck, isCustomer, borrowBook);`. 
-* **Fat Services, Skinny Controllers:** Controllers must remain "skinny" (only handle extracting request data and returning JSON responses). All core business logic, database calculations, and complex transactions must live in the Service layer.
+### VIII. Import Path Verification (NEW)
+Before creating any new files, editing existing files, or writing import statements, the AI Agent MUST analyze the project directory structure to determine the exact relative path from the current file to the target file. Assumption-based imports are prohibited; all imports must be verified against the actual workspace file tree.
 ## Coding Conventions
 
 ### Tech Stack

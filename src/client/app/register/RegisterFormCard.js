@@ -26,7 +26,11 @@ const RegisterFormCard = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setState(prev => ({ ...prev, isLoading: true }));
+    if (formData.password !== formData.confirmPassword) {
+      setState(prev => ({ ...prev, error: "Passwords do not match" }));
+      return;
+    }
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     // Mock submission delay
     setTimeout(() => {
@@ -80,6 +84,15 @@ const RegisterFormCard = ({
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={state.validationErrors.password}
+          />
+          <FormField
+            label="Confirm Password"
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            value={formData.confirmPassword || ""}
+            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            error={state.validationErrors.confirmPassword}
           />
           <SecurityIndicator level={passwordStrength} />
         </div>
