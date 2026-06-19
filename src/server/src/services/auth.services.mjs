@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import pool from '../config/index.mjs';
+import pool from '../config/postgres.mjs';
 import { findUserByEmail, createUser } from '../models/auth.models.mjs';
 import { sendOtp, checkVerified, clearOtp } from './otp.service.mjs';
 

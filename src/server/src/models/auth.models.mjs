@@ -1,4 +1,4 @@
-import pool from '../config/index.mjs';
+import pool from '../config/postgres.mjs';
 
 const findUserByEmail = async (email) => {
   const result = await pool.query(
