@@ -44,7 +44,7 @@ export const getBookById = async (id) => {
     publicationYear: book.publication_year || 'N/A',
     numPages: book.num_pages || 'N/A',
     rating: book.rating ? `${book.rating} / 5` : 'N/A',
-    coverImage: book.isbn || book.book_id, // Ưu tiên ISBN cho ảnh bìa trực tuyến
+    coverImage: book.image_url || null,
     inventory: {
       floor: book.shelf ? book.shelf.split(',')[0] : '1',
       wing: book.shelf ? book.shelf.split(',')[1] : 'Main',
@@ -62,7 +62,7 @@ export const getBooksList = async (page = 1, limit = 24) => {
   
   const countQuery = 'SELECT COUNT(*) FROM public.books';
   const booksQuery = `
-    SELECT book_id, title, author, isbn 
+    SELECT book_id, title, author, isbn, image_url
     FROM public.books 
     ORDER BY title ASC 
     LIMIT $1 OFFSET $2
@@ -81,7 +81,7 @@ export const getBooksList = async (page = 1, limit = 24) => {
       title: cleanText(book.title),
       author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
       isbn: book.isbn,
-      coverImage: book.isbn || book.book_id // Truyền ISBN hoặc book_id để Frontend bóc tách
+      coverImage: book.image_url || null
     })),
     totalBooks,
     totalPages: Math.ceil(totalBooks / limit),
@@ -94,7 +94,7 @@ export const getBooksList = async (page = 1, limit = 24) => {
  */
 export const getRecommendations = async (id) => {
   const recQuery = `
-    SELECT book_id, title, author, isbn 
+    SELECT book_id, title, author, isbn, image_url
     FROM public.books 
     WHERE book_id != $1
     LIMIT 6
@@ -105,7 +105,7 @@ export const getRecommendations = async (id) => {
     id: book.book_id,
     title: cleanText(book.title),
     author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
-    coverImage: book.isbn || book.book_id
+    coverImage: book.image_url || null
   }));
 };
 

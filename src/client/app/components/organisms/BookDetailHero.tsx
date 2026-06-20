@@ -9,25 +9,12 @@ interface BookDetailHeroProps {
 }
 
 export default function BookDetailHero({ title, author, description, coverImage, compact = false }: BookDetailHeroProps) {
-  let imageUrl = "/Rectangle1248.png";
-  
-  if (coverImage && !coverImage.startsWith('/')) {
-    const isIsbn = /^[0-9X]{10,13}$/i.test(coverImage);
-    if (isIsbn) {
-      imageUrl = `https://covers.openlibrary.org/b/isbn/${coverImage}-L.jpg`;
-    } else {
-      const cleanId = coverImage.startsWith('OL_') ? coverImage.substring(3) : coverImage;
-      imageUrl = `https://covers.openlibrary.org/b/olid/${cleanId}-L.jpg`;
-    }
-  } else if (coverImage) {
-    imageUrl = coverImage;
-  }
 
   if (compact) {
     return (
       <div className="relative w-full aspect-[3/4.5] md:aspect-[3/4.2] overflow-hidden rounded-3xl transition-transform duration-500 bg-[#EAEAEA]">
         <img
-          src={imageUrl}
+          src={coverImage}
           alt={title}
           className="w-full h-full object-cover"
           onError={(e) => {
@@ -51,7 +38,7 @@ export default function BookDetailHero({ title, author, description, coverImage,
     <div className="flex flex-col md:flex-row gap-12 w-full">
       <div className="w-full md:w-[479px] shrink-0 bg-[#EAEAEA] rounded-3xl overflow-hidden shadow-lg">
         <img
-          src={imageUrl}
+          src={coverImage}
           alt={title}
           className="w-full h-auto object-cover"
           onError={(e) => {
