@@ -18,7 +18,7 @@
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
 - [x] All acceptance scenarios are defined
-- [x] Edge cases are identified (whitespace, ChromaDB unavailability, invalid filters)
+- [x] Edge cases are identified (whitespace, database/extension failure, invalid filters)
 - [x] Scope is clearly bounded (guest vs. authenticated user history log)
 - [x] Dependencies and assumptions identified
 
@@ -32,4 +32,4 @@
 ## Notes
 
 - The specification successfully incorporates the dual-mode searching requirements (OPAC vs Semantic search) while mapping them to clear, testable scenarios.
-- The use of ChromaDB for similarity searching and PostgreSQL for history logs is correctly captured in assumptions, entities, and requirements without cluttering user stories with implementation details.
+- The use of pgvector for similarity searching and PostgreSQL for history logs is correctly captured in assumptions, entities, and requirements without cluttering user stories with implementation details.

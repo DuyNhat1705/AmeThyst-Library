@@ -5,10 +5,10 @@ This guide provides step-by-step scenarios to validate the "Book Searching" feat
 ## Prerequisites
 - **Backend Server**: Running on `http://localhost:5000`
 - **Frontend Client**: Running on `http://localhost:3000`
-- **ChromaDB Instance**: Running and initialized with sample vector embeddings of library books.
+- **PostgreSQL Database**: Running and configured with the pgvector extension enabled, containing sample book vector embeddings.
 - **Environment**:
   - Frontend `.env.local` contains `NEXT_PUBLIC_API_URL=http://localhost:5000`
-  - Backend `.env` contains ChromaDB configurations.
+  - Backend `.env` contains PostgreSQL database credentials.
 
 ---
 
@@ -27,7 +27,7 @@ This guide provides step-by-step scenarios to validate the "Book Searching" feat
 2. **Action**: Enter a natural language theme or conceptual description (e.g., "a story about rings, elves, and an evil lord in Middle Earth") and click "Search".
 3. **Expectation**:
     - System displays a brief loading/searching state.
-    - System retrieves matching books from ChromaDB based on similarity.
+    - System retrieves matching books from the PostgreSQL database using pgvector cosine distance.
     - "The Lord of the Rings" or relevant titles appear at the top of the search results grid.
 
 ### Scenario 3: Apply Metadata Filters

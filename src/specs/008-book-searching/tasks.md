@@ -20,7 +20,7 @@
 
 - [ ] T001 Create search page directory `client/app/search/` and default components structures
 - [ ] T002 Configure `NEXT_PUBLIC_API_URL` inside `client/.env.local`
-- [ ] T003 [P] Add ChromaDB connection credentials and API keys in server `.env`
+- [ ] T003 [P] Add database connection credentials and embedding API keys in server `.env`
 
 ---
 
@@ -28,7 +28,7 @@
 
 **Purpose**: Core backend setup for routing and database connections.
 
-- [ ] T004 Setup ChromaDB client configuration and loader class in `server/src/config/chromadb.config.mjs`
+- [ ] T004 Verify PostgreSQL connection configuration and setup pgvector in `server/src/config/db.config.mjs`
 - [ ] T005 Setup basic routes mapping inside `server/src/routes/search.routes.mjs` and `server/src/routes/history.routes.mjs`
 - [ ] T006 Initialize base search controller shell in `server/src/controllers/search.controllers.mjs`
 - [ ] T007 Initialize base search history controller shell in `server/src/controllers/history.controllers.mjs`
@@ -58,18 +58,18 @@
 
 ## Phase 4: User Story 2 - Semantic Search (Priority: P1)
 
-**Goal**: Implement description-based semantic similarity search using ChromaDB.
+**Goal**: Implement description-based semantic similarity search using pgvector in PostgreSQL.
 
 **Independent Test**: Toggle to Semantic Search, search for a book plot/concept (e.g., "wizard school"), and verify that contextually relevant books are returned.
 
 ### Implementation for User Story 2
 
 - [ ] T014 [P] [US2] Implement embedding generator service helper in `server/src/services/embedding.services.mjs`
-- [ ] T015 [P] [US2] Implement collection similarity query methods inside `server/src/services/search.services.mjs` utilizing ChromaDB cosine distance
+- [ ] T015 [P] [US2] Implement similarity query methods inside `server/src/services/search.services.mjs` utilizing pgvector cosine distance
 - [ ] T016 [US2] Update `server/src/controllers/search.controllers.mjs` to execute semantic search service when mode is "semantic"
 - [ ] T017 [US2] Connect search action in `client/app/search/page.jsx` to trigger semantic search endpoint request
 
-**Checkpoint**: User Story 2 is functional - semantic queries execute through ChromaDB similarity engine.
+**Checkpoint**: User Story 2 is functional - semantic queries execute through PostgreSQL pgvector similarity engine.
 
 ---
 
@@ -83,7 +83,7 @@
 
 - [ ] T018 [P] [US3] Create `FilterCheckbox` and `RangeInput` atoms in `client/app/components/atoms/`
 - [ ] T019 [P] [US3] Create `FilterSidebar` organism in `client/app/components/organisms/FilterSidebar.jsx`
-- [ ] T020 [US3] Implement backend filtering parameters handling in `server/src/services/search.services.mjs` (mapping filters to PostgreSQL where statements or ChromaDB metadata queries)
+- [ ] T020 [US3] Implement backend filtering parameters handling in `server/src/services/search.services.mjs` (mapping filters to PostgreSQL WHERE clauses combined with pgvector query)
 - [ ] T021 [US3] Integrate `FilterSidebar` inside `client/app/search/page.jsx` to trigger filtering requests on filters change
 
 **Checkpoint**: User Story 3 is functional - both standard and semantic searches can be filtered.

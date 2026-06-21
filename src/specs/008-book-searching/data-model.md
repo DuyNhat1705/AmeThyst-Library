@@ -3,7 +3,7 @@
 ## Entities
 
 ### Book
-Represents the bibliographic information for a book. Standard metadata is stored in the primary database (PostgreSQL), and the vector embedding + metadata are mirrored in ChromaDB.
+Represents the bibliographic information for a book. Both standard metadata and the description vector embedding are stored in PostgreSQL, utilizing the pgvector extension.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -18,7 +18,7 @@ Represents the bibliographic information for a book. Standard metadata is stored
 | pageCount | number | Total number of pages |
 | language | string | Primary language of the text (e.g., "en", "vi") |
 | coverImage | string | Path to the cover image asset |
-| embedding | array[float] | Vector representation (e.g., 384 or 1536 float array) of `description` for ChromaDB similarity matching |
+| embedding | vector | Vector representation (e.g., 384 or 1536 dimensions) of `description` for pgvector similarity matching |
 
 ### SearchHistory
 Represents the logs of queries ran by authenticated (logged-in) users.
@@ -34,4 +34,4 @@ Represents the logs of queries ran by authenticated (logged-in) users.
 
 ## Relationships
 - **User (1) -> (N) SearchHistory**: A logged-in user has multiple search history log entries. Guest users have none.
-- **Book (1) -> (1) ChromaDB Vector Document**: Each Book's description is embedded and stored as a vector document in ChromaDB, with additional fields (genres, publicationDate, pageCount, language) stored as document metadata to enable fast pre-filtering.
+- **Book (1) -> (1) pgvector Embedding**: Each Book has an associated vector embedding column inside PostgreSQL, allowing similarity queries to be performed alongside metadata filtering in standard SQL queries.

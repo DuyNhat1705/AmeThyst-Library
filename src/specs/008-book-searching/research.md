@@ -49,24 +49,22 @@ Based on the Layered Architecture requirement, we propose these API endpoints:
 
 ---
 
-## ChromaDB & Vector Integration
+## pgvector & Vector Integration
 
-ChromaDB will manage the semantic similarity querying. The system will operate as follows:
+PostgreSQL with the pgvector extension will manage the semantic similarity querying. The system will operate as follows:
 1. **Embedding Generation**: Book summaries are converted to vectors (using local HuggingFace transformers via `xenova/transformers` or an external OpenAI API) during database seeding.
 2. **Query Embedding**: The search input from the user is converted into a vector query on the backend.
-3. **Similarity Search**: The query embedding is sent to ChromaDB. ChromaDB returns records sorted by similarity (cosine distance).
-4. **Metadata Filters inside ChromaDB**: Metadata filters (such as language, publication year, genres) will be attached as a `where` dict query inside the ChromaDB query to execute fast pre-filtering. E.g.:
+3. **Similarity Search**: The query embedding is compared against book embeddings using pgvector operators (such as `<=>` for cosine distance). PostgreSQL returns records sorted by similarity.
+4. **Metadata Filters inside PostgreSQL**: Metadata filters (such as language, publication year, genres) will be combined with the vector query using standard SQL `WHERE` clauses. E.g.:
    ```javascript
-   const results = await collection.query({
-     queryEmbeddings: [queryVector],
-     nResults: 20,
-     where: {
-       "$and": [
-         { "language": "en" },
-         { "publicationYear": { "$gte": 2010 } }
-       ]
-     }
-   });
+   const results = await db.query(
+     `SELECT *, (embedding <=> $1) AS distance
+      FROM books
+      WHERE language = $2 AND publication_year >= $3
+      ORDER BY distance ASC
+      LIMIT 20`,
+     [queryVector, 'en', 2010]
+   );
    ```
 
 ---
@@ -91,9 +89,9 @@ To lay the foundation for predicting user preferences:
 
 ## Decision Log
 
-- **Decision**: Perform filtering directly in ChromaDB query parameters.
-  - *Rationale*: Avoids the inefficiency of fetching large amounts of semantic matches and doing filter operations in Node memory.
+- **Decision**: Perform filtering directly in PostgreSQL SQL queries alongside pgvector similarity matching.
+  - *Rationale*: Allows PostgreSQL's query planner to optimize execution by using both relational indexes and vector indexing (HNSW/IVFFlat) in a single unified operation, avoiding the cost of manual in-memory filtering.
 - **Decision**: Avoid saving empty query logs to SearchHistory.
   - *Rationale*: Filters out noise and protects analytics datasets.
-- **Decision**: Gracefully degrade to Standard OPAC search if ChromaDB is unavailable.
-  - *Rationale*: Users can still find books via metadata keyword search if the vector engine encounters downtime.
+- **Decision**: Gracefully degrade to Standard OPAC search if pgvector queries fail or the vector column is unavailable.
+  - *Rationale*: Users can still find books via metadata keyword search if the vector engine encounters database exceptions.

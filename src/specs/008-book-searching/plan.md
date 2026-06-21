@@ -6,17 +6,17 @@
 
 ## Summary
 
-The goal of this feature is to implement a dual-mode Book Searching feature containing two search modes: Standard (OPAC) Search (keyword matching on metadata like Title, Author, ISBN, and Publisher) and Semantic Search (natural language description similarity matching utilizing ChromaDB). The results list will support real-time filtering by publication date range, genres, page count, and language. Users who are logged in will have their search queries tracked and recorded in the database `SearchHistory` collection to support future personalized book recommendation features. If search results are empty, a clean user-friendly screen with tips will be rendered.
+The goal of this feature is to implement a dual-mode Book Searching feature containing two search modes: Standard (OPAC) Search (keyword matching on metadata like Title, Author, ISBN, and Publisher) and Semantic Search (natural language description similarity matching utilizing pgvector in PostgreSQL). The results list will support real-time filtering by publication date range, genres, page count, and language. Users who are logged in will have their search queries tracked and recorded in the database `SearchHistory` collection to support future personalized book recommendation features. If search results are empty, a clean user-friendly screen with tips will be rendered.
 
 ## Technical Context
 
 **Language/Version**: JavaScript (Node.js 20+, React 19)
 
-**Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, ChromaDB JavaScript Client (`chromadb` or REST API integration), Node Embedding library or OpenAI API client for embedding generation.
+**Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, pgvector (pg package or pgvector library extension), Node Embedding library or OpenAI API client for embedding generation.
 
-**Storage**: PostgreSQL (via existing DB service) for traditional metadata and user search history log; ChromaDB for book vector representations, similarity search, and semantic filtering.
+**Storage**: PostgreSQL (via existing DB service) with pgvector extension enabled, storing traditional metadata, search history logs, and book description vector embeddings in a single database.
 
-**Testing**: ESLint, manual route validation, and integration tests for ChromaDB search queries.
+**Testing**: ESLint, manual route validation, and integration tests for pgvector similarity search queries.
 
 **Target Platform**: Modern Web Browsers
 
@@ -35,7 +35,7 @@ The goal of this feature is to implement a dual-mode Book Searching feature cont
 - [x] **Atomic Design Compliance**: Components will be broken down into Atoms, Molecules, and Organisms in `client/app/components`.
 - [x] **Layered Backend Architecture**: New search and history endpoints will follow `Route -> Middleware -> Controller -> Service -> Model`.
 - [x] **Naming Conventions**: camelCase for frontend variables and controllers/services, PascalCase for components/models.
-- [x] **Environment Variables**: Backend base URL loaded via `NEXT_PUBLIC_API_URL`. ChromaDB server config and Embedding model API keys stored in server `.env`.
+- [x] **Environment Variables**: Backend base URL loaded via `NEXT_PUBLIC_API_URL`. PostgreSQL connection credentials and Embedding model API keys stored in server `.env`.
 - [x] **Modular Backend**: Use of ES Modules (`.mjs`) and directory-specific naming patterns.
 
 ## Project Structure
@@ -44,7 +44,7 @@ The goal of this feature is to implement a dual-mode Book Searching feature cont
 
 ```text
 src/specs/008-book-searching/
-├── spec.md              # Feature Specification (Standard/Semantic, filters, ChromaDB, history)
+├── spec.md              # Feature Specification (Standard/Semantic, filters, pgvector, history)
 └── plan.md              # This file
 ```
 
@@ -62,7 +62,7 @@ client/
 server/
 └── src/
     ├── config/
-    │   └── chromadb.config.mjs  # ChromaDB connection settings and initialization
+    │   └── db.config.mjs          # PostgreSQL and pgvector configuration and initialization
     ├── controllers/
     │   ├── search.controllers.mjs  # Handles standard/semantic search triggers and payload extraction
     │   └── history.controllers.mjs # Handles retrieval of logged search histories
@@ -74,7 +74,7 @@ server/
     │   ├── search.routes.mjs      # Endpoint: GET/POST /api/search
     │   └── history.routes.mjs     # Endpoint: GET/POST /api/search/history
     └── services/
-        ├── search.services.mjs    # Performs standard Postgres metadata lookup or ChromaDB similarity search
+        ├── search.services.mjs    # Performs standard Postgres metadata lookup or pgvector similarity search
         └── history.services.mjs   # Interacts with DB to store or retrieve user search histories
 ```
 

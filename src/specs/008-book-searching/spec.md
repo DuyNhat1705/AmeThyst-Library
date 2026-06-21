@@ -30,12 +30,12 @@ As a library member, I want to perform a keyword-based search on classic book me
 
 As a library member who doesn't remember a book's title or author but recalls its plot or topic, I want to search using a natural language description (e.g., "a story about space exploration and finding alien artifacts") so that I can discover books matching my conceptual description.
 
-**Why this priority**: This is a key requirement that enables discovery and matches book content description instead of exact metadata keywords, leveraging ChromaDB's vector similarity matching.
+**Why this priority**: This is a key requirement that enables discovery and matches book content description instead of exact metadata keywords, leveraging pgvector similarity matching in PostgreSQL.
 
 **Independent Test**: Can be tested by selecting "Semantic Search", entering a description of a book's theme or plot, and confirming that books with conceptually relevant summaries/descriptions are returned at the top of the results list.
 
 **Acceptance Scenarios**:
-1. **Given** I am on the Book Search page and have selected "Semantic Search" mode, **When** I input a conceptual description of a book (e.g., "dystopian society where reading books is banned") and click Search, **Then** the system retrieves matching books from ChromaDB using vector similarity, sorted by relevance score.
+1. **Given** I am on the Book Search page and have selected "Semantic Search" mode, **When** I input a conceptual description of a book (e.g., "dystopian society where reading books is banned") and click Search, **Then** the system retrieves matching books from the PostgreSQL database using pgvector similarity search, sorted by relevance score.
 
 ---
 
@@ -84,7 +84,7 @@ As a logged-in library member, I want the system to securely record my search qu
 ## Edge Cases
 
 - **Empty or Whitespace-only Input**: If the user submits an empty query or only whitespace, standard search should return either all books or prompt the user for input. Semantic search should handle this gracefully without triggering vector generation errors.
-- **ChromaDB Unavailability**: If the ChromaDB vector database is offline or fails, semantic search should degrade gracefully by falling back to standard metadata keyword search and notifying the user.
+- **Database / Extension Failure**: If the pgvector queries fail or the database connection is interrupted, semantic search should degrade gracefully by falling back to standard metadata keyword search and notifying the user.
 - **Malformed Filter Inputs**: Users inputting invalid page ranges (e.g., minimum pages > maximum pages) or invalid dates. The interface must validate these inputs or default them correctly.
 - **Books with Incomplete Metadata**: If some books in the database lack language, page counts, or publication dates, the filtering logic must handle `null` or `undefined` values without crashing or excluding books unless explicitly filtered out.
 - **Extremely Long Semantic Queries**: If a user pastes a massive block of text as a description, the embedding model must truncate the input appropriately without failing.
@@ -97,13 +97,13 @@ As a logged-in library member, I want the system to securely record my search qu
 
 - **FR-001**: The system MUST provide a search UI with a clear toggle/selector to switch between **Standard (OPAC) Search** and **Semantic Search**.
 - **FR-002**: **Standard Search** MUST perform key-matching on Title, Author, ISBN, Publisher, and Category using partial matching.
-- **FR-003**: **Semantic Search** MUST compute embeddings for the search query and perform a vector similarity search using ChromaDB.
+- **FR-003**: **Semantic Search** MUST compute embeddings for the search query and perform a vector similarity search using pgvector in PostgreSQL.
 - **FR-004**: The system MUST provide filters for:
   - **Publication Date**: Start and end year/date.
   - **Genres**: Multiple-choice checkbox list.
   - **Number of Pages**: Min and max page counts.
   - **Languages**: Multiple-choice checkbox list.
-- **FR-005**: The system MUST support combined vector similarity search (ChromaDB) and metadata filtering (ChromaDB metadata where-clauses or post-filtering).
+- **FR-005**: The system MUST support combined vector similarity search and metadata filtering using PostgreSQL (integrating pgvector distance operations with standard WHERE clauses).
 - **FR-006**: The system MUST display a user-friendly message when a query returns zero results.
 - **FR-007**: The system MUST log the search details to the database under a `SearchHistory` model if a user is logged in.
 - **FR-008**: The system MUST NOT log search history for unauthenticated/guest users.
@@ -111,7 +111,7 @@ As a logged-in library member, I want the system to securely record my search qu
 ### Key Entities
 
 - **Book**: Represents a book resource in the system.
-  - *Attributes*: `id`, `title`, `author`, `isbn`, `publisher`, `publicationDate`, `genres` (array), `pageCount`, `language`, `description`, `coverImage`, `embedding` (for ChromaDB similarity matches).
+  - *Attributes*: `id`, `title`, `author`, `isbn`, `publisher`, `publicationDate`, `genres` (array), `pageCount`, `language`, `description`, `coverImage`, `embedding` (vector type for pgvector similarity matches).
 - **SearchHistory**: Represents a log of a search query executed by a logged-in user.
   - *Attributes*: `id`, `userId` (references User), `query`, `searchMode` (Standard/Semantic), `filters` (JSON object of applied filters), `timestamp`.
 
@@ -122,7 +122,7 @@ As a logged-in library member, I want the system to securely record my search qu
 ### Measurable Outcomes
 
 - **SC-001**: Standard searches must execute and render results in under 200ms.
-- **SC-002**: Semantic searches (including embedding generation and ChromaDB lookup) must execute and return results in under 800ms.
+- **SC-002**: Semantic searches (including embedding generation and pgvector lookup) must execute and return results in under 800ms.
 - **SC-003**: Filtering updates the displayed result list in under 100ms (client-side or server-side).
 - **SC-004**: 100% of searches by authenticated users successfully write a record to `SearchHistory` database tables.
 
@@ -131,6 +131,6 @@ As a logged-in library member, I want the system to securely record my search qu
 ## Assumptions
 
 - **Embedding Service**: A reliable embedding generation model (e.g., via HuggingFace transformers, local models, or OpenAI API) will be available to convert descriptions and queries into vectors.
-- **ChromaDB**: ChromaDB will be initialized with a book collection containing descriptions and metadata to support vector similarity searches.
-- **Integration**: A mock/stub layer for ChromaDB and SearchHistory logging will be implemented first, as the "real database will be added later".
+- **pgvector**: The PostgreSQL database will have the pgvector extension enabled, and the books table will feature a vector column for descriptions.
+- **Integration**: A mock/stub layer for pgvector and SearchHistory logging will be implemented first, as the "real database will be added later".
 - **User Session Context**: The frontend/backend integration exposes a user session context containing the current user's ID when they are authenticated.
