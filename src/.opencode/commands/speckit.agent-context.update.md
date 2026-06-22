@@ -1,8 +1,10 @@
-description = "Refresh the managed Spec Kit section in the coding agent context file"
+---
+description: Refresh the managed Spec Kit section in the coding agent context file
+---
 
-# Source: agent-context
 
-prompt = """
+<!-- Extension: agent-context -->
+<!-- Config: .specify/extensions/agent-context/ -->
 # Update Coding Agent Context
 
 Refresh the managed Spec Kit section inside the active coding agent's context/instruction file (e.g. `CLAUDE.md`, `.github/copilot-instructions.md`, `AGENTS.md`).
@@ -25,4 +27,3 @@ If `context_file` is empty or the file cannot be located, the command reports no
 - **PowerShell**: `.specify/extensions/agent-context/scripts/powershell/update-agent-context.ps1 [plan_path]`
 
 When `plan_path` is omitted, the script auto-detects the most recently modified `specs/*/plan.md`.
-"""

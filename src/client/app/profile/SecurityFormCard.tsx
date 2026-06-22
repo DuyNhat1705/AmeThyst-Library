@@ -4,8 +4,10 @@ import React, { useState, useMemo } from 'react';
 import { FormField } from '../components/molecules';
 import { Button } from '../components/atoms';
 import SecurityIndicator from '../register/SecurityIndicator';
+import { useI18n } from '../providers/I18nProvider';
 
 export default function SecurityFormCard() {
+  const { t } = useI18n();
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,29 +29,29 @@ export default function SecurityFormCard() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t('profile.password_match_error'));
       return;
     }
     setError(null);
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      alert("Password updated successfully!");
+      alert(t('profile.password_changed'));
     }, 1000);
   };
 
   return (
     <div className="w-full max-w-[380px] flex flex-col gap-6">
       <header className="flex flex-col gap-1 text-center">
-        <h2 className="text-3xl font-semibold tracking-[-0.01em] text-[#0B1C30]">
-          Security Settings
+        <h2 className="text-3xl font-semibold tracking-[-0.01em] text-[#0B1C30] dark:text-neutral-200">
+          {t('profile.security_settings')}
         </h2>
       </header>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {error && <p className="text-red-500 dark:text-red-400 text-sm text-center">{error}</p>}
         <FormField
-          label="Current Password"
+          label={t('profile.current_password')}
           id="currentPassword"
           type="password"
           value={password}
@@ -58,18 +60,18 @@ export default function SecurityFormCard() {
 
         <div className="flex flex-col gap-2">
           <FormField
-            label="New Password"
+            label={t('profile.new_password')}
             id="newPassword"
             type="password"
-            placeholder="Min. 8 characters"
+            placeholder={t('profile.new_password_placeholder')}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
           <FormField
-            label="Confirm New Password"
+            label={t('profile.confirm_new_password')}
             id="confirmPassword"
             type="password"
-            placeholder="Confirm new password"
+            placeholder={t('profile.confirm_new_password_placeholder')}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
@@ -77,7 +79,7 @@ export default function SecurityFormCard() {
         </div>
 
         <Button type="submit" className="w-full h-[52px] mt-2" isLoading={isLoading}>
-          Update Password
+          {t('profile.update_password')}
         </Button>
       </form>
     </div>

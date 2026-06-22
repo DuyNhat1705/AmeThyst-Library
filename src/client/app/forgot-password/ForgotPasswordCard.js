@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { FormField } from '../components/molecules';
 import { Button } from '../components/atoms';
+import { useI18n } from '../providers/I18nProvider';
 
 const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => {
+  const { t } = useI18n();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -20,7 +22,7 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
       setError(''); 
       setStep(2); 
     } else { 
-      setError(result?.error || 'Email does not exist'); 
+      setError(result?.error || t('auth.email_not_exist')); 
     }
   };
 
@@ -31,14 +33,14 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
       setError(''); 
       setStep(3); 
     } else { 
-      setError(result?.error || 'OTP is incorrect or has expired'); 
+      setError(result?.error || t('auth.otp_incorrect')); 
     }
   };
 
   const handleStep3 = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwords_no_match'));
       return;
     }
     setError('');
@@ -47,21 +49,21 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
       setError('');
       setIsSuccess(true);
     } else {
-      setError(result?.error || 'Password reset failed, please try again');
+      setError(result?.error || t('auth.password_reset_failed'));
     }
   };
 
   return (
-    <div className="w-full max-w-[480px] rounded-xl bg-white border border-[#C5C6CD] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] overflow-hidden">
+    <div className="w-full max-w-[480px] rounded-xl bg-white dark:bg-neutral-800 border border-[#C5C6CD] dark:border-neutral-600 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] overflow-hidden">
       <div className="pt-12 pb-12 px-6 sm:pt-16 sm:px-12 flex flex-col items-start w-full gap-2">
 
         {isSuccess ? (
           <div className="w-full flex flex-col gap-2">
-            <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426]" style={{ letterSpacing: '-0.01em' }}>
-              Success!
+            <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '-0.01em' }}>
+              {t('auth.forgot_success_title')}
             </h1>
-            <p className="text-sm sm:text-base leading-6 text-[#45474C] mb-6">
-              Your password has been successfully reset. Redirecting you to the sign-in page...
+            <p className="text-sm sm:text-base leading-6 text-[#45474C] dark:text-neutral-400 mb-6">
+              {t('auth.forgot_success_message')}
             </p>
           </div>
         ) : (
@@ -69,18 +71,18 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
             {/* Step 1 — Enter email */}
             {step === 1 && (
               <>
-                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426]" style={{ letterSpacing: '-0.01em' }}>
-                  Forgot Password
+                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '-0.01em' }}>
+                  {t('auth.forgot_password_title')}
                 </h1>
-                <p className="text-sm sm:text-base leading-6 text-[#45474C]">
-                  Enter the email address associated with your account.
+                <p className="text-sm sm:text-base leading-6 text-[#45474C] dark:text-neutral-400">
+                  {t('auth.forgot_password_subtitle')}
                 </p>
                 <form onSubmit={handleStep1} className="w-full py-6 px-0 flex flex-col gap-6">
                   <FormField
-                    label="Email Address"
+                    label={t('auth.email_address_label')}
                     id="email"
                     type="email"
-                    placeholder="researcher@university.edu"
+                    placeholder={t('auth.email_otp_placeholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -88,7 +90,7 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
                   />
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                   <Button type="submit" className="w-full h-[52px] gap-2" isLoading={isLoading} disabled={isLoading}>
-                    Send OTP
+                    {t('auth.send_otp')}
                   </Button>
                 </form>
               </>
@@ -97,18 +99,18 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
             {/* Step 2 — Enter OTP */}
             {step === 2 && (
               <>
-                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426]" style={{ letterSpacing: '-0.01em' }}>
-                  Enter OTP
+                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '-0.01em' }}>
+                  {t('auth.otp_title')}
                 </h1>
-                <p className="text-sm sm:text-base leading-6 text-[#45474C]">
-                  Check your email <b>{email}</b> for the OTP code.
+                <p className="text-sm sm:text-base leading-6 text-[#45474C] dark:text-neutral-400">
+                  {t('auth.otp_subtitle')} <b>{email}</b>
                 </p>
                 <form onSubmit={handleStep2} className="w-full py-6 px-0 flex flex-col gap-6">
                   <FormField
-                    label="OTP Code"
+                    label={t('auth.otp_code_label')}
                     id="otp"
                     type="text"
-                    placeholder="123456"
+                    placeholder={t('auth.otp_placeholder')}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     required
@@ -116,7 +118,7 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
                   />
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                   <Button type="submit" className="w-full h-[52px] gap-2" isLoading={isLoading} disabled={isLoading}>
-                    Verify OTP
+                    {t('auth.verify_otp')}
                   </Button>
                 </form>
               </>
@@ -125,15 +127,15 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
             {/* Step 3 — Enter new password */}
             {step === 3 && (
               <>
-                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426]" style={{ letterSpacing: '-0.01em' }}>
-                  New Password
+                <h1 className="text-2xl sm:text-[32px] leading-9 sm:leading-10 font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '-0.01em' }}>
+                  {t('auth.new_password_title')}
                 </h1>
-                <p className="text-sm sm:text-base leading-6 text-[#45474C]">
-                  Enter your new password below.
+                <p className="text-sm sm:text-base leading-6 text-[#45474C] dark:text-neutral-400">
+                  {t('auth.new_password_subtitle')}
                 </p>
                 <form onSubmit={handleStep3} className="w-full py-6 px-0 flex flex-col gap-6">
                   <FormField
-                    label="New Password"
+                    label={t('auth.new_password_label')}
                     id="newPassword"
                     type="password"
                     placeholder="••••••••"
@@ -143,7 +145,7 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
                     disabled={isLoading}
                   />
                   <FormField
-                    label="Confirm Password"
+                    label={t('auth.confirm_password_label')}
                     id="confirmPassword"
                     type="password"
                     placeholder="••••••••"
@@ -154,7 +156,7 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
                   />
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                   <Button type="submit" className="w-full h-[52px] gap-2" isLoading={isLoading} disabled={isLoading}>
-                    Reset Password
+                    {t('auth.reset_password')}
                   </Button>
                 </form>
               </>
@@ -163,14 +165,14 @@ const ForgotPasswordCard = ({ onBackToSignIn, onSubmit, isLoading = false }) => 
         )}
 
         <div
-          className="pt-8 w-full border-t border-t-[#C5C6CD] flex items-center justify-center gap-1.5 cursor-pointer group"
+          className="pt-8 w-full border-t border-t-[#C5C6CD] dark:border-neutral-600 flex items-center justify-center gap-1.5 cursor-pointer group"
           onClick={onBackToSignIn}
           style={{ pointerEvents: isLoading ? 'none' : 'auto', opacity: isLoading ? 0.5 : 1 }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 group-hover:-translate-x-0.5 transition-transform">
-            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="#091426" />
+            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="currentColor" className="text-[#091426] dark:text-neutral-200" />
           </svg>
-          <span className="text-sm font-semibold text-[#091426]" style={{ letterSpacing: '0.01em' }}>Back to Sign In</span>
+          <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '0.01em' }}>{t('auth.back_to_sign_in')}</span>
         </div>
 
       </div>

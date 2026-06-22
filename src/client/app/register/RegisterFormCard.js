@@ -5,6 +5,7 @@ import RoleSelector from './RoleSelector';
 import SecurityIndicator from './SecurityIndicator';
 import { OAuthButtons } from '../components/molecules';
 import Link from 'next/link';
+import { useI18n } from '../providers/I18nProvider';
 
 const RegisterFormCard = ({ 
   formData, 
@@ -12,6 +13,8 @@ const RegisterFormCard = ({
   state, 
   setState 
 }) => {
+  const { t } = useI18n();
+
   const calculatePasswordStrength = (password) => {
     if (!password) return 0;
     let strength = 0;
@@ -27,7 +30,7 @@ const RegisterFormCard = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setState(prev => ({ ...prev, error: "Passwords do not match" }));
+      setState(prev => ({ ...prev, error: t('auth.passwords_no_match') }));
       return;
     }
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -53,7 +56,6 @@ const RegisterFormCard = ({
       const data = await res.json();
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
       
-      // Redirect to login after success
       setTimeout(() => {
         window.location.href = '/login';
       }, 2000);
@@ -65,21 +67,20 @@ const RegisterFormCard = ({
 
   return (
     <div className="w-full max-w-[380px] flex flex-col gap-6">
-      {/* Căn giữa text tiêu đề để phù hợp với bố cục center của trang */}
       <header className="flex flex-col gap-1 text-center">
-        <h2 className="text-3xl font-semibold tracking-[-0.01em] text-[#0B1C30]">
-          Create Account
+        <h2 className="text-3xl font-semibold tracking-[-0.01em] text-[#0B1C30] dark:text-neutral-200">
+          {t('auth.register_title')}
         </h2>
-        <p className="text-sm text-[#45474C]">
-          Please fill in the details to create your account.
+        <p className="text-sm text-[#45474C] dark:text-neutral-400">
+          {t('auth.register_subtitle')}
         </p>
       </header>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
         <FormField
-          label="Full Name"
+          label={t('auth.full_name_label')}
           id="fullName"
-          placeholder="Alex Johnson"
+          placeholder={t('auth.full_name_placeholder')}
           value={formData.fullName}
           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
           error={state.validationErrors.fullName}
@@ -87,10 +88,10 @@ const RegisterFormCard = ({
         />
 
         <FormField
-          label="Email Address"
+          label={t('auth.email_address_label')}
           id="email"
           type="email"
-          placeholder="alex@university.edu"
+          placeholder={t('auth.email_address_placeholder')}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           error={state.validationErrors.email}
@@ -105,20 +106,20 @@ const RegisterFormCard = ({
 
         <div className="flex flex-col gap-2">
           <FormField
-            label="Password"
+            label={t('auth.password_label')}
             id="password"
             type="password"
-            placeholder="Min. 8 characters"
+            placeholder={t('auth.password_placeholder_short')}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={state.validationErrors.password}
             disabled={state.isLoading}
           />
           <FormField
-            label="Confirm Password"
+            label={t('auth.confirm_password_label')}
             id="confirmPassword"
             type="password"
-            placeholder="Confirm your password"
+            placeholder={t('auth.confirm_password_placeholder')}
             value={formData.confirmPassword || ""}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             error={state.validationErrors.confirmPassword}
@@ -132,26 +133,25 @@ const RegisterFormCard = ({
           className="w-full h-[52px] mt-2"
           isLoading={state.isLoading}
         >
-          Create Account
+          {t('auth.register_button')}
         </Button>
 
         <div className="flex pb-px flex-col items-center w-full relative my-2">
-          <div className="absolute w-full h-[1px] bg-[#C5C6CD] top-1/2 -translate-y-1/2" />
-          {/* Đổi bg sang transparent hoặc bg-[#FFF8EB] trùng màu card */}
-          <div className="flex py-0 px-4 justify-center items-start bg-[#FFF8EB] w-fit relative z-10">
-            <p className="text-[#45474C] font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
-              OR CONTINUE WITH
+          <div className="absolute w-full h-[1px] bg-[#C5C6CD] dark:bg-neutral-600 top-1/2 -translate-y-1/2" />
+          <div className="flex py-0 px-4 justify-center items-start bg-[#FFF8EB] dark:bg-neutral-800 w-fit relative z-10">
+            <p className="text-[#45474C] dark:text-neutral-400 font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
+              {t('auth.or_continue_with')}
             </p>
           </div>
         </div>
 
-        <OAuthButtons label="Sign up with Google" />
+        <OAuthButtons label={t('auth.sign_up_google')} />
 
         <div className="flex pt-2 flex-col items-center w-full">
-          <p className="text-[#091426] font-inter text-sm leading-5 w-fit">
-            Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-[#091426] hover:underline">
-              Sign In
+          <p className="text-[#091426] dark:text-neutral-300 font-inter text-sm leading-5 w-fit">
+            {t('auth.already_have_account')}{' '}
+            <Link href="/login" className="font-semibold text-[#091426] dark:text-neutral-200 hover:underline">
+              {t('auth.login_link')}
             </Link>
           </p>
         </div>

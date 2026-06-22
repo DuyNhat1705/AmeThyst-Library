@@ -5,9 +5,9 @@ interface BadgeProps {
 
 export default function Badge({ children, variant = 'success' }: BadgeProps) {
   const colors = {
-    success: 'bg-[#006A61] text-white',
-    warning: 'bg-orange-100 text-orange-800',
-    error: 'bg-red-100 text-red-800',
+    success: 'bg-[#006A61] text-white dark:bg-[#006A61]',
+    warning: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+    error: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
   };
 
   return (

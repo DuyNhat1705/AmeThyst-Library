@@ -2,14 +2,14 @@
   "version": "0.9.5.dev0",
   "integration_state_schema": 1,
   "installed_integrations": [
-    "gemini"
+    "opencode"
   ],
   "integration_settings": {
-    "gemini": {
+    "opencode": {
       "script": "ps",
       "invoke_separator": "."
     }
   },
-  "integration": "gemini",
-  "default_integration": "gemini"
+  "integration": "opencode",
+  "default_integration": "opencode"
 }
