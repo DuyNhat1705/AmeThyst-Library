@@ -31,7 +31,7 @@ export default function LoginFormCard({
   return (
     <div className="w-full max-w-[342px] flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <h2 className="text-3xl font-semibold tracking-[-0.01em]">{t('auth.login_button')}</h2>
+        <h2 className="text-3xl font-semibold tracking-[-0.01em] dark:text-neutral-200">{t('auth.login_button')}</h2>
       </header>
 
       <form className="flex flex-col gap-6" onSubmit={onSubmit}>
@@ -56,7 +56,7 @@ export default function LoginFormCard({
           error={validationErrors.password}
           disabled={isLoading}
           rightLabel={
-            <Link href="/forgot-password" className="text-[#006A61] text-xs font-medium tracking-[0.02em] hover:underline">
+            <Link href="/forgot-password" className="text-[#006A61] dark:text-[#FFB95F] text-xs font-medium tracking-[0.02em] hover:underline">
               {t('auth.forgot_password')}
             </Link>
           }
@@ -71,15 +71,15 @@ export default function LoginFormCard({
         </Button>
 
         <div className="flex items-center gap-4 my-2">
-          <div className="flex-1 h-px bg-[#C5C6CD]"></div>
-          <span className="text-[#45474C] text-xs font-medium tracking-[0.02em]">{t('auth.or')}</span>
-          <div className="flex-1 h-px bg-[#C5C6CD]"></div>
+          <div className="flex-1 h-px bg-[#C5C6CD] dark:bg-neutral-600"></div>
+          <span className="text-[#45474C] dark:text-neutral-400 text-xs font-medium tracking-[0.02em]">{t('auth.or')}</span>
+          <div className="flex-1 h-px bg-[#C5C6CD] dark:bg-neutral-600"></div>
         </div>
 
         <OAuthButtons label={t('auth.sign_in_google')} disabled={isLoading} />
 
         <div className="flex flex-col items-center gap-4 mt-2">
-          <p className="text-[#45474C] text-sm tracking-[-0.01em]">{t('auth.no_account')} {t('auth.create_one')}</p>
+          <p className="text-[#45474C] dark:text-neutral-400 text-sm tracking-[-0.01em]">{t('auth.no_account')} {t('auth.create_one')}</p>
           <Link href="/register" className="w-full h-[52px]">
             <Button variant="primary" className="w-full h-[52px]">
               {t('auth.register_button')}

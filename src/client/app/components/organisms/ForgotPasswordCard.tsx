@@ -209,7 +209,7 @@ export default function ForgotPasswordCard({
           className="pt-8 w-full border-t border-t-[#C5C6CD] dark:border-t-neutral-700 flex items-center justify-center gap-1.5 group disabled:opacity-50"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 group-hover:-translate-x-0.5 transition-transform">
-            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="currentColor" />
+            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="currentColor" className="text-[#091426] dark:text-neutral-200"/>
           </svg>
           <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '0.01em' }}>{t('auth.back_to_sign_in')}</span>
         </button>
