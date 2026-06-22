@@ -19,7 +19,7 @@ export default function NavBar({ userActions }: { userActions?: React.ReactNode 
   ];
 
   return (
-    <nav className="w-full h-[84px] bg-[#000] dark:bg-neutral-950 fixed top-0 z-50 transition-colors duration-300">
+    <nav className="w-full h-[84px] bg-[#000] dark:bg-neutral-950 sticky top-0 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
         {/* Logo & Brand */}
         <Link href="/" className="flex items-center gap-2">
