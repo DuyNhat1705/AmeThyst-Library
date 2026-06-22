@@ -154,8 +154,8 @@ export default function BookPage() {
               {/* Info Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 rounded-xl border border-[#C5C6CD] bg-white shadow-sm">
                 <InfoGridItem label="Publisher" value={book.publisher} icon={<PublisherIcon />} />
-                <InfoGridItem label="Year" value={book.publicationYear} icon={<CalendarIcon />} />
-                <InfoGridItem label="Pages" value={book.numPages} icon={<PageIcon />} />
+                <InfoGridItem label="Year" value={String(book.publicationYear)} icon={<CalendarIcon />} />
+                <InfoGridItem label="Pages" value={String(book.numPages)} icon={<PageIcon />} />
                 <InfoGridItem label="Rating" value={book.rating} icon={<StarIcon />} />
               </div>
 

@@ -1,0 +1,175 @@
+import React from 'react';
+import GenreTag from '../atoms/GenreTag';
+import YearRangeFilter from '../molecules/YearRangeFilter';
+
+interface FilterPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedGenres: string[];
+  onGenresChange: (genres: string[]) => void;
+  selectedBranches: number[];
+  onBranchesChange: (branches: number[]) => void;
+  availableOnly: boolean;
+  onAvailableOnlyChange: (available: boolean) => void;
+  startYear: string;
+  endYear: string;
+  onStartYearChange: (year: string) => void;
+  onEndYearChange: (year: string) => void;
+  onReset: () => void;
+}
+
+const GENRES = [
+  'Mathematics',
+  'Physics',
+  'Biology',
+  'Computer Science',
+  'Fiction',
+  'Nonfiction',
+  'Philosophy',
+  'Psychology',
+  'Literature',
+  'Others'
+];
+
+const BRANCHES = [
+  { id: 1, name: 'Nguyen Van Cu Campus Library', short: 'NVC' },
+  { id: 2, name: 'Linh Trung Campus Library', short: 'LT' }
+];
+
+export default function FilterPanel({
+  isOpen,
+  onClose,
+  selectedGenres,
+  onGenresChange,
+  selectedBranches,
+  onBranchesChange,
+  availableOnly,
+  onAvailableOnlyChange,
+  startYear,
+  endYear,
+  onStartYearChange,
+  onEndYearChange,
+  onReset
+}: FilterPanelProps) {
+  const toggleGenre = (genre: string) => {
+    if (selectedGenres.includes(genre)) {
+      onGenresChange(selectedGenres.filter((g) => g !== genre));
+    } else {
+      onGenresChange([...selectedGenres, genre]);
+    }
+  };
+
+  const toggleBranch = (branchId: number) => {
+    if (selectedBranches.includes(branchId)) {
+      onBranchesChange(selectedBranches.filter((id) => id !== branchId));
+    } else {
+      onBranchesChange([...selectedBranches, branchId]);
+    }
+  };
+
+  return (
+    <>
+      {/* Backdrop overlay */}
+      <div
+        onClick={onClose}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 z-40 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      />
+
+      {/* Slide-out drawer panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-[#FFF8EB] border-l border-[#C5C6CD] shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#C5C6CD]">
+          <h2 className="text-xl font-bold text-[#091426] font-manrope">Filters</h2>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onReset}
+              className="text-sm font-semibold text-[#006F66] hover:underline transition font-inter cursor-pointer"
+            >
+              Reset All
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition text-[#45474C] active:scale-95 cursor-pointer"
+              title="Close panel"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-grow overflow-y-auto p-6 flex flex-col gap-8">
+          {/* Section 1: Genres */}
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-semibold text-[#091426] font-inter">Genres</span>
+            <div className="flex flex-wrap gap-2">
+              {GENRES.map((genre) => (
+                <GenreTag
+                  key={genre}
+                  genre={genre}
+                  selected={selectedGenres.includes(genre)}
+                  onClick={() => toggleGenre(genre)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Campus Locations */}
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-semibold text-[#091426] font-inter">Campus Location</span>
+            <div className="flex flex-col gap-3">
+              {BRANCHES.map((branch) => (
+                <label
+                  key={branch.id}
+                  className="flex items-center gap-3 cursor-pointer select-none text-[#45474C] hover:text-[#091426] font-inter text-sm font-medium"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedBranches.includes(branch.id)}
+                    onChange={() => toggleBranch(branch.id)}
+                    className="w-5 h-5 rounded-lg border-[#C5C6CD] text-[#006F66] focus:ring-[#006F66]"
+                  />
+                  <span>{branch.name} ({branch.short})</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 3: Publication Year */}
+          <YearRangeFilter
+            startYear={startYear}
+            endYear={endYear}
+            onStartYearChange={onStartYearChange}
+            onEndYearChange={onEndYearChange}
+          />
+
+          {/* Section 4: Availability */}
+          <div className="flex items-center justify-between p-4 rounded-xl border border-[#C5C6CD] bg-white shadow-xs">
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#091426] font-inter">Available Only</span>
+              <span className="text-xs text-[#75777D] font-inter">Hide books currently out of stock</span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={availableOnly}
+                onChange={(e) => onAvailableOnlyChange(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#006F66]"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

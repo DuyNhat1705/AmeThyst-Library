@@ -3,18 +3,11 @@
 import React, { useState } from 'react';
 import { Button } from '../atoms/Button';
 
-const CATEGORIES = ["Science", "History", "Arts & Humanities"];
+interface SearchBarProps {
+  onFilterClick: () => void;
+}
 
-export default function SearchBar() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-
-  const toggleGenre = (genre: string) => {
-    setSelectedGenres(prev => 
-      prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
-    );
-  };
-
+export default function SearchBar({ onFilterClick }: SearchBarProps) {
   return (
     <div className="w-full max-w-[896px] mx-auto bg-[#EFF4FF] rounded-2xl border-2 border-transparent shadow-sm p-4 flex items-center justify-between gap-4 mt-[-44px] relative z-20">
       {/* Search Input Group */}
@@ -45,8 +38,8 @@ export default function SearchBar() {
       <div className="relative">
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 py-2 px-4 h-auto rounded-xl"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
+          className="flex items-center gap-2 py-2 px-4 h-auto rounded-xl cursor-pointer"
+          onClick={onFilterClick}
         >
           <svg
             width="18"
@@ -63,22 +56,6 @@ export default function SearchBar() {
           </svg>
           <span>Filter</span>
         </Button>
-
-        {isFilterOpen && (
-          <div className="absolute top-full right-0 mt-2 bg-white border rounded-lg shadow-lg p-4 w-48 z-30">
-            {CATEGORIES.map(genre => (
-              <label key={genre} className="flex items-center gap-2 mb-2 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={selectedGenres.includes(genre)}
-                  onChange={() => toggleGenre(genre)}
-                  className="rounded border-gray-300 text-teal focus:ring-teal"
-                />
-                <span className="text-sm font-inter text-navy">{genre}</span>
-              </label>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
