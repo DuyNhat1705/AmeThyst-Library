@@ -2,7 +2,7 @@ import pool from '../config/postgres.mjs';
 
 const getUserById = async (userId) => {
   const result = await pool.query(
-    'SELECT user_id, email, username, phone_number, avatar FROM users WHERE user_id = $1',
+    "SELECT user_id, email, username, phone_number, avatar, (password_hash = 'GOOGLE_AUTH') AS is_google_account FROM users WHERE user_id = $1",
     [userId]
   );
   return result.rows[0] || null;
