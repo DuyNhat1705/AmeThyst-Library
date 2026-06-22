@@ -64,7 +64,7 @@ const FormCard = ({
           <div className="flex-1 h-px bg-[#C5C6CD] dark:bg-neutral-600"></div>
         </div>
 
-        <OAuthButtons disabled={isLoading} />
+        <OAuthButtons label={t('auth.sign_in_google')} disabled={isLoading} />
 
         <div className="flex flex-col items-center gap-4 mt-2">
           <p className="text-[#45474C] dark:text-neutral-400 text-sm tracking-[-0.01em]">{t('auth.no_account')} {t('auth.create_one')}</p>

@@ -93,6 +93,7 @@
     "or_continue_with": "OR CONTINUE WITH",
     "create_one": "Create one!",
     "sign_up_google": "Sign up with Google",
+    "sign_in_google": "Sign in with Google",
     "full_name_label": "Full Name",
     "full_name_placeholder": "Alex Johnson",
     "email_address_label": "Email Address",

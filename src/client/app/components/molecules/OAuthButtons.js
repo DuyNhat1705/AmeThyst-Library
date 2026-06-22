@@ -3,7 +3,8 @@
 import React from 'react';
 import { Button } from '../atoms';
 
-export const OAuthButtons = ({ label = "Sign in with Google", disabled = false }) => {
+export const OAuthButtons = ({ label, disabled = false }) => {
+
   const handleGoogleSignIn = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     window.location.href = `${apiUrl}/auth/google`;
