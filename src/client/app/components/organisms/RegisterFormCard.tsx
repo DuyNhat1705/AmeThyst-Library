@@ -1,36 +1,56 @@
-import React, { useMemo } from 'react';
-import { FormField } from '../components/molecules';
-import { Button } from '../components/atoms';
-import RoleSelector from './RoleSelector';
-import SecurityIndicator from './SecurityIndicator';
-import { OAuthButtons } from '../components/molecules';
-import Link from 'next/link';
-import { useI18n } from '../providers/I18nProvider';
+"use client";
 
-const RegisterFormCard = ({ 
+import React, { useMemo } from 'react';
+import { FormField, OAuthButtons, RoleSelector } from '../molecules';
+import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
+import { calculatePasswordStrength, validatePassword } from '../../utils/password';
+import Link from 'next/link';
+import { useI18n } from '../../providers/I18nProvider';
+
+interface FormData {
+  fullName: string;
+  email: string;
+  role: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber?: string;
+  avatar?: string;
+}
+
+interface FormState {
+  isLoading: boolean;
+  error: string | null;
+  validationErrors: Partial<Record<string, string>>;
+  isSuccess: boolean;
+}
+
+interface RegisterFormCardProps {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  state: FormState;
+  setState: React.Dispatch<React.SetStateAction<FormState>>;
+}
+
+export default function RegisterFormCard({ 
   formData, 
   setFormData, 
   state, 
   setState 
-}) => {
+}: RegisterFormCardProps) {
   const { t } = useI18n();
-
-  const calculatePasswordStrength = (password) => {
-    if (!password) return 0;
-    let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    return strength;
-  };
-
   const passwordStrength = useMemo(() => calculatePasswordStrength(formData.password), [formData.password]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setState(prev => ({ ...prev, error: t('auth.passwords_no_match') }));
+    const error = validatePassword(formData.password, formData.confirmPassword);
+    if (error) {
+      if (error === "Passwords do not match") {
+        setState(prev => ({ ...prev, error: t('auth.passwords_no_match') }));
+      } else if (error === "New password must be at least 8 characters") {
+        setState(prev => ({ ...prev, error: t('auth.password_min_length') }));
+      } else {
+        setState(prev => ({ ...prev, error }));
+      }
       return;
     }
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -49,19 +69,19 @@ const RegisterFormCard = ({
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Registration failed');
+        const err = await res.json();
+        throw new Error(err.error || t('auth.register_failed'));
       }
 
-      const data = await res.json();
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
       
+      // Redirect to login after success
       setTimeout(() => {
         window.location.href = '/login';
       }, 2000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Register error:', err);
-      setState(prev => ({ ...prev, isLoading: false, error: err.message }));
+      setState(prev => ({ ...prev, isLoading: false, error: err instanceof Error ? err.message : t('auth.register_failed') }));
     }
   };
 
@@ -72,18 +92,19 @@ const RegisterFormCard = ({
           {t('auth.register_title')}
         </h2>
         <p className="text-sm text-[#45474C] dark:text-neutral-400">
-          {t('auth.register_subtitle')}
+          {t('auth.register_details_subtitle')}
         </p>
       </header>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        {state.error && <ErrorMessage message={state.error} />}
         <FormField
           label={t('auth.full_name_label')}
           id="fullName"
-          placeholder={t('auth.full_name_placeholder')}
+          placeholder="Alex Johnson"
           value={formData.fullName}
           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-          error={state.validationErrors.fullName}
+          error={state.validationErrors?.fullName}
           disabled={state.isLoading}
         />
 
@@ -94,7 +115,7 @@ const RegisterFormCard = ({
           placeholder={t('auth.email_address_placeholder')}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          error={state.validationErrors.email}
+          error={state.validationErrors?.email}
           disabled={state.isLoading}
         />
 
@@ -112,7 +133,7 @@ const RegisterFormCard = ({
             placeholder={t('auth.password_placeholder_short')}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            error={state.validationErrors.password}
+            error={state.validationErrors?.password}
             disabled={state.isLoading}
           />
           <FormField
@@ -122,7 +143,7 @@ const RegisterFormCard = ({
             placeholder={t('auth.confirm_password_placeholder')}
             value={formData.confirmPassword || ""}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            error={state.validationErrors.confirmPassword}
+            error={state.validationErrors?.confirmPassword}
             disabled={state.isLoading}
           />
           <SecurityIndicator level={passwordStrength} />
@@ -137,7 +158,7 @@ const RegisterFormCard = ({
         </Button>
 
         <div className="flex pb-px flex-col items-center w-full relative my-2">
-          <div className="absolute w-full h-[1px] bg-[#C5C6CD] dark:bg-neutral-600 top-1/2 -translate-y-1/2" />
+          <div className="absolute w-full h-[1px] bg-[#C5C6CD] top-1/2 -translate-y-1/2" />
           <div className="flex py-0 px-4 justify-center items-start bg-[#FFF8EB] dark:bg-neutral-800 w-fit relative z-10">
             <p className="text-[#45474C] dark:text-neutral-400 font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
               {t('auth.or_continue_with')}
@@ -148,7 +169,7 @@ const RegisterFormCard = ({
         <OAuthButtons label={t('auth.sign_up_google')} />
 
         <div className="flex pt-2 flex-col items-center w-full">
-          <p className="text-[#091426] dark:text-neutral-300 font-inter text-sm leading-5 w-fit">
+          <p className="text-[#091426] dark:text-neutral-200 font-inter text-sm leading-5 w-fit">
             {t('auth.already_have_account')}{' '}
             <Link href="/login" className="font-semibold text-[#091426] dark:text-neutral-200 hover:underline">
               {t('auth.login_link')}
@@ -158,6 +179,4 @@ const RegisterFormCard = ({
       </form>
     </div>
   );
-};
-
-export default RegisterFormCard;
+}

@@ -107,7 +107,7 @@
     "security_level": "Mức độ bảo mật",
     "passwords_no_match": "Mật khẩu không khớp",
     "otp_title": "Nhập mã OTP",
-    "otp_subtitle": "Kiểm tra email của bạn để lấy mã OTP.",
+    "otp_subtitle": "Kiểm tra email {email} của bạn để lấy mã OTP.",
     "otp_code_label": "Mã OTP",
     "otp_placeholder": "123456",
     "send_otp": "Gửi mã OTP",
@@ -125,7 +125,15 @@
     "forgot_success_message": "Mật khẩu của bạn đã được đặt lại thành công. Đang chuyển hướng bạn đến trang đăng nhập...",
     "email_not_exist": "Email không tồn tại",
     "otp_incorrect": "Mã OTP không đúng hoặc đã hết hạn",
-    "password_reset_failed": "Đặt lại mật khẩu thất bại, vui lòng thử lại"
+    "password_reset_failed": "Đặt lại mật khẩu thất bại, vui lòng thử lại",
+    "or": "HOẶC",
+    "register_details_subtitle": "Vui lòng điền thông tin chi tiết bên dưới để tạo tài khoản.",
+    "register_failed": "Đăng ký thất bại",
+    "password_min_length": "Mật khẩu phải có ít nhất 8 ký tự",
+    "login_failed": "Đăng nhập thất bại",
+    "something_went_wrong": "Đã xảy ra lỗi, vui lòng thử lại sau",
+    "our_activities": "Hoạt động của chúng tôi",
+    "library_branding": "Thương hiệu Thư viện"
   },
   "profile": {
     "welcome": "Chào mừng đến trang cá nhân của bạn,",
@@ -153,7 +161,14 @@
     "not_provided": "Chưa cung cấp",
     "security_settings": "Cài đặt bảo mật",
     "new_password_placeholder": "Tối thiểu 8 ký tự",
-    "confirm_new_password_placeholder": "Xác nhận mật khẩu mới"
+    "confirm_new_password_placeholder": "Xác nhận mật khẩu mới",
+    "department": "Phòng ban",
+    "department_it": "Công nghệ thông tin",
+    "security_loading": "Đang tải cài đặt bảo mật...",
+    "password_update_failed": "Cập nhật mật khẩu thất bại",
+    "google_linked_message": "Tài khoản của bạn đã được liên kết với Xác thực Google. Việc quản lý mật khẩu được xử lý an toàn qua Google.",
+    "manage_google_account": "Quản lý Tài khoản Google",
+    "load_profile_failed": "Tải thông tin hồ sơ thất bại"
   },
   "hero": {
     "title": "Khám phá thế giới",

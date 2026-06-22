@@ -107,7 +107,7 @@
     "security_level": "Security Level",
     "passwords_no_match": "Passwords do not match",
     "otp_title": "Enter OTP",
-    "otp_subtitle": "Check your email for the OTP code.",
+    "otp_subtitle": "Check your email {email} for the OTP code.",
     "otp_code_label": "OTP Code",
     "otp_placeholder": "123456",
     "send_otp": "Send OTP",
@@ -125,7 +125,15 @@
     "forgot_success_message": "Your password has been successfully reset. Redirecting you to the sign-in page...",
     "email_not_exist": "Email does not exist",
     "otp_incorrect": "OTP is incorrect or has expired",
-    "password_reset_failed": "Password reset failed, please try again"
+    "password_reset_failed": "Password reset failed, please try again",
+    "or": "OR",
+    "register_details_subtitle": "Please fill in the details to create your account.",
+    "register_failed": "Registration failed",
+    "password_min_length": "Password must be at least 8 characters",
+    "login_failed": "Login failed",
+    "something_went_wrong": "Something went wrong",
+    "our_activities": "Our Activities",
+    "library_branding": "Library Branding"
   },
   "profile": {
     "welcome": "Welcome to your profile,",
@@ -153,7 +161,14 @@
     "not_provided": "Not provided",
     "security_settings": "Security Settings",
     "new_password_placeholder": "Min. 8 characters",
-    "confirm_new_password_placeholder": "Confirm new password"
+    "confirm_new_password_placeholder": "Confirm new password",
+    "department": "Department",
+    "department_it": "Information Technology",
+    "security_loading": "Loading security settings...",
+    "password_update_failed": "Failed to update password",
+    "google_linked_message": "Your account is linked with Google Authentication. Password management is handled securely through Google.",
+    "manage_google_account": "Manage Google Account",
+    "load_profile_failed": "Failed to load profile"
   },
   "hero": {
     "title": "Discover a World of",
