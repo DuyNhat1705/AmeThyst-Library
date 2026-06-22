@@ -201,7 +201,7 @@ http://localhost:3000
 
 # II. Introduct to Server Structure
 ## 1. Server.mjs
-This is the entry point of all system. It combines all components andstarts the server instance by calling `app.listen()`
+This is the entry point of all system. It combines all components and starts the server instance by calling `app.listen()`
 ## 2. config/
 This directory holds configuration files for third-party services and system settings.
 ```javascript
