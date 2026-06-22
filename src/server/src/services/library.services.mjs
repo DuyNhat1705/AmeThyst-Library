@@ -23,7 +23,7 @@ function cleanText(text) {
  */
 export const getBookById = async (id) => {
   const query = `
-    SELECT b.*, l.shelf, l.quantity, l.available_quantity
+    SELECT b.*, EXTRACT(YEAR FROM b.publication_date)::INTEGER AS publication_year, l.shelf, l.quantity, l.available_quantity
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
     WHERE b.book_id = $1

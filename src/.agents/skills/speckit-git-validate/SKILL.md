@@ -1,8 +1,12 @@
-description = "Validate current branch follows feature branch naming conventions"
+---
+name: speckit-git-validate
+description: Validate current branch follows feature branch naming conventions
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: git:commands/speckit.git.validate.md
+---
 
-# Source: git
-
-prompt = """
 # Validate Feature Branch
 
 Validate that the current Git branch follows the expected feature branch naming conventions.
@@ -48,4 +52,3 @@ If Git is not installed or the directory is not a Git repository:
 - Check the `SPECIFY_FEATURE` environment variable as a fallback
 - If set, validate that value against the naming patterns
 - If not set, skip validation with a warning
-"""

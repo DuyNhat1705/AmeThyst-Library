@@ -1,8 +1,11 @@
-version: '3.8'
+name: amethyst_ecosystem
 
 services:
+  # ============================================================================
+  # PostgreSQL + pgvector
+  # ============================================================================
   db:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: ${DB_CONTAINER_NAME}
     restart: unless-stopped
     environment:
@@ -15,5 +18,37 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init_db/postgres:/docker-entrypoint-initdb.d
 
+  # ============================================================================
+  # GRAPH KNOWLEDGE ENGINE
+  # ============================================================================
+  memgraph:
+    image: memgraph/memgraph-mage:latest
+    container_name: amethyst_memgraph
+    restart: always
+    ports:
+      - "7687:7687"
+    environment:
+      MEMGRAPH_USER: ${MEMGRAPH_USER}
+      MEMGRAPH_PASSWORD: ${MEMGRAPH_PASSWORD}
+    volumes:
+      - memgraph_data:/var/lib/memgraph
+
+  # ============================================================================
+  # VISUAL LAB 
+  # ============================================================================
+  lab:
+    image: memgraph/lab:latest
+    container_name: amethyst_memgraph_lab
+    restart: always
+    ports:
+      - "8080:3000"  
+    environment:
+      - QUICK_CONNECT_MG_HOST=memgraph
+    depends_on:
+      - memgraph
+
 volumes:
   pgdata:
+    driver: local
+  memgraph_data:
+    driver: local

@@ -1,8 +1,12 @@
-description = "Auto-commit changes after a Spec Kit command completes"
+---
+name: speckit-git-commit
+description: Auto-commit changes after a Spec Kit command completes
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: git:commands/speckit.git.commit.md
+---
 
-# Source: git
-
-prompt = """
 # Auto-Commit Changes
 
 Automatically stage and commit all changes after a Spec Kit command completes.
@@ -47,4 +51,3 @@ auto_commit:
 - If Git is not available or the current directory is not a repository: skips with a warning
 - If no config file exists: skips (disabled by default)
 - If no changes to commit: skips with a message
-"""

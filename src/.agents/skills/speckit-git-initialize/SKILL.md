@@ -1,8 +1,12 @@
-description = "Initialize a Git repository with an initial commit"
+---
+name: speckit-git-initialize
+description: Initialize a Git repository with an initial commit
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: git:commands/speckit.git.initialize.md
+---
 
-# Source: git
-
-prompt = """
 # Initialize Git Repository
 
 Initialize a Git repository in the current project directory if one does not already exist.
@@ -48,4 +52,3 @@ If Git is not installed:
 If Git is installed but `git init`, `git add .`, or `git commit` fails:
 - Surface the error to the user
 - Stop this command rather than continuing with a partially initialized repository
-"""
