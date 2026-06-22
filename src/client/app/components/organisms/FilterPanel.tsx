@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
 import YearRangeFilter from '../molecules/YearRangeFilter';
 
@@ -51,6 +51,17 @@ export default function FilterPanel({
   onEndYearChange,
   onReset
 }: FilterPanelProps) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const toggleGenre = (genre: string) => {
     if (selectedGenres.includes(genre)) {
       onGenresChange(selectedGenres.filter((g) => g !== genre));
@@ -72,14 +83,14 @@ export default function FilterPanel({
       {/* Backdrop overlay */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 z-40 ${
+        className={`fixed top-[84px] inset-x-0 bottom-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 z-40 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       />
 
       {/* Slide-out drawer panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-[#FFF8EB] border-l border-[#C5C6CD] shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col ${
+        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] border-l border-[#C5C6CD] shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
