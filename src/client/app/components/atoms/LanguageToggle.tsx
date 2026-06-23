@@ -8,7 +8,7 @@ export function LanguageToggle() {
   return (
     <button
       onClick={toggleLocale}
-      className="!text-[#FFF] px-3 py-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground dark:text-neutral-200 transition-all duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer font-inter text-xs font-bold leading-normal border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700"
+      className="!text-[#FFF] px-3 py-1.5 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-800 text-foreground dark:text-neutral-200 transition-all duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer font-inter text-xs font-bold leading-normal border border-transparent hover:border-neutral-200 dark:hover:border-neutral-200"
       aria-label={t('navbar.language_aria_label')}
       title={locale === 'en' ? t('navbar.language_tooltip_en') : t('navbar.language_tooltip_vi')}
     >

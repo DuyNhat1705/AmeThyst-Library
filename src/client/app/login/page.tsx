@@ -6,7 +6,6 @@ import { LoginBrandPanel, LoginFormCard } from '../components/organisms';
 import { useRedirectIfLoggedIn } from '../utils/user';
 import { useI18n } from '../providers/I18nProvider';
 import { mapServerError } from '../utils/errors';
-
 export default function LoginPage() {
   const { t } = useI18n();
   useRedirectIfLoggedIn();

@@ -71,24 +71,82 @@ export const getBookById = async (id) => {
 /**
  * Lấy danh sách sách có phân trang
  */
-export const getBooksList = async (page = 1, limit = 24) => {
+export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   const offset = (page - 1) * limit;
-  
-  const countQuery = 'SELECT COUNT(*) FROM public.books';
-  const booksQuery = `
-    SELECT book_id, title, author, isbn, image_url
-    FROM public.books 
-    ORDER BY title ASC 
-    LIMIT $1 OFFSET $2
+  const { genres = [], branches = [], availableOnly = false, startYear = null, endYear = null } = filters;
+
+  const whereClauses = [];
+  const queryParams = [];
+  let paramIndex = 1;
+
+  const standardGenres = ['Mathematics', 'Physics', 'Biology', 'Computer Science', 'Fiction', 'Nonfiction', 'Philosophy', 'Psychology', 'Literature'];
+  const selectedStandard = genres.filter(g => g !== 'Others');
+  const hasOthers = genres.includes('Others');
+
+  if (genres.length > 0) {
+    let genreCondition = '';
+    if (selectedStandard.length > 0) {
+      queryParams.push(selectedStandard);
+      genreCondition = `b.genres && $${paramIndex++}`;
+    }
+    if (hasOthers) {
+      const othersCondition = `(b.genres IS NULL OR NOT (b.genres && ARRAY[${standardGenres.map(g => `'${g}'`).join(',')}]))`;
+      if (genreCondition) {
+        genreCondition = `(${genreCondition} OR ${othersCondition})`;
+      } else {
+        genreCondition = othersCondition;
+      }
+    }
+    whereClauses.push(genreCondition);
+  }
+
+  if (branches.length > 0) {
+    queryParams.push(branches);
+    whereClauses.push(`l.branch_id = ANY($${paramIndex++})`);
+  }
+
+  if (availableOnly) {
+    whereClauses.push(`l.available_quantity > 0`);
+  }
+
+  if (startYear !== null) {
+    queryParams.push(startYear);
+    whereClauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER >= $${paramIndex++}`);
+  }
+
+  if (endYear !== null) {
+    queryParams.push(endYear);
+    whereClauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER <= $${paramIndex++}`);
+  }
+
+  const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+  const countQuery = `
+    SELECT COUNT(DISTINCT b.book_id) 
+    FROM public.books b
+    LEFT JOIN public.library l ON b.book_id = l.book_id
+    ${whereString}
   `;
+
+  const limitParam = `$${paramIndex++}`;
+  const offsetParam = `$${paramIndex++}`;
   
+  const booksQuery = `
+    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url
+    FROM public.books b
+    LEFT JOIN public.library l ON b.book_id = l.book_id
+    ${whereString}
+    ORDER BY b.title ASC
+    LIMIT ${limitParam} OFFSET ${offsetParam}
+  `;
+
   const [countRes, booksRes] = await Promise.all([
-    pool.query(countQuery),
-    pool.query(booksQuery, [limit, offset])
+    pool.query(countQuery, queryParams),
+    pool.query(booksQuery, [...queryParams, limit, offset])
   ]);
-  
+
   const totalBooks = parseInt(countRes.rows[0].count);
-  
+
   return {
     books: booksRes.rows.map(book => ({
       id: book.book_id,

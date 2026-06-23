@@ -25,7 +25,9 @@
     "prev": "Prev",
     "next": "Next",
     "search_placeholder": "Search...",
-    "filter": "Filter"
+    "filter": "Filter",
+    "no_books_found": "No books found",
+    "no_books_found_message": "We could not find any books matching your criteria."
   },
   "book": {
     "loading": "Preparing your reading experience...",
@@ -46,7 +48,9 @@
     "copies": "Copies",
     "copies_remaining": "Remaining",
     "scroll_left": "Scroll Left",
-    "scroll_right": "Scroll Right"
+    "scroll_right": "Scroll Right",
+    "availability_locations": "Availability & Locations",
+    "no_available_locations": "No location data available"
   },
   "footer": {
     "tagline": "Empowering students through accessible knowledge and community-driven learning.",

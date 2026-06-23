@@ -6,6 +6,7 @@ interface HomeLayoutProps {
   searchBar: React.ReactNode;
   popularPublishes: React.ReactNode;
   footer: React.ReactNode;
+  filterPanel?: React.ReactNode;
 }
 
 export default function HomeLayout({
@@ -13,7 +14,8 @@ export default function HomeLayout({
   hero,
   searchBar,
   popularPublishes,
-  footer
+  footer,
+  filterPanel
 }: HomeLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
@@ -23,6 +25,7 @@ export default function HomeLayout({
         {searchBar}
         {popularPublishes}
       </div>
+      {filterPanel}
       {footer}
     </div>
   );

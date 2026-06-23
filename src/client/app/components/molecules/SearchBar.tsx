@@ -4,23 +4,12 @@ import React, { useState } from 'react';
 import { Button } from '../atoms/Button';
 import { useI18n } from '../../providers/I18nProvider';
 
-export default function SearchBar() {
+interface SearchBarProps {
+  onFilterClick: () => void;
+}
+
+export default function SearchBar({ onFilterClick }: SearchBarProps) {
   const { t } = useI18n();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-
-  const categories = [
-    t('searchbar.category_science'),
-    t('searchbar.category_history'),
-    t('searchbar.category_arts'),
-  ];
-
-  const toggleGenre = (genre: string) => {
-    setSelectedGenres(prev =>
-      prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
-    );
-  };
-
   return (
     <div className="w-full max-w-[896px] mx-auto bg-white dark:bg-neutral-800 rounded-2xl border-2 border-transparent dark:border-neutral-700 shadow-sm p-4 flex items-center justify-between gap-4 mt-[-44px] relative z-20 transition-colors duration-300">
       {/* Search Input Group */}
@@ -49,10 +38,10 @@ export default function SearchBar() {
 
       {/* Filter Button */}
       <div className="relative">
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 py-2 px-4 h-auto rounded-xl dark:border-neutral-600 dark:text-neutral-200"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
+        <Button 
+          variant="outline" 
+          className="flex items-center gap-2 py-2 px-4 h-auto rounded-xl cursor-pointer"
+          onClick={onFilterClick}
         >
           <svg
             width="18"
@@ -69,22 +58,6 @@ export default function SearchBar() {
           </svg>
           <span>{t('searchbar.filter')}</span>
         </Button>
-
-        {isFilterOpen && (
-          <div className="absolute top-full right-0 mt-2 bg-white dark:bg-neutral-800 border dark:border-neutral-700 rounded-lg shadow-lg p-4 w-48 z-30 transition-colors duration-300">
-            {categories.map(genre => (
-              <label key={genre} className="flex items-center gap-2 mb-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedGenres.includes(genre)}
-                  onChange={() => toggleGenre(genre)}
-                  className="rounded border-gray-300 text-teal focus:ring-teal"
-                />
-                <span className="text-sm font-inter text-foreground dark:text-neutral-200">{genre}</span>
-              </label>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -112,7 +112,7 @@ export default function BookDetailTemplate({
               </div>
 
               <div className="flex flex-col gap-4 mt-2">
-                <h3 className="text-lg font-bold text-[#091426] dark:text-neutral-200 border-b border-[#C5C6CD] dark:border-neutral-600 pb-2">Availability & Locations</h3>
+                <h3 className="text-lg font-bold text-[#091426] dark:text-neutral-200 border-b border-[#C5C6CD] dark:border-neutral-600 pb-2">{t('book.availability_locations')}</h3>
                 
                 {book.inventory && book.inventory.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,7 +137,7 @@ export default function BookDetailTemplate({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#6B7280]">No location data available.</p>
+                  <p className="text-sm text-[#6B7280]">{t('book.no_available_locations')}</p>
                 )}
                 
                 <div className="w-full max-w-sm mt-4">
