@@ -6,6 +6,7 @@ import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
 import { getAuthToken } from '../../utils/user';
 import { calculatePasswordStrength, validateNewPassword } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
+import { mapServerError } from '../../utils/errors';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -26,13 +27,7 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
 
     const validationError = validateNewPassword(newPassword, confirmPassword);
     if (validationError) {
-      if (validationError === "Passwords do not match") {
-        setError(t('auth.passwords_no_match'));
-      } else if (validationError === "New password must be at least 8 characters") {
-        setError(t('auth.password_min_length'));
-      } else {
-        setError(validationError);
-      }
+      setError(t(validationError));
       return;
     }
 
@@ -47,15 +42,12 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          currentPassword: password,
-          newPassword,
-        }),
+        body: JSON.stringify({ currentPassword: password, newPassword }),
       });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || t('profile.password_update_failed'));
+        throw new Error(err.error || 'Failed to update password');
       }
 
       setSuccess(t('profile.password_changed'));
@@ -63,7 +55,8 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('profile.password_update_failed'));
+      const raw = err instanceof Error ? err.message : undefined;
+      setError(mapServerError(raw, t, 'profile.password_update_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -87,27 +80,17 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
               const term = msg.includes('Google Authentication') ? 'Google Authentication' : 'Xác thực Google';
               const parts = msg.split(term);
               if (parts.length > 1) {
-                return (
-                  <>
-                    {parts[0]}<strong>{term}</strong>{parts[1]}
-                  </>
-                );
+                return (<>{parts[0]}<strong>{term}</strong>{parts[1]}</>);
               }
               return msg;
             })()}
           </p>
-          <a
-            href="https://myaccount.google.com/security"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full mt-2"
-          >
+          <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" className="w-full mt-2">
             <Button variant="primary" className="w-full h-[52px]">
               {t('profile.manage_google_account')}
             </Button>
           </a>
         </div>
-
       </div>
     );
   }
@@ -130,7 +113,6 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
         <div className="flex flex-col gap-2">
           <FormField
             label={t('profile.new_password')}
@@ -150,7 +132,6 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
           />
           <SecurityIndicator level={passwordStrength} />
         </div>
-
         <Button type="submit" className="w-full h-[52px] mt-2" isLoading={isLoading}>
           {t('profile.update_password')}
         </Button>

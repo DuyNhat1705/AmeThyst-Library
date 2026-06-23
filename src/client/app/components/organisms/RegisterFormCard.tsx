@@ -6,6 +6,7 @@ import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
 import { calculatePasswordStrength, validatePassword } from '../../utils/password';
 import Link from 'next/link';
 import { useI18n } from '../../providers/I18nProvider';
+import { mapServerError } from '../../utils/errors';
 
 interface FormData {
   fullName: string;
@@ -44,13 +45,7 @@ export default function RegisterFormCard({
     e.preventDefault();
     const error = validatePassword(formData.password, formData.confirmPassword);
     if (error) {
-      if (error === "Passwords do not match") {
-        setState(prev => ({ ...prev, error: t('auth.passwords_no_match') }));
-      } else if (error === "New password must be at least 8 characters") {
-        setState(prev => ({ ...prev, error: t('auth.password_min_length') }));
-      } else {
-        setState(prev => ({ ...prev, error }));
-      }
+      setState(prev => ({ ...prev, error: t(error) }));
       return;
     }
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -81,7 +76,8 @@ export default function RegisterFormCard({
       }, 2000);
     } catch (err: unknown) {
       console.error('Register error:', err);
-      setState(prev => ({ ...prev, isLoading: false, error: err instanceof Error ? err.message : t('auth.register_failed') }));
+      const raw = err instanceof Error ? err.message : undefined;
+      setState(prev => ({ ...prev, isLoading: false, error: mapServerError(raw, t, 'auth.register_failed') }));
     }
   };
 
@@ -158,7 +154,7 @@ export default function RegisterFormCard({
         </Button>
 
         <div className="flex pb-px flex-col items-center w-full relative my-2">
-          <div className="absolute w-full h-[1px] bg-[#C5C6CD] dark:bg-neutral-600 top-1/2 -translate-y-1/2" />
+          <div className="absolute w-full h-[1px] bg-[#C5C6CD] top-1/2 -translate-y-1/2" />
           <div className="flex py-0 px-4 justify-center items-start bg-[#FFF8EB] dark:bg-neutral-800 w-fit relative z-10">
             <p className="text-[#45474C] dark:text-neutral-400 font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
               {t('auth.or_continue_with')}
