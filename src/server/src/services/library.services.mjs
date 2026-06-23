@@ -23,9 +23,17 @@ function cleanText(text) {
  */
 export const getBookById = async (id) => {
   const query = `
-    SELECT b.*, EXTRACT(YEAR FROM b.publication_date)::INTEGER AS publication_year, l.shelf, l.quantity, l.available_quantity
+    SELECT 
+      b.*, 
+      EXTRACT(YEAR FROM b.publication_date)::INTEGER AS publication_year, 
+      l.shelf, 
+      l.quantity, 
+      l.available_quantity,
+      br.name as branch_name,
+      br.address as branch_address
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
+    LEFT JOIN public.branches br ON l.branch_id = br.branch_id
     WHERE b.book_id = $1
   `;
   const result = await pool.query(query, [id]);
@@ -33,6 +41,17 @@ export const getBookById = async (id) => {
   if (result.rows.length === 0) return null;
   
   const book = result.rows[0];
+  
+  // Lấy danh sách các chi nhánh
+  const inventory = result.rows
+    .filter(row => row.branch_name) // Loại bỏ nếu null
+    .map(row => ({
+      location: row.branch_name,
+      address: row.branch_address,
+      shelf: row.shelf || 'N/A',
+      availableCopies: row.available_quantity !== undefined ? row.available_quantity : 0
+    }));
+
   return {
     id: book.book_id,
     title: cleanText(book.title),
@@ -45,12 +64,7 @@ export const getBookById = async (id) => {
     numPages: book.num_pages || 'N/A',
     rating: book.rating ? `${book.rating} / 5` : 'N/A',
     coverImage: book.image_url || null,
-    inventory: {
-      floor: book.shelf ? book.shelf.split(',')[0] : '1',
-      wing: book.shelf ? book.shelf.split(',')[1] : 'Main',
-      shelfId: book.shelf || 'N/A',
-      availableCopies: book.available_quantity !== undefined ? book.available_quantity : 3
-    }
+    inventory: inventory
   };
 };
 

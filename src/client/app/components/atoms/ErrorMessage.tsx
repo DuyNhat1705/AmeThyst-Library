@@ -2,10 +2,12 @@ import React from 'react';
 
 interface ErrorMessageProps {
   message: string;
+  variant?: 'error' | 'success';
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, variant = 'error' }) => {
+  const color = variant === 'success' ? 'text-green-600' : 'text-red-500';
   return (
-    <span className="text-red-500 text-xs mt-1">{message}</span>
+    <span className={`${color} text-xs mt-1`}>{message}</span>
   );
 };

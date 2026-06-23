@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import BookCard from '../molecules/BookCard';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface Book {
   id: string;
@@ -12,6 +13,7 @@ interface Book {
 }
 
 export default function PopularPublishes() {
+  const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -75,14 +77,14 @@ export default function PopularPublishes() {
   return (
     <div className="w-full max-w-7xl mx-auto my-12 px-4">
       {/* Section Header */}
-      <h2 className="text-navy font-manrope text-2xl font-bold tracking-[0.01em] mb-6">
-        Library
+      <h2 className="text-foreground font-manrope text-2xl font-bold tracking-[0.01em] mb-6">
+        {t('library.title')}
       </h2>
 
       {/* Book Grid */}
       {loading ? (
         <div className="flex justify-center items-center h-48 text-teal font-semibold text-lg animate-pulse">
-          Loading library catalog...
+          {t('library.loading')}
         </div>
       ) : books.length === 0 ? (
         <div className="flex flex-col justify-center items-center h-64 gap-4 text-[#75777D] font-medium border-2 border-dashed border-[#C5C6CD] rounded-2xl bg-white/50 p-8 select-none">
@@ -119,39 +121,34 @@ export default function PopularPublishes() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8 select-none">
-          {/* Nút lùi trang */}
           <button
             onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 h-8 rounded-lg font-inter text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="px-3 h-8 rounded-lg font-inter text-sm font-semibold bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
-            Prev
+            {t('library.prev')}
           </button>
 
-          {/* Render các nút số trang kèm dấu ... */}
           {(() => {
             const pages = [];
-            const range = 1; // Số trang hiển thị xung quanh trang hiện tại
+            const range = 1;
 
-            // Luôn hiển thị trang đầu tiên
             pages.push(
               <button
                 key={1}
                 onClick={() => handlePageChange(1)}
                 className={`w-8 h-8 rounded-lg font-inter text-sm font-semibold transition-colors cursor-pointer ${
-                  currentPage === 1 ? "bg-teal text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  currentPage === 1 ? "bg-teal text-white" : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-600"
                 }`}
               >
                 1
               </button>
             );
 
-            // Dấu chấm lửng bên trái
             if (currentPage > range + 2) {
-              pages.push(<span key="left-dots" className="px-1 text-gray-500 font-bold">...</span>);
+              pages.push(<span key="left-dots" className="px-1 text-neutral-500 font-bold">...</span>);
             }
 
-            // Các trang ở giữa xung quanh currentPage
             const start = Math.max(2, currentPage - range);
             const end = Math.min(totalPages - 1, currentPage + range);
 
@@ -161,7 +158,7 @@ export default function PopularPublishes() {
                   key={i}
                   onClick={() => handlePageChange(i)}
                   className={`w-8 h-8 rounded-lg font-inter text-sm font-semibold transition-colors cursor-pointer ${
-                    currentPage === i ? "bg-teal text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    currentPage === i ? "bg-teal text-white" : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-600"
                   }`}
                 >
                   {i}
@@ -169,19 +166,17 @@ export default function PopularPublishes() {
               );
             }
 
-            // Dấu chấm lửng bên phải
             if (currentPage < totalPages - range - 1) {
-              pages.push(<span key="right-dots" className="px-1 text-gray-500 font-bold">...</span>);
+              pages.push(<span key="right-dots" className="px-1 text-neutral-500 font-bold">...</span>);
             }
 
-            // Luôn hiển thị trang cuối cùng
             if (totalPages > 1) {
               pages.push(
                 <button
                   key={totalPages}
                   onClick={() => handlePageChange(totalPages)}
                   className={`w-8 h-8 rounded-lg font-inter text-sm font-semibold transition-colors cursor-pointer ${
-                    currentPage === totalPages ? "bg-teal text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    currentPage === totalPages ? "bg-teal text-white" : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-600"
                   }`}
                 >
                   {totalPages}
@@ -192,13 +187,12 @@ export default function PopularPublishes() {
             return pages;
           })()}
 
-          {/* Nút tiến trang */}
           <button
             onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 h-8 rounded-lg font-inter text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="px-3 h-8 rounded-lg font-inter text-sm font-semibold bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
-            Next
+            {t('library.next')}
           </button>
         </div>
       )}

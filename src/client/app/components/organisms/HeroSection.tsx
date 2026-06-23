@@ -1,12 +1,15 @@
+"use client";
+
 import React from 'react';
 import { Button } from '../atoms/Button';
 import searchBarBg from '../../assets/search_bar_bg.png';
+import { useI18n } from '../../providers/I18nProvider';
 
 export default function HeroSection() {
+  const { t } = useI18n();
   return (
     <section 
       className="w-full bg-navy py-20 px-4 relative overflow-hidden"
-      // 2. Use the imported asset here
       style={{ 
         backgroundImage: `url(${searchBarBg.src || searchBarBg})`, 
         backgroundSize: 'cover', 
@@ -21,14 +24,14 @@ export default function HeroSection() {
 
       <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
         <h1 className="text-white font-manrope text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight max-w-4xl">
-          Discover a World of <span className="text-orange">Knowledge</span> & Community
+          {t('hero.title')} <span className="text-orange">{t('hero.title_highlight')}</span> {t('hero.title_suffix')}
         </h1>
-        <p className="text-[#A1A3A9] font-open-sans text-lg md:text-xl max-w-2xl mb-10">
-          Join thousands of students and lifelong learners. Borrow books, join study groups, and track your learning journey in one place.
+        <p className="text-[#A1A3A9] dark:text-neutral-400 font-open-sans text-lg md:text-xl max-w-2xl mb-10">
+          {t('hero.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button variant="white" className="px-8 py-4 text-base text-black">Explore Library</Button>
-          <Button variant="white" className="px-8 py-4 text-base text-black">How it Works</Button>
+          <Button variant="white" className="px-8 py-4 text-base text-black">{t('hero.explore_library')}</Button>
+          <Button variant="white" className="px-8 py-4 text-base text-black">{t('hero.how_it_works')}</Button>
         </div>
       </div>
     </section>

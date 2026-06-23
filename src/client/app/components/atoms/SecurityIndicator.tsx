@@ -1,8 +1,13 @@
 "use client";
 
 import React from 'react';
+import { useI18n } from '../../providers/I18nProvider';
+export interface SecurityIndicatorProps {
+  level: number;
+}
 
-const SecurityIndicator = ({ level }) => {
+export function SecurityIndicator({ level }: SecurityIndicatorProps) {
+  const { t } = useI18n();
   return (
     <div className="flex pt-2 flex-col items-start -space-y-px w-full gap-2">
       <div className="flex justify-center items-start gap-1 w-full h-1">
@@ -15,11 +20,11 @@ const SecurityIndicator = ({ level }) => {
           />
         ))}
       </div>
-      <p className="text-[#45474C] font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
-        Security Level
+      <p className="text-[#45474C] dark:text-neutral-400 font-inter text-xs font-medium leading-4 w-fit tracking-[0.02em]">
+        {t('auth.security_level')}
       </p>
     </div>
   );
-};
+}
 
 export default SecurityIndicator;

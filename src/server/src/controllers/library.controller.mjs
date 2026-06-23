@@ -1,6 +1,5 @@
 import { getBookById, getRecommendations, createReservation, getBooksList } from '../services/library.services.mjs';
 
-
 const getAllBooks = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

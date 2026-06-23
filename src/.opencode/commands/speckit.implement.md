@@ -1,11 +1,11 @@
-description = "Execute the implementation plan by processing and executing all tasks defined in tasks.md"
-
-prompt = """
+---
+description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+---
 
 ## User Input
 
 ```text
-{{args}}
+$ARGUMENTS
 ```
 
 You **MUST** consider the user input before proceeding (if not empty).
@@ -46,7 +46,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-1. Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\\''m Groot' (or double-quote if possible: "I'm Groot").
+1. Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 2. **Check checklists status** (if FEATURE_DIR/checklists/ exists):
    - Scan all checklist files in the checklists/ directory
@@ -210,4 +210,4 @@ Report final status with summary of completed work.
 - [ ] All tasks in tasks.md completed and marked `[X]`
 - [ ] Implementation validated against specification, plan, and test coverage
 - [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
-- [ ] Completion reported to user with summary of completed work"""
+- [ ] Completion reported to user with summary of completed work

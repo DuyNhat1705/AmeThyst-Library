@@ -15,11 +15,11 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = "flex items-center justify-center font-semibold transition-all rounded-lg";
   
   const variants = {
-    primary: "bg-[#091426] text-white hover:opacity-90 disabled:opacity-50",
-    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-    outline: "border border-[#C5C6CD] bg-white text-[#0B1C30] hover:bg-gray-50",
-    ghost: "text-[#006A61] hover:underline",
-    white: "bg-white text-black hover:bg-gray-50"
+    primary: "bg-[#091426] text-white hover:opacity-90 disabled:opacity-50 dark:bg-white dark:text-[#091426] dark:hover:opacity-90",
+    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600",
+    outline: "border border-[#C5C6CD] bg-white text-[#0B1C30] hover:bg-gray-50 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700",
+    ghost: "text-[#006A61] hover:underline dark:text-[#FFB95F]",
+    white: "bg-white text-black hover:bg-gray-50 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
   };
 
   return (

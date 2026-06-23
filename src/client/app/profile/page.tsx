@@ -3,51 +3,66 @@
 import React, { useState, useEffect } from 'react';
 import ProfileTemplate from '../components/templates/ProfileTemplate';
 import ProfileCard from '../components/molecules/ProfileCard';
+import { useRequireAuth, getAuthToken, updateStoredUser, logoutUser } from '../utils/user';
+import { useI18n } from '../providers/I18nProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function ProfilePage() {
+  const { t } = useI18n();
+  useRequireAuth();
+
   const [profile, setProfile] = useState({
     fullName: "",
     email: "",
     phoneNumber: "",
-    avatar: "",
+    department: "Information Technology", // mock data
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (!stored) {
-      window.location.href = '/login';
-      return;
-    }
+    const token = getAuthToken();
+    if (!token) return; // Wait until requireAuth redirects if no token
 
-    const token = localStorage.getItem('token');
     fetch(`${API}/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => {
-        if (!r.ok) throw new Error('Failed to load profile');
+        if (r.status === 401) {
+          logoutUser();
+          window.location.href = '/login';
+          return;
+        }
+        if (!r.ok) throw new Error(t('profile.load_profile_failed'));
         return r.json();
       })
-      .then((data) =>
-        setProfile({
+      .then((data) => {
+        if (!data) return;
+        setProfile((prev) => ({
+          ...prev,
           fullName: data.username || "",
           email: data.email || "",
           phoneNumber: data.phone_number || "",
-          avatar: data.avatar || "",
-        })
-      )
+          // department không lấy từ API, giữ nguyên mock data hiện có
+        }));
+        updateStoredUser({
+          username: data.username,
+          email: data.email,
+          phone_number: data.phone_number,
+        });
+      })
       .catch((err) => setError(err.message));
-  }, []);
+  }, [t]);
 
   const handleUpdate = async (field: string, value: string) => {
-    const token = localStorage.getItem('token');
+    // Department là mock data, không thể cập nhật
+    if (field === 'department') return;
+
+    const token = getAuthToken();
     const body: Record<string, string> = {};
     if (field === 'fullName') body.username = value;
     if (field === 'phoneNumber') body.phoneNumber = value;
-    if (field === 'avatar') body.avatar = value;
 
     try {
       const res = await fetch(`${API}/user/profile`, {
@@ -59,122 +74,52 @@ export default function ProfilePage() {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error('Update failed');
+      if (res.status === 401) {
+        logoutUser();
+        window.location.href = '/login';
+        return;
+      }
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || t('profile.update_failed'));
+      }
       const updated = await res.json();
 
       setProfile((prev) => ({ ...prev, [field]: value }));
-      const stored = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          ...stored,
-          userId: updated.user_id || stored.userId,
-          username: updated.username,
-          email: updated.email,
-          phone_number: updated.phone_number,
-          avatar: updated.avatar,
-        })
-      );
-      setMessage('Updated successfully!');
+      updateStoredUser({
+        username: updated.username,
+        email: updated.email,
+        phone_number: updated.phone_number,
+      });
+      setMessage(t('profile.updated_success'));
       setError('');
       setTimeout(() => setMessage(''), 2000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Update failed');
+      setError(err instanceof Error ? err.message : t('profile.update_failed'));
     }
   };
 
-  const handleChangePassword = async (currentPassword: string, newPassword: string) => {
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch(`${API}/user/profile/password`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error);
-      }
-      setMessage('Password changed successfully!');
-      setError('');
-      setTimeout(() => setMessage(''), 2000);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Password change failed');
+  const getDepartmentValue = (dept: string) => {
+    if (dept === "Information Technology") {
+      return t('profile.department_it');
     }
+    return dept;
   };
 
   return (
     <ProfileTemplate username={profile.fullName}>
-      <h1 className="text-2xl font-bold mb-6 text-[#091426]">Personal Information</h1>
+      <h1 className="text-2xl font-bold mb-6 text-[#091426] dark:text-neutral-200">{t('profile.personal_info')}</h1>
 
       {message && <p className="mb-4 text-green-600 font-medium">{message}</p>}
       {error && <p className="mb-4 text-red-500 font-medium">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProfileCard label="Full Name" value={profile.fullName} onUpdate={(v) => handleUpdate('fullName', v)} />
-        <ProfileCard label="Email Address" value={profile.email} onUpdate={() => {}} editable={false} />
-        <ProfileCard label="Phone Number" value={profile.phoneNumber} onUpdate={(v) => handleUpdate('phoneNumber', v)} />
-        <ProfileCard label="Avatar URL" value={profile.avatar} onUpdate={(v) => handleUpdate('avatar', v)} />
-      </div>
-
-      <div className="mt-10">
-        <h2 className="text-xl font-bold mb-4 text-[#091426]">Change Password</h2>
-        <ChangePasswordForm onSubmit={handleChangePassword} />
+        <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleUpdate('fullName', v)} />
+        <ProfileCard label={t('profile.email_address')} value={profile.email} onUpdate={() => {}} editable={false} />
+        <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleUpdate('phoneNumber', v)} />
+        <ProfileCard label={t('profile.department')} value={getDepartmentValue(profile.department)} onUpdate={() => {}} editable={false} />
       </div>
     </ProfileTemplate>
-  );
-}
-
-function ChangePasswordForm({ onSubmit }: { onSubmit: (cur: string, next: string) => void }) {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [err, setErr] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setErr('Passwords do not match');
-      return;
-    }
-    setErr('');
-    onSubmit(currentPassword, newPassword);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
-      <input
-        type="password"
-        placeholder="Current Password"
-        value={currentPassword}
-        onChange={(e) => setCurrentPassword(e.target.value)}
-        className="border border-[#C5C6CD] rounded-lg px-4 h-[52px] outline-none focus:border-[#486C7E]"
-      />
-      <input
-        type="password"
-        placeholder="New Password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        className="border border-[#C5C6CD] rounded-lg px-4 h-[52px] outline-none focus:border-[#486C7E]"
-      />
-      <input
-        type="password"
-        placeholder="Confirm New Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        className="border border-[#C5C6CD] rounded-lg px-4 h-[52px] outline-none focus:border-[#486C7E]"
-      />
-      {err && <p className="text-red-500 text-sm">{err}</p>}
-      <button
-        type="submit"
-        className="h-[52px] bg-[#091426] text-white rounded-lg font-semibold hover:bg-[#486C7E] transition-colors"
-      >
-        Update Password
-      </button>
-    </form>
   );
 }

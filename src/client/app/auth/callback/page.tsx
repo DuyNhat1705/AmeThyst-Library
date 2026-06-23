@@ -2,9 +2,11 @@
 
 import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useI18n } from '../../providers/I18nProvider';
 
 function AuthCallbackContent() {
   const searchParams = useSearchParams();
+  const { t } = useI18n();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -20,18 +22,19 @@ function AuthCallbackContent() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-[#091426]">Signing in...</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#F8EFE6] dark:bg-[#091426]">
+      <p className="text-[#091426] dark:text-neutral-200">{t('auth.login_loading')}</p>
     </div>
   );
 }
 
 export default function AuthCallback() {
+  const { t } = useI18n();
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-[#091426]">Signing in...</p>
+        <div className="min-h-screen flex items-center justify-center bg-[#F8EFE6] dark:bg-[#091426]">
+          <p className="text-[#091426] dark:text-neutral-200">{t('auth.login_loading')}</p>
         </div>
       }
     >

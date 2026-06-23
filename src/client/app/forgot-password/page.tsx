@@ -2,9 +2,15 @@
 
 import React, { useState } from 'react';
 import RegisterTemplate from '../components/templates/RegisterTemplate';
-import ForgotPasswordCard from './ForgotPasswordCard';
+import { ForgotPasswordCard } from '../components/organisms';
+import { SubmitData } from '../components/organisms/ForgotPasswordCard';
+import { useRedirectIfLoggedIn } from '../utils/user';
+import { useI18n } from '../providers/I18nProvider';
 
 export default function ForgotPasswordPage() {
+  const { t } = useI18n();
+  useRedirectIfLoggedIn();
+
   const [state, setState] = useState({
     isLoading: false,
     error: null as string | null,
@@ -16,7 +22,7 @@ export default function ForgotPasswordPage() {
     window.location.href = '/login';
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: SubmitData) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
       let endpoint = '';
@@ -40,7 +46,7 @@ export default function ForgotPasswordPage() {
       });
 
       if (!res.ok) {
-        let errorMessage = 'Something went wrong';
+        let errorMessage = t('auth.something_went_wrong');
         try {
           const errorData = await res.json();
           errorMessage = errorData.error || errorMessage;
@@ -52,27 +58,29 @@ export default function ForgotPasswordPage() {
 
       if (data.step === 3) {
         setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
-        setTimeout(() => { 
-          window.location.href = '/login'; 
+        setTimeout(() => {
+          window.location.href = '/login';
         }, 1500);
       } else {
         setState(prev => ({ ...prev, isLoading: false }));
       }
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('auth.something_went_wrong');
       console.error('Forgot password error:', err);
-      setState(prev => ({ ...prev, isLoading: false, error: err.message }));
-      return { success: false, error: err.message };
+      setState(prev => ({ ...prev, isLoading: false, error: message }));
+      return { success: false, error: message };
     }
   };
 
   return (
     <RegisterTemplate>
-        <ForgotPasswordCard 
-            onBackToSignIn={handleBackToSignIn} 
-            onSubmit={handleSubmit}
-            isLoading={state.isLoading}
-        />
+      <ForgotPasswordCard
+        onBackToSignIn={handleBackToSignIn}
+        onSubmit={handleSubmit}
+        isLoading={state.isLoading}
+        isSuccess={state.isSuccess}
+      />
     </RegisterTemplate>
   );
 }

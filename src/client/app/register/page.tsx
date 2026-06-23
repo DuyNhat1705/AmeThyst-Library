@@ -2,10 +2,15 @@
 
 import React, { useState } from 'react';
 import RegisterTemplate from '../components/templates/RegisterTemplate';
-import RegisterFormCard from './RegisterFormCard';
+import { RegisterFormCard } from '../components/organisms';
+import { useRedirectIfLoggedIn } from '../utils/user';
+
 
 const RegisterPage = () => {
+  useRedirectIfLoggedIn();
+
   const [state, setState] = useState({
+
     isLoading: false,
     error: null as string | null,
     validationErrors: {} as Record<string, string>,
@@ -17,6 +22,7 @@ const RegisterPage = () => {
     email: "",
     role: "student",
     password: "",
+    confirmPassword: "",
   });
 
   return (

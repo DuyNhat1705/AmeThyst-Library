@@ -1,5 +1,7 @@
 import { Inter, Manrope, Open_Sans } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./providers/ThemeProvider";
+import { I18nProvider } from "./providers/I18nProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
@@ -12,7 +14,11 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} ${manrope.variable} ${openSans.variable} h-full`}
     >
       <body className="min-h-full flex flex-col font-inter antialiased">
-        <main className="flex-grow">{children}</main>
+        <I18nProvider>
+          <ThemeProvider>
+            <main className="flex-grow">{children}</main>
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );

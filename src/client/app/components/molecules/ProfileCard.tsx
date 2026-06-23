@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { Input } from '../atoms';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface ProfileCardProps {
   label: string;
@@ -10,6 +12,7 @@ interface ProfileCardProps {
 }
 
 export default function ProfileCard({ label, value, onUpdate, editable = true }: ProfileCardProps) {
+  const { t } = useI18n();
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
 
@@ -29,16 +32,17 @@ export default function ProfileCard({ label, value, onUpdate, editable = true }:
     >
       <h3 className="text-sm text-[#45474C] font-semibold">{label}</h3>
       {isEditing ? (
-        <input
+        <Input
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={handleSave}
+          onKeyDown={(e) => e.key === 'Enter' && handleSave()}
           autoFocus
-          className="w-full border-b border-[#486C7E] outline-none"
+          className="h-8 border-0 border-b border-[#486C7E] rounded-none bg-transparent px-0 focus:ring-0"
         />
       ) : (
         <p className={`text-base ${value ? 'text-[#091426]' : 'text-[#A1A3A7]'}`}>
-          {value || 'Not provided'}
+          {value || t('profile.not_provided')}
         </p>
       )}
     </div>

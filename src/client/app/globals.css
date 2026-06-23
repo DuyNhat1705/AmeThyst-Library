@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #F8EFE6;
   --foreground: #091426;
   --primary: #091426;
   --secondary: #006F66;
   --accent: #FFB95F;
+}
+
+.dark {
+  --background: #091426;
+  --foreground: #F8EFE6;
+  --primary: #F8EFE6;
+  --secondary: #FFB95F;
+  --accent: #006F66;
 }
 
 @theme inline {
@@ -22,6 +32,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Custom Utilities if needed */

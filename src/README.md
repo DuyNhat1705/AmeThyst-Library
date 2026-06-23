@@ -1,28 +1,207 @@
 # I. Run the Program
-When you clone the repository into your local drive, you are in the branch `main`.You must use `git checkout` to switch to the branch `dev` and we start here.
-```
-git checkout dev
-``` 
-For the future developing, you must clone your branch, which can be named as `YourName_Feature` (e.g: `Minh_Authentication`) or other easy-understandable names, from the branch `dev`, not branch `main`. The `main` branch is only merged from the `dev` branch when everything is done and the team deploys the web as production.
 
-When you are in branch `dev`, you first are located at the root folder, `AmeThyst-Library` and to **run the program**, you must turn on 2 terminals and you can simply use **split terminal** for this purpose. In one terminal, you use `cd src/server` (or use `cd src` --> cd `cd server`) to go to folder `server` considered as backend and in the other terminal, you use `cd src/client` to go to folder `client` considerd as frontend.
+When you clone the repository into your local drive, you are in the branch `main`. You must use `git checkout` to switch to the branch `dev` and start development from there.
+
+```bash
+git checkout dev
 ```
-cd src/server
+
+For future development, you should create your own feature branch from the `dev` branch (not from `main`). The branch name should be descriptive, such as `YourName_Feature` (e.g., `Minh_Authentication`).
+
+```bash
+git checkout -b Minh_Authentication
+```
+
+The `main` branch is only merged from the `dev` branch when all features are completed and the project is ready for production deployment.
+
+---
+
+## II. Project Setup
+
+The project consists of three main parts:
+
+* Frontend (`src/client`)
+* Backend (`src/server`)
+* Database (`src/database`)
+
+### 1. Frontend Setup
+
+Navigate to the client folder:
+
+```bash
 cd src/client
 ```
-If you are in the folder `server` and want to move to the folder `client`, you first use `cd ..` to back to parent folder, `src` folder, of `server` folder, and use `cd client` after that.
+
+Copy the provided `.env.local` file into the `src/client` directory.
+
+Example structure:
+
+```text
+src/
+└── client/
+    ├── .env.local
+    ├── package.json
+    └── ...
 ```
-cd ..
-cd client
+
+Install dependencies:
+
+```bash
+npm install
 ```
-Here, in the terminal with `server` folder, you use `npm run dev` to start **server side**, and in the terminal with `client` folder, you also use `npm run dev` to start **client side**.
-```
+
+Start the frontend server:
+
+```bash
 npm run dev
 ```
-The server runs on **PORT 5000**, and the client (GUI) runs on **PORT 3000** by default from **React js**. Therefore, we interact mainly with the web GUI at the endpoint (or you can consider it as URL) http://localhost:3000.
+
+The frontend runs on:
+
+```text
+http://localhost:3000
+```
+
+---
+
+### 2. Backend Setup
+
+Open a new terminal and navigate to the server folder:
+
+```bash
+cd src/server
+```
+
+Copy the provided `.env` file into the `src/server` directory.
+
+Example structure:
+
+```text
+src/
+└── server/
+    ├── .env
+    ├── package.json
+    └── ...
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the backend server:
+
+```bash
+npm run dev
+```
+
+The backend runs on:
+
+```text
+http://localhost:5000
+```
+
+---
+
+### 3. Database Setup
+
+Navigate to the database folder:
+
+```bash
+cd src/database
+```
+
+Copy the provided `.env` file into:
+
+```text
+src/database/.env
+```
+
+Download the `init_db` package from the shared Google Drive and place the three SQL files into:
+
+```text
+src/database/init_db/postgres/
+```
+
+The folder structure should look similar to:
+
+```text
+src/
+└── database/
+    ├── .env
+    ├── docker-compose.yml
+    └── init_db/
+        └── postgres/
+            ├── 01_schema.sql
+            ├── 02_seed.sql
+            └── 03_data.sql
+```
+
+After placing all SQL files correctly, start the database containers:
+
+```bash
+docker-compose up
+```
+
+Or run in detached mode:
+
+```bash
+docker-compose up -d
+```
+
+You can verify that the containers are running:
+
+```bash
+docker ps
+```
+
+---
+
+## III. Running the Entire System
+
+Open three separate terminals (or use split terminals).
+
+### Terminal 1 – Database
+
+```bash
+cd src/database
+docker-compose up
+```
+
+### Terminal 2 – Backend
+
+```bash
+cd src/server
+npm install
+npm run dev
+```
+
+### Terminal 3 – Frontend
+
+```bash
+cd src/client
+npm install
+npm run dev
+```
+
+After all services start successfully:
+
+| Service     | URL                   |
+| ----------- | --------------------- |
+| Frontend    | http://localhost:3000 |
+| Backend API | http://localhost:5000 |
+| Database    | Docker Container      |
+
+The application should now be fully operational through:
+
+```text
+http://localhost:3000
+```
+
 # II. Introduct to Server Structure
 ## 1. Server.mjs
-This is the entry point of all system. It combines all components andstarts the server instance by calling `app.listen()`
+This is the entry point of all system. It combines all components and starts the server instance by calling `app.listen()`
 ## 2. config/
 This directory holds configuration files for third-party services and system settings.
 ```javascript
