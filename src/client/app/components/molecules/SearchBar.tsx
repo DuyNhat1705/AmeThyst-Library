@@ -9,6 +9,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onFilterClick }: SearchBarProps) {
+  const { t } = useI18n();
   return (
     <div className="w-full max-w-[896px] mx-auto bg-white dark:bg-neutral-800 rounded-2xl border-2 border-transparent dark:border-neutral-700 shadow-sm p-4 flex items-center justify-between gap-4 mt-[-44px] relative z-20 transition-colors duration-300">
       {/* Search Input Group */}

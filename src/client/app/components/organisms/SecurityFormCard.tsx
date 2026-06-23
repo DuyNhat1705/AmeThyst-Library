@@ -6,6 +6,7 @@ import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
 import { getAuthToken } from '../../utils/user';
 import { calculatePasswordStrength, validateNewPassword } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
+import { mapServerError } from '../../utils/errors';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -26,13 +27,7 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
 
     const validationError = validateNewPassword(newPassword, confirmPassword);
     if (validationError) {
-      if (validationError === "Passwords do not match") {
-        setError(t('auth.passwords_no_match'));
-      } else if (validationError === "New password must be at least 8 characters") {
-        setError(t('auth.password_min_length'));
-      } else {
-        setError(validationError);
-      }
+      setError(t(validationError));
       return;
     }
 
@@ -63,7 +58,8 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('profile.password_update_failed'));
+      const raw = err instanceof Error ? err.message : undefined;
+      setError(mapServerError(raw, t, 'profile.password_update_failed'));
     } finally {
       setIsLoading(false);
     }

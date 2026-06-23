@@ -25,7 +25,9 @@
     "prev": "Trước",
     "next": "Tiếp",
     "search_placeholder": "Tìm kiếm...",
-    "filter": "Lọc"
+    "filter": "Lọc",
+    "no_books_found": "Không tìm thấy sách",
+    "no_books_found_message": "Chúng tôi không thể tìm thấy sách nào phù hợp với tiêu chí của bạn."
   },
   "book": {
     "loading": "Đang chuẩn bị trải nghiệm đọc sách của bạn...",
@@ -46,7 +48,9 @@
     "copies": "Cuốn",
     "copies_remaining": "Còn lại",
     "scroll_left": "Cuộn trái",
-    "scroll_right": "Cuộn phải"
+    "scroll_right": "Cuộn phải",
+    "availability_locations": "Sẵn có & Vị trí",
+    "no_available_locations": "Không có sẵn ở đây"
   },
   "footer": {
     "tagline": "Trao quyền cho sinh viên thông qua kiến thức dễ tiếp cận và học tập cộng đồng.",

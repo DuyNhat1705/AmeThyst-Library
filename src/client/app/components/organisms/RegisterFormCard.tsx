@@ -6,6 +6,7 @@ import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
 import { calculatePasswordStrength, validatePassword } from '../../utils/password';
 import Link from 'next/link';
 import { useI18n } from '../../providers/I18nProvider';
+import { mapServerError } from '../../utils/errors';
 
 interface FormData {
   fullName: string;
@@ -44,13 +45,7 @@ export default function RegisterFormCard({
     e.preventDefault();
     const error = validatePassword(formData.password, formData.confirmPassword);
     if (error) {
-      if (error === "Passwords do not match") {
-        setState(prev => ({ ...prev, error: t('auth.passwords_no_match') }));
-      } else if (error === "New password must be at least 8 characters") {
-        setState(prev => ({ ...prev, error: t('auth.password_min_length') }));
-      } else {
-        setState(prev => ({ ...prev, error }));
-      }
+      setState(prev => ({ ...prev, error: t(error) }));
       return;
     }
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -81,7 +76,8 @@ export default function RegisterFormCard({
       }, 2000);
     } catch (err: unknown) {
       console.error('Register error:', err);
-      setState(prev => ({ ...prev, isLoading: false, error: err instanceof Error ? err.message : t('auth.register_failed') }));
+      const raw = err instanceof Error ? err.message : undefined;
+      setState(prev => ({ ...prev, isLoading: false, error: mapServerError(raw, t, 'auth.register_failed') }));
     }
   };
 
