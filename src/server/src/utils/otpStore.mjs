@@ -6,14 +6,14 @@ const otpStore = new Map();
 export const saveOtp = (email, otp) => {
   otpStore.set(email, {
     otp,
-    expiresAt: Date.now() + OTP_RESET_TTL,
+    expiresAt: Date.now() + OTP_VERIFY_TTL,
     verified: false,
   });
 
   setTimeout(() => {
     const record = otpStore.get(email);
     if (record?.otp === otp && !record.verified) otpStore.delete(email);
-  }, OTP_RESET_TTL);
+  }, OTP_VERIFY_TTL);
 };
 
 export const getOtp = (email) => otpStore.get(email);
