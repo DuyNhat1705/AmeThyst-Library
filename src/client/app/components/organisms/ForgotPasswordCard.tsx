@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { FormField } from '../molecules';
 import { Button, ErrorMessage, SecurityIndicator } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
+import { mapServerError } from '../../utils/errors';
 
 export interface SubmitData {
   step: 1 | 2 | 3;
@@ -20,9 +21,11 @@ interface ForgotPasswordCardProps {
   isSuccess?: boolean;
 }
 
-export default function ForgotPasswordCard({ 
-  onBackToSignIn, 
-  onSubmit, 
+const OTP_TTL = 30; // seconds — must match server OTP_VERIFY_TTL
+
+export default function ForgotPasswordCard({
+  onBackToSignIn,
+  onSubmit,
   isLoading = false,
   isSuccess = false
 }: ForgotPasswordCardProps) {
@@ -34,27 +37,67 @@ export default function ForgotPasswordCard({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
+  // OTP countdown
+  const [secondsLeft, setSecondsLeft] = useState(OTP_TTL);
+  const [otpExpired, setOtpExpired] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const passwordStrength = useMemo(() => calculatePasswordStrength(newPassword), [newPassword]);
+
+  const startCountdown = () => {
+    setSecondsLeft(OTP_TTL);
+    setOtpExpired(false);
+    setResendMessage('');
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          setOtpExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (step === 2) startCountdown();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [step]);
 
   const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await onSubmit({ step: 1, email });
-    if (result && result.success) { 
-      setError(''); 
-      setStep(2); 
-    } else { 
-      setError(result?.error || t('auth.email_not_exist')); 
+    if (result && result.success) {
+      setError('');
+      setStep(2);
+    } else {
+      setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
     }
   };
 
   const handleStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await onSubmit({ step: 2, email, otp });
-    if (result && result.success) { 
-      setError(''); 
-      setStep(3); 
-    } else { 
-      setError(result?.error || t('auth.otp_incorrect')); 
+    if (result && result.success) {
+      setError('');
+      setStep(3);
+    } else {
+      setError(mapServerError(result?.error, t, 'auth.otp_incorrect'));
+    }
+  };
+
+  const handleResend = async () => {
+    setOtp('');
+    setError('');
+    const result = await onSubmit({ step: 1, email });
+    if (result && result.success) {
+      setResendMessage(t('auth.otp_resent'));
+      startCountdown();
+    } else {
+      setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
     }
   };
 
@@ -62,13 +105,7 @@ export default function ForgotPasswordCard({
     e.preventDefault();
     const validationError = validateNewPassword(newPassword, confirmPassword);
     if (validationError) {
-      if (validationError === "Passwords do not match") {
-        setError(t('auth.passwords_no_match'));
-      } else if (validationError === "New password must be at least 8 characters") {
-        setError(t('auth.password_min_length'));
-      } else {
-        setError(validationError);
-      }
+      setError(t(validationError));
       return;
     }
     setError('');
@@ -77,7 +114,7 @@ export default function ForgotPasswordCard({
     if (result && result.success) {
       setError('');
     } else {
-      setError(result?.error || t('auth.password_reset_failed'));
+      setError(mapServerError(result?.error, t, 'auth.password_reset_failed'));
     }
   };
 
@@ -140,22 +177,50 @@ export default function ForgotPasswordCard({
                     );
                   })()}
                 </p>
-                <form onSubmit={handleStep2} className="w-full py-6 px-0 flex flex-col gap-6">
-                  <FormField
-                    label={t('auth.otp_code_label')}
-                    id="otp"
-                    type="text"
-                    placeholder={t('auth.otp_placeholder')}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                  {error && <ErrorMessage message={error} />}
-                  <Button type="submit" className="w-full h-[52px] gap-2" isLoading={isLoading} disabled={isLoading}>
-                    {t('auth.verify_otp')}
-                  </Button>
-                </form>
+
+                {otpExpired ? (
+                  /* Expired UI */
+                  <div className="w-full py-6 flex flex-col gap-4">
+                    <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 flex flex-col gap-1">
+                      <p className="text-sm font-semibold text-red-600 dark:text-red-400">{t('auth.otp_expired')}</p>
+                      <p className="text-sm text-red-500 dark:text-red-400">{t('auth.otp_expired_message')}</p>
+                    </div>
+                    {error && <ErrorMessage message={error} />}
+                    <Button
+                      type="button"
+                      className="w-full h-[52px] gap-2"
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                      onClick={handleResend}
+                    >
+                      {t('auth.resend_otp')}
+                    </Button>
+                  </div>
+                ) : (
+                  /* Normal OTP form */
+                  <form onSubmit={handleStep2} className="w-full py-6 px-0 flex flex-col gap-6">
+                    <div className="flex flex-col gap-2">
+                      <FormField
+                        label={t('auth.otp_code_label')}
+                        id="otp"
+                        type="text"
+                        placeholder={t('auth.otp_placeholder')}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                      <p className="text-xs text-[#45474C] dark:text-neutral-400 tabular-nums">
+                        {t('auth.otp_expires_in').replace('{seconds}', String(secondsLeft))}
+                      </p>
+                    </div>
+                    {resendMessage && <p className="text-sm text-green-600 dark:text-green-400">{resendMessage}</p>}
+                    {error && <ErrorMessage message={error} />}
+                    <Button type="submit" className="w-full h-[52px] gap-2" isLoading={isLoading} disabled={isLoading}>
+                      {t('auth.verify_otp')}
+                    </Button>
+                  </form>
+                )}
               </>
             )}
 
@@ -209,7 +274,7 @@ export default function ForgotPasswordCard({
           className="pt-8 w-full border-t border-t-[#C5C6CD] dark:border-t-neutral-700 flex items-center justify-center gap-1.5 group disabled:opacity-50"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 group-hover:-translate-x-0.5 transition-transform">
-            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="currentColor" className="text-[#091426] dark:text-neutral-200"/>
+            <path d="M2.86875 6.75L7.06875 10.95L6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875Z" fill="currentColor" />
           </svg>
           <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200" style={{ letterSpacing: '0.01em' }}>{t('auth.back_to_sign_in')}</span>
         </button>
