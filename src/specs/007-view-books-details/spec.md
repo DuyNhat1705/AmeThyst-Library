@@ -21,8 +21,8 @@ As a library member, I want to view all relevant details of a specific book (tit
 **Acceptance Scenarios**:
 
 1. **Given** I am on the library catalog, **When** I click on a book card, **Then** I am redirected to the book details page.
-2. **Given** I am on the book details page, **When** the page loads, **Then** I see the book cover, title, author name, and two paragraphs of description.
-3. **Given** the book details page is loaded, **When** I look at the information grid, **Then** I see the Location, Shelf ID, Language, and ISBN.
+2. **Given** I am on the book details page, **When** the page loads, **Then** I see the book cover, title, author name, and the description.
+3. **Given** the book details page is loaded, **When** I look at the information grid, **Then** I see the Publisher, Publication Year, Number of Pages, and Rating.
 
 ---
 
@@ -36,8 +36,8 @@ As a student in the library, I want to see exactly where a book is located and h
 
 **Acceptance Scenarios**:
 
-1. **Given** I am viewing a book, **When** I check the status bar, **Then** I see either "Available" with the remaining copy count or "Out of Stock".
-2. **Given** the book is available, **When** I check the location details, **Then** I see the Floor/Wing and the specific Shelf ID.
+1. **Given** I am viewing a book, **When** I check the Availability & Locations section, **Then** I see a list of library branches.
+2. **Given** a branch location, **When** I check its details, **Then** I see the branch address, the specific Shelf ID, and the exact number of available copies.
 
 ---
 
@@ -81,25 +81,24 @@ As a researcher, I want to see related books so that I can discover more resourc
 
 - **FR-001**: System MUST display a high-quality book cover image (utilizing Next.js `<Image>` for optimization).
 - **FR-002**: System MUST display the Book Title, Author Name, and Description paragraphs.
-- **FR-003**: System MUST provide an "Info Grid" showing Location, Shelf ID, Language, and ISBN.
-- **FR-004**: System MUST show real-time availability status (Available/Unavailable) and the number of copies remaining.
-- **FR-005**: System MUST provide a "Reserve for Pickup" primary action button.
-- **FR-006**: System MUST provide an "Add to Wishlist" secondary action button.
-- **FR-007**: System MUST implement a "You May Also Like" recommendation carousel with at least 5 items.
+- **FR-003**: System MUST provide an "Info Grid" showing Publisher, Publication Year, Number of Pages, and Rating.
+- **FR-004**: System MUST show a dedicated "Availability & Locations" section listing multiple library branches, their addresses, specific shelf IDs, and available copies.
+- **FR-005**: System MUST provide a "Reserve" primary action button, which disables if no copies are available.
+- **FR-006**: System MUST implement a "You May Also Like" recommendation carousel.
 - **FR-008**: System MUST include a global navigation header (LIMA Branding, Home, Dashboard, etc.) consistent with other pages.
 - **FR-009**: System MUST include a standard library footer with copyright and policy links.
 
 ### Key Entities
 
-- **Book**: Represents the resource being viewed. Attributes: Title, Author, Description, ISBN, Language, CoverImage, Category.
-- **Inventory**: Tracks physical location and availability. Attributes: ShelfID, Floor, Wing, TotalCopies, AvailableCopies.
+- **Book**: Represents the resource being viewed. Attributes: Title, Author, Description, Publisher, PublicationYear, NumPages, Rating, CoverImage.
+- **Inventory**: Embedded within the Book entity as an array of locations. Attributes: Location Name, Address, Shelf, AvailableCopies.
 - **Reservation**: Represents a user's intent to pick up a book. Relationships: Links a User to a Book.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Users can locate the physical "Shelf ID" of a book within 3 seconds of the page loading.
+- **SC-001**: Users can find the physical "Shelf" and "Location" of a book within 3 seconds of the page loading.
 - **SC-002**: The "Reserve for Pickup" action completes in under 2 seconds from click to confirmation.
 - **SC-003**: 100% of book cover images use optimized loading to prevent Layout Shift.
 - **SC-004**: The page is fully accessible, passing standard WCAG contrast checks for text against the `#F8EFE6` background.
