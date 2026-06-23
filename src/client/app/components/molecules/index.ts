@@ -10,4 +10,9 @@ export { default as RoleSelector } from './RoleSelector';
 export { default as ProfileCard } from './ProfileCard';
 export { default as StatusBanner } from './StatusBanner';
 export { default as InfoGridItem } from './InfoGridItem';
+export { default as DashboardCalendar } from './DashboardCalendar';
+export { default as BorrowedBookCard } from './BorrowedBookCard';
+export type { BorrowedBook, BookStatus } from './BorrowedBookCard';
+export { statusConfig } from './BorrowedBookCard';
+export { default as BorrowedHistoryTable } from './BorrowedHistoryTable';
 

@@ -3,8 +3,8 @@ import { verifyOtp } from '../services/otp.service.mjs';
 
 const register = async (req, res) => {
   try {
-    const { email, password, username, phoneNumber, avatar } = req.body;
-    const user = await registerUser({ email, password, username, phoneNumber, avatar });
+    const { email, password, username, phoneNumber, avatar, role } = req.body;
+    const user = await registerUser({ email, password, username, phoneNumber, avatar, role });
     res.status(201).json({ message: 'Register successful', user });
   } catch (err) {
     res.status(400).json({ error: err.message });

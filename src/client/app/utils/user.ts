@@ -12,9 +12,12 @@ export function getInitials(name: string): string {
 }
 
 export interface StoredUser {
+  userId?: number;
   username?: string;
   email?: string;
   phone_number?: string;
+  avatar?: string;
+  role?: string;
 }
 
 export function getLoggedInUser(): StoredUser | null {

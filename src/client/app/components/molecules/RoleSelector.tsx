@@ -24,17 +24,17 @@ export default function RoleSelector({ selectedRole, onChange, disabled = false 
         <button
           type="button"
           role="tab"
-          aria-selected={selectedRole === 'student'}
-          onClick={() => !disabled && onChange('student')}
+          aria-selected={selectedRole === 'user'}
+          onClick={() => !disabled && onChange('user')}
           disabled={disabled}
           className={`cursor-pointer text-nowrap flex justify-center items-center rounded transition-all duration-200 h-full ${
-            selectedRole === 'student' 
+            selectedRole === 'user' 
               ? 'bg-[#091426] dark:bg-[#FFB95F] text-white dark:text-[#091426] shadow-sm' 
               : 'text-[#45474C] dark:text-neutral-300 hover:bg-[#D3E4FE] dark:hover:bg-neutral-600'
           } ${disabled ? 'opacity-50' : ''}`}
         >
           <span className="font-inter text-sm font-semibold leading-5 tracking-[0.01em]">
-            {t('auth.role_student')}
+            {t('auth.role_user')}
           </span>
         </button>
         <button

@@ -1,0 +1,140 @@
+import React, { useState } from 'react';
+
+export default function CombinedBookTabs() {
+  const [activeTab, setActiveTab] = useState('reservations'); // 'reservations' hoặc 'history'
+
+  return (
+    <div className="bg-[#F8EFE6] min-h-screen p-6 font-sans">
+      {/* Container chính cho khu vực Tabs */}
+      <div className="max-w-6xl mx-auto bg-[#FFF] rounded-xl shadow-sm border border-[#C5C6CD] overflow-hidden">
+        
+        {/* Thanh chuyển đổi Tabs (Navigation Tabs) */}
+        <div className="flex border-b border-[#C4C6CD] bg-[#F8F3E9]">
+          <button
+            onClick={() => setActiveTab('reservations')}
+            className={`flex-1 py-4 text-center font-manrope text-sm font-bold tracking-[0.05em] uppercase transition-colors ${
+              activeTab === 'reservations'
+                ? 'bg-[#FFF] text-[#1A2E44] border-b-2 border-[#1A2E44]'
+                : 'text-[#43474D] hover:bg-[#F0EAE1]'
+            }`}
+          >
+            All Reservations
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex-1 py-4 text-center font-manrope text-sm font-bold tracking-[0.05em] uppercase transition-colors ${
+              activeTab === 'history'
+                ? 'bg-[#FFF] text-[#1A2E44] border-b-2 border-[#1A2E44]'
+                : 'text-[#43474D] hover:bg-[#F0EAE1]'
+            }`}
+          >
+            Borrow History
+          </button>
+        </div>
+
+        {/* Nội dung tương ứng với từng Tab */}
+        <div className="p-6">
+          {activeTab === 'reservations' && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* Bộ lọc / Thanh tìm kiếm của Reservations (nếu có) */}
+              <div className="flex justify-between items-center pb-4 border-b border-[#C4C6CD]">
+                <h2 className="text-xl font-bold text-[#091426]">Active Reservations</h2>
+                <span className="py-1 px-3 rounded-full border border-[rgba(96,67,130,0.3)] bg-[rgba(96,67,130,0.1)] text-[#604382] text-xs font-bold tracking-[0.05em]">
+                  PENDING LIST
+                </span>
+              </div>
+
+              {/* Thẻ mẫu thông tin Sách đặt trước (Reservation Card) */}
+              <div className="border border-[#C4C6CD] bg-[#FFF] rounded-lg p-6 shadow-sm relative">
+                <div className="flex gap-4 items-start">
+                  <div className="flex py-1 px-2 flex-col items-start rounded bg-[rgba(96,67,130,0.10)] w-fit">
+                    <p className="text-[#604382] font-hankenGrotesk text-xs font-bold tracking-[0.05em]">PENDING</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[#43474D] font-hankenGrotesk text-xs font-bold tracking-[0.05em] opacity-60">ACCESS PIN</p>
+                    <p className="text-[#1D1C16] font-liberationMono text-sm tracking-[0.1em] font-bold mt-1">•••• (Available upon approval)</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-[rgba(186,26,26,0.2)] flex justify-end">
+                  <button className="cursor-pointer flex py-2.5 px-4 justify-center items-center gap-2 rounded-lg border border-[rgba(186,26,26,0.20)] bg-[#FFF] hover:bg-[#FFF5F5] text-[#BA1A1A] font-hankenGrotesk text-xs font-bold tracking-[0.05em]">
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4.8 11.25L7.5 8.55L10.2 11.25L11.25 10.2L8.55 7.5L11.25 4.8L10.2 3.75L7.5 6.45L4.8 3.75L3.75 4.8L6.45 7.5L3.75 10.2L4.8 11.25Z" fill="#BA1A1A"/>
+                    </svg>
+                    CANCEL RESERVATION
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* Bộ lọc Date Range cho History */}
+              <div className="flex flex-wrap gap-4 pt-4 pr-6 pb-4 pl-6 items-center border border-[#C4C6CD] bg-[#FFF] rounded-lg shadow-sm">
+                <div className="flex flex-col gap-1">
+                  <p className="text-[#43474D] font-manrope text-xs font-bold tracking-[0.05em]">FROM DATE</p>
+                  <div className="py-1.5 px-3 border border-[#C4C6CD] bg-[#FFF] rounded-lg text-sm text-[#43474D]">01/01/2024</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-[#43474D] font-manrope text-xs font-bold tracking-[0.05em]">TO DATE</p>
+                  <div className="py-1.5 px-3 border border-[#C4C6CD] bg-[#FFF] rounded-lg text-sm text-[#43474D]">31/12/2024</div>
+                </div>
+              </div>
+
+              {/* Bảng lịch sử mượn sách (Borrow History Table) */}
+              <div className="border border-[#C4C6CD] rounded-lg overflow-hidden shadow-sm">
+                {/* Header của Table */}
+                <div className="flex bg-[#F8F3E9] border-b border-[#C4C6CD] text-left font-bold text-xs text-[#43474D] tracking-[0.05em] uppercase">
+                  <div className="flex-2 p-4 w-[352px]">TITLE</div>
+                  <div className="flex-1 p-4 w-[159px]">BORROWED</div>
+                  <div className="flex-1 p-4 w-[163px]">RETURNED</div>
+                  <div className="flex-1 p-4 w-[131px]">FEE</div>
+                  <div className="flex-1 p-4 w-[168px]">STATUS</div>
+                </div>
+
+                {/* Các dòng dữ liệu mẫu (Hardcoded Table Rows) */}
+                <div className="divide-y divide-[#C4C6CD] bg-[#FFF]">
+                  <div className="flex items-center text-sm text-[#43474D]">
+                    <div className="p-4 w-[352px] font-semibold text-[#091426]">Introduction to Artificial Intelligence</div>
+                    <div className="p-4 w-[159px]">10/05/2024</div>
+                    <div className="p-4 w-[163px]">24/05/2024</div>
+                    <div className="p-4 w-[131px]">$0.00</div>
+                    <div className="p-4 w-[168px]">
+                      <div className="py-1 px-3 rounded-full border border-[rgba(186,26,26,0.30)] bg-[rgba(255,218,214,0.20)] w-fit">
+                        <p className="text-[#BA1A1A] text-xs font-bold tracking-[0.05em]">LATE</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center text-sm text-[#43474D]">
+                    <div className="p-4 w-[352px] font-semibold text-[#091426]">Operating System Concepts</div>
+                    <div className="p-4 w-[159px]">01/04/2024</div>
+                    <div className="p-4 w-[163px]">15/04/2024</div>
+                    <div className="p-4 w-[131px]">$0.00</div>
+                    <div className="p-4 w-[168px]">
+                      <div className="py-1 px-3 rounded-full border border-[rgba(56,120,0,0.30)] bg-[rgba(200,240,180,0.20)] w-fit">
+                        <p className="text-[#2E6F00] text-xs font-bold tracking-[0.05em]">RETURNED</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Điều hướng phân trang (Pagination) */}
+              <div className="flex justify-end items-center gap-2 pt-4">
+                <button className="cursor-pointer border border-[#C4C6CD] bg-[#FFF] text-[#1A2E44] rounded-lg w-8 h-8 flex items-center justify-center font-bold text-xs">1</button>
+                <button className="cursor-pointer border border-[#C4C6CD] text-[#43474D] rounded-lg w-8 h-8 flex items-center justify-center text-xs">2</button>
+                <button className="cursor-pointer border border-[#C4C6CD] text-[#43474D] rounded-lg w-8 h-8 flex items-center justify-center text-xs">3</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}

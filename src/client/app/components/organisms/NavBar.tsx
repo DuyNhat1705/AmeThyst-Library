@@ -13,7 +13,7 @@ export default function NavBar() {
 
   const navItems = [
     { label: t('navbar.library'), href: '/library' },
-    { label: t('navbar.dashboard'), href: '/dashboard' },
+    { label: t('navbar.dashboard'), href: '/dashboard/user' },
     { label: t('navbar.study_together'), href: '/study' },
     { label: t('navbar.library_map'), href: '/map' }
   ];

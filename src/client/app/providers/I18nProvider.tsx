@@ -36,7 +36,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     setLocale((prev) => (prev === 'en' ? 'vi' : 'en'));
   };
 
-  const t = (key: string): string => {
+  const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     
     // Attempt lookup in current active dictionary
@@ -50,7 +50,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (value !== undefined) return String(value);
+    if (value !== undefined) {
+      let result = String(value);
+      if (params) {
+        for (const [k, v] of Object.entries(params)) {
+          result = result.replace(`{${k}}`, String(v));
+        }
+      }
+      return result;
+    }
 
     // Fallback: Attempt lookup in alternative dictionary
     const fallbackLocale = locale === 'en' ? 'vi' : 'en';
@@ -64,7 +72,16 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    return fallbackValue !== undefined ? String(fallbackValue) : key;
+    if (fallbackValue !== undefined) {
+      let result = String(fallbackValue);
+      if (params) {
+        for (const [k, v] of Object.entries(params)) {
+          result = result.replace(`{${k}}`, String(v));
+        }
+      }
+      return result;
+    }
+    return key;
   };
 
   return (

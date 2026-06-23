@@ -11,7 +11,7 @@
 ### `RoleSelector`
 
 **Props**:
-- `selectedRole`: `'student' | 'librarian'`
+- `selectedRole`: `'user' | 'librarian'`
 - `onChange`: `(role: string) => void`
 
 **Behavior**:

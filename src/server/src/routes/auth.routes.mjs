@@ -22,7 +22,7 @@ router.get(
   passport.authenticate('google', { failureRedirect: `${FRONTEND_URL}/login`, session: false }),
   (req, res) => {
     const token = jwt.sign(
-      { userId: req.user.user_id, email: req.user.email },
+      { userId: req.user.user_id, email: req.user.email, role: req.user.role },
       process.env.JWT_SECRET || 'your_super_secret_key_here',
       { expiresIn: '7d' }
     );
@@ -32,6 +32,7 @@ router.get(
       email: req.user.email,
       username: req.user.username,
       avatar: req.user.avatar,
+      role: req.user.role,
     };
 
     res.redirect(
