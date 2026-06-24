@@ -20,73 +20,6 @@ function cleanText(text) {
 }
 
 /**
- * Builds standard filter conditions for metadata
- */
-function buildFiltersSQL(filters, startParamIndex = 1) {
-  const clauses = [];
-  const params = [];
-  let paramIdx = startParamIndex;
-
-  if (!filters) {
-    return { clauseStr: '', params, nextIdx: paramIdx };
-  }
-
-  // Helper to safely parse and validate integers
-  const isValidInt = (val) => {
-    if (val === undefined || val === null || String(val).trim() === '') return false;
-    const parsed = parseInt(val, 10);
-    return !isNaN(parsed);
-  };
-
-  // 1. Publication Date Range Filter
-  if (filters.publicationDate) {
-    const { start, end } = filters.publicationDate;
-    if (isValidInt(start)) {
-      clauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER >= $${paramIdx}`);
-      params.push(parseInt(start, 10));
-      paramIdx++;
-    }
-    if (isValidInt(end)) {
-      clauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER <= $${paramIdx}`);
-      params.push(parseInt(end, 10));
-      paramIdx++;
-    }
-  }
-
-  // 2. Genres Filter (Array intersection)
-  if (filters.genres && Array.isArray(filters.genres) && filters.genres.length > 0) {
-    // Map genres case insensitively or check array intersection
-    clauses.push(`b.genres && $${paramIdx}::text[]`);
-    params.push(filters.genres);
-    paramIdx++;
-  }
-
-
-  // 4. Languages Filter
-  if (filters.languages && Array.isArray(filters.languages) && filters.languages.length > 0) {
-    // Convert filter languages to lowercase, check case-insensitive match on language_code
-    clauses.push(`lower(b.language_code) = ANY($${paramIdx}::text[])`);
-    params.push(filters.languages.map(l => l.toLowerCase()));
-    paramIdx++;
-  }
-
-  // 5. Branches Filter
-  if (filters.branches && Array.isArray(filters.branches) && filters.branches.length > 0) {
-    clauses.push(`l.branch_id = ANY($${paramIdx}::integer[])`);
-    params.push(filters.branches);
-    paramIdx++;
-  }
-
-  // 6. Available Only Filter
-  if (filters.availableOnly) {
-    clauses.push(`l.available_quantity > 0`);
-  }
-
-  const clauseStr = clauses.length > 0 ? ` AND ${clauses.join(' AND ')}` : '';
-  return { clauseStr, params, nextIdx: paramIdx };
-}
-
-/**
  * Executes standard keyword-based metadata search
  */
 export const executeStandardSearch = async (query, filters) => {
@@ -106,10 +39,6 @@ export const executeStandardSearch = async (query, filters) => {
     params.push(cleanQuery);
     paramIdx++;
   }
-
-  // Build extra filters
-  const { clauseStr, params: filterParams } = buildFiltersSQL(filters, paramIdx);
-  params = [...params, ...filterParams];
 
   const sql = `
     SELECT DISTINCT b.book_id, b.title, b.author, b.description, b.genres, b.isbn, b.publisher, b.publication_date, b.num_pages, b.language_code, b.image_url
@@ -154,10 +83,6 @@ export const executeSemanticSearch = async (query, filters) => {
 
     let params = [vectorStr];
     let paramIdx = 2;
-
-    // Build extra filters
-    const { clauseStr, params: filterParams } = buildFiltersSQL(filters, paramIdx);
-    params = [...params, ...filterParams];
 
     const sql = `
       SELECT DISTINCT b.book_id, b.title, b.author, b.description, b.genres, b.isbn, b.publisher, b.publication_date, b.num_pages, b.language_code, b.image_url,
