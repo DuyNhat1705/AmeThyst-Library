@@ -22,10 +22,10 @@ passport.use(
 
         if (result.rows.length === 0) {
           result = await pool.query(
-            `INSERT INTO users (email, username, avatar, password_hash)
-             VALUES ($1, $2, $3, $4)
-             RETURNING user_id, email, username, avatar`,
-            [email, username, avatar, 'GOOGLE_AUTH']
+            `INSERT INTO users (email, username, avatar, password_hash, role)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING user_id, email, username, avatar, role`,
+            [email, username, avatar, 'GOOGLE_AUTH', 'user']
           );
         }
 

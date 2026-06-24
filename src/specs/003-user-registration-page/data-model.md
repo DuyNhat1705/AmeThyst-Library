@@ -10,7 +10,7 @@ The `RegisterPage` will maintain a central state object representing the registr
 |-------|------|------------------|
 | `fullName` | `string` | Required, min 2 characters |
 | `email` | `string` | Required, valid email format |
-| `role` | `enum` | Must be `student` or `librarian` |
+| `role` | `enum` | Must be `user` or `librarian` |
 | `password` | `string` | Min 8 characters |
 
 ### UI State Entity

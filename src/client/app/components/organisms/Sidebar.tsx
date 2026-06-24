@@ -32,7 +32,7 @@ export default function Sidebar({ username }: { username: string }) {
           <div className="flex flex-col items-center space-y-3">
             <h2 className="text-lg font-bold text-[#45474C] dark:text-neutral-200">{username}</h2>
             <span className="bg-[#86F2E4] dark:bg-[#86F2E4]/20 text-[#006F66] dark:text-[#86F2E4] px-3 py-1 rounded-full text-sm font-semibold">
-              {t('profile.role_student')}
+              {t('profile.role_user')}
             </span>
           </div>
         </div>

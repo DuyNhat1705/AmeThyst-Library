@@ -6,12 +6,12 @@ import { sendOtp, checkVerified, clearOtp } from './otp.service.mjs';
 
 const SALT_ROUNDS = 10;
 
-const registerUser = async ({ email, password, username, phoneNumber, avatar }) => {
+const registerUser = async ({ email, password, username, phoneNumber, avatar, role }) => {
   const existing = await findUserByEmail(email);
   if (existing) throw new Error('Email already exists');
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  return await createUser({ email, passwordHash, username, phoneNumber, avatar });
+  return await createUser({ email, passwordHash, username, phoneNumber, avatar, role });
 };
 
 const loginUser = async ({ email, password }) => {
@@ -21,8 +21,10 @@ const loginUser = async ({ email, password }) => {
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) throw new Error('Invalid email or password');
 
+  const safeRole = user.role || 'user';
+
   const token = jwt.sign(
-    { userId: user.user_id, email: user.email },
+    { userId: user.user_id, email: user.email, role: safeRole },
     process.env.JWT_SECRET || 'your_super_secret_key_here',
     { expiresIn: '7d' }
   );
@@ -34,6 +36,7 @@ const loginUser = async ({ email, password }) => {
       email: user.email,
       username: user.username,
       avatar: user.avatar,
+      role: safeRole,
     },
   };
 };

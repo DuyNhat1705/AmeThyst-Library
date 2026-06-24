@@ -59,7 +59,8 @@ export default function RegisterFormCard({
           password: formData.password,
           username: formData.fullName,
           phoneNumber: formData.phoneNumber || null,
-          avatar: formData.avatar || null
+          avatar: formData.avatar || null,
+          role: formData.role || 'user'
         })
       });
 

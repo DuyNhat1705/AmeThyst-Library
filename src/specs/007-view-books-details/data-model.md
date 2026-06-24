@@ -14,6 +14,10 @@ Represents the core bibliographic information for a library resource.
 | category | string | Primary genre/subject |
 | isbn | string | International Standard Book Number |
 | language | string | Primary language of the text |
+| publisher | string | Name of the publisher |
+| publicationYear | number | Year the book was published |
+| numPages | number | Total number of pages |
+| rating | string | Book rating out of 5 |
 | coverImage | string | Path to the cover image asset |
 
 ### Inventory
@@ -22,9 +26,9 @@ Tracks the physical presence and location of a book within the library.
 | Field | Type | Description |
 |-------|------|-------------|
 | bookId | string | Reference to Book.id |
-| floor | number | Numerical floor level |
-| wing | string | Library wing (e.g., "East Wing") |
-| shelfId | string | Alphanumeric shelf identifier (e.g., "AR-204") |
+| location | string | Name of the library branch/location |
+| address | string | Physical address of the location |
+| shelf | string | Alphanumeric shelf identifier (e.g., "AR-204") |
 | availableCopies | number | Current count of physical copies on shelf |
 
 ### Reservation

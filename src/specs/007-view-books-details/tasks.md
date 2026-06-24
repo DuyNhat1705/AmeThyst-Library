@@ -56,7 +56,7 @@
 
 ## Phase 4: User Story 2 - Check Real-time Availability and Location (Priority: P1)
 
-**Goal**: Display Floor, Wing, Shelf ID, and real-time copy count.
+**Goal**: Display Location, Address, Shelf, and real-time copy count.
 
 **Independent Test**: Verify location details and copy count on the details page match the inventory record.
 
@@ -83,7 +83,7 @@
 - [x] T019 [P] [US3] Define `Reservation` model/logic in `server/src/models/library.models.mjs`
 - [x] T020 [US3] Implement `POST /api/library/reserve` endpoint in `server/src/routes/library.mjs`
 - [x] T021 [US3] Implement reservation business logic in `server/src/services/library.services.mjs`
-- [x] T022 [US3] Add "Reserve for Pickup" and "Add to Wishlist" buttons to `client/app/library/[id]/page.tsx`
+- [x] T022 [US3] Add "Reserve" action button to `client/app/library/[id]/page.tsx`
 - [x] T023 [US3] Add client-side state handling for reservation success/failure in `client/app/library/[id]/page.tsx`
 
 **Checkpoint**: User Story 3 is functional - reservations can be made and status updates live.

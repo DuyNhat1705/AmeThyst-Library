@@ -1,0 +1,58 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { isLoggedIn, getLoggedInUser } from '../utils/user';
+import { Toast } from '../components/atoms';
+import { useI18n } from '../providers/I18nProvider';
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { t } = useI18n();
+  const [authState, setAuthState] = useState<'loading' | 'authorized' | 'unauthorized' | 'forbidden'>('loading');
+  const [notification, setNotification] = useState<{ message: string; type: 'info' | 'error' } | null>(null);
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      setNotification({ message: t('dashboard.auth_required'), type: 'info' });
+      setAuthState('unauthorized');
+      setTimeout(() => router.push('/login'), 2000);
+      return;
+    }
+    const user = getLoggedInUser();
+    if ((user?.role || 'user') !== 'user') {
+      setNotification({ message: t('dashboard.auth_forbidden'), type: 'error' });
+      setAuthState('forbidden');
+      setTimeout(() => router.push('/'), 2000);
+      return;
+    }
+    setAuthState('authorized');
+  }, [router, t]);
+
+  if (authState === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-amber-50 dark:bg-neutral-900">
+        <p className="text-neutral-500 dark:text-neutral-400">Loading...</p>
+      </div>
+    );
+  }
+
+  if (authState === 'unauthorized' || authState === 'forbidden') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-amber-50 dark:bg-neutral-900">
+        {notification && (
+          <Toast message={notification.message} type={notification.type} onDismiss={() => {}} duration={4000} />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {notification && (
+        <Toast message={notification.message} type={notification.type} onDismiss={() => setNotification(null)} duration={4000} />
+      )}
+      {children}
+    </>
+  );
+}
