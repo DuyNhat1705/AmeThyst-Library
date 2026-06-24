@@ -10,9 +10,33 @@ interface BookCardProps {
 }
 
 export default function BookCard({ id, title, author, image }: BookCardProps) {
+  const handleCardClick = () => {
+    if (typeof window !== 'undefined') {
+      const searchHistoryId = sessionStorage.getItem('currentSearchHistoryId');
+      const token = localStorage.getItem('token');
+      if (searchHistoryId && token) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        fetch(`${apiUrl}/api/search/history/click`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            searchHistoryId,
+            bookId: id
+          })
+        }).catch(err => console.error("Failed to log intent click:", err));
+      }
+    }
+  };
 
   return (
-    <Link href={`/library/${id}`} className="flex flex-col gap-3 group cursor-pointer block">
+    <Link 
+      href={`/library/${id}`} 
+      onClick={handleCardClick}
+      className="flex flex-col gap-3 group cursor-pointer block"
+    >
       {/* Book Cover Container */}
       <div className="relative w-full aspect-[3/4] bg-[#EAEAEA] dark:bg-neutral-700 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
         <img

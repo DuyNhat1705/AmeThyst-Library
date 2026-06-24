@@ -7,8 +7,10 @@ import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
 import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
+import { initPgVector } from './config/db.config.mjs';
 
 dotenv.config();
+initPgVector();
 
 const app = express();
 app.use(cors());

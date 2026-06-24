@@ -1,6 +1,7 @@
 {
   "navbar": {
     "library": "Thư viện",
+    "search": "Tìm kiếm",
     "dashboard": "Bảng điều khiển",
     "study_together": "Học cùng nhau",
     "library_map": "Bản đồ thư viện",
@@ -27,7 +28,12 @@
     "search_placeholder": "Tìm kiếm...",
     "filter": "Lọc",
     "no_books_found": "Không tìm thấy sách",
-    "no_books_found_message": "Chúng tôi không thể tìm thấy sách nào phù hợp với tiêu chí của bạn."
+    "no_books_found_message": "Chúng tôi không thể tìm thấy sách nào phù hợp với tiêu chí của bạn.",
+    "search_mode": "Chế độ tìm kiếm",
+    "standard": "Tìm kiếm tiêu chuẩn",
+    "semantic": "Tìm kiếm ngữ nghĩa",
+    "standard_desc": "Tìm kiếm theo tên sách, tác giả, nhà xuất bản, hoặc ISBN",
+    "semantic_desc": "Tìm kiếm theo khái niệm, cốt truyện, hoặc chủ đề sách"
   },
   "book": {
     "loading": "Đang chuẩn bị trải nghiệm đọc sách của bạn...",

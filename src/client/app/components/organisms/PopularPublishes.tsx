@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import BookCard from '../molecules/BookCard';
+import EmptySearchResults from '../molecules/EmptySearchResults';
 import { useI18n } from '../../providers/I18nProvider';
 
 interface Book {
@@ -12,7 +13,19 @@ interface Book {
   coverImage?: string;
 }
 
-export default function PopularPublishes() {
+interface PopularPublishesProps {
+  searchQuery?: string;
+  searchMode?: string;
+  logHistory?: boolean;
+  onFetchCompleted?: () => void;
+}
+
+export default function PopularPublishes({
+  searchQuery = '',
+  searchMode = 'standard',
+  logHistory = false,
+  onFetchCompleted
+}: PopularPublishesProps) {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
@@ -26,7 +39,7 @@ export default function PopularPublishes() {
   const startYear = searchParams.get('startYear') || '';
   const endYear = searchParams.get('endYear') || '';
 
-  const hasActiveFilters = !!(genres || branches || availableOnly || startYear || endYear);
+  const hasActiveFilters = !!(genres || branches || availableOnly || startYear || endYear || searchQuery);
 
   const [books, setBooks] = useState<Book[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,22 +50,85 @@ export default function PopularPublishes() {
       setLoading(true);
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        
-        // Build dynamic query parameters for endpoint
-        const params = new URLSearchParams();
-        params.set('page', currentPage.toString());
-        params.set('limit', '24');
-        if (genres) params.set('genres', genres);
-        if (branches) params.set('branches', branches);
-        if (availableOnly) params.set('availableOnly', availableOnly);
-        if (startYear) params.set('startYear', startYear);
-        if (endYear) params.set('endYear', endYear);
+        const limit = 24;
 
-        const res = await fetch(`${apiUrl}/api/library/books?${params.toString()}`);
-        if (res.ok) {
-          const data = await res.json();
-          setBooks(data.books || []);
-          setTotalPages(data.totalPages || 1);
+        if (searchQuery || genres || branches || availableOnly || startYear || endYear) {
+          // Formulate filters object
+          const filterObj: any = {};
+          if (genres) {
+            filterObj.genres = genres.split(',');
+          }
+          if (branches) {
+            filterObj.branches = branches.split(',').map(Number);
+          }
+          if (availableOnly) {
+            filterObj.availableOnly = availableOnly === 'true';
+          }
+          if (startYear || endYear) {
+            filterObj.publicationDate = {};
+            if (startYear) filterObj.publicationDate.start = startYear;
+            if (endYear) filterObj.publicationDate.end = endYear;
+          }
+
+          const res = await fetch(`${apiUrl}/api/search`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(typeof window !== 'undefined' && localStorage.getItem('token')
+                ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                : {})
+            },
+            body: JSON.stringify({
+              query: searchQuery,
+              searchMode: searchMode,
+              logHistory: logHistory,
+              filters: filterObj
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const allSearchBooks = data.books || [];
+
+            // Client-side pagination slice
+            const startIndex = (currentPage - 1) * limit;
+            const paginatedBooks = allSearchBooks.slice(startIndex, startIndex + limit);
+
+            setBooks(paginatedBooks);
+            setTotalPages(Math.ceil(allSearchBooks.length / limit) || 1);
+
+            // Save searchHistoryId if returned (for click tracking later)
+            if (typeof window !== 'undefined') {
+              if (data.searchHistoryId) {
+                sessionStorage.setItem('currentSearchHistoryId', data.searchHistoryId);
+              } else {
+                sessionStorage.removeItem('currentSearchHistoryId');
+              }
+            }
+          }
+          if (onFetchCompleted) {
+            onFetchCompleted();
+          }
+        } else {
+          // Clear active search history context for passive catalog clicks
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('currentSearchHistoryId');
+          }
+
+          // Build dynamic query parameters for explore endpoint
+          const params = new URLSearchParams();
+          params.set('page', currentPage.toString());
+          params.set('limit', limit.toString());
+
+          const res = await fetch(`${apiUrl}/api/library/books?${params.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            setBooks(data.books || []);
+            setTotalPages(data.totalPages || 1);
+          }
+          if (onFetchCompleted) {
+            onFetchCompleted();
+          }
         }
       } catch (error) {
         console.error('Error fetching books from catalog:', error);
@@ -62,7 +138,7 @@ export default function PopularPublishes() {
     };
 
     fetchBooks();
-  }, [currentPage, genres, branches, availableOnly, startYear, endYear]);
+  }, [currentPage, genres, branches, availableOnly, startYear, endYear, searchQuery, searchMode, logHistory]);
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -71,6 +147,9 @@ export default function PopularPublishes() {
   };
 
   const handleClearFilters = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('currentSearchHistoryId');
+    }
     router.push(pathname);
   };
 
@@ -83,27 +162,19 @@ export default function PopularPublishes() {
 
       {/* Book Grid */}
       {loading ? (
-        <div className="flex justify-center items-center h-48 text-teal font-semibold text-lg animate-pulse">
-          {t('library.loading')}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 12 }).map((_, idx) => (
+            <div key={idx} className="flex flex-col gap-3 animate-pulse">
+              <div className="w-full aspect-[3/4] bg-[#EAEAEA] dark:bg-neutral-700 rounded-lg" />
+              <div className="flex flex-col gap-1.5">
+                <div className="h-4 bg-[#EAEAEA] dark:bg-neutral-700 rounded-md w-3/4" />
+                <div className="h-3 bg-[#EAEAEA] dark:bg-neutral-700 rounded-md w-1/2" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : books.length === 0 ? (
-        <div className="flex flex-col justify-center items-center h-64 gap-4 text-[#75777D] font-medium border-2 border-dashed border-[#C5C6CD] rounded-2xl bg-white/50 p-8 select-none">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#75777D" strokeWidth="1.5" className="text-gray-400">
-            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <div className="text-center flex flex-col gap-1">
-            <span className="text-[#091426] font-bold text-lg font-manrope">{t('library.no_books_found')}</span>
-            <span className="text-sm font-inter">{t('library.no_books_found_message')}</span>
-          </div>
-          {hasActiveFilters && (
-            <button
-              onClick={handleClearFilters}
-              className="mt-2 px-6 py-2.5 bg-[#006F66] text-white rounded-xl text-sm font-semibold hover:bg-[#005a53] transition active:scale-95 cursor-pointer shadow-sm font-inter"
-            >
-              Clear All Filters
-            </button>
-          )}
-        </div>
+        <EmptySearchResults hasActiveFilters={hasActiveFilters} onClearFilters={handleClearFilters} />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {books.map((book) => (

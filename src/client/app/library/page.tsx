@@ -19,6 +19,7 @@ function LibraryPageContent() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Read initial states from URL
+  const initialSearchQuery = searchParams.get('q') || '';
   const urlGenres = searchParams.get('genres') ? searchParams.get('genres')!.split(',') : [];
   const urlBranches = searchParams.get('branches') ? searchParams.get('branches')!.split(',').map(Number) : [];
   const urlAvailableOnly = searchParams.get('availableOnly') === 'true';
@@ -32,6 +33,12 @@ function LibraryPageContent() {
   const [startYear, setStartYear] = useState<string>(urlStartYear);
   const [endYear, setEndYear] = useState<string>(urlEndYear);
 
+  // Search query and mode state
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialSearchQuery);
+  const [searchMode, setSearchMode] = useState(searchParams.get('mode') || 'standard');
+  const [logHistory, setLogHistory] = useState(false);
+
   // Sync state if URL changes externally (e.g. Back/Forward button)
   useEffect(() => {
     setGenres(searchParams.get('genres') ? searchParams.get('genres')!.split(',') : []);
@@ -39,7 +46,35 @@ function LibraryPageContent() {
     setAvailableOnly(searchParams.get('availableOnly') === 'true');
     setStartYear(searchParams.get('startYear') || '');
     setEndYear(searchParams.get('endYear') || '');
+
+    const urlQ = searchParams.get('q') || '';
+    setSearchQuery(urlQ);
+    setDebouncedQuery(urlQ);
+
+    const urlMode = searchParams.get('mode') || 'standard';
+    setSearchMode(urlMode);
   }, [searchParams]);
+
+  // Debounce effect for typing
+  useEffect(() => {
+    if (searchQuery === debouncedQuery) return;
+
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+      setLogHistory(false); // Typing logs are always false (debounced)
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (searchQuery) {
+        params.set('q', searchQuery);
+      } else {
+        params.delete('q');
+      }
+      params.set('page', '1'); // Reset pagination on query change
+      router.push(`${pathname}?${params.toString()}`);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, debouncedQuery, searchParams, pathname, router]);
 
   // Helper to update URL query params
   const updateUrl = (updatedFilters: {
@@ -85,16 +120,19 @@ function LibraryPageContent() {
   // Immediate handlers for tags and checkboxes
   const handleGenresChange = (newGenres: string[]) => {
     setGenres(newGenres);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ genres: newGenres });
   };
 
   const handleBranchesChange = (newBranches: number[]) => {
     setBranches(newBranches);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ branches: newBranches });
   };
 
   const handleAvailableOnlyChange = (newAvailableOnly: boolean) => {
     setAvailableOnly(newAvailableOnly);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ availableOnly: newAvailableOnly });
   };
 
@@ -102,6 +140,7 @@ function LibraryPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (startYear !== urlStartYear || endYear !== urlEndYear) {
+        setLogHistory(true); // Filter change triggers persistent log
         updateUrl({ startYear, endYear });
       }
     }, 500);
@@ -109,40 +148,88 @@ function LibraryPageContent() {
     return () => clearTimeout(timer);
   }, [startYear, endYear]);
 
+  const handleSearchTrigger = (query: string, isSubmit?: boolean) => {
+    setSearchQuery(query);
+    if (isSubmit) {
+      setDebouncedQuery(query);
+      setLogHistory(true); // Explicit submit triggers persistent log
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (query) {
+        params.set('q', query);
+      } else {
+        params.delete('q');
+      }
+      params.set('page', '1');
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  const handleSearchModeChange = (mode: string) => {
+    setSearchMode(mode);
+    setLogHistory(true); // Mode change triggers persistent log
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('mode', mode);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   const handleReset = () => {
     setGenres([]);
     setBranches([]);
     setAvailableOnly(false);
     setStartYear('');
     setEndYear('');
+    setSearchQuery('');
+    setDebouncedQuery('');
+    setSearchMode('standard');
+    setLogHistory(false);
     router.push(pathname);
   };
 
   return (
-    <HomeLayout
-      navbar={<NavBar />}
-      hero={<HeroSection />}
-      searchBar={<SearchBar onFilterClick={() => setIsFilterOpen(true)} />}
-      popularPublishes={<PopularPublishes />}
-      filterPanel={
-        <FilterPanel
-          isOpen={isFilterOpen}
-          onClose={() => setIsFilterOpen(false)}
-          selectedGenres={genres}
-          onGenresChange={handleGenresChange}
-          selectedBranches={branches}
-          onBranchesChange={handleBranchesChange}
-          availableOnly={availableOnly}
-          onAvailableOnlyChange={handleAvailableOnlyChange}
-          startYear={startYear}
-          endYear={endYear}
-          onStartYearChange={setStartYear}
-          onEndYearChange={setEndYear}
-          onReset={handleReset}
-        />
-      }
-      footer={<Footer />}
-    />
+    <>
+      <HomeLayout
+        navbar={<NavBar />}
+        hero={<HeroSection />}
+        searchBar={
+          <SearchBar
+            onFilterClick={() => setIsFilterOpen(true)}
+            onSearchTrigger={handleSearchTrigger}
+            value={searchQuery}
+          />
+        }
+        popularPublishes={
+          <PopularPublishes
+            searchQuery={debouncedQuery}
+            searchMode={searchMode}
+            logHistory={logHistory}
+            onFetchCompleted={() => setLogHistory(false)}
+          />
+        }
+        filterPanel={
+          <FilterPanel
+            isOpen={isFilterOpen}
+            onClose={() => setIsFilterOpen(false)}
+            selectedGenres={genres}
+            onGenresChange={handleGenresChange}
+            selectedBranches={branches}
+            onBranchesChange={handleBranchesChange}
+            availableOnly={availableOnly}
+            onAvailableOnlyChange={handleAvailableOnlyChange}
+            startYear={startYear}
+            endYear={endYear}
+            onStartYearChange={setStartYear}
+            onEndYearChange={setEndYear}
+            onReset={handleReset}
+            searchMode={searchMode}
+            onSearchModeChange={handleSearchModeChange}
+          />
+        }
+        footer={<Footer />}
+      />
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
 import YearRangeFilter from '../molecules/YearRangeFilter';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ interface FilterPanelProps {
   onStartYearChange: (year: string) => void;
   onEndYearChange: (year: string) => void;
   onReset: () => void;
+  searchMode?: string;
+  onSearchModeChange?: (mode: string) => void;
 }
 
 const GENRES = [
@@ -49,8 +52,12 @@ export default function FilterPanel({
   endYear,
   onStartYearChange,
   onEndYearChange,
-  onReset
+  onReset,
+  searchMode = 'standard',
+  onSearchModeChange
 }: FilterPanelProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -119,6 +126,49 @@ export default function FilterPanel({
 
         {/* Scrollable Content */}
         <div className="flex-grow overflow-y-auto p-6 flex flex-col gap-8">
+          {/* Section 0: Search Mode */}
+          {onSearchModeChange && (
+            <div className="flex flex-col gap-3">
+              <span className="text-sm font-semibold text-[#091426] font-inter">
+                {t('library.search_mode')}
+              </span>
+              <div className="grid grid-cols-2 gap-2 bg-[#F0E6D8] dark:bg-neutral-800 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => onSearchModeChange('standard')}
+                  className={`py-2 px-3 rounded-lg text-sm font-semibold transition cursor-pointer select-none text-center ${
+                    searchMode === 'standard'
+                      ? 'bg-[#006F66] text-white shadow-xs'
+                      : 'text-[#45474C] hover:text-[#091426] dark:text-neutral-400 dark:hover:text-neutral-200'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span>{t('library.standard')}</span>
+                    <span className="text-[10px] font-normal opacity-85 mt-0.5 max-w-[150px] leading-tight">
+                      {t('library.standard_desc')}
+                    </span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSearchModeChange('semantic')}
+                  className={`py-2 px-3 rounded-lg text-sm font-semibold transition cursor-pointer select-none text-center ${
+                    searchMode === 'semantic'
+                      ? 'bg-[#006F66] text-white shadow-xs'
+                      : 'text-[#45474C] hover:text-[#091426] dark:text-neutral-400 dark:hover:text-neutral-200'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span>{t('library.semantic')}</span>
+                    <span className="text-[10px] font-normal opacity-85 mt-0.5 max-w-[150px] leading-tight">
+                      {t('library.semantic_desc')}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Section 1: Genres */}
           <div className="flex flex-col gap-3">
             <span className="text-sm font-semibold text-[#091426] font-inter">Genres</span>

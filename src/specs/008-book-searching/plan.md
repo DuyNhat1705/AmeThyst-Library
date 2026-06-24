@@ -1,87 +1,64 @@
-# Implementation Plan: Book Searching
+# Implementation Plan: In-Place Book Searching & Log Refinement
 
-**Branch**: `008-book-searching` | **Date**: 2026-06-21 | **Spec**: [spec.md](spec.md)
-
-**Input**: Feature specification from `specs/008-book-searching/spec.md`
+**Branch**: `009-book-filter-panel` | **Date**: 2026-06-24 | **Spec**: [spec.md](spec.md)
 
 ## Summary
-
-The goal of this feature is to implement a dual-mode Book Searching feature containing two search modes: Standard (OPAC) Search (keyword matching on metadata like Title, Author, ISBN, and Publisher) and Semantic Search (natural language description similarity matching utilizing pgvector in PostgreSQL). The results list will support real-time filtering by publication date range, genres, page count, and language. Users who are logged in will have their search queries tracked and recorded in the database `SearchHistory` collection to support future personalized book recommendation features. If search results are empty, a clean user-friendly screen with tips will be rendered.
+The goal of this phase is to refine the Book Searching UI and database logging mechanism:
+1. **In-Place UI**: Remove the `SearchPanel` overlay drawer entirely. Instead, standard and semantic search query inputs directly filter and update the catalog grid on the `/library` page in-place, replacing the default explored books catalog (`PopularPublishes.tsx`).
+2. **Filter Panel Integration**: Reuse the slide-out `FilterPanel.tsx` drawer (supporting Genres, Locations, Year Range, and Availability) to filter both search results and explore views. Add the search mode selector (Standard vs Semantic) directly into the `FilterPanel.tsx` drawer as a top option.
+3. **Database Migration**: Rename the database column `query` to `search_content` in the `search_history` table to store a composed text summarizing the search text + applied filter tags (e.g. `Query: "dystopian" | Filters: { Genres: [Sci-Fi] }`).
+4. **Keystroke Log Debouncing & Intent Logging**: Prevent character-by-character search logs. Introduce a `logHistory: boolean` parameter to the search API. Trigger persistent history logging (`logHistory: true`) **only** when the user presses Enter, clicks the search icon, or applies filters (including filters applied without a query). Debounced typing searches will pass `logHistory: false` to fetch instant results without polluting database logs.
 
 ## Technical Context
-
-**Language/Version**: JavaScript (Node.js 20+, React 19)
-
-**Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, pgvector (pg package or pgvector library extension), Node Embedding library or OpenAI API client for embedding generation.
-
-**Storage**: PostgreSQL (via existing DB service) with pgvector extension enabled, storing traditional metadata, search history logs, and book description vector embeddings in a single database.
-
-**Testing**: ESLint, manual route validation, and integration tests for pgvector similarity search queries.
-
-**Target Platform**: Modern Web Browsers
-
-**Project Type**: Full-stack Web Application (Next.js App Router + Express)
-
-**Performance Goals**: Standard search response < 200ms; Semantic search (including query embedding generation and similarity query) < 800ms.
-
-**Constraints**: Strict compliance with `constitution.md` (Atomic Design, Layered Architecture, `.mjs` extensions, relative import checks).
-
-**Scale/Scope**: Integration of vector search capability into library catalog search.
+- **Language/Version**: JavaScript (Node.js 20+, React 19)
+- **Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, pg (PostgreSQL)
+- **Storage**: PostgreSQL with pgvector extension enabled. Schema update: `ALTER TABLE search_history RENAME COLUMN query TO search_content;` (or equivalent migration).
+- **Testing**: Manual scenario testing of search submissions, live typing debounce vs enter logging, and click intent logs.
 
 ## Constitution Check
-
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
-
-- [x] **Atomic Design Compliance**: Components will be broken down into Atoms, Molecules, and Organisms in `client/app/components`.
-- [x] **Layered Backend Architecture**: New search and history endpoints will follow `Route -> Middleware -> Controller -> Service -> Model`.
-- [x] **Naming Conventions**: camelCase for frontend variables and controllers/services, PascalCase for components/models.
-- [x] **Environment Variables**: Backend base URL loaded via `NEXT_PUBLIC_API_URL`. PostgreSQL connection credentials and Embedding model API keys stored in server `.env`.
-- [x] **Modular Backend**: Use of ES Modules (`.mjs`) and directory-specific naming patterns.
+- **Atomic Design Compliance**: SearchToggle, checkboxes, and year range filters reside in `client/app/components/atoms/` and `molecules/`. The main grid catalog and unified slide-out filter reside in `client/app/components/organisms/`.
+- **Layered Backend Architecture**: Backend search flows follow `Route -> Middleware -> Controller -> Service -> Model`.
+- **Import Path Verification**: Relative path checks inside `client/` and `server/`.
 
 ## Project Structure
 
-### Documentation (this feature)
-
+### Documentation
 ```text
 src/specs/008-book-searching/
-├── spec.md              # Feature Specification (Standard/Semantic, filters, pgvector, history)
-└── plan.md              # This file
+├── spec.md              # Original Feature Specification
+├── plan.md              # This file (In-place UI + Search Log Refinements)
+├── research.md          # Consolidated research on in-place routing & history logs
+└── contracts/
+    └── api-contract.md  # API JSON schemas with logHistory parameter
 ```
 
-### Source Code (repository root)
-
+### Source Code File Updates
 ```text
 client/
 └── app/
-    ├── search/
-    │   └── page.jsx      # Main Search page showing search bar, toggle, filter sidebar, results grid
+    ├── library/
+    │   └── page.tsx                 # Manages unified state for query, mode, filters, and logs
     └── components/
-        ├── atoms/        # Search inputs, toggle switches, filter checkmarks, pagination buttons
-        ├── molecules/    # Result cards, filter section dropdowns, empty state UI
-        └── organisms/    # Results list grid, sidebar filters panel, search execution bar
+        ├── organisms/
+        │   ├── FilterPanel.tsx      # Slide-out drawer; houses Standard/Semantic search mode toggle
+        │   └── PopularPublishes.tsx  # Dynamic catalog list; fetches in-place search results
+        └── molecules/
+            └── SearchBar.tsx        # Triggers search submissions (Enter / Click search)
 server/
 └── src/
-    ├── config/
-    │   └── db.config.mjs          # PostgreSQL and pgvector configuration and initialization
     ├── controllers/
-    │   ├── search.controllers.mjs  # Handles standard/semantic search triggers and payload extraction
-    │   └── history.controllers.mjs # Handles retrieval of logged search histories
-    ├── middlewares/
-    │   └── auth.middlewares.mjs   # Checks for authentication session to log search history
+    │   └── search.controllers.mjs   # Formulates search response and invokes conditional history logs
     ├── models/
-    │   └── history.models.mjs     # SearchHistory mongoose/pg model definition
-    ├── routes/
-    │   ├── search.routes.mjs      # Endpoint: GET/POST /api/search
-    │   └── history.routes.mjs     # Endpoint: GET/POST /api/search/history
+    │   └── history.models.mjs       # Interacts with DB referencing search_content column
     └── services/
-        ├── search.services.mjs    # Performs standard Postgres metadata lookup or pgvector similarity search
-        └── history.services.mjs   # Interacts with DB to store or retrieve user search histories
+        ├── search.services.mjs      # Executes SQL query matches combining metadata filters & pgvector
+        └── history.services.mjs     # Composes search_content text logging
 ```
 
-**Structure Decision**: Standard web application structure separating `client/` (Next.js App Router) and `server/` (Express API), in accordance with the layered architecture pattern.
-
-## Complexity Tracking
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| None | N/A | N/A |
+## Done When
+- [ ] Database migration renaming `query` to `search_content` in `search_history` executed.
+- [ ] `FilterPanel.tsx` updated to support Standard/Semantic search mode toggle.
+- [ ] `PopularPublishes.tsx` updated to fetch search results dynamically in-place using `/api/search` when queries or filters are active.
+- [ ] Search input submit handlers (Enter, Search button click) mapped to trigger database logging, while live typing performs non-logging fetches.
+- [ ] Filter panel adjustments with or without queries trigger database logs.
+- [ ] Click-through interaction logging correctly maps search results clicks to the active history entry.
