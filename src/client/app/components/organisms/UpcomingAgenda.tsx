@@ -40,7 +40,7 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <span className="text-neutral-400 dark:text-neutral-500 font-manrope text-sm">Loading...</span>
+          <span className="text-neutral-400 dark:text-neutral-500 font-manrope text-sm">{t('dashboard.agenda_loading')}</span>
         </div>
       ) : (
         <>
@@ -52,14 +52,14 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
               <div className="bg-[#E8E2D5] dark:bg-neutral-700 flex-1 h-px" />
             </div>
             {today.length === 0 ? (
-              <p className="text-neutral-400 dark:text-neutral-500 font-manrope text-xs py-4 text-center">No events today</p>
+              <p className="text-neutral-400 dark:text-neutral-500 font-manrope text-xs py-4 text-center">{t('dashboard.agenda_no_events_today')}</p>
             ) : (
               <div className="flex flex-col gap-5">
                 {today.map((ev) => (
                   <div key={ev.id} className="flex items-start gap-4">
                     <div className="pt-1 w-12 shrink-0">
                       <span className="text-[rgba(67,71,77,0.60)] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                        {ev.time || 'All day'}
+                        {ev.time || t('dashboard.agenda_all_day')}
                       </span>
                     </div>
                     <div className="flex items-start gap-3 min-w-0">
@@ -91,14 +91,14 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
               <div className="bg-[#E8E2D5] dark:bg-neutral-700 flex-1 h-px" />
             </div>
             {tomorrow.length === 0 ? (
-              <p className="text-neutral-400 dark:text-neutral-500 font-manrope text-xs py-4 text-center">No events tomorrow</p>
+              <p className="text-neutral-400 dark:text-neutral-500 font-manrope text-xs py-4 text-center">{t('dashboard.agenda_no_events_tomorrow')}</p>
             ) : (
               <div className="flex flex-col gap-5">
                 {tomorrow.map((ev) => (
                   <div key={ev.id} className="flex items-start gap-4">
                     <div className="pt-1 w-12 shrink-0">
                       <span className="text-[rgba(67,71,77,0.60)] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                        {ev.time || 'All day'}
+                        {ev.time || t('dashboard.agenda_all_day')}
                       </span>
                     </div>
                     <div className="flex items-start gap-3 min-w-0">
@@ -136,11 +136,11 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
 
           {showForm && (
             <form className="flex flex-col gap-3 p-4 border border-dashed border-[#E8E2D5] dark:border-neutral-600 rounded-lg mt-2">
-              <input name="title" placeholder="Task title" className="text-sm p-2 border rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100" />
+              <input name="title" placeholder={t('dashboard.agenda_task_title')} className="text-sm p-2 border rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100" />
               <input name="date" type="date" className="text-sm p-2 border rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100" />
               <input name="time" type="time" className="text-sm p-2 border rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100" />
               <button type="submit" className="py-2 px-4 bg-black text-white dark:bg-neutral-100 dark:text-black rounded-full text-sm font-bold hover:opacity-80 transition-opacity">
-                Save
+                {t('dashboard.agenda_save')}
               </button>
             </form>
           )}

@@ -17,8 +17,8 @@ interface DashboardCalendarProps {
 type ViewMode = 'month' | 'week' | 'day';
 
 const dayKeys = ['calendar_mon', 'calendar_tue', 'calendar_wed', 'calendar_thu', 'calendar_fri', 'calendar_sat', 'calendar_sun'];
-const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const dayNamesShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const monthKeys = ['calendar_month_january', 'calendar_month_february', 'calendar_month_march', 'calendar_month_april', 'calendar_month_may', 'calendar_month_june', 'calendar_month_july', 'calendar_month_august', 'calendar_month_september', 'calendar_month_october', 'calendar_month_november', 'calendar_month_december'];
+const dayShortKeys = ['calendar_day_mon_short', 'calendar_day_tue_short', 'calendar_day_wed_short', 'calendar_day_thu_short', 'calendar_day_fri_short', 'calendar_day_sat_short', 'calendar_day_sun_short'];
 
 function getMonthGrid(year: number, month: number) {
   const firstDay = new Date(year, month, 1);
@@ -111,17 +111,17 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
       <div className="flex justify-between items-center pb-6">
         <div className="flex items-center gap-6">
           <h3 className="font-manrope text-xl font-bold text-black dark:text-neutral-100">
-            {view === 'month' && `${monthNames[month]} ${year}`}
+            {view === 'month' && `${t(`dashboard.${monthKeys[month]}`)} ${year}`}
             {view === 'week' && (() => {
               const start = getWeekStart(viewDate);
               const end = new Date(start);
               end.setDate(end.getDate() + 6);
               if (start.getMonth() === end.getMonth()) {
-                return `${monthNames[start.getMonth()]} ${start.getDate()} – ${end.getDate()}, ${start.getFullYear()}`;
+                return `${t(`dashboard.${monthKeys[start.getMonth()]}`)} ${start.getDate()} – ${end.getDate()}, ${start.getFullYear()}`;
               }
-              return `${monthNames[start.getMonth()]} ${start.getDate()} – ${monthNames[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
+              return `${t(`dashboard.${monthKeys[start.getMonth()]}`)} ${start.getDate()} – ${t(`dashboard.${monthKeys[end.getMonth()]}`)} ${end.getDate()}, ${end.getFullYear()}`;
             })()}
-            {view === 'day' && `${dayNamesShort[viewDate.getDay() === 0 ? 6 : viewDate.getDay() - 1]}, ${monthNames[month]} ${viewDate.getDate()}, ${year}`}
+            {view === 'day' && `${t(`dashboard.${dayShortKeys[viewDate.getDay() === 0 ? 6 : viewDate.getDay() - 1]}`)}, ${t(`dashboard.${monthKeys[month]}`)} ${viewDate.getDate()}, ${year}`}
           </h3>
           <div className="flex p-1 items-center rounded-full bg-[#F2EDE3] dark:bg-neutral-700">
             <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/50 dark:hover:bg-neutral-600 transition-colors">
@@ -192,7 +192,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
                   ))}
                   {dayEvents.length > 2 && (
                     <span className="text-[#43474D] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                      +{dayEvents.length - 2} more
+                      +{dayEvents.length - 2}
                     </span>
                   )}
                 </div>
@@ -232,7 +232,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
                 return (
                   <div key={i} className="text-center flex flex-col items-center gap-1">
                     <span className="text-[rgba(67,71,77,0.60)] dark:text-neutral-500 font-hankenGrotesk text-[10px] leading-[15px] tracking-[0.1em]">
-                      {dayNamesShort[i]}
+                      {t(`dashboard.${dayShortKeys[i]}`)}
                     </span>
                     <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isToday ? 'bg-black dark:bg-neutral-100' : ''}`}>
                       <span className={`font-hankenGrotesk text-sm font-bold leading-4 ${isToday ? 'text-white dark:text-black' : 'text-[#1D1C16] dark:text-neutral-300'}`}>
@@ -255,7 +255,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
                 if (!hasEvents) {
                   return (
                     <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">
-                      No events this week
+                      {t('dashboard.calendar_no_events_week')}
                     </div>
                   );
                 }
@@ -298,7 +298,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
             <div className="flex flex-col gap-3 py-4">
               {dayEvents.length === 0 ? (
                 <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">
-                  No events on this day
+                  {t('dashboard.calendar_no_events_day')}
                 </div>
               ) : (
                 dayEvents.map((ev, i) => (

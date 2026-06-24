@@ -14,3 +14,4 @@ export { default as BookDetailHero } from './BookDetailHero';
 export { default as RecommendationCarousel } from './RecommendationCarousel';
 export { default as DashboardSidebar } from './DashboardSidebar';
 export { default as UpcomingAgenda } from './UpcomingAgenda';
+export { default as FeesBreakdownPanel } from './FeesBreakdownPanel';

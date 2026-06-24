@@ -1,20 +1,51 @@
-import { BorrowedBook, statusConfig } from './BorrowedBookCard';
+import { useI18n } from '../../providers/I18nProvider';
+import type { BookStatus } from './BorrowedBookCard';
+
+interface BorrowedBook {
+  id: string;
+  title: string;
+  author: string;
+  cover: string;
+  borrowDate: string;
+  dueDate: string;
+  status: BookStatus;
+  returnedDate?: string;
+}
 
 interface Props {
   books: BorrowedBook[];
 }
 
+const statusKey: Record<BookStatus, string> = {
+  borrowed: 'dashboard.borrowed_status_borrowed',
+  overdue: 'dashboard.borrowed_status_overdue',
+  returned: 'dashboard.borrowed_status_returned',
+};
+
+const statusBg: Record<BookStatus, string> = {
+  borrowed: 'bg-[#E8F0FE] dark:bg-blue-900/30',
+  overdue: 'bg-[#FCE8E6] dark:bg-red-900/30',
+  returned: 'bg-[#E6F4EA] dark:bg-green-900/30',
+};
+
+const statusText: Record<BookStatus, string> = {
+  borrowed: 'text-[#1A73E8] dark:text-blue-300',
+  overdue: 'text-[#D93025] dark:text-red-300',
+  returned: 'text-[#137333] dark:text-green-300',
+};
+
 export default function BorrowedHistoryTable({ books }: Props) {
+  const { t } = useI18n();
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-xl overflow-hidden shadow-sm">
       <table className="w-full text-left">
         <thead>
           <tr className="border-b border-[#E8E2D5] dark:border-neutral-700">
-            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">Title</th>
-            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">Author</th>
-            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">Borrowed</th>
-            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">Returned</th>
-            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">Status</th>
+            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">{t('dashboard.borrowed_table_title')}</th>
+            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">{t('dashboard.borrowed_table_author')}</th>
+            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">{t('dashboard.borrowed_table_borrowed')}</th>
+            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">{t('dashboard.borrowed_table_returned')}</th>
+            <th className="py-3 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">{t('dashboard.borrowed_table_status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -38,8 +69,8 @@ export default function BorrowedHistoryTable({ books }: Props) {
               <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.borrowDate}</td>
               <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.returnedDate || '—'}</td>
               <td className="py-4 px-5">
-                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold leading-4 ${statusConfig[book.status].bg} ${statusConfig[book.status].text}`}>
-                  {statusConfig[book.status].label}
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold leading-4 ${statusBg[book.status]} ${statusText[book.status]}`}>
+                  {t(statusKey[book.status])}
                 </span>
               </td>
             </tr>
@@ -47,7 +78,7 @@ export default function BorrowedHistoryTable({ books }: Props) {
         </tbody>
       </table>
       {books.length === 0 && (
-        <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">No books found</div>
+        <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">{t('dashboard.borrowed_no_books')}</div>
       )}
     </div>
   );
