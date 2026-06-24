@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan at
-`specs/009-user-dashboard-page/plan.md`
+`specs/010-user-dashboard-recommendation/plan.md`
 <!-- SPECKIT END -->

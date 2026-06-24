@@ -13,9 +13,10 @@ interface RecommendedBook {
 
 interface RecommendationCarouselProps {
   books: RecommendedBook[];
+  title?: string;
 }
 
-export default function RecommendationCarousel({ books }: RecommendationCarouselProps) {
+export default function RecommendationCarousel({ books, title }: RecommendationCarouselProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
 
@@ -30,10 +31,10 @@ export default function RecommendationCarousel({ books }: RecommendationCarousel
   };
 
   return (
-    <section className="flex flex-col gap-8 w-full mt-24">
+    <section className="flex flex-col gap-6 w-full mt-8">
       <div className="flex justify-between items-end">
         <h2 className="text-[#091426] dark:text-neutral-200 text-3xl md:text-4xl font-semibold tracking-[0.1em]">
-          {t('book.you_may_like')}
+          {title || t('book.you_may_like')}
         </h2>
         <div className="flex items-start gap-2 w-fit">
           <button 
@@ -82,7 +83,7 @@ export default function RecommendationCarousel({ books }: RecommendationCarousel
         className="flex overflow-x-auto pb-8 gap-6 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {books.map((book) => (
-          <div key={book.id} className="min-w-[280px]">
+          <div key={book.id} className="w-[160px] md:w-[220px] flex-none">
             <BookCard
               id={book.id}
               title={book.title}

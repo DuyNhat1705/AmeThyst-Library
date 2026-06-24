@@ -6,7 +6,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
       <NavBar />
       <div className="flex flex-1">
         <DashboardSidebar />
-        <main className="flex-1 p-8 pl-10 flex flex-col gap-8">
+        <main className="flex-1 p-8 pl-10 flex flex-col gap-8 min-w-0">
           {children}
         </main>
       </div>
