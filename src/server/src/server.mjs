@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import libraryRoutes from './routes/library.mjs';
 import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
+import searchRoutes from './routes/search.routes.mjs';
+import historyRoutes from './routes/history.routes.mjs';
 
 dotenv.config();
 
@@ -15,6 +17,8 @@ app.use(passport.initialize());
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use(libraryRoutes);
+app.use(searchRoutes);
+app.use(historyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
