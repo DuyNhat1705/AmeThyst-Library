@@ -61,20 +61,6 @@ function buildFiltersSQL(filters, startParamIndex = 1) {
     paramIdx++;
   }
 
-  // 3. Page Count Range Filter
-  if (filters.pageRange) {
-    const { min, max } = filters.pageRange;
-    if (isValidInt(min)) {
-      clauses.push(`b.num_pages >= $${paramIdx}`);
-      params.push(parseInt(min, 10));
-      paramIdx++;
-    }
-    if (isValidInt(max)) {
-      clauses.push(`b.num_pages <= $${paramIdx}`);
-      params.push(parseInt(max, 10));
-      paramIdx++;
-    }
-  }
 
   // 4. Languages Filter
   if (filters.languages && Array.isArray(filters.languages) && filters.languages.length > 0) {
