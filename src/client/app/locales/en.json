@@ -33,7 +33,8 @@
     "standard": "Standard Search",
     "semantic": "Semantic Search",
     "standard_desc": "Search by title, author, publisher, or ISBN",
-    "semantic_desc": "Search by book concepts, plots, or topics"
+    "semantic_desc": "Search by book concepts, plots, or topics",
+    "result": "Result"
   },
   "book": {
     "loading": "Preparing your reading experience...",

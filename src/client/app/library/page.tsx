@@ -120,19 +120,16 @@ function LibraryPageContent() {
   // Immediate handlers for tags and checkboxes
   const handleGenresChange = (newGenres: string[]) => {
     setGenres(newGenres);
-    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ genres: newGenres });
   };
 
   const handleBranchesChange = (newBranches: number[]) => {
     setBranches(newBranches);
-    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ branches: newBranches });
   };
 
   const handleAvailableOnlyChange = (newAvailableOnly: boolean) => {
     setAvailableOnly(newAvailableOnly);
-    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ availableOnly: newAvailableOnly });
   };
 
@@ -140,7 +137,6 @@ function LibraryPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (startYear !== urlStartYear || endYear !== urlEndYear) {
-        setLogHistory(true); // Filter change triggers persistent log
         updateUrl({ startYear, endYear });
       }
     }, 500);
@@ -167,7 +163,6 @@ function LibraryPageContent() {
 
   const handleSearchModeChange = (mode: string) => {
     setSearchMode(mode);
-    setLogHistory(true); // Mode change triggers persistent log
 
     const params = new URLSearchParams(searchParams.toString());
     params.set('mode', mode);
@@ -211,7 +206,10 @@ function LibraryPageContent() {
         filterPanel={
           <FilterPanel
             isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
+            onClose={() => {
+              setIsFilterOpen(false);
+              setLogHistory(true);
+            }}
             selectedGenres={genres}
             onGenresChange={handleGenresChange}
             selectedBranches={branches}

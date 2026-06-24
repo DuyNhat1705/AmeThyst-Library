@@ -1,49 +1,6 @@
 import { createSearchHistory, addClickedBook, getSearchHistoryByUserId } from '../models/history.models.mjs';
 
 /**
- * Composes a rich text summary of search query and filters.
- */
-function composeSearchContent(query, filters) {
-  const queryStr = query && query.trim() ? `Query: "${query.trim()}"` : 'Query: (None)';
-  
-  if (!filters || Object.keys(filters).length === 0) {
-    return `${queryStr} | Filters: None`;
-  }
-  
-  const filterParts = [];
-  
-  // Genres
-  if (filters.genres && Array.isArray(filters.genres) && filters.genres.length > 0) {
-    filterParts.push(`Genres: [${filters.genres.join(', ')}]`);
-  }
-  
-  // Branches
-  if (filters.branches && Array.isArray(filters.branches) && filters.branches.length > 0) {
-    filterParts.push(`Branches: [${filters.branches.join(', ')}]`);
-  }
-  
-  // Publication date range
-  if (filters.publicationDate) {
-    const { start, end } = filters.publicationDate;
-    if (start && end) {
-      filterParts.push(`Years: ${start} - ${end}`);
-    } else if (start) {
-      filterParts.push(`Years: >= ${start}`);
-    } else if (end) {
-      filterParts.push(`Years: <= ${end}`);
-    }
-  }
-  
-  // Available Only
-  if (filters.availableOnly) {
-    filterParts.push('Available Only');
-  }
-  
-  const filtersStr = filterParts.length > 0 ? `Filters: { ${filterParts.join('; ')} }` : 'Filters: None';
-  return `${queryStr} | ${filtersStr}`;
-}
-
-/**
  * Logs search query and configuration for an authenticated user.
  * 
  * @param {string} userId - The user ID
@@ -52,20 +9,19 @@ function composeSearchContent(query, filters) {
  * @param {object} filters - The active filters
  * @returns {Promise<object|null>} The logged entry or null if skipped
  */
-export const logSearchHistory = async (userId, query, searchMode, filters) => {
+export const logSearchHistory = async (userId, query, searchMode, filters, bookClicked = null) => {
   if (!userId) return null;
 
   const cleanQuery = query && query.trim() ? query.trim() : null;
   const hasFilters = filters && Object.keys(filters).length > 0;
 
-  if (!cleanQuery && !hasFilters) {
-    console.log('Skipping search history log for empty query and empty filters.');
+  if (!cleanQuery && !hasFilters && !bookClicked) {
+    console.log('Skipping search history log for empty query, empty filters, and no book click.');
     return null;
   }
 
   try {
-    const searchContent = composeSearchContent(cleanQuery, filters);
-    return await createSearchHistory(userId, searchContent, searchMode, filters);
+    return await createSearchHistory(userId, cleanQuery, searchMode, filters, bookClicked);
   } catch (error) {
     console.error('Error logging search history:', error);
     return null;

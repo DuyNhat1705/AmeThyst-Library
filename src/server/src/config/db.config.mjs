@@ -5,6 +5,9 @@ export const initPgVector = async () => {
     await pool.query("CREATE EXTENSION IF NOT EXISTS vector");
     console.log("pgvector extension verified/enabled in database");
 
+    // Drop unused clicked_book_ids column if it exists
+    await pool.query("ALTER TABLE search_history DROP COLUMN IF EXISTS clicked_book_ids;");
+
     // Check if the query column exists, if so rename it to search_content
     const checkQueryCol = await pool.query(`
       SELECT column_name 

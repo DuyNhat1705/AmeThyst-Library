@@ -33,7 +33,8 @@
     "standard": "Tìm kiếm tiêu chuẩn",
     "semantic": "Tìm kiếm ngữ nghĩa",
     "standard_desc": "Tìm kiếm theo tên sách, tác giả, nhà xuất bản, hoặc ISBN",
-    "semantic_desc": "Tìm kiếm theo khái niệm, cốt truyện, hoặc chủ đề sách"
+    "semantic_desc": "Tìm kiếm theo khái niệm, cốt truyện, hoặc chủ đề sách",
+    "result": "Kết quả"
   },
   "book": {
     "loading": "Đang chuẩn bị trải nghiệm đọc sách của bạn...",

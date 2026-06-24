@@ -25,10 +25,14 @@ export default function SearchBar({
   const { t } = useI18n();
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const activeQuery = value !== undefined ? value : query;
 
   const executeSearch = () => {
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
     if (onSearchTrigger) {
       onSearchTrigger(activeQuery, true);
       return;
@@ -44,6 +48,9 @@ export default function SearchBar({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
       executeSearch();
     }
   };
@@ -81,6 +88,7 @@ export default function SearchBar({
         </svg>
         {/* Input Field */}
         <input
+          ref={inputRef}
           type="text"
           value={activeQuery}
           onChange={handleInputChange}

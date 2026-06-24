@@ -14,19 +14,42 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
     if (typeof window !== 'undefined') {
       const searchHistoryId = sessionStorage.getItem('currentSearchHistoryId');
       const token = localStorage.getItem('token');
-      if (searchHistoryId && token) {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        fetch(`${apiUrl}/api/search/history/click`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            searchHistoryId,
-            bookId: id
+      if (token) {
+        const query = sessionStorage.getItem('currentSearchQuery') || '';
+        const searchMode = sessionStorage.getItem('currentSearchMode') || 'standard';
+        const filtersStr = sessionStorage.getItem('currentFilters');
+        const filters = filtersStr ? JSON.parse(filtersStr) : null;
+        const hasFilters = filters && Object.keys(filters).length > 0;
+
+        if (searchHistoryId || query || hasFilters) {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+          fetch(`${apiUrl}/api/search/history/click`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              searchHistoryId,
+              bookId: id,
+              query,
+              searchMode,
+              filters
+            })
           })
-        }).catch(err => console.error("Failed to log intent click:", err));
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            if (data.searchHistoryId) {
+              sessionStorage.setItem('currentSearchHistoryId', data.searchHistoryId);
+            }
+          })
+          .catch(err => console.error("Failed to log intent click:", err));
+        }
       }
     }
   };

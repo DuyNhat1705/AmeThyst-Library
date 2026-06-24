@@ -8,19 +8,19 @@ import pool from '../config/db.config.mjs';
  * @param {object} filters - JSON object of applied filters
  * @returns {Promise<object>} The created history object
  */
-export const createSearchHistory = async (userId, searchContent, searchMode, filters) => {
+export const createSearchHistory = async (userId, searchContent, searchMode, filters, bookClicked = null) => {
   const sql = `
-    INSERT INTO search_history (user_id, search_content, search_mode, filters, created_at)
-    VALUES ($1, $2, $3, $4, NOW())
-    RETURNING search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, clicked_book_ids AS "clickedBookIds", created_at AS timestamp
+    INSERT INTO search_history (user_id, search_content, search_mode, filters, book_clicked, created_at)
+    VALUES ($1, $2, $3, $4, $5, NOW())
+    RETURNING search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, book_clicked AS "bookClicked", created_at AS timestamp
   `;
-  const values = [userId, searchContent, searchMode, JSON.stringify(filters || {})];
+  const values = [userId, searchContent, searchMode, JSON.stringify(filters || {}), bookClicked];
   const result = await pool.query(sql, values);
   return result.rows[0];
 };
 
 /**
- * Appends a book ID to the clickedBookIds array of a search history entry.
+ * Updates a search history entry with the clicked book's ID.
  * @param {string} searchHistoryId - UUID of the search history log
  * @param {string} bookId - ID of the clicked book
  * @returns {Promise<object>} The updated history object or null
@@ -28,9 +28,9 @@ export const createSearchHistory = async (userId, searchContent, searchMode, fil
 export const addClickedBook = async (searchHistoryId, bookId) => {
   const sql = `
     UPDATE search_history
-    SET clicked_book_ids = array_append(COALESCE(clicked_book_ids, ARRAY[]::VARCHAR(20)[]), $2)
+    SET book_clicked = $2
     WHERE search_id = $1
-    RETURNING search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, clicked_book_ids AS "clickedBookIds", created_at AS timestamp
+    RETURNING search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, book_clicked AS "bookClicked", created_at AS timestamp
   `;
   const result = await pool.query(sql, [searchHistoryId, bookId]);
   return result.rows[0] || null;
@@ -43,7 +43,7 @@ export const addClickedBook = async (searchHistoryId, bookId) => {
  */
 export const getSearchHistoryByUserId = async (userId) => {
   const sql = `
-    SELECT search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, clicked_book_ids AS "clickedBookIds", created_at AS timestamp
+    SELECT search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, book_clicked AS "bookClicked", created_at AS timestamp
     FROM search_history
     WHERE user_id = $1
     ORDER BY created_at DESC
@@ -59,7 +59,7 @@ export const getSearchHistoryByUserId = async (userId) => {
  */
 export const getSearchHistoryById = async (searchHistoryId) => {
   const sql = `
-    SELECT search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, clicked_book_ids AS "clickedBookIds", created_at AS timestamp
+    SELECT search_id AS id, user_id AS "userId", search_content AS "searchContent", search_mode AS "searchMode", filters, book_clicked AS "bookClicked", created_at AS timestamp
     FROM search_history
     WHERE search_id = $1
   `;

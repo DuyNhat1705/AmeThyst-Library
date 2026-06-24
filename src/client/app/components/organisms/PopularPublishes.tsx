@@ -104,6 +104,10 @@ export default function PopularPublishes({
               } else {
                 sessionStorage.removeItem('currentSearchHistoryId');
               }
+              // Save search context for later click logging if needed
+              sessionStorage.setItem('currentSearchQuery', searchQuery);
+              sessionStorage.setItem('currentSearchMode', searchMode);
+              sessionStorage.setItem('currentFilters', JSON.stringify(filterObj));
             }
           }
           if (onFetchCompleted) {
@@ -113,6 +117,9 @@ export default function PopularPublishes({
           // Clear active search history context for passive catalog clicks
           if (typeof window !== 'undefined') {
             sessionStorage.removeItem('currentSearchHistoryId');
+            sessionStorage.removeItem('currentSearchQuery');
+            sessionStorage.removeItem('currentSearchMode');
+            sessionStorage.removeItem('currentFilters');
           }
 
           // Build dynamic query parameters for explore endpoint
@@ -157,7 +164,7 @@ export default function PopularPublishes({
     <div className="w-full max-w-7xl mx-auto my-12 px-4">
       {/* Section Header */}
       <h2 className="text-foreground font-manrope text-2xl font-bold tracking-[0.01em] mb-6">
-        {t('library.title')}
+        {hasActiveFilters ? t('library.result') : t('library.title')}
       </h2>
 
       {/* Book Grid */}
