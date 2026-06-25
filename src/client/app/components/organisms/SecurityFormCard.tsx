@@ -8,7 +8,7 @@ import { calculatePasswordStrength, validateNewPassword } from '../../utils/pass
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogleAccount?: boolean }) {
   const { t } = useI18n();

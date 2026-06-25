@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import LoginTemplate from '../components/templates/LoginTemplate';
 import { LoginBrandPanel, LoginFormCard } from '../components/organisms';
-import { useRedirectIfLoggedIn } from '../utils/user';
+import { useRedirectIfLoggedIn, getRedirectPathForUser } from '../utils/user';
 import { useI18n } from '../providers/I18nProvider';
 import { mapServerError } from '../utils/errors';
+
 export default function LoginPage() {
   const { t } = useI18n();
   useRedirectIfLoggedIn();
@@ -27,7 +28,7 @@ export default function LoginPage() {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
@@ -44,9 +45,9 @@ export default function LoginPage() {
 
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
 
-      // Redirect to dashboard
+      //implement role-based redirect when dashboard routes are ready
       setTimeout(() => {
-        window.location.href = '/library';
+        window.location.href = getRedirectPathForUser(data.user);
       }, 500);
     } catch (err: unknown) {
       console.error('Login error:', err);

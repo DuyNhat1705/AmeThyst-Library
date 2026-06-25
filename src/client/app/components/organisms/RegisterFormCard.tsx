@@ -1,28 +1,25 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { FormField, OAuthButtons, RoleSelector } from '../molecules';
+import { FormField, OAuthButtons } from '../molecules';
 import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
 import { calculatePasswordStrength, validatePassword } from '../../utils/password';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
 
 interface FormData {
   fullName: string;
   email: string;
-  role: string;
   password: string;
   confirmPassword: string;
-  phoneNumber?: string;
-  avatar?: string;
 }
 
 interface FormState {
   isLoading: boolean;
   error: string | null;
   validationErrors: Partial<Record<string, string>>;
-  isSuccess: boolean;
 }
 
 interface RegisterFormCardProps {
@@ -32,17 +29,26 @@ interface RegisterFormCardProps {
   setState: React.Dispatch<React.SetStateAction<FormState>>;
 }
 
-export default function RegisterFormCard({ 
-  formData, 
-  setFormData, 
-  state, 
-  setState 
+export default function RegisterFormCard({
+  formData,
+  setFormData,
+  state,
+  setState
 }: RegisterFormCardProps) {
   const { t } = useI18n();
+  const router = useRouter();
   const passwordStrength = useMemo(() => calculatePasswordStrength(formData.password), [formData.password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setState(prev => ({ ...prev, error: t('auth.invalid_email_format') }));
+      return;
+    }
+
     const error = validatePassword(formData.password, formData.confirmPassword);
     if (error) {
       setState(prev => ({ ...prev, error: t(error) }));
@@ -51,16 +57,13 @@ export default function RegisterFormCard({
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          username: formData.fullName,
-          phoneNumber: formData.phoneNumber || null,
-          avatar: formData.avatar || null,
-          role: formData.role || 'user'
+          username: formData.fullName
         })
       });
 
@@ -69,12 +72,8 @@ export default function RegisterFormCard({
         throw new Error(err.error || t('auth.register_failed'));
       }
 
-      setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
-      
-      // Redirect to login after success
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 2000);
+      setState(prev => ({ ...prev, isLoading: false }));
+      router.push(`/check-email?email=${encodeURIComponent(formData.email)}`);
     } catch (err: unknown) {
       console.error('Register error:', err);
       const raw = err instanceof Error ? err.message : undefined;
@@ -113,12 +112,6 @@ export default function RegisterFormCard({
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           error={state.validationErrors?.email}
-          disabled={state.isLoading}
-        />
-
-        <RoleSelector
-          selectedRole={formData.role}
-          onChange={(role) => setFormData({ ...formData, role })}
           disabled={state.isLoading}
         />
 

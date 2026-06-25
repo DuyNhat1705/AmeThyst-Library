@@ -10,7 +10,7 @@ const getUserById = async (userId) => {
 
 const getUserWithPassword = async (userId) => {
   const result = await pool.query(
-    'SELECT user_id, email, username, phone_number, avatar, role, password_hash FROM users WHERE user_id = $1',
+    'SELECT user_id, email, username, phone_number, avatar, password_hash FROM users WHERE user_id = $1',
     [userId]
   );
   return result.rows[0] || null;

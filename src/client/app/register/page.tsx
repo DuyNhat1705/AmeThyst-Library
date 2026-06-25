@@ -10,29 +10,26 @@ const RegisterPage = () => {
   useRedirectIfLoggedIn();
 
   const [state, setState] = useState({
-
     isLoading: false,
     error: null as string | null,
     validationErrors: {} as Record<string, string>,
-    isSuccess: false,
   });
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    role: "user",
     password: "",
     confirmPassword: "",
   });
 
   return (
     <RegisterTemplate>
-        <RegisterFormCard 
-            formData={formData}
-            setFormData={setFormData}
-            state={state}
-            setState={setState}
-        />
+      <RegisterFormCard
+        formData={formData}
+        setFormData={setFormData}
+        state={state}
+        setState={setState}
+      />
     </RegisterTemplate>
   );
 };

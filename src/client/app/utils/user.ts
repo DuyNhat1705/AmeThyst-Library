@@ -12,12 +12,11 @@ export function getInitials(name: string): string {
 }
 
 export interface StoredUser {
-  userId?: number;
-  username?: string;
-  email?: string;
-  phone_number?: string;
-  avatar?: string;
-  role?: string;
+  userId: string;
+  username: string;
+  email: string;
+  avatar: string | null;
+  role: 'admin' | 'librarian' | 'user';
 }
 
 export function getLoggedInUser(): StoredUser | null {
@@ -25,7 +24,7 @@ export function getLoggedInUser(): StoredUser | null {
   const userStr = localStorage.getItem('user');
   if (!userStr) return null;
   try {
-    return JSON.parse(userStr);
+    return JSON.parse(userStr) as StoredUser;
   } catch (e) {
     return null;
   }
@@ -95,3 +94,10 @@ export function useRequireAuth(redirectTo: string = '/login'): void {
   }, [router, redirectTo]);
 }
 
+/**
+ * Resolves the redirect path based on the user's role.
+ */
+export function getRedirectPathForUser(user: StoredUser | null): string {
+  if (!user) return '/login';
+  return '/library';
+}

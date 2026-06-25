@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef} from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { FormField } from '../molecules';
 import { Button, ErrorMessage, SecurityIndicator } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
@@ -20,10 +20,12 @@ interface ForgotPasswordCardProps {
   isLoading?: boolean;
   isSuccess?: boolean;
 }
-const OTP_TTL = 30; // seconds — must match server OTP_VERIFY_TTL
-export default function ForgotPasswordCard({ 
-  onBackToSignIn, 
-  onSubmit, 
+
+const OTP_TTL = 60; // seconds — must match server OTP_VERIFY_TTL
+
+export default function ForgotPasswordCard({
+  onBackToSignIn,
+  onSubmit,
   isLoading = false,
   isSuccess = false
 }: ForgotPasswordCardProps) {
@@ -34,16 +36,17 @@ export default function ForgotPasswordCard({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  
+  const [isResending, setIsResending] = useState(false);
+  const isResendingRef = useRef(false);
 
-    // OTP countdown
+  // OTP countdown
   const [secondsLeft, setSecondsLeft] = useState(OTP_TTL);
   const [otpExpired, setOtpExpired] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const passwordStrength = useMemo(() => calculatePasswordStrength(newPassword), [newPassword]);
-  
+
   const startCountdown = () => {
     setSecondsLeft(OTP_TTL);
     setOtpExpired(false);
@@ -69,10 +72,10 @@ export default function ForgotPasswordCard({
   const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await onSubmit({ step: 1, email });
-    if (result && result.success) { 
-      setError(''); 
-      setStep(2); 
-    } else { 
+    if (result && result.success) {
+      setError('');
+      setStep(2);
+    } else {
       setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
     }
   };
@@ -80,23 +83,31 @@ export default function ForgotPasswordCard({
   const handleStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await onSubmit({ step: 2, email, otp });
-    if (result && result.success) { 
-      setError(''); 
-      setStep(3); 
-    } else { 
+    if (result && result.success) {
+      setError('');
+      setStep(3);
+    } else {
       setError(mapServerError(result?.error, t, 'auth.otp_incorrect'));
     }
   };
-  
+
   const handleResend = async () => {
+    if (isResendingRef.current || isLoading) return;
+    isResendingRef.current = true;
+    setIsResending(true);
     setOtp('');
     setError('');
-    const result = await onSubmit({ step: 1, email });
-    if (result && result.success) {
-      setResendMessage(t('auth.otp_resent'));
-      startCountdown();
-    } else {
-      setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
+    try {
+      const result = await onSubmit({ step: 1, email });
+      if (result && result.success) {
+        setResendMessage(t('auth.otp_resent'));
+        startCountdown();
+      } else {
+        setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
+      }
+    } finally {
+      setIsResending(false);
+      isResendingRef.current = false;
     }
   };
 
@@ -176,7 +187,7 @@ export default function ForgotPasswordCard({
                     );
                   })()}
                 </p>
-                
+
                 {otpExpired ? (
                   /* Expired UI */
                   <div className="w-full py-6 flex flex-col gap-4">
@@ -188,8 +199,8 @@ export default function ForgotPasswordCard({
                     <Button
                       type="button"
                       className="w-full h-[52px] gap-2"
-                      isLoading={isLoading}
-                      disabled={isLoading}
+                      isLoading={isResending}
+                      disabled={isResending || isLoading}
                       onClick={handleResend}
                     >
                       {t('auth.resend_otp')}
