@@ -171,6 +171,20 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
+    // 0.5 Check user's borrow_num against limit
+    const MAX_BORROW_LIMIT = 5;
+    const userBorrowQuery = 'SELECT borrow_num FROM public.users WHERE user_id = $1';
+    const userBorrowResult = await client.query(userBorrowQuery, [userId]);
+    const currentBorrowNum = userBorrowResult.rows[0].borrow_num || 0;
+
+    if (currentBorrowNum >= MAX_BORROW_LIMIT) {
+      await client.query('ROLLBACK');
+      return { 
+        error: { code: 'BORROW_LIMIT_EXCEEDED', message: `You have reached the maximum borrow limit of ${MAX_BORROW_LIMIT} books` },
+        statusCode: 400
+      };
+    }
+
     // 1. Check if book exists at the specified branch with row locking
     const inventoryQuery = `
       SELECT available_quantity, shelf 
@@ -231,6 +245,12 @@ export const createReservation = async (userId, bookId, branchId) => {
     `;
     const insertResult = await client.query(insertQuery, [userId, bookId, branchId, expiresAt]);
     const { borrow_id, reserve_date } = insertResult.rows[0];
+
+    // 6.5 Increment user's borrow_num
+    await client.query(
+      'UPDATE public.users SET borrow_num = borrow_num + 1 WHERE user_id = $1',
+      [userId]
+    );
 
     // 7. Get branch name for response
     const branchQuery = 'SELECT name, address FROM public.branches WHERE branch_id = $1';
@@ -308,6 +328,12 @@ export const cancelReservationById = async (userId, reservationId) => {
     await client.query(
       'DELETE FROM public.borrow_book WHERE borrow_id = $1',
       [reservationId]
+    );
+
+    // 5. Decrement user's borrow_num
+    await client.query(
+      'UPDATE public.users SET borrow_num = GREATEST(borrow_num - 1, 0) WHERE user_id = $1',
+      [userId]
     );
 
     await client.query('COMMIT');
