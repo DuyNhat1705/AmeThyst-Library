@@ -95,28 +95,7 @@ function buildFilterSQL(filters, startingParamIdx = 2) {
     }
   }
 
-  // 3. Page Count filter
-  if (filters.pageCount) {
-    const { min, max } = filters.pageCount;
-    if (min) {
-      const minPages = parseInt(min);
-      if (!isNaN(minPages)) {
-        clauses.push(`b.num_pages >= $${paramIdx}`);
-        params.push(minPages);
-        paramIdx++;
-      }
-    }
-    if (max) {
-      const maxPages = parseInt(max);
-      if (!isNaN(maxPages)) {
-        clauses.push(`b.num_pages <= $${paramIdx}`);
-        params.push(maxPages);
-        paramIdx++;
-      }
-    }
-  }
-
-  // 4. Languages filter (matches array list)
+  // 3. Languages filter (matches array list)
   if (filters.languages && Array.isArray(filters.languages) && filters.languages.length > 0) {
     clauses.push(`b.language_code = ANY($${paramIdx}::text[])`);
     params.push(filters.languages);
@@ -196,7 +175,7 @@ const executeSemanticSearch = async (rawQuery, cleanQuery, filters) => {
 /**
  * Unified Hybrid Search: Executes Text and Semantic Paths and fuses them via RRF.
  */
-export const executeSearch = async (query, searchMode, filters) => {
+export const executeSearch = async (query, filters) => {
   // If the query is empty, return filtered catalog matching filters
   if (!query || typeof query !== 'string' || !query.trim()) {
     return fetchDefaultCatalog(filters);

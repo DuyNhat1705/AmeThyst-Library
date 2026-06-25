@@ -10,7 +10,7 @@ export const searchBooks = async (req, res) => {
     const { query, logHistory = true, filters } = req.body;
 
     // 1. Run the hybrid search (exact keyword + trigram typo tolerance + semantic vector)
-    const books = await executeSearch(query, 'hybrid', filters);
+    const books = await executeSearch(query, filters);
 
     // 2. Log search history if user is authenticated and logHistory is true
     let searchHistoryId = null;
