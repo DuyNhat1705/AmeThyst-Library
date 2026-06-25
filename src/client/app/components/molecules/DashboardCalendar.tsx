@@ -38,6 +38,7 @@ function getEventTypeColor(type: string) {
     case 'room_reservation': return 'bg-[#009484]';
     case 'study_group': return 'bg-[#6E5191]';
     case 'pin_expiry': return 'bg-[#BA1A1A]';
+    case 'reservation_expiry': return 'bg-[#E37400]';
     default: return 'bg-neutral-400';
   }
 }
@@ -48,6 +49,7 @@ function getEventTypeDot(type: string) {
     case 'room_reservation': return 'bg-[#009484]';
     case 'study_group': return 'bg-[#6E5191]';
     case 'pin_expiry': return 'bg-[#BA1A1A]';
+    case 'reservation_expiry': return 'bg-[#E37400]';
     default: return 'bg-neutral-400';
   }
 }
@@ -205,6 +207,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
               { label: t('dashboard.legend_room_reservation'), color: 'bg-[#009484]' },
               { label: t('dashboard.legend_study_group'), color: 'bg-[#6E5191]' },
               { label: t('dashboard.legend_pin_expiry'), color: 'bg-[#BA1A1A]' },
+              { label: t('dashboard.legend_reservation_expiry'), color: 'bg-[#E37400]' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2">
                 <div className={`rounded-full w-3 h-3 ${item.color}`} />

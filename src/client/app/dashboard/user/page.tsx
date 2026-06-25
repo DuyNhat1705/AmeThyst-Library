@@ -17,6 +17,13 @@ interface EventItem {
   date: string;
 }
 
+interface BorrowRecord {
+  id: string;
+  title: string;
+  expiresAt?: string;
+  status: string;
+}
+
 export default function UserDashboardPage() {
   const { t } = useI18n();
   const user = getLoggedInUser();
@@ -28,13 +35,37 @@ export default function UserDashboardPage() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch(`${API_BASE}/dashboard/events`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setAllEvents(data.events || []);
-        }
+
+        const [eventsRes, borrowedRes] = await Promise.all([
+          fetch(`${API_BASE}/dashboard/events`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_BASE}/api/library/my-borrowed`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        ]);
+
+        const eventsData = eventsRes.ok ? await eventsRes.json() : { events: [] };
+        const borrowedData = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
+
+        const events = eventsData.events || [];
+
+        const reservationEvents: EventItem[] = (borrowedData.current || [])
+          .filter((record: BorrowRecord) => record.status === 'pending' && record.expiresAt)
+          .map((record: BorrowRecord) => {
+            const expiryDate = new Date(record.expiresAt!);
+            const dateStr = `${expiryDate.getFullYear()}-${String(expiryDate.getMonth() + 1).padStart(2, '0')}-${String(expiryDate.getDate()).padStart(2, '0')}`;
+            return {
+              id: parseInt(record.id.replace(/-/g, '').slice(0, 8), 16),
+              title: `Reservation expires: ${record.title}`,
+              time: expiryDate.toLocaleTimeString(),
+              location: '',
+              type: 'reservation_expiry',
+              date: dateStr,
+            };
+          });
+
+        setAllEvents([...events, ...reservationEvents]);
       } catch {
         // silently fail; UI shows empty state
       } finally {

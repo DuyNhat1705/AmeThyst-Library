@@ -1,24 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useI18n } from '../../../providers/I18nProvider';
 import { BorrowedBookCard, BorrowedHistoryTable } from '../../../components/molecules';
 import type { BorrowedBook } from '../../../components/molecules';
-
-const currentBooks: BorrowedBook[] = [
-  { id: '1', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', cover: '', borrowDate: '2026-05-10', dueDate: '2026-06-10', status: 'borrowed' },
-  { id: '2', title: 'To Kill a Mockingbird', author: 'Harper Lee', cover: '', borrowDate: '2026-05-15', dueDate: '2026-06-05', status: 'overdue' },
-  { id: '3', title: '1984', author: 'George Orwell', cover: '', borrowDate: '2026-05-20', dueDate: '2026-06-20', status: 'borrowed' },
-  { id: '5', title: 'The Catcher in the Rye', author: 'J.D. Salinger', cover: '', borrowDate: '2026-06-01', dueDate: '2026-07-01', status: 'borrowed' },
-  { id: '6', title: 'Dune', author: 'Frank Herbert', cover: '', borrowDate: '2026-05-25', dueDate: '2026-06-15', status: 'borrowed' },
-];
-
-const historyBooks: BorrowedBook[] = [
-  { id: '4', title: 'Pride and Prejudice', author: 'Jane Austen', cover: '', borrowDate: '2026-04-01', dueDate: '2026-05-01', status: 'returned', returnedDate: '2026-04-28' },
-  { id: '7', title: 'Brave New World', author: 'Aldous Huxley', cover: '', borrowDate: '2026-03-10', dueDate: '2026-04-10', status: 'returned', returnedDate: '2026-04-05' },
-  { id: '8', title: 'The Hobbit', author: 'J.R.R. Tolkien', cover: '', borrowDate: '2026-02-15', dueDate: '2026-03-15', status: 'returned', returnedDate: '2026-03-10' },
-  { id: '9', title: 'Fahrenheit 451', author: 'Ray Bradbury', cover: '', borrowDate: '2026-01-05', dueDate: '2026-02-05', status: 'returned', returnedDate: '2026-02-01' },
-];
 
 type Tab = 'current' | 'history';
 
@@ -28,6 +13,44 @@ export default function BorrowedBooksPage() {
   const [search, setSearch] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [currentBooks, setCurrentBooks] = useState<BorrowedBook[]>([]);
+  const [historyBooks, setHistoryBooks] = useState<BorrowedBook[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBorrowRecords = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/my-borrowed`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          setCurrentBooks([]);
+          setHistoryBooks([]);
+          return;
+        }
+
+        const data = await response.json();
+        setCurrentBooks(data.current || []);
+        setHistoryBooks(data.history || []);
+      } catch (err) {
+        console.error('Error fetching borrow records:', err);
+        setCurrentBooks([]);
+        setHistoryBooks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBorrowRecords();
+  }, []);
 
   const isCurrent = tab === 'current';
   const books = isCurrent ? currentBooks : historyBooks;
@@ -40,6 +63,24 @@ export default function BorrowedBooksPage() {
     }
     return true;
   });
+
+  const handleCancelReservation = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        setCurrentBooks(prev => prev.filter(book => book.id !== id));
+      }
+    } catch (err) {
+      console.error('Error cancelling reservation:', err);
+    }
+  };
 
   return (
     <>
@@ -78,11 +119,18 @@ export default function BorrowedBooksPage() {
         ))}
       </div>
 
-      {isCurrent ? (
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="text-neutral-400 dark:text-neutral-500 font-manrope text-sm animate-pulse">{t('dashboard.borrowed_loading')}</div>
+        </div>
+      ) : isCurrent ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filtered.map((book) => (
-            <BorrowedBookCard key={book.id} book={book} />
+            <BorrowedBookCard key={book.id} book={book} onCancel={handleCancelReservation} />
           ))}
+          {filtered.length === 0 && (
+            <div className="col-span-full py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">{t('dashboard.borrowed_no_books')}</div>
+          )}
         </div>
       ) : (
         <BorrowedHistoryTable books={filtered} />

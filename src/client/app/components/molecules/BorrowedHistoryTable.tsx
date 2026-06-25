@@ -5,9 +5,10 @@ interface BorrowedBook {
   id: string;
   title: string;
   author: string;
-  cover: string;
-  borrowDate: string;
-  dueDate: string;
+  cover?: string;
+  coverImage?: string;
+  borrowDate?: string;
+  dueDate?: string;
   status: BookStatus;
   returnedDate?: string;
 }
@@ -18,20 +19,20 @@ interface Props {
 
 const statusKey: Record<BookStatus, string> = {
   borrowed: 'dashboard.borrowed_status_borrowed',
-  overdue: 'dashboard.borrowed_status_overdue',
-  returned: 'dashboard.borrowed_status_returned',
+  pending: 'dashboard.borrowed_status_pending',
+  expired: 'dashboard.borrowed_status_expired',
 };
 
 const statusBg: Record<BookStatus, string> = {
   borrowed: 'bg-[#E8F0FE] dark:bg-blue-900/30',
-  overdue: 'bg-[#FCE8E6] dark:bg-red-900/30',
-  returned: 'bg-[#E6F4EA] dark:bg-green-900/30',
+  pending: 'bg-[#FFF3E0] dark:bg-orange-900/30',
+  expired: 'bg-[#F3F4F6] dark:bg-neutral-700/30',
 };
 
 const statusText: Record<BookStatus, string> = {
   borrowed: 'text-[#1A73E8] dark:text-blue-300',
-  overdue: 'text-[#D93025] dark:text-red-300',
-  returned: 'text-[#137333] dark:text-green-300',
+  pending: 'text-[#E37400] dark:text-orange-300',
+  expired: 'text-[#75777D] dark:text-neutral-400',
 };
 
 export default function BorrowedHistoryTable({ books }: Props) {
@@ -54,8 +55,8 @@ export default function BorrowedHistoryTable({ books }: Props) {
               <td className="py-4 px-5">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-11 rounded bg-[#EAEAEA] dark:bg-neutral-700 shrink-0 flex items-center justify-center overflow-hidden">
-                    {book.cover ? (
-                      <img src={book.cover} alt="" className="w-full h-full object-cover" />
+                    {(book.coverImage || book.cover) ? (
+                      <img src={book.coverImage || book.cover} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="opacity-40">
                         <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" fill="#75777D" />
@@ -66,11 +67,11 @@ export default function BorrowedHistoryTable({ books }: Props) {
                 </div>
               </td>
               <td className="py-4 px-5 text-[#75777D] dark:text-neutral-400 font-inter text-xs">{book.author}</td>
-              <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.borrowDate}</td>
-              <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.returnedDate || '—'}</td>
+              <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.borrowDate ? new Date(book.borrowDate).toLocaleDateString() : '—'}</td>
+              <td className="py-4 px-5 text-black dark:text-neutral-200 font-manrope text-xs">{book.returnedDate ? new Date(book.returnedDate).toLocaleDateString() : '—'}</td>
               <td className="py-4 px-5">
-                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold leading-4 ${statusBg[book.status]} ${statusText[book.status]}`}>
-                  {t(statusKey[book.status])}
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold leading-4 ${statusBg[book.status] || statusBg.borrowed} ${statusText[book.status] || statusText.borrowed}`}>
+                  {t(statusKey[book.status] || statusKey.borrowed)}
                 </span>
               </td>
             </tr>
