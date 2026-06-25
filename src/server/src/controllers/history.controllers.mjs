@@ -34,7 +34,7 @@ export const logClick = async (req, res) => {
 
     let updatedHistory;
     if (!searchHistoryId) {
-      updatedHistory = await logSearchHistory(userId, query, searchMode, filters, bookId);
+      updatedHistory = await logSearchHistory(userId, query, filters, bookId);
     } else {
       updatedHistory = await logBookClick(searchHistoryId, bookId);
     }

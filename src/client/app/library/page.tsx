@@ -33,10 +33,9 @@ function LibraryPageContent() {
   const [startYear, setStartYear] = useState<string>(urlStartYear);
   const [endYear, setEndYear] = useState<string>(urlEndYear);
 
-  // Search query and mode state
+  // Search query and logging state
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialSearchQuery);
-  const [searchMode, setSearchMode] = useState(searchParams.get('mode') || 'standard');
   const [logHistory, setLogHistory] = useState(false);
 
   // Sync state if URL changes externally (e.g. Back/Forward button)
@@ -50,9 +49,6 @@ function LibraryPageContent() {
     const urlQ = searchParams.get('q') || '';
     setSearchQuery(urlQ);
     setDebouncedQuery(urlQ);
-
-    const urlMode = searchParams.get('mode') || 'standard';
-    setSearchMode(urlMode);
   }, [searchParams]);
 
   // Debounce effect for typing
@@ -120,16 +116,19 @@ function LibraryPageContent() {
   // Immediate handlers for tags and checkboxes
   const handleGenresChange = (newGenres: string[]) => {
     setGenres(newGenres);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ genres: newGenres });
   };
 
   const handleBranchesChange = (newBranches: number[]) => {
     setBranches(newBranches);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ branches: newBranches });
   };
 
   const handleAvailableOnlyChange = (newAvailableOnly: boolean) => {
     setAvailableOnly(newAvailableOnly);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ availableOnly: newAvailableOnly });
   };
 
@@ -137,6 +136,7 @@ function LibraryPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (startYear !== urlStartYear || endYear !== urlEndYear) {
+        setLogHistory(true); // Filter change triggers persistent log
         updateUrl({ startYear, endYear });
       }
     }, 500);
@@ -161,15 +161,6 @@ function LibraryPageContent() {
     }
   };
 
-  const handleSearchModeChange = (mode: string) => {
-    setSearchMode(mode);
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('mode', mode);
-    params.set('page', '1');
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
   const handleReset = () => {
     setGenres([]);
     setBranches([]);
@@ -178,7 +169,6 @@ function LibraryPageContent() {
     setEndYear('');
     setSearchQuery('');
     setDebouncedQuery('');
-    setSearchMode('standard');
     setLogHistory(false);
     router.push(pathname);
   };
@@ -198,7 +188,6 @@ function LibraryPageContent() {
         popularPublishes={
           <PopularPublishes
             searchQuery={debouncedQuery}
-            searchMode={searchMode}
             logHistory={logHistory}
             onFetchCompleted={() => setLogHistory(false)}
           />
@@ -221,8 +210,6 @@ function LibraryPageContent() {
             onStartYearChange={setStartYear}
             onEndYearChange={setEndYear}
             onReset={handleReset}
-            searchMode={searchMode}
-            onSearchModeChange={handleSearchModeChange}
           />
         }
         footer={<Footer />}

@@ -1,23 +1,43 @@
-import pool from '../config/db.config.mjs';
+import pool from '../config/postgres.mjs';
+import { pipeline } from '@xenova/transformers';
+
+let embedder = null;
+const getEmbedder = async () => {
+  if (!embedder) {
+    // Pipeline initialization. The framework caches model weights automatically
+    embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  }
+  return embedder;
+};
 
 /**
  * Generates an embedding for a text query.
- * To provide realistic test results on pre-seeded vector databases,
- * this function tries to fetch the vector of a book that matches keywords
- * in the query. If no matches are found, it falls back to a deterministic 
- * vector generated from the query hash.
+ * First uses @xenova/transformers local model. If that fails, it falls back
+ * to looking up an existing book's pre-seeded embedding, and then to a
+ * hash-based deterministic mock embedding.
  * 
  * @param {string} query - The search text
  * @returns {Promise<Array<number>>} A 384-dimensional vector array
  */
 export const generateQueryEmbedding = async (query) => {
   if (!query || typeof query !== 'string' || !query.trim()) {
-    // Return a default zero vector
     return Array.from({ length: 384 }, () => 0.0);
   }
 
   const cleanQuery = query.trim();
 
+  // 1. Try local transformer embedding
+  try {
+    const generator = await getEmbedder();
+    const output = await generator(cleanQuery, { pooling: 'mean', normalize: true });
+    if (output && output.data) {
+      return Array.from(output.data);
+    }
+  } catch (error) {
+    console.warn("Local transformer embedding failed, falling back to database/hash lookup:", error);
+  }
+
+  // 2. Try pre-seeded database lookup
   // Extract clean alphanumeric words of length >= 3
   const words = cleanQuery
     .toLowerCase()
@@ -27,8 +47,6 @@ export const generateQueryEmbedding = async (query) => {
 
   if (words.length > 0) {
     try {
-      // Check if we can find a book with metadata matching these words
-      // Limit to 5 words to keep the query size reasonable
       const activeWords = words.slice(0, 5);
       const conditions = [];
       const params = [];
@@ -56,7 +74,7 @@ export const generateQueryEmbedding = async (query) => {
     }
   }
 
-  // Fallback: Generate a deterministic 384-dimensional vector based on string hash
+  // 3. Fallback: Generate a deterministic 384-dimensional vector based on string hash
   let hash = 0;
   for (let i = 0; i < cleanQuery.length; i++) {
     hash = (hash << 5) - hash + cleanQuery.charCodeAt(i);
@@ -65,7 +83,6 @@ export const generateQueryEmbedding = async (query) => {
   
   const embedding = [];
   for (let i = 0; i < 384; i++) {
-    // Generate deterministic values between -0.1 and 0.1
     const val = Math.sin(hash + i) * 0.1;
     embedding.push(val);
   }

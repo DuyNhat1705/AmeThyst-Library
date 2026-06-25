@@ -1,13 +1,12 @@
-# API Contract: Book Searching & Dynamic Filtering
+# API Contract: Hybrid Book Searching & Analytics Logging
 
-## 1. Execute Book Search (Standard & Semantic)
+## 1. Execute Hybrid Search
 **Endpoint**: `POST /api/search`
 
 ### Request Body
 ```json
 {
-  "query": "dystopian rebellion",
-  "searchMode": "semantic",
+  "query": "dystopian rebellion teh",
   "logHistory": true,
   "filters": {
     "publicationDate": {
@@ -15,20 +14,23 @@
       "end": "2026"
     },
     "genres": ["Sci-Fi", "Fiction"],
-    "branches": [1],
-    "availableOnly": true
+    "pageCount": {
+      "min": 100,
+      "max": 500
+    },
+    "languages": ["en", "vi"]
   }
 }
 ```
 
-*Note: `logHistory` decides whether the search execution results in a persistent log database write. Live keystroke debounces pass `logHistory: false`; User submission clicks, Enters, or Filter changes pass `logHistory: true`.*
+*Note: `logHistory` decides whether the search execution results in a persistent log database write. Live keystroke debounces pass `logHistory: false`; User submission clicks, Enters, or Filter changes pass `logHistory: true`. Misspelled connector words like "teh" in the query will be filtered out by the backend regex pre-processor.*
 
 ### Success Response (200 OK)
 ```json
 {
   "books": [
     {
-      "id": "book_1",
+      "id": "book_123",
       "title": "Fahrenheit 451",
       "author": "Ray Bradbury",
       "description": "Guy Montag is a fireman. His job is to destroy the most illegal of commodities...",
@@ -38,11 +40,12 @@
       "publicationDate": "2012-01-10T00:00:00Z",
       "pageCount": 256,
       "language": "en",
-      "coverImage": "/fahrenheit451.png"
+      "coverImage": "/fahrenheit451.png",
+      "rrfScore": 0.0333
     }
   ],
   "totalResults": 1,
-  "searchHistoryId": "log_888"
+  "searchHistoryId": "history_log_777"
 }
 ```
 
@@ -68,17 +71,16 @@
 {
   "history": [
     {
-      "id": "log_888",
-      "searchContent": "Query: \"dystopian rebellion\" | Filters: { Genres: [Sci-Fi, Fiction]; Branches: [1]; Years: 2010 - 2026; Available Only }",
-      "searchMode": "semantic",
+      "id": "history_log_777",
+      "searchContent": "dystopian rebellion",
       "filters": {
         "publicationDate": { "start": "2010", "end": "2026" },
         "genres": ["Sci-Fi", "Fiction"],
-        "branches": [1],
-        "availableOnly": true
+        "pageCount": { "min": 100, "max": 500 },
+        "languages": ["en", "vi"]
       },
-      "clickedBookIds": ["book_1"],
-      "timestamp": "2026-06-24T09:12:35Z"
+      "clickedBookIds": ["book_123"],
+      "timestamp": "2026-06-25T14:41:00Z"
     }
   ]
 }
@@ -100,8 +102,8 @@
 ### Request Body
 ```json
 {
-  "searchHistoryId": "log_888",
-  "bookId": "book_1"
+  "searchHistoryId": "history_log_777",
+  "bookId": "book_123"
 }
 ```
 
@@ -109,8 +111,8 @@
 ```json
 {
   "message": "Click interaction logged successfully",
-  "searchHistoryId": "log_888",
-  "clickedBookIds": ["book_1"]
+  "searchHistoryId": "history_log_777",
+  "clickedBookIds": ["book_123"]
 }
 ```
 

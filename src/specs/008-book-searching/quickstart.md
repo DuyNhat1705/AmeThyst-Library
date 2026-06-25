@@ -1,57 +1,52 @@
-# Quickstart: Book Searching & Filter Panel Integration Validation
+# Quickstart: Hybrid Book Searching Validation
 
-This guide provides scenarios to validate the updated in-place Book Searching and unified filter panel integration.
+This guide provides scenarios to validate the implementation of the single-mode Hybrid Search (Lexical + Semantic + Reciprocal Rank Fusion) and intent logging.
+
+---
 
 ## Prerequisites
 - **Backend Server**: Running on `http://localhost:5000`
 - **Frontend Client**: Running on `http://localhost:3000`
-- **PostgreSQL Database**: Configured with the pgvector extension enabled and the modified `search_history` schema.
+- **PostgreSQL Database**: Extensions `pg_trgm` and `pgvector` enabled. Books table seeded with vector embeddings and indexed.
 
 ---
 
 ## Validation Scenarios
 
-### Scenario 1: Standard In-Place Search
+### Scenario 1: Pre-processing & Typo-Tolerant Hybrid Search
 1. **Action**: Open browser, go to `http://localhost:3000/library`.
-2. **Expectation**:
-    - The page renders the general books catalog. No popup overlay panel opens.
-3. **Action**: Click the Search input at the top, type a query (e.g., "Potter"), and press **Enter** (or click the search icon).
-4. **Expectation**:
-    - The main explored books grid replaces its default content in-place with books matching "Potter" by metadata.
-    - An HTTP request `POST /api/search` is executed with `logHistory: true`.
-    - If logged in, a search log entry is saved in the database under `search_content` (e.g. `Query: "Potter"`).
+2. **Action**: Type a query with typos and incorrect connectors: `"teh harry poter adn goblet"` and hit Enter.
+3. **Expectation**:
+   - The frontend updates the search results grid in-place.
+   - The backend interceptor regex identifies and strips out `"teh"` and `"adn"`, leaving `"harry poter goblet"`.
+   - The exact & trigram path matches `"harry"` and `"goblet"` and uses trigram similarity to match `"poter"` to `"Potter"`.
+   - The semantic path converts `"harry poter goblet"` into a vector and performs a pgvector cosine similarity lookup.
+   - RRF rank fusion merges the lists, and the books (like "Harry Potter and the Goblet of Fire") appear at the top.
 
-### Scenario 2: Semantic Search via Filter Panel Toggle
-1. **Action**: Click the "Filter" button on the Search Bar to slide out the `FilterPanel` drawer.
+### Scenario 2: Search Debounce vs. Enter Logging
+1. **Action**: Type `"hobbi"` slowly character-by-character.
 2. **Expectation**:
-    - At the top of the Filter Panel drawer, a search mode selector (Standard vs Semantic) is visible.
-3. **Action**: Toggle search mode to "Semantic", type "teenage wizard at magic academy" in the search bar, and click Search (or press Enter).
-4. **Expectation**:
-    - The catalog grid refreshes in-place with books sorted by cosine similarity relevance (pgvector lookup).
-    - If logged in, a search log entry is created with `search_mode` set to "semantic".
-
-### Scenario 3: Intent-Based Logging (Enter vs. Live Debounce)
-1. **Action**: Type a query character-by-character (e.g., typing "H-a-r-r-y") without pressing Enter or clicking Search.
-2. **Expectation**:
-    - The catalog results update dynamically as you type (live debounce).
-    - If logged in, verify the database: **no new rows are created in `search_history`** (since the client passed `logHistory: false` during typing).
+   - Results fetch automatically (debounced typing search) and update the grid in-place.
+   - An API request `POST /api/search` is sent with `logHistory: false`.
+   - Verify the database `search_history` table: **no new rows are created**.
 3. **Action**: Press **Enter** once typing is finished.
 4. **Expectation**:
-    - A single history log row is created in the database `search_history` table.
+   - The search executes. The API request is sent with `logHistory: true`.
+   - A single new record is written to the `search_history` table containing the user search query.
 
-### Scenario 4: Logging Filter Trigger without Search
-1. **Action**: Click the Filter button to open the filter drawer. Leave the search input completely empty.
-2. **Action**: Check "Fiction" genre tag and click apply/toggle it.
+### Scenario 3: Logging Filter Changes
+1. **Action**: Click the Filter button to open the filter drawer. Leave the search query empty.
+2. **Action**: Toggle the genre check for `"Fantasy"` and click Apply.
 3. **Expectation**:
-    - The catalog results grid updates in-place to display fiction books.
-    - Even with an empty search query, an API request `POST /api/search` with `logHistory: true` is dispatched.
-    - If logged in, a search history log is written containing `search_content` as: `Filters: { Genres: [Fiction] }`.
+   - The catalog grid refreshes in-place with Fantasy books.
+   - An API request `POST /api/search` with `logHistory: true` is sent.
+   - A new search history log is written containing the search query (which is null/empty in this case) and the filter details in the `filters` column.
 
-### Scenario 5: Click-Through Intent Tracking
-1. **Action**: Perform an in-place search, and click one of the matching book cards from the results.
+### Scenario 4: Click-Through Intent Tracking
+1. **Action**: Execute a search for `"magic school"`, then click one of the returned book cards in the grid.
 2. **Expectation**:
-    - User is redirected to the book details page.
-    - An intent click is logged under `clickedBookIds` for that search session history ID.
-3. **Action**: Go back to library page, browse explore catalog without typing a query or toggling filters, and click a book card.
+   - Redirects to the book details page.
+   - A POST request is dispatched to `/api/search/history/click` to record this book ID under `clickedBookIds` for this search session ID.
+3. **Action**: Go back to `/library`, clear searches, passively browse popular books, and click a card.
 4. **Expectation**:
-    - Redirect works correctly; **no** click tracking event is logged.
+   - Redirects to book details; **no** click tracking request is sent.

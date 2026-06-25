@@ -5,11 +5,10 @@ import { createSearchHistory, addClickedBook, getSearchHistoryByUserId } from '.
  * 
  * @param {string} userId - The user ID
  * @param {string} query - The search query string
- * @param {string} searchMode - 'standard' or 'semantic'
  * @param {object} filters - The active filters
  * @returns {Promise<object|null>} The logged entry or null if skipped
  */
-export const logSearchHistory = async (userId, query, searchMode, filters, bookClicked = null) => {
+export const logSearchHistory = async (userId, query, filters, bookClicked = null) => {
   if (!userId) return null;
 
   const cleanQuery = query && query.trim() ? query.trim() : null;
@@ -21,7 +20,7 @@ export const logSearchHistory = async (userId, query, searchMode, filters, bookC
   }
 
   try {
-    return await createSearchHistory(userId, cleanQuery, searchMode, filters, bookClicked);
+    return await createSearchHistory(userId, cleanQuery, filters, bookClicked);
   } catch (error) {
     console.error('Error logging search history:', error);
     return null;

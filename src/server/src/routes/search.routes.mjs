@@ -1,6 +1,6 @@
 import express from 'express';
 import { searchBooks } from '../controllers/search.controllers.mjs';
-import { optionalAuth } from '../middlewares/auth.middlewares.mjs';
+import { optionalAuth } from '../middlewares/auth.middleware.mjs';
 
 const router = express.Router();
 

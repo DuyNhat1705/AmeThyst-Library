@@ -2,20 +2,20 @@ import { executeSearch } from '../services/search.services.mjs';
 import { logSearchHistory } from '../services/history.services.mjs';
 
 /**
- * Executes standard/semantic search and logs history for logged-in users.
+ * Executes hybrid search and logs history for logged-in users.
  * POST /api/search
  */
 export const searchBooks = async (req, res) => {
   try {
-    const { query, searchMode = 'standard', logHistory = true, filters } = req.body;
+    const { query, logHistory = true, filters } = req.body;
 
-    // 1. Run the search
-    const books = await executeSearch(query, searchMode, filters);
+    // 1. Run the hybrid search (exact keyword + trigram typo tolerance + semantic vector)
+    const books = await executeSearch(query, 'hybrid', filters);
 
     // 2. Log search history if user is authenticated and logHistory is true
     let searchHistoryId = null;
     if (logHistory && req.user && req.user.userId) {
-      const historyEntry = await logSearchHistory(req.user.userId, query, searchMode, filters);
+      const historyEntry = await logSearchHistory(req.user.userId, query, filters);
       if (historyEntry) {
         searchHistoryId = historyEntry.id;
       }

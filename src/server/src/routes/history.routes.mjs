@@ -1,6 +1,6 @@
 import express from 'express';
 import { getHistory, logClick } from '../controllers/history.controllers.mjs';
-import { requireAuth } from '../middlewares/auth.middlewares.mjs';
+import { requireAuth } from '../middlewares/auth.middleware.mjs';
 
 const router = express.Router();
 

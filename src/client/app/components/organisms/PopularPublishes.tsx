@@ -15,14 +15,12 @@ interface Book {
 
 interface PopularPublishesProps {
   searchQuery?: string;
-  searchMode?: string;
   logHistory?: boolean;
   onFetchCompleted?: () => void;
 }
 
 export default function PopularPublishes({
   searchQuery = '',
-  searchMode = 'standard',
   logHistory = false,
   onFetchCompleted
 }: PopularPublishesProps) {
@@ -80,7 +78,6 @@ export default function PopularPublishes({
             },
             body: JSON.stringify({
               query: searchQuery,
-              searchMode: searchMode,
               logHistory: logHistory,
               filters: filterObj
             })
@@ -106,7 +103,6 @@ export default function PopularPublishes({
               }
               // Save search context for later click logging if needed
               sessionStorage.setItem('currentSearchQuery', searchQuery);
-              sessionStorage.setItem('currentSearchMode', searchMode);
               sessionStorage.setItem('currentFilters', JSON.stringify(filterObj));
             }
           }
@@ -118,7 +114,6 @@ export default function PopularPublishes({
           if (typeof window !== 'undefined') {
             sessionStorage.removeItem('currentSearchHistoryId');
             sessionStorage.removeItem('currentSearchQuery');
-            sessionStorage.removeItem('currentSearchMode');
             sessionStorage.removeItem('currentFilters');
           }
 
@@ -145,7 +140,7 @@ export default function PopularPublishes({
     };
 
     fetchBooks();
-  }, [currentPage, genres, branches, availableOnly, startYear, endYear, searchQuery, searchMode, logHistory]);
+  }, [currentPage, genres, branches, availableOnly, startYear, endYear, searchQuery, logHistory]);
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
