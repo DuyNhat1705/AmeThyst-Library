@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useI18n } from '../../../providers/I18nProvider';
 import { BorrowedBookCard, BorrowedHistoryTable } from '../../../components/molecules';
+import { PinModal } from '../../../components/organisms';
 import type { BorrowedBook } from '../../../components/molecules';
 
 type Tab = 'current' | 'history';
@@ -16,6 +17,8 @@ export default function BorrowedBooksPage() {
   const [currentBooks, setCurrentBooks] = useState<BorrowedBook[]>([]);
   const [historyBooks, setHistoryBooks] = useState<BorrowedBook[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pinModal, setPinModal] = useState<{ open: boolean; pin: string; expiresAt: string }>({ open: false, pin: '', expiresAt: '' });
+  const [generatingPinId, setGeneratingPinId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBorrowRecords = async () => {
@@ -50,6 +53,8 @@ export default function BorrowedBooksPage() {
     };
 
     fetchBorrowRecords();
+    const interval = setInterval(fetchBorrowRecords, 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const isCurrent = tab === 'current';
@@ -79,6 +84,40 @@ export default function BorrowedBooksPage() {
       }
     } catch (err) {
       console.error('Error cancelling reservation:', err);
+    }
+  };
+
+  const handleGeneratePin = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      setGeneratingPinId(id);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}/pin`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        setCurrentBooks(prev => prev.map(book =>
+          book.id === id ? { ...book, pin: data.data.pin, status: 'pending', expiresAt: data.data.expiresAt } : book
+        ));
+        setPinModal({ open: true, pin: data.data.pin, expiresAt: data.data.expiresAt });
+      }
+    } catch (err) {
+      console.error('Error generating PIN:', err);
+    } finally {
+      setGeneratingPinId(null);
+    }
+  };
+
+  const handleViewPin = (id: string) => {
+    const book = currentBooks.find(b => b.id === id);
+    if (book?.pin) {
+      setPinModal({ open: true, pin: book.pin, expiresAt: book.expiresAt || '' });
     }
   };
 
@@ -126,7 +165,13 @@ export default function BorrowedBooksPage() {
       ) : isCurrent ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filtered.map((book) => (
-            <BorrowedBookCard key={book.id} book={book} onCancel={handleCancelReservation} />
+            <BorrowedBookCard
+              key={book.id}
+              book={book}
+              onCancel={handleCancelReservation}
+              onViewPin={handleViewPin}
+              onGeneratePin={handleGeneratePin}
+            />
           ))}
           {filtered.length === 0 && (
             <div className="col-span-full py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">{t('dashboard.borrowed_no_books')}</div>
@@ -135,6 +180,13 @@ export default function BorrowedBooksPage() {
       ) : (
         <BorrowedHistoryTable books={filtered} />
       )}
+
+      <PinModal
+        pin={pinModal.pin}
+        expiresAt={pinModal.expiresAt}
+        isOpen={pinModal.open}
+        onClose={() => setPinModal({ open: false, pin: '', expiresAt: '' })}
+      />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { getBookById, getRecommendations, createReservation, getBooksList, cancelReservationById, getUserBorrowRecords } from '../services/library.services.mjs';
+import { getBookById, getRecommendations, createReservation, getBooksList, cancelReservationById, getUserBorrowRecords, generatePickupPin, cleanupReservationPin } from '../services/library.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
@@ -104,4 +104,43 @@ const getMyBorrowRecords = async (req, res) => {
   }
 };
 
-export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook, cancelReservation, getMyBorrowRecords };
+const generatePin = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { reservationId } = req.params;
+
+    const result = await generatePickupPin(userId, reservationId);
+
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error generating pickup PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
+  }
+};
+
+const cleanupPin = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { reservationId } = req.params;
+    const cleaned = await cleanupReservationPin(userId, reservationId);
+    res.json({ success: true, cleaned });
+  } catch (error) {
+    console.error('Error cleaning up PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
+  }
+};
+
+export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook, cancelReservation, getMyBorrowRecords, generatePin, cleanupPin };

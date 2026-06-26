@@ -183,7 +183,9 @@ export default function BookDetailTemplate({
                     <h4 className="font-semibold text-[#006F66] dark:text-[#FFB95F] mb-2">{t('book.active_reservation')}</h4>
                     <div className="text-sm text-[#45474C] dark:text-neutral-300 space-y-1">
                       <p>{t('book.branch')}: {book.userReservation.branchName}</p>
-                      <p>{t('book.expires')}: {new Date(book.userReservation.expiresAt).toLocaleString()}</p>
+                      {book.userReservation.expiresAt && (
+                        <p>{t('book.expires')}: {new Date(book.userReservation.expiresAt).toLocaleString()}</p>
+                      )}
                     </div>
                   </div>
                 )}

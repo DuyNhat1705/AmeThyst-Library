@@ -20,7 +20,7 @@ interface EventItem {
 interface BorrowRecord {
   id: string;
   title: string;
-  expiresAt?: string;
+  reserveDate?: string;
   status: string;
 }
 
@@ -51,16 +51,16 @@ export default function UserDashboardPage() {
         const events = eventsData.events || [];
 
         const reservationEvents: EventItem[] = (borrowedData.current || [])
-          .filter((record: BorrowRecord) => record.status === 'pending' && record.expiresAt)
+          .filter((record: BorrowRecord) => ['reserved', 'pending'].includes(record.status) && record.reserveDate)
           .map((record: BorrowRecord) => {
-            const expiryDate = new Date(record.expiresAt!);
-            const dateStr = `${expiryDate.getFullYear()}-${String(expiryDate.getMonth() + 1).padStart(2, '0')}-${String(expiryDate.getDate()).padStart(2, '0')}`;
+            const dueDate = new Date(new Date(record.reserveDate!).getTime() + 7 * 24 * 60 * 60 * 1000);
+            const dateStr = `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
             return {
               id: parseInt(record.id.replace(/-/g, '').slice(0, 8), 16),
-              title: `Reservation expires: ${record.title}`,
-              time: expiryDate.toLocaleTimeString(),
+              title: `Pickup due: ${record.title}`,
+              time: '',
               location: '',
-              type: 'reservation_expiry',
+              type: 'reservation_due',
               date: dateStr,
             };
           });

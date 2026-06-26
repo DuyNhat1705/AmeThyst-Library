@@ -65,7 +65,7 @@ export const getBookById = async (id, userId = null) => {
       SELECT bb.*, br.name as branch_name 
       FROM public.borrow_book bb
       JOIN public.branches br ON bb.branch_id = br.branch_id
-      WHERE bb.user_id = $1 AND bb.book_id = $2 AND bb.status = 'pending'
+      WHERE bb.user_id = $1 AND bb.book_id = $2 AND bb.status IN ('reserved', 'pending')
       ORDER BY bb.reserve_date DESC LIMIT 1
     `;
     const reservationResult = await pool.query(reservationQuery, [userId, id]);
@@ -217,7 +217,7 @@ export const createReservation = async (userId, bookId, branchId) => {
     // 3. Check for duplicate reservation (user cannot have multiple active reservations for same book)
     const duplicateQuery = `
       SELECT borrow_id FROM public.borrow_book 
-      WHERE user_id = $1 AND book_id = $2 AND status = 'pending'
+      WHERE user_id = $1 AND book_id = $2 AND status IN ('reserved', 'pending')
     `;
     const duplicateResult = await client.query(duplicateQuery, [userId, bookId]);
     
@@ -235,16 +235,13 @@ export const createReservation = async (userId, bookId, branchId) => {
       [bookId, branchId]
     );
 
-    // 5. Set expiration (1 week)
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-    // 6. Insert reservation into borrow_book table
+    // 5. Insert reservation into borrow_book table
     const insertQuery = `
-      INSERT INTO public.borrow_book (user_id, book_id, branch_id, expired_at, status)
-      VALUES ($1, $2, $3, $4, 'pending')
+      INSERT INTO public.borrow_book (user_id, book_id, branch_id, status)
+      VALUES ($1, $2, $3, 'reserved')
       RETURNING borrow_id, reserve_date
     `;
-    const insertResult = await client.query(insertQuery, [userId, bookId, branchId, expiresAt]);
+    const insertResult = await client.query(insertQuery, [userId, bookId, branchId]);
     const { borrow_id, reserve_date } = insertResult.rows[0];
 
     // 6.5 Increment user's borrow_num
@@ -272,8 +269,7 @@ export const createReservation = async (userId, bookId, branchId) => {
         branchAddress,
         shelf,
         reserveDate: reserve_date,
-        expiresAt,
-        status: 'pending'
+        status: 'reserved'
       }
     };
   } catch (error) {
@@ -310,11 +306,11 @@ export const cancelReservationById = async (userId, reservationId) => {
 
     const reservation = checkResult.rows[0];
 
-    // 2. Check if reservation can be cancelled (only pending reservations)
-    if (reservation.status !== 'pending') {
+    // 2. Check if reservation can be cancelled (pending or reserved)
+    if (reservation.status !== 'pending' && reservation.status !== 'reserved') {
       await client.query('ROLLBACK');
       return { 
-        error: { code: 'CANNOT_CANCEL', message: 'Only pending reservations can be cancelled' },
+        error: { code: 'CANNOT_CANCEL', message: 'Only pending or reserved reservations can be cancelled' },
         statusCode: 400
       };
     }
@@ -366,6 +362,7 @@ export const getUserBorrowRecords = async (userId) => {
       rb.return_date,
       bb.reserve_date,
       bb.expired_at,
+      bb.pin,
       b.title,
       b.author,
       b.image_url,
@@ -405,10 +402,11 @@ export const getUserBorrowRecords = async (userId) => {
       dueDate: row.due_date,
       returnDate: row.return_date,
       reserveDate: row.reserve_date,
-      expiresAt: row.expired_at
+      expiresAt: row.expired_at,
+      pin: row.pin || null
     };
     
-    if (['pending', 'borrowed'].includes(row.status)) {
+    if (['reserved', 'pending', 'borrowed'].includes(row.status)) {
       current.push(record);
     } else {
       history.push(record);
@@ -416,4 +414,113 @@ export const getUserBorrowRecords = async (userId) => {
   }
   
   return { current, history };
+};
+
+/**
+ * Generate a 6-digit pickup PIN for a reservation
+ */
+export const generatePickupPin = async (userId, borrowId) => {
+  try {
+    const check = await pool.query(
+      `SELECT borrow_id, user_id FROM public.borrow_book WHERE borrow_id = $1 AND user_id = $2 AND status IN ('reserved', 'pending')`,
+      [borrowId, userId]
+    );
+
+    if (check.rows.length === 0) {
+      return { error: { code: 'RESERVATION_NOT_FOUND', message: 'Reservation not found or invalid status' }, statusCode: 404 };
+    }
+
+    const active = await pool.query(
+      `SELECT pin, expired_at FROM public.borrow_book WHERE borrow_id = $1 AND pin IS NOT NULL AND expired_at > NOW()`,
+      [borrowId]
+    );
+
+    if (active.rows.length > 0) {
+      return { pin: active.rows[0].pin, expiresAt: active.rows[0].expired_at };
+    }
+
+    await pool.query(
+      `UPDATE public.borrow_book SET pin = NULL, expired_at = NULL, status = 'reserved' WHERE borrow_id = $1`,
+      [borrowId]
+    );
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const pin = String(Math.floor(100000 + Math.random() * 900000));
+      const expiresAt = new Date(Date.now() + 15 * 1000);
+
+      try {
+        const updated = await pool.query(
+          `UPDATE public.borrow_book SET pin = $1, expired_at = $2, status = 'pending' WHERE borrow_id = $3`,
+          [pin, expiresAt, borrowId]
+        );
+
+        if (updated.rowCount > 0) {
+          return { pin, expiresAt };
+        }
+      } catch (err) {
+        if (err.code === '23505') {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    return { error: { code: 'PIN_GENERATION_FAILED', message: 'Failed to generate unique PIN after 3 attempts' }, statusCode: 500 };
+  } catch (error) {
+    console.error('Error generating pickup PIN:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cleanup expired PINs: revert pending reservations with expired PINs back to reserved
+ */
+export const cleanupExpiredPins = async () => {
+  try {
+    const query = `
+      UPDATE public.borrow_book
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at <= NOW()
+    `;
+    const result = await pool.query(query);
+    return result.rowCount;
+  } catch (error) {
+    console.error('Error cleaning up expired PINs:', error);
+    return 0;
+  }
+};
+
+/**
+ * Cleanup a specific reservation's expired PIN
+ */
+export const cleanupReservationPin = async (userId, borrowId) => {
+  try {
+    const result = await pool.query(
+      `UPDATE public.borrow_book SET pin = NULL, expired_at = NULL, status = 'reserved'
+       WHERE borrow_id = $1 AND user_id = $2 AND status = 'pending'`,
+      [borrowId, userId]
+    );
+    return result.rowCount > 0;
+  } catch (error) {
+    console.error('Error cleaning up reservation PIN:', error);
+    return false;
+  }
+};
+
+/**
+ * Clear all pending PINs on server startup
+ */
+export const clearAllPins = async () => {
+  try {
+    const query = `
+      UPDATE public.borrow_book
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending'
+    `;
+    const result = await pool.query(query);
+    return result.rowCount;
+  } catch (error) {
+    console.error('Error clearing all pending PINs:', error);
+    return 0;
+  }
 };

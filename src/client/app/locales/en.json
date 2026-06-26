@@ -256,11 +256,13 @@
     "borrowed_return": "Return",
     "borrowed_renew": "Renew",
     "borrowed_status_borrowed": "Borrowed",
-    "borrowed_status_pending": "Reserved",
-    "borrowed_status_expired": "Expired",
+    "borrowed_status_reserved": "Reserved",
+    "borrowed_status_pending": "Awaiting Pickup",
     "borrowed_label_reserved": "Reserved:",
     "borrowed_label_expires": "Expires:",
     "borrowed_cancel": "Cancel",
+    "borrowed_view_pin": "View PIN",
+    "borrowed_generate_pin": "Generate PIN",
     "borrowed_loading": "Loading borrow records...",
     "borrowed_table_title": "Title",
     "borrowed_table_author": "Author",
@@ -314,5 +316,14 @@
     "loan_fees_lost_book": "Lost Book",
     "loan_fees_damage": "Damage",
     "loan_fees_processing": "Processing Fee"
+  },
+  "pin": {
+    "title": "Pickup PIN",
+    "expires_in": "Expires in {minutes}:{seconds}",
+    "expired": "PIN Expired",
+    "generated": "PIN Generated",
+    "close": "Close",
+    "expired_message": "This PIN has expired. Please generate a new one.",
+    "generating": "Generating PIN..."
   }
 }

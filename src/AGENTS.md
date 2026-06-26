@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan at
-`specs/013-reserve-book/plan.md`
+`specs/014-pin-generation/plan.md`
 <!-- SPECKIT END -->
