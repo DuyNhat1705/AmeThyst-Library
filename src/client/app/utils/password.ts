@@ -1,21 +1,29 @@
-// Tính độ mạnh password (0-4)
-export function calculatePasswordStrength(password: string): number {
-  if (!password) return 0;
-  let strength = 0;
-  if (password.length >= 8) strength += 1;
-  if (/[0-9]/.test(password)) strength += 1;
-  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 1;
-  if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-  return strength;
+export const SPECIAL_CHARS = [
+  '!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+  '_', '+', '-', '=', '[', ']', '{', '}', ';', ':',
+  "'", '"', ',', '.', '<', '>', '/', '?', '\\', '|',
+  '`', '~'
+];
+
+// Tính độ mạnh password (trả về mảng boolean tương ứng 4 điều kiện)
+export function calculatePasswordStrength(password: string): [boolean, boolean, boolean, boolean] {
+  if (!password) return [false, false, false, false];
+  const hasLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = password.split('').some(char => SPECIAL_CHARS.includes(char));
+  return [hasLength, hasUppercase, hasNumber, hasSpecial];
 }
 
 export function validateNewPassword(newPassword: string, confirmPassword: string): string | null {
   if (newPassword !== confirmPassword) return 'auth.passwords_no_match';
-  if (newPassword.length < 8) return 'auth.password_min_length';
-  if (!/[A-Z]/.test(newPassword)) return 'auth.password_require_uppercase';
-  if (!/[a-z]/.test(newPassword)) return 'auth.password_require_lowercase';
-  if (!/[0-9]/.test(newPassword)) return 'auth.password_require_digit';
-  if (!/[^A-Za-z0-9]/.test(newPassword)) return 'auth.password_require_special';
+  
+  const [hasLength, hasUppercase, hasNumber, hasSpecial] = calculatePasswordStrength(newPassword);
+  if (!hasLength) return 'auth.password_min_length';
+  if (!hasUppercase) return 'auth.password_require_uppercase';
+  if (!hasNumber) return 'auth.password_require_digit';
+  if (!hasSpecial) return 'auth.password_require_special';
+  
   return null;
 }
 
