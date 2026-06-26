@@ -9,10 +9,13 @@ export function calculatePasswordStrength(password: string): number {
   return strength;
 }
 
-// Validate password match + độ dài — trả về i18n key hoặc null
 export function validateNewPassword(newPassword: string, confirmPassword: string): string | null {
   if (newPassword !== confirmPassword) return 'auth.passwords_no_match';
   if (newPassword.length < 8) return 'auth.password_min_length';
+  if (!/[A-Z]/.test(newPassword)) return 'auth.password_require_uppercase';
+  if (!/[a-z]/.test(newPassword)) return 'auth.password_require_lowercase';
+  if (!/[0-9]/.test(newPassword)) return 'auth.password_require_digit';
+  if (!/[^A-Za-z0-9]/.test(newPassword)) return 'auth.password_require_special';
   return null;
 }
 
