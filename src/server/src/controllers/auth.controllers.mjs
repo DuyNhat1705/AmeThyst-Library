@@ -3,6 +3,8 @@ import {
   verifyEmail, resendVerificationEmailService,
 } from '../services/auth.services.mjs';
 import { verifyOtp, forgotPassword, resetPassword } from '../services/otp.service.mjs';
+import passport from '../config/passport.mjs';
+import { signToken, buildUserPayload } from '../utils/authHelpers.mjs';
 
 export const register = async (req, res) => {
   try {
@@ -80,3 +82,21 @@ export const resendVerification = async (req, res) => {
 };
 
 
+export const googleAuth = passport.authenticate('google', {
+  scope: ['profile', 'email'],
+  session: false,
+});
+
+export const googleCallback = [
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
+    session: false,
+  }),
+  (req, res) => {
+    const token = signToken(req.user.user_id, req.user.email);
+    const user = buildUserPayload(req.user);
+    res.redirect(
+      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`
+    );
+  },
+];
