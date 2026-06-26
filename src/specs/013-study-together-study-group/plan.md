@@ -6,7 +6,7 @@
 
 ## Summary
 
-Implement the Study Together page that displays a list of study groups using mock data, allowing users to filter, sort, and request to join available groups. The feature includes a "Request to Join" modal. All UI must adhere to the Atomic Design system, support Light/Dark modes, and be fully localized.
+Implement the Study Together page that displays a list of study groups using mock data, allowing users to filter, sort, and request to join available groups. The feature includes a "Request to Join" modal and a detailed "Study Group Info" modal (extension). All UI must adhere to the Atomic Design system, support Light/Dark modes, and be fully localized.
 
 ## Technical Context
 
@@ -65,7 +65,8 @@ client/
     │   │   └── StudyGroupSort.tsx
     │   └── organisms/
     │       ├── StudyGroupGrid.tsx
-    │       └── RequestToJoinModal.tsx
+    │       ├── RequestToJoinModal.tsx
+    │       └── StudyGroupInfoModal.tsx
     ├── study-together/
     │   ├── page.tsx
     │   └── mockData.ts

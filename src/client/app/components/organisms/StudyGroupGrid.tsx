@@ -7,10 +7,11 @@ import { useI18n } from '../../providers/I18nProvider';
 interface StudyGroupGridProps {
   groups: StudyGroup[];
   onJoinGroup: (id: string) => void;
+  onCardClick: (id: string) => void;
   pendingRequests?: string[];
 }
 
-export default function StudyGroupGrid({ groups, onJoinGroup, pendingRequests = [] }: StudyGroupGridProps) {
+export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, pendingRequests = [] }: StudyGroupGridProps) {
   const { t } = useI18n();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -49,6 +50,7 @@ export default function StudyGroupGrid({ groups, onJoinGroup, pendingRequests = 
             {...group}
             isPending={pendingRequests.includes(group.id)}
             onJoin={onJoinGroup}
+            onCardClick={onCardClick}
           />
         ))}
       </div>

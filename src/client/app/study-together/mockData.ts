@@ -15,6 +15,7 @@ export interface StudyGroup {
   currentMembers: number;
   maxMembers: number;
   status: 'Available' | 'Full';
+  requirements: string[];
 }
 
 export const mockStudyGroups: StudyGroup[] = [
@@ -29,7 +30,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 304',
     currentMembers: 1,
     maxMembers: 6,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Bring your laptop', 'Completed Data Structures', 'Leetcode account required']
   },
   {
     id: '2',
@@ -42,7 +44,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 102',
     currentMembers: 5,
     maxMembers: 5,
-    status: 'Full'
+    status: 'Full',
+    requirements: ['Read chapter 4 and 5', 'Bring scientific calculator']
   },
   {
     id: '3',
@@ -55,7 +58,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 205',
     currentMembers: 3,
     maxMembers: 5,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Bring sketching materials', 'Review weekly case studies']
   },
   {
     id: '4',
@@ -68,7 +72,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 401',
     currentMembers: 2,
     maxMembers: 4,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Read The Wealth of Nations excerpts', 'Basic understanding of macroeconomics']
   },
   {
     id: '5',
@@ -81,7 +86,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 305',
     currentMembers: 4,
     maxMembers: 4,
-    status: 'Full'
+    status: 'Full',
+    requirements: ['Bring practice exam printouts', 'Graphing calculator recommended']
   },
   {
     id: '6',
@@ -94,7 +100,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Lab 2A',
     currentMembers: 2,
     maxMembers: 6,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Completed Biology 101', 'Bring lab coat if staying for practicals']
   },
   {
     id: '7',
@@ -107,7 +114,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 112',
     currentMembers: 3,
     maxMembers: 8,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Read The Waste Land', 'Open mind for discussion']
   },
   {
     id: '8',
@@ -120,7 +128,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 410',
     currentMembers: 5,
     maxMembers: 10,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Basic Python programming', 'Bring your own laptop']
   },
   {
     id: '9',
@@ -133,7 +142,8 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 210',
     currentMembers: 4,
     maxMembers: 5,
-    status: 'Available'
+    status: 'Available',
+    requirements: ['Read assigned textbook chapters', 'Prepare 2 discussion questions']
   },
   {
     id: '10',
@@ -146,6 +156,7 @@ export const mockStudyGroups: StudyGroup[] = [
     room: 'Room 105',
     currentMembers: 6,
     maxMembers: 6,
-    status: 'Full'
+    status: 'Full',
+    requirements: ['Bring molecular model kit', 'Review SN1/SN2 reactions']
   }
 ];

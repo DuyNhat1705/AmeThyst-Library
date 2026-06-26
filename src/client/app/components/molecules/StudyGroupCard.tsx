@@ -23,6 +23,7 @@ interface StudyGroupCardProps {
   status: 'Available' | 'Full';
   isPending?: boolean;
   onJoin?: (id: string) => void;
+  onCardClick?: (id: string) => void;
 }
 
 export default function StudyGroupCard({
@@ -38,7 +39,8 @@ export default function StudyGroupCard({
   maxMembers,
   status,
   isPending,
-  onJoin
+  onJoin,
+  onCardClick
 }: StudyGroupCardProps) {
   const { t } = useI18n();
   const isFull = status === 'Full';
@@ -60,7 +62,10 @@ export default function StudyGroupCard({
   };
 
   return (
-    <div className={`p-6 rounded-2xl flex flex-col gap-4 bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDisabled ? 'opacity-50 pointer-events-none' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer'}`}>
+    <div 
+      className={`p-6 rounded-2xl flex flex-col gap-4 bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDisabled ? 'opacity-50 pointer-events-none' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer'}`}
+      onClick={() => onCardClick && onCardClick(id)}
+    >
       {/* Header */}
       <div className="flex justify-between items-start">
         <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${getSubjectColor(subject)}`}>
@@ -117,7 +122,10 @@ export default function StudyGroupCard({
           variant={isDisabled ? 'secondary' : 'primary'}
           className="w-full py-2.5"
           disabled={isDisabled}
-          onClick={() => onJoin && onJoin(id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onJoin && onJoin(id);
+          }}
         >
           {isFull 
             ? t('study_together.status_full') 

@@ -6,6 +6,7 @@ import StudyGroupGrid from '../components/organisms/StudyGroupGrid';
 import StudyGroupFilter from '../components/molecules/StudyGroupFilter';
 import StudyGroupSort, { SortOption } from '../components/molecules/StudyGroupSort';
 import RequestToJoinModal from '../components/organisms/RequestToJoinModal';
+import StudyGroupInfoModal from '../components/organisms/StudyGroupInfoModal';
 import { mockStudyGroups, StudyGroup } from './mockData';
 import { useI18n } from '../providers/I18nProvider';
 
@@ -17,8 +18,9 @@ export default function StudyTogetherPage() {
   const [subjectFilter, setSubjectFilter] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
 
-  // Modal State
+  // Modal States
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [infoGroupId, setInfoGroupId] = useState<string | null>(null);
 
   // Derived subjects list
   const subjects = useMemo(() => {
@@ -117,16 +119,22 @@ export default function StudyTogetherPage() {
           <StudyGroupGrid 
             groups={displayedGroups} 
             onJoinGroup={handleJoinGroup}
+            onCardClick={(id) => setInfoGroupId(id)}
             pendingRequests={pendingRequests}
           />
         </div>
       </main>
 
       <RequestToJoinModal 
-        isOpen={!!selectedGroupId}
+        isOpen={selectedGroupId !== null}
         onClose={handleCloseModal}
         onSend={handleSendMessage}
         group={selectedGroup}
+      />
+      <StudyGroupInfoModal
+        isOpen={infoGroupId !== null}
+        onClose={() => setInfoGroupId(null)}
+        group={mockStudyGroups.find(g => g.id === infoGroupId) || null}
       />
 
       <Footer />
