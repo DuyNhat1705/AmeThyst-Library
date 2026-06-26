@@ -177,7 +177,9 @@
     "security_loading": "Đang tải cài đặt bảo mật...",
     "google_linked_message": "Tài khoản của bạn đã được liên kết với Xác thực Google. Việc quản lý mật khẩu được xử lý an toàn qua Google.",
     "manage_google_account": "Quản lý Tài khoản Google",
-    "load_profile_failed": "Tải thông tin hồ sơ thất bại"
+    "load_profile_failed": "Tải thông tin hồ sơ thất bại",
+    "save_changes": "Lưu thay đổi",
+    "cancel": "Hủy"
   },
   "hero": {
     "title": "Khám phá thế giới",

@@ -177,7 +177,9 @@
     "security_loading": "Loading security settings...",
     "google_linked_message": "Your account is linked with Google Authentication. Password management is handled securely through Google.",
     "manage_google_account": "Manage Google Account",
-    "load_profile_failed": "Failed to load profile"
+    "load_profile_failed": "Failed to load profile",
+    "save_changes": "Save Changes",
+    "cancel": "Cancel"
   },
   "hero": {
     "title": "Discover a World of",

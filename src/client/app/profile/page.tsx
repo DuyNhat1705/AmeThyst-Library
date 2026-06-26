@@ -18,6 +18,12 @@ export default function ProfilePage() {
     phoneNumber: "",
     department: "Information Technology", // mock data
   });
+  const [originalProfile, setOriginalProfile] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    department: "Information Technology", // mock data
+  });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -39,30 +45,43 @@ export default function ProfilePage() {
       })
       .then((data) => {
         if (!data) return;
-        setProfile((prev) => ({
-          ...prev,
+        const loaded = {
           fullName: data.username || "",
           email: data.email || "",
           phoneNumber: data.phone_number || "",
-          // department không lấy từ API, giữ nguyên mock data hiện có
-        }));
+          department: "Information Technology",
+        };
+        setProfile(loaded);
+        setOriginalProfile(loaded);
         updateStoredUser({
           username: data.username,
           email: data.email,
-          phone_number: data.phone_number,
         });
       })
       .catch((err) => setError(err.message));
   }, [t]);
 
-  const handleUpdate = async (field: string, value: string) => {
-    // Department là mock data, không thể cập nhật
+  const handleLocalUpdate = (field: string, value: string) => {
     if (field === 'department') return;
+    setProfile((prev) => ({ ...prev, [field]: value }));
+  };
 
+  const handleCancel = () => {
+    setProfile(originalProfile);
+  };
+
+  const handleSaveChanges = async () => {
     const token = getAuthToken();
     const body: Record<string, string> = {};
-    if (field === 'fullName') body.username = value;
-    if (field === 'phoneNumber') body.phoneNumber = value;
+
+    if (profile.fullName !== originalProfile.fullName) {
+      body.username = profile.fullName;
+    }
+    if (profile.phoneNumber !== originalProfile.phoneNumber) {
+      body.phoneNumber = profile.phoneNumber;
+    }
+
+    if (Object.keys(body).length === 0) return;
 
     try {
       const res = await fetch(`${API}/user/profile`, {
@@ -86,11 +105,17 @@ export default function ProfilePage() {
       }
       const updated = await res.json();
 
-      setProfile((prev) => ({ ...prev, [field]: value }));
+      const newProfile = {
+        ...profile,
+        fullName: updated.username || profile.fullName,
+        phoneNumber: updated.phone_number || profile.phoneNumber,
+      };
+
+      setProfile(newProfile);
+      setOriginalProfile(newProfile);
       updateStoredUser({
         username: updated.username,
         email: updated.email,
-        phone_number: updated.phone_number,
       });
       setMessage(t('profile.updated_success'));
       setError('');
@@ -99,6 +124,10 @@ export default function ProfilePage() {
       setError(err instanceof Error ? err.message : t('profile.update_failed'));
     }
   };
+
+  const isChanged =
+    profile.fullName !== originalProfile.fullName ||
+    profile.phoneNumber !== originalProfile.phoneNumber;
 
   const getDepartmentValue = (dept: string) => {
     if (dept === "Information Technology") {
@@ -109,16 +138,33 @@ export default function ProfilePage() {
 
   return (
     <ProfileTemplate username={profile.fullName}>
-      <h1 className="text-2xl font-bold mb-6 text-[#091426] dark:text-neutral-200">{t('profile.personal_info')}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-slate-900 dark:text-neutral-200">{t('profile.personal_info')}</h1>
 
       {message && <p className="mb-4 text-green-600 font-medium">{message}</p>}
       {error && <p className="mb-4 text-red-500 font-medium">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleUpdate('fullName', v)} />
+        <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleLocalUpdate('fullName', v)} />
         <ProfileCard label={t('profile.email_address')} value={profile.email} onUpdate={() => {}} editable={false} />
-        <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleUpdate('phoneNumber', v)} />
+        <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleLocalUpdate('phoneNumber', v)} />
         <ProfileCard label={t('profile.department')} value={getDepartmentValue(profile.department)} onUpdate={() => {}} editable={false} />
+      </div>
+
+      <div className="mt-8 flex justify-end space-x-4">
+        <button
+          onClick={handleCancel}
+          disabled={!isChanged}
+          className="px-6 py-2.5 rounded-lg font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 border border-slate-300 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-slate-500"
+        >
+          {t('profile.cancel')}
+        </button>
+        <button
+          onClick={handleSaveChanges}
+          disabled={!isChanged}
+          className="px-6 py-2.5 rounded-lg font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed focus:ring-emerald-500"
+        >
+          {t('profile.save_changes')}
+        </button>
       </div>
     </ProfileTemplate>
   );
