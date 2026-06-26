@@ -38,7 +38,7 @@ export interface BookDetails {
   rating: string;
   coverImage: string;
   inventory?: {
-    branchId?: string;
+    branchId?: number;
     location: string;
     address: string;
     shelf: string;
@@ -46,7 +46,7 @@ export interface BookDetails {
   }[];
   userReservation?: {
     reservationId: string;
-    branchId: string;
+    branchId: number;
     branchName: string;
     reserveDate: string;
     expiresAt: string;
@@ -67,8 +67,8 @@ export interface BookDetailTemplateProps {
   loading: boolean;
   isReserving: boolean;
   reserved: boolean;
-  selectedBranchId: string | null;
-  onBranchSelect: (branchId: string | null) => void;
+  selectedBranchId: number | null;
+  onBranchSelect: (branchId: number | null) => void;
   error: string | null;
   onReserve: () => void;
 }
@@ -90,9 +90,9 @@ export default function BookDetailTemplate({
   if (!book) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 text-xl">{t('book.not_found')}</div>;
 
   const hasAvailability = book.inventory && book.inventory.some(loc => loc.availableCopies > 0);
-  const hasActiveReservation = book.userReservation && book.userReservation.status === 'pending';
+  const hasActiveReservation = book.userReservation && ['reserved', 'pending', 'borrowed'].includes(book.userReservation.status);
 
-  const handleBranchClick = (branchId: string | undefined, availableCopies: number) => {
+  const handleBranchClick = (branchId: number | undefined, availableCopies: number) => {
     if (availableCopies <= 0) return;
     if (!branchId) return;
     onBranchSelect(branchId === selectedBranchId ? null : branchId);
@@ -138,9 +138,9 @@ export default function BookDetailTemplate({
                 
                 {book.inventory && book.inventory.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {book.inventory.map((loc, idx) => (
+                    {book.inventory.map((loc) => (
                       <div 
-                        key={idx} 
+                        key={loc.branchId}
                         className={`flex flex-col p-4 rounded-lg border bg-white dark:bg-neutral-800 shadow-sm transition-all duration-200 ${
                           loc.availableCopies > 0 
                             ? selectedBranchId === loc.branchId

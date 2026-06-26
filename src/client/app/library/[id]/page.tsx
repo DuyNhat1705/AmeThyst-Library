@@ -11,7 +11,7 @@ export default function BookPage() {
   const [loading, setLoading] = useState(true);
   const [isReserving, setIsReserving] = useState(false);
   const [reserved, setReserved] = useState(false);
-  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
+  const [selectedBranchId, setSelectedBranchId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

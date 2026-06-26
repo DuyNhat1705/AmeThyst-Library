@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import libraryRoutes from './routes/library.mjs';
 import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
-import dashboardRoutes from './routes/dashboard.routes.mjs';
+import dashboardRoutes from './routes/dashboard.user.routes.mjs';
 
 dotenv.config();
 

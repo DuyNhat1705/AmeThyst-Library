@@ -1,4 +1,4 @@
-import { findEventsByMonth, findEventsByDateRange, insertEvent } from '../models/dashboard.models.mjs';
+import { findEventsByMonth, findEventsByDateRange, insertEvent } from '../models/dashboard.user.models.mjs';
 
 const fetchEventsByMonth = async (userId, month, year) => {
   const rows = await findEventsByMonth(userId, month, year);

@@ -39,6 +39,7 @@ export const getBookById = async (id, userId = null) => {
     LEFT JOIN public.library l ON b.book_id = l.book_id
     LEFT JOIN public.branches br ON l.branch_id = br.branch_id
     WHERE b.book_id = $1
+    ORDER BY l.branch_id ASC
   `;
   const result = await pool.query(query, [id]);
   
