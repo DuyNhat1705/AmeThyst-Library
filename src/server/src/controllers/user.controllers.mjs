@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import { getUserById, getUserWithPassword, updateUser, updatePassword } from '../models/user.models.mjs';
-import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
 
 const getProfile = async (req, res) => {
   try {
@@ -35,7 +34,7 @@ const changePassword = async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
     if (!isMatch) return res.status(400).json({ error: 'Current password is incorrect' });
 
-    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    const passwordHash = await bcrypt.hash(newPassword, 10);
     await updatePassword(req.user.userId, passwordHash);
 
     res.status(200).json({ message: 'Password updated successfully' });
