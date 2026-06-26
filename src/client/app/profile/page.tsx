@@ -61,13 +61,19 @@ export default function ProfilePage() {
       .catch((err) => setError(err.message));
   }, [t]);
 
+  const [phoneError, setPhoneError] = useState('');
+
   const handleLocalUpdate = (field: string, value: string) => {
     if (field === 'department') return;
+    if (field === 'phoneNumber') {
+      setPhoneError('');
+    }
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCancel = () => {
     setProfile(originalProfile);
+    setPhoneError('');
   };
 
   const handleSaveChanges = async () => {
@@ -78,6 +84,11 @@ export default function ProfilePage() {
       body.username = profile.fullName;
     }
     if (profile.phoneNumber !== originalProfile.phoneNumber) {
+      const phoneRegex = /^\d{9,10}$/;
+      if (!phoneRegex.test(profile.phoneNumber)) {
+        setPhoneError(t('profile.phone_validation_error'));
+        return;
+      }
       body.phoneNumber = profile.phoneNumber;
     }
 
@@ -146,7 +157,14 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleLocalUpdate('fullName', v)} />
         <ProfileCard label={t('profile.email_address')} value={profile.email} onUpdate={() => {}} editable={false} />
-        <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleLocalUpdate('phoneNumber', v)} />
+        <div className="flex flex-col">
+          <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleLocalUpdate('phoneNumber', v)} />
+          {phoneError && (
+            <p className="text-red-600 dark:text-red-400 text-xs mt-1.5 px-1 font-medium">
+              {phoneError}
+            </p>
+          )}
+        </div>
         <ProfileCard label={t('profile.department')} value={getDepartmentValue(profile.department)} onUpdate={() => {}} editable={false} />
       </div>
 

@@ -179,7 +179,8 @@
     "manage_google_account": "Quản lý Tài khoản Google",
     "load_profile_failed": "Tải thông tin hồ sơ thất bại",
     "save_changes": "Lưu thay đổi",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "phone_validation_error": "Số điện thoại chỉ được chứa chữ số và phải có độ dài đúng 9 hoặc 10 chữ số."
   },
   "hero": {
     "title": "Khám phá thế giới",
