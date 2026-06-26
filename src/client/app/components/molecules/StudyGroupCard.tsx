@@ -24,6 +24,10 @@ interface StudyGroupCardProps {
   isPending?: boolean;
   onJoin?: (id: string) => void;
   onCardClick?: (id: string) => void;
+  viewMode?: 'explore' | 'joined' | 'created';
+  userStatus?: string;
+  userApplicantStatus?: string;
+  pendingApplicants?: number;
 }
 
 export default function StudyGroupCard({
@@ -40,11 +44,30 @@ export default function StudyGroupCard({
   status,
   isPending,
   onJoin,
-  onCardClick
+  onCardClick,
+  viewMode = 'explore',
+  userStatus,
+  userApplicantStatus,
+  pendingApplicants = 0
 }: StudyGroupCardProps) {
   const { t } = useI18n();
   const isFull = status === 'Full';
-  const isDisabled = isFull || isPending;
+
+  let isDimmed = false;
+  let isUnclickable = false;
+
+  if (viewMode === 'explore') {
+    isDimmed = isFull || isPending;
+    isUnclickable = isFull || isPending;
+  } else if (viewMode === 'created') {
+    isDimmed = userStatus === 'completed' || userStatus === 'cancelled';
+    isUnclickable = false;
+  } else if (viewMode === 'joined') {
+    isDimmed = userApplicantStatus === 'denied' || userApplicantStatus === 'expired';
+    isUnclickable = false;
+  }
+
+  const clickableClass = isUnclickable ? 'pointer-events-none' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer';
 
   const getSubjectColor = (subj: string) => {
     const hash = subj.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -63,22 +86,44 @@ export default function StudyGroupCard({
 
   return (
     <div 
-      className={`p-6 rounded-2xl flex flex-col gap-4 bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDisabled ? 'opacity-50 pointer-events-none' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer'}`}
+      className={`${viewMode === 'explore' ? 'p-6 gap-4' : 'p-5 gap-3 h-[320px]'} rounded-2xl flex flex-col bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDimmed ? 'opacity-60' : ''} ${clickableClass}`}
       onClick={() => onCardClick && onCardClick(id)}
     >
       {/* Header */}
       <div className="flex justify-between items-start">
-        <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${getSubjectColor(subject)}`}>
-          {subject}
-        </span>
+        <div className="flex items-center gap-2 overflow-hidden">
+          <span className={`text-xs font-bold px-3 py-1.5 rounded-full truncate max-w-[120px] ${getSubjectColor(subject)}`}>
+            {subject}
+          </span>
+          {viewMode === 'created' && userStatus && (
+            <span className={`text-[13px] font-bold px-3 py-1 rounded-full shrink-0 ${
+              userStatus === 'upcoming' ? 'bg-[#D8E3FB] text-[#0C447C]' : 
+              userStatus === 'inprogress' ? 'bg-[#86F2E4] text-[#27500A]' : 
+              userStatus === 'cancelled' ? 'bg-[#FBD8D8] text-[#7C0C0C]' :
+              userStatus === 'completed' ? 'bg-[#E8D8FB] text-[#4C0C7C]' :
+              'bg-gray-200 text-gray-800'
+            }`}>
+              {userStatus.charAt(0).toUpperCase() + userStatus.slice(1)}
+            </span>
+          )}
+          {viewMode === 'joined' && userApplicantStatus && (
+            <span className={`text-[13px] font-bold px-3 py-1 rounded-full shrink-0 ${
+              userApplicantStatus === 'approved' ? 'bg-[#D8FBD8] text-[#0C7C0C]' : 
+              userApplicantStatus === 'pending' ? 'bg-[#FBEED8] text-[#7C5C0C]' : 
+              'bg-[#FBD8D8] text-[#7C0C0C]'
+            }`}>
+              {userApplicantStatus.charAt(0).toUpperCase() + userApplicantStatus.slice(1)}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Title & Desc */}
       <div className="flex flex-col gap-1">
-        <h3 className="font-manrope text-xl font-bold text-[#0B1C30] dark:text-white leading-snug">
+        <h3 className={`font-manrope ${viewMode === 'explore' ? 'text-xl' : 'text-lg line-clamp-1'} font-bold text-[#0B1C30] dark:text-white leading-snug`} title={title}>
           {title}
         </h3>
-        <p className="font-inter text-sm text-[#75777D] dark:text-gray-400 line-clamp-2">
+        <p className={`font-inter ${viewMode === 'explore' ? 'text-sm' : 'text-xs'} text-[#75777D] dark:text-gray-400 line-clamp-2`} title={description}>
           {description}
         </p>
       </div>
@@ -99,41 +144,111 @@ export default function StudyGroupCard({
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-[#EAEAEA] dark:border-neutral-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[#E5F3F2] dark:bg-teal-900/30 flex items-center justify-center text-[#006A61] dark:text-teal-400 font-bold text-xs">
-            {leader.initials}
+      {/* Members Capacity & Footer for Dashboard Modes */}
+      {viewMode !== 'explore' && (
+        <>
+          <div className="flex pt-2 flex-col items-start gap-1 w-full border-t border-[#EAEAEA] dark:border-neutral-800 mt-1">
+            <div className="flex justify-between items-start w-full mb-1">
+              <p className="text-[#7D7483] font-openSans text-[11px] font-bold leading-4 tracking-[0.05em]">
+                MEMBERS CAPACITY
+              </p>
+              <p className="text-[#7D7483] font-openSans text-[11px] font-bold leading-4 tracking-[0.05em]">
+                {currentMembers} / {maxMembers}
+              </p>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-[#F8EFE6] dark:bg-neutral-800 overflow-hidden relative">
+              <div 
+                className="absolute left-0 top-0 h-full bg-[#0B1C30] dark:bg-white rounded-full transition-all duration-500" 
+                style={{ width: `${Math.min(100, (currentMembers / maxMembers) * 100)}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Leader</span>
-            <span className="text-sm font-semibold text-[#0B1C30] dark:text-white">{leader.name}</span>
+          <div className="flex pb-[8px] pt-[2px] justify-between items-center w-full">
+            <div className="flex items-center w-fit">
+              <button className="flex pt-1.5 pb-[7px] justify-center items-center rounded-full border-2 border-white dark:border-neutral-900 bg-[#4B0082] w-8 h-8 relative z-10">
+                <p className="text-[#BA7EF4] font-openSans text-[10px] font-bold leading-[15px]">
+                  {leader.initials}
+                </p>
+              </button>
+              {currentMembers > 1 && (
+                <div className="flex flex-col justify-center items-center w-5 h-8 -ml-3">
+                  <button className="flex pt-1.5 pb-[7px] justify-center items-center shrink-0 rounded-full border-2 border-white dark:border-neutral-900 bg-[#C3DCFE] w-8 h-8">
+                    <p className="text-[#001D36] font-openSans text-[10px] font-bold leading-[15px]">
+                      +{currentMembers - 1}
+                    </p>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-end w-fit">
+              {viewMode === 'created' && (
+                pendingApplicants > 0 ? (
+                  <div className="flex items-center gap-1.5 w-fit whitespace-nowrap">
+                    <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M0 6.70833C0 5.31944 0.309028 4.04514 0.927083 2.88542C1.54514 1.72569 2.375 0.763889 3.41667 0L4.39583 1.33333C3.5625 1.94444 2.89931 2.71528 2.40625 3.64583C1.91319 4.57639 1.66667 5.59722 1.66667 6.70833H0ZM15 6.70833C15 5.59722 14.7535 4.57639 14.2604 3.64583C13.7674 2.71528 13.1042 1.94444 12.2708 1.33333L13.25 0C14.2917 0.763889 15.1215 1.72569 15.7396 2.88542C16.3576 4.04514 16.6667 5.31944 16.6667 6.70833H15ZM1.66667 14.2083V12.5417H3.33333V6.70833C3.33333 5.55556 3.68056 4.53125 4.375 3.63542C5.06944 2.73958 5.97222 2.15278 7.08333 1.875V1.29167C7.08333 0.944444 7.20486 0.649306 7.44792 0.40625C7.69097 0.163194 7.98611 0.0416667 8.33333 0.0416667C8.68056 0.0416667 8.97569 0.163194 9.21875 0.40625C9.46181 0.649306 9.58333 0.944444 9.58333 1.29167V1.875C10.6944 2.15278 11.5972 2.73958 12.2917 3.63542C12.9861 4.53125 13.3333 5.55556 13.3333 6.70833V12.5417H15V14.2083H1.66667ZM8.33333 16.7083C7.875 16.7083 7.48264 16.5451 7.15625 16.2188C6.82986 15.8924 6.66667 15.5 6.66667 15.0417H10C10 15.5 9.83681 15.8924 9.51042 16.2188C9.18403 16.5451 8.79167 16.7083 8.33333 16.7083ZM5 12.5417H11.6667V6.70833C11.6667 5.79167 11.3403 5.00694 10.6875 4.35417C10.0347 3.70139 9.25 3.375 8.33333 3.375C7.41667 3.375 6.63194 3.70139 5.97917 4.35417C5.32639 5.00694 5 5.79167 5 6.70833V12.5417Z" fill="#0053D0"/>
+                    </svg>
+                    <p className="text-[#0053D0] font-openSans text-[11px] font-bold">
+                      {pendingApplicants} pending
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-[#4C4451] dark:text-gray-400 font-openSans text-[11px] leading-6">
+                    No requests
+                  </p>
+                )
+              )}
+              {viewMode === 'joined' && (
+                <div className="flex flex-col items-end justify-center">
+                  <p className="text-[#7D7483] font-openSans text-[9px] font-bold tracking-wider uppercase leading-[12px]">
+                    Creator
+                  </p>
+                  <p className="text-[#0D1C2E] dark:text-white font-inter text-xs font-semibold leading-[14px]">
+                    {leader.name}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-1 text-sm font-semibold text-[#0B1C30] dark:text-white">
-          <svg className="w-4 h-4 text-[#75777D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-          <span>{currentMembers}/{maxMembers}</span>
-        </div>
-      </div>
+        </>
+      )}
 
-      {/* Join Action */}
-      <div className="mt-2">
-        <Button 
-          variant={isDisabled ? 'secondary' : 'primary'}
-          className="w-full py-2.5"
-          disabled={isDisabled}
-          onClick={(e) => {
-            e.stopPropagation();
-            onJoin && onJoin(id);
-          }}
-        >
-          {isFull 
-            ? t('study_together.status_full') 
-            : isPending 
-              ? t('study_together.status_pending') || 'Pending Request' 
-              : t('study_together.join_group')}
-        </Button>
-      </div>
+      {/* Footer & Join Action for Explore Mode */}
+      {viewMode === 'explore' && (
+        <>
+          <div className="flex items-center justify-between pt-4 border-t border-[#EAEAEA] dark:border-neutral-800">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-[#E5F3F2] dark:bg-teal-900/30 flex items-center justify-center text-[#006A61] dark:text-teal-400 font-bold text-xs">
+                {leader.initials}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500 dark:text-gray-400">Leader</span>
+                <span className="text-sm font-semibold text-[#0B1C30] dark:text-white">{leader.name}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-sm font-semibold text-[#0B1C30] dark:text-white">
+              <svg className="w-4 h-4 text-[#75777D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <span>{currentMembers}/{maxMembers}</span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <Button 
+              variant={isUnclickable ? 'secondary' : 'primary'}
+              className="w-full py-2.5"
+              disabled={isUnclickable}
+              onClick={(e) => {
+                e.stopPropagation();
+                onJoin && onJoin(id);
+              }}
+            >
+              {isFull 
+                ? t('study_together.status_full') 
+                : isPending 
+                  ? t('study_together.status_pending') || 'Pending Request' 
+                  : t('study_together.join_group')}
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

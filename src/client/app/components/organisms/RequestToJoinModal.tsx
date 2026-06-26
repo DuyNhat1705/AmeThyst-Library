@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { useI18n } from '../../providers/I18nProvider';
 import { StudyGroup } from '../../../study-together/mockData';
@@ -14,6 +14,17 @@ interface RequestToJoinModalProps {
 export default function RequestToJoinModal({ isOpen, onClose, onSend, group }: RequestToJoinModalProps) {
   const { t } = useI18n();
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen || !group) return null;
 

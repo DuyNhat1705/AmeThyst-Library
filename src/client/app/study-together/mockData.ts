@@ -16,6 +16,9 @@ export interface StudyGroup {
   maxMembers: number;
   status: 'Available' | 'Full';
   requirements: string[];
+  userStatus?: 'upcoming' | 'full' | 'cancelled' | 'inprogress' | 'completed' | 'expired';
+  userApplicantStatus?: 'pending' | 'approved' | 'denied' | 'expired';
+  pendingApplicants?: number;
 }
 
 export const mockStudyGroups: StudyGroup[] = [
@@ -160,3 +163,17 @@ export const mockStudyGroups: StudyGroup[] = [
     requirements: ['Bring molecular model kit', 'Review SN1/SN2 reactions']
   }
 ];
+
+export const mockJoinedGroups: StudyGroup[] = Array.from({ length: 16 }).map((_, i) => ({
+  ...mockStudyGroups[i % mockStudyGroups.length],
+  id: `j${i + 1}`,
+  userApplicantStatus: i % 4 === 0 ? 'approved' : i % 4 === 1 ? 'pending' : i % 4 === 2 ? 'denied' : 'expired'
+}));
+
+export const mockCreatedGroups: StudyGroup[] = Array.from({ length: 16 }).map((_, i) => ({
+  ...mockStudyGroups[i % mockStudyGroups.length],
+  id: `c${i + 1}`,
+  userStatus: i % 5 === 0 ? 'upcoming' : i % 5 === 1 ? 'inprogress' : i % 5 === 2 ? 'completed' : i % 5 === 3 ? 'cancelled' : 'expired',
+  pendingApplicants: i % 3 === 0 ? 2 : 0,
+  leader: { name: 'You', initials: 'ME' }
+}));
