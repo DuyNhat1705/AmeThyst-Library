@@ -296,5 +296,24 @@
     "loan_fees_lost_book": "Mất sách",
     "loan_fees_damage": "Hư hỏng",
     "loan_fees_processing": "Phí xử lý"
+  },
+  "study_together": {
+    "title": "Học cùng nhau",
+    "description": "Tìm và tham gia các nhóm học tập để cộng tác với bạn bè.",
+    "search_placeholder": "Tìm kiếm nhóm...",
+    "filter_all_subjects": "Tất cả môn học",
+    "sort_by": "Sắp xếp theo",
+    "sort_newest": "Mới nhất",
+    "sort_availability": "Khả dụng",
+    "status_available": "Đang tuyển",
+    "status_full": "Đã đủ người",
+    "join_group": "Tham gia nhóm",
+    "request_to_join": "Yêu cầu tham gia",
+    "send": "Gửi",
+    "cancel": "Hủy",
+    "message_placeholder": "Giới thiệu bản thân và lý do bạn muốn tham gia (tối đa 100 ký tự)...",
+    "time": "Thời gian",
+    "address": "Địa điểm",
+    "room": "Phòng"
   }
 }
