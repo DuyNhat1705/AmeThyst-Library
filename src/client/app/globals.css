@@ -41,3 +41,9 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Hide the clear and reveal buttons in password inputs for IE/Edge*/
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

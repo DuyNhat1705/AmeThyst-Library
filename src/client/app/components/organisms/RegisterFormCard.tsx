@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { FormField, OAuthButtons } from '../molecules';
-import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
+import { Button, SecurityIndicator, ErrorMessage, PasswordInput } from '../atoms';
 import { calculatePasswordStrength, validatePassword } from '../../utils/password';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -116,20 +116,18 @@ export default function RegisterFormCard({
         />
 
         <div className="flex flex-col gap-2">
-          <FormField
+          <PasswordInput
             label={t('auth.password_label')}
             id="password"
-            type="password"
             placeholder={t('auth.password_placeholder_short')}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={state.validationErrors?.password}
             disabled={state.isLoading}
           />
-          <FormField
+          <PasswordInput
             label={t('auth.confirm_password_label')}
             id="confirmPassword"
-            type="password"
             placeholder={t('auth.confirm_password_placeholder')}
             value={formData.confirmPassword || ""}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
