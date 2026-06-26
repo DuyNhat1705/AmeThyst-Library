@@ -6,7 +6,7 @@ import { SecurityFormCard } from '../../components/organisms';
 import { useRequireAuth, getLoggedInUser, getAuthToken, logoutUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function SecurityPage() {
   const { t } = useI18n();

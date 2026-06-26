@@ -15,11 +15,6 @@ const SERVER_ERROR_MAP: Record<string, string> = {
   'Passwords do not match': 'auth.passwords_no_match',
   'New password must be at least 8 characters': 'auth.password_min_length',
   'Password must be at least 8 characters': 'auth.password_min_length',
-  'Invalid or expired verification link.': 'auth.verification_failed',
-  'Verification link has expired. Please register again.': 'auth.verification_link_expired',
-  'Email already exists.': 'auth.email_already_exists',
-  'A verification email has already been sent. Please check your inbox.': 'auth.verification_already_sent',
-  'No pending registration found for this email. Please register again.': 'auth.registration_expired',
 };
 
 export function mapServerError(rawMsg: string | null | undefined, t: (key: string) => string, fallbackKey?: string): string {
