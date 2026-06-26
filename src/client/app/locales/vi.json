@@ -314,6 +314,7 @@
     "message_placeholder": "Giới thiệu bản thân và lý do bạn muốn tham gia (tối đa 100 ký tự)...",
     "time": "Thời gian",
     "address": "Địa điểm",
-    "room": "Phòng"
+    "room": "Phòng",
+    "status_pending": "Chờ phê duyệt"
   }
 }

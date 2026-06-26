@@ -314,6 +314,7 @@
     "message_placeholder": "Introduce yourself and explain why you want to join (max 100 characters)...",
     "time": "Time",
     "address": "Location",
-    "room": "Room"
+    "room": "Room",
+    "status_pending": "Pending Request"
   }
 }

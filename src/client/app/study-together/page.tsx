@@ -59,6 +59,8 @@ export default function StudyTogetherPage() {
     return result;
   }, [searchQuery, subjectFilter, sortOption]);
 
+  const [pendingRequests, setPendingRequests] = useState<string[]>([]);
+
   const handleJoinGroup = (id: string) => {
     setSelectedGroupId(id);
   };
@@ -69,7 +71,9 @@ export default function StudyTogetherPage() {
 
   const handleSendMessage = (message: string) => {
     console.log(`Join request sent for group ${selectedGroupId} with message: ${message}`);
-    // Show toast or alert here in real app
+    if (selectedGroupId) {
+      setPendingRequests(prev => [...prev, selectedGroupId]);
+    }
     setSelectedGroupId(null);
   };
 
@@ -112,7 +116,8 @@ export default function StudyTogetherPage() {
           {/* Content */}
           <StudyGroupGrid 
             groups={displayedGroups} 
-            onJoinGroup={handleJoinGroup} 
+            onJoinGroup={handleJoinGroup}
+            pendingRequests={pendingRequests}
           />
         </div>
       </main>

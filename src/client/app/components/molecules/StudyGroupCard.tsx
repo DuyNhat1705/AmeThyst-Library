@@ -21,6 +21,7 @@ interface StudyGroupCardProps {
   currentMembers: number;
   maxMembers: number;
   status: 'Available' | 'Full';
+  isPending?: boolean;
   onJoin?: (id: string) => void;
 }
 
@@ -36,10 +37,12 @@ export default function StudyGroupCard({
   currentMembers,
   maxMembers,
   status,
+  isPending,
   onJoin
 }: StudyGroupCardProps) {
   const { t } = useI18n();
   const isFull = status === 'Full';
+  const isDisabled = isFull || isPending;
 
   const getSubjectColor = (subj: string) => {
     const hash = subj.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -57,7 +60,7 @@ export default function StudyGroupCard({
   };
 
   return (
-    <div className={`p-6 rounded-2xl flex flex-col gap-4 bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isFull ? 'opacity-80' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer'}`}>
+    <div className={`p-6 rounded-2xl flex flex-col gap-4 bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDisabled ? 'opacity-50 pointer-events-none' : 'hover:shadow-lg hover:border-[#D4B895] cursor-pointer'}`}>
       {/* Header */}
       <div className="flex justify-between items-start">
         <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${getSubjectColor(subject)}`}>
@@ -111,12 +114,16 @@ export default function StudyGroupCard({
       {/* Join Action */}
       <div className="mt-2">
         <Button 
-          variant={isFull ? 'secondary' : 'primary'}
+          variant={isDisabled ? 'secondary' : 'primary'}
           className="w-full py-2.5"
-          disabled={isFull}
+          disabled={isDisabled}
           onClick={() => onJoin && onJoin(id)}
         >
-          {isFull ? t('study_together.status_full') : t('study_together.join_group')}
+          {isFull 
+            ? t('study_together.status_full') 
+            : isPending 
+              ? t('study_together.status_pending') || 'Pending Request' 
+              : t('study_together.join_group')}
         </Button>
       </div>
     </div>
