@@ -5,8 +5,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { logoutUser, getInitials } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
+import { AvatarUploader } from '../molecules';
 
-export default function Sidebar({ username }: { username: string }) {
+export default function Sidebar({
+  username,
+  avatarUrl,
+  role = 'user',
+  borrowNum = 0,
+  onAvatarUpdate,
+}: {
+  username: string;
+  avatarUrl?: string;
+  role?: string;
+  borrowNum?: number;
+  onAvatarUpdate?: (newUrl: string) => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { t } = useI18n();
@@ -14,6 +27,12 @@ export default function Sidebar({ username }: { username: string }) {
   const handleLogout = () => {
     logoutUser();
     router.push('/login');
+  };
+
+  const getRoleLabel = () => {
+    if (role === 'admin') return t('profile.role_admin');
+    if (role === 'librarian') return t('profile.role_librarian');
+    return t('profile.role_user');
   };
 
   return (
@@ -26,13 +45,16 @@ export default function Sidebar({ username }: { username: string }) {
       </button>
       <aside className={`${isOpen ? 'block' : 'hidden'} lg:block w-[330px] min-h-screen bg-[#F8EFE6] dark:bg-neutral-900 border-r border-[#000000] dark:border-neutral-700 p-6 flex flex-col gap-6 sticky top-0 h-screen overflow-y-auto`}>
         <div className="flex flex-col items-center gap-4">
-          <button className="w-20 h-20 bg-[#486C7E] rounded-full text-white font-bold text-2xl hover:scale-105 transition-transform">
-            {getInitials(username)}
-          </button>
+          <AvatarUploader
+            avatarUrl={avatarUrl || ''}
+            onAvatarUpdate={onAvatarUpdate || (() => {})}
+            username={username}
+          />
           <div className="flex flex-col items-center space-y-3">
             <h2 className="text-lg font-bold text-[#45474C] dark:text-neutral-200">{username}</h2>
-            <span className="bg-[#86F2E4] dark:bg-[#86F2E4]/20 text-[#006F66] dark:text-[#86F2E4] px-3 py-1 rounded-full text-sm font-semibold">
-              {t('profile.role_user')}
+
+            <span className="bg-[#86F2E4] dark:bg-[#86F2E4]/20 text-[#006F66] dark:text-[#86F2E4] px-3 py-1 rounded-full text-sm font-semibold capitalize">
+              {getRoleLabel()}
             </span>
           </div>
         </div>
@@ -43,6 +65,14 @@ export default function Sidebar({ username }: { username: string }) {
           </Link>
           <Link href="/profile/security" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#EAEAEA] active:bg-[#D4D4D4] dark:hover:bg-neutral-700 dark:active:bg-neutral-600 transition-all text-[#091426] dark:text-neutral-200">
             <span>🔒</span> {t('profile.security_link')}
+          </Link>
+          <Link href="/dashboard/user/borrowed" className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EAEAEA] active:bg-[#D4D4D4] dark:hover:bg-neutral-700 dark:active:bg-neutral-600 transition-all text-[#091426] dark:text-neutral-200">
+            <span className="flex items-center gap-3">
+              <span>📚</span> {t('profile.borrow_books_link')}
+            </span>
+            <span className="bg-[#006F66] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[22px] text-center">
+              {borrowNum}
+            </span>
           </Link>
         </nav>
 

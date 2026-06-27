@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan at
-`specs/010-user-dashboard-recommendation/plan.md`
+`specs/021-avatar-placement-redesign/plan.md`
 <!-- SPECKIT END -->

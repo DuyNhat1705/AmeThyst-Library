@@ -8,6 +8,7 @@ import { useI18n } from '../providers/I18nProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+
 export default function ProfilePage() {
   const { t } = useI18n();
   useRequireAuth();
@@ -16,20 +17,26 @@ export default function ProfilePage() {
     fullName: "",
     email: "",
     phoneNumber: "",
-    department: "Information Technology", // mock data
+    department: "Information Technology",
+    avatarUrl: "",
+    role: "user",
+    borrowNum: 0,
   });
-  const [originalProfile, setOriginalProfile] = useState({
+  const [savedProfile, setSavedProfile] = useState({
     fullName: "",
     email: "",
     phoneNumber: "",
-    department: "Information Technology", // mock data
+    department: "Information Technology",
+    avatarUrl: "",
+    role: "user",
+    borrowNum: 0,
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     const token = getAuthToken();
-    if (!token) return; // Wait until requireAuth redirects if no token
+    if (!token) return;
 
     fetch(`${API}/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -50,12 +57,16 @@ export default function ProfilePage() {
           email: data.email || "",
           phoneNumber: data.phone_number || "",
           department: "Information Technology",
+          avatarUrl: data.avatar || "",
+          role: data.role || "user",
+          borrowNum: data.borrow_num || 0,
         };
         setProfile(loaded);
-        setOriginalProfile(loaded);
+        setSavedProfile(loaded);
         updateStoredUser({
           username: data.username,
           email: data.email,
+          avatar: data.avatar,
         });
       })
       .catch((err) => setError(err.message));
@@ -72,7 +83,7 @@ export default function ProfilePage() {
   };
 
   const handleCancel = () => {
-    setProfile(originalProfile);
+    setProfile(savedProfile);
     setPhoneError('');
   };
 
@@ -80,10 +91,10 @@ export default function ProfilePage() {
     const token = getAuthToken();
     const body: Record<string, string> = {};
 
-    if (profile.fullName !== originalProfile.fullName) {
+    if (profile.fullName !== savedProfile.fullName) {
       body.username = profile.fullName;
     }
-    if (profile.phoneNumber !== originalProfile.phoneNumber) {
+    if (profile.phoneNumber !== savedProfile.phoneNumber) {
       const phoneRegex = /^\d{9,10}$/;
       if (!phoneRegex.test(profile.phoneNumber)) {
         setPhoneError(t('profile.phone_validation_error'));
@@ -123,10 +134,11 @@ export default function ProfilePage() {
       };
 
       setProfile(newProfile);
-      setOriginalProfile(newProfile);
+      setSavedProfile(newProfile);
       updateStoredUser({
         username: updated.username,
         email: updated.email,
+        avatar: profile.avatarUrl,
       });
       setMessage(t('profile.updated_success'));
       setError('');
@@ -136,9 +148,15 @@ export default function ProfilePage() {
     }
   };
 
+  const handleAvatarUpdate = (newAvatarUrl: string) => {
+    setProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+    setSavedProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+    updateStoredUser({ avatar: newAvatarUrl });
+  };
+
   const isChanged =
-    profile.fullName !== originalProfile.fullName ||
-    profile.phoneNumber !== originalProfile.phoneNumber;
+    profile.fullName !== savedProfile.fullName ||
+    profile.phoneNumber !== savedProfile.phoneNumber;
 
   const getDepartmentValue = (dept: string) => {
     if (dept === "Information Technology") {
@@ -148,11 +166,23 @@ export default function ProfilePage() {
   };
 
   return (
-    <ProfileTemplate username={profile.fullName}>
-      <h1 className="text-2xl font-bold mb-6 text-slate-900 dark:text-neutral-200">{t('profile.personal_info')}</h1>
+    <ProfileTemplate
+      username={profile.fullName}
+      avatarUrl={profile.avatarUrl}
+      role={profile.role}
+      borrowNum={profile.borrowNum}
+      onAvatarUpdate={handleAvatarUpdate}
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-200 dark:border-neutral-700 pb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-200">{t('profile.personal_info')}</h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{t('profile.personal_info_desc') || 'Manage your personal information, role status, and avatar.'}</p>
+        </div>
+      </div>
 
       {message && <p className="mb-4 text-green-600 font-medium">{message}</p>}
       {error && <p className="mb-4 text-red-500 font-medium">{error}</p>}
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleLocalUpdate('fullName', v)} />
