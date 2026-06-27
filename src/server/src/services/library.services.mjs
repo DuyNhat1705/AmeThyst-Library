@@ -60,7 +60,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
 
   // 1. Prepare/Map filters for buildFilterSQL compatibility
   const mappedFilters = {
-    // If 'Others' is selected, we handle genres manually below due to custom logic
     genres: genres.includes('Others') ? [] : genres, 
     publicationDate: { start: startYear, end: endYear }
   };
@@ -98,7 +97,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   }
 
   // 3. Combine buildFilterSQL result with extra clauses
-  // Because buildFilterSQL returns ' AND clause1 AND clause2', we need to clean up prefixes
   let finalWhereString = '';
   let allClauses = [];
 
