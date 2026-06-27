@@ -2,6 +2,8 @@
 import React from 'react';
 import { useI18n } from '../../providers/I18nProvider';
 
+import { CustomSelect } from '../atoms/CustomSelect';
+
 export type SortOption = 'newest' | 'availability';
 
 interface StudyGroupSortProps {
@@ -17,14 +19,15 @@ export default function StudyGroupSort({ sortOption, onSortChange }: StudyGroupS
       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
         {t('study_together.sort_by')}:
       </span>
-      <select
+      <CustomSelect
+        className="w-40"
         value={sortOption}
-        onChange={(e) => onSortChange(e.target.value as SortOption)}
-        className="h-10 px-4 rounded-lg border border-[#C5C6CD] bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#006A61] transition-all dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:ring-[#FFB95F] shadow-sm"
-      >
-        <option value="newest">{t('study_together.sort_newest')}</option>
-        <option value="availability">{t('study_together.sort_availability')}</option>
-      </select>
+        onChange={(val) => onSortChange(val as SortOption)}
+        options={[
+          { value: 'newest', label: t('study_together.sort_newest') },
+          { value: 'availability', label: t('study_together.sort_availability') }
+        ]}
+      />
     </div>
   );
 }

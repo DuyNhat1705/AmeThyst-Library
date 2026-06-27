@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { Input } from '../atoms/Input';
+import { CustomSelect } from '../atoms/CustomSelect';
 import { useI18n } from '../../providers/I18nProvider';
 
 interface StudyGroupFilterProps {
@@ -37,16 +38,15 @@ export default function StudyGroupFilter({
       </div>
 
       {/* Subject Filter */}
-      <select
+      <CustomSelect
+        className="w-full sm:w-64"
         value={subjectFilter}
-        onChange={(e) => onSubjectChange(e.target.value)}
-        className="h-10 px-4 rounded-lg border border-[#C5C6CD] bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#006A61] transition-all dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:ring-[#FFB95F] shadow-sm"
-      >
-        <option value="">{t('study_together.filter_all_subjects')}</option>
-        {subjects.map(subject => (
-          <option key={subject} value={subject}>{subject}</option>
-        ))}
-      </select>
+        onChange={onSubjectChange}
+        options={[
+          { value: '', label: t('study_together.filter_all_subjects') },
+          ...subjects.map(s => ({ value: s, label: s }))
+        ]}
+      />
     </div>
   );
 }

@@ -81,11 +81,11 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={onClose}>
       <div 
-        className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl animate-scale-up border border-[#EAEAEA] dark:border-neutral-800 flex flex-col max-h-[90vh]"
+        className={`bg-white ${viewMode === 'explore' ? 'dark:bg-neutral-900 dark:border-neutral-800' : 'dark:bg-[#1F1F1F] dark:border-neutral-700'} rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl animate-scale-up border border-[#EAEAEA] flex flex-col max-h-[90vh]`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Main Content Area */}
-        <div className="flex flex-col p-6 md:p-8 gap-6 overflow-y-auto">
+        <div className="flex flex-col p-6 md:p-8 gap-6 overflow-y-auto custom-scrollbar">
           
           {/* Header Section */}
           <div className="flex flex-col items-start gap-6 w-full">
@@ -356,7 +356,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
             {/* Dissolve Group Button for Creators */}
             {canEdit && (
               <div className="flex justify-end mt-4">
-                <button className="flex items-center gap-2 px-6 py-3 rounded-sm border-2 border-[#BA1A1A] text-[#BA1A1A] font-inter text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                <button className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#BA1A1A] text-white font-inter text-sm font-medium hover:bg-red-800 transition-colors">
                   <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.4 13.5L8 10.9L10.6 13.5L12 12.1L9.4 9.5L12 6.9L10.6 5.5L8 8.1L5.4 5.5L4 6.9L6.6 9.5L4 12.1L5.4 13.5ZM3 18C2.45 18 1.97917 17.8042 1.5875 17.4125C1.19583 17.0208 1 16.55 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8042 17.0208 14.4125 17.4125C14.0208 17.8042 13.55 18 13 18H3ZM13 3H3V16H13V3ZM3 3V16V3Z" fill="currentColor"/>
                   </svg>

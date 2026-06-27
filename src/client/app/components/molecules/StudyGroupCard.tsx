@@ -86,7 +86,7 @@ export default function StudyGroupCard({
 
   return (
     <div 
-      className={`${viewMode === 'explore' ? 'p-6 gap-4' : 'p-5 gap-3 h-[320px]'} rounded-2xl flex flex-col bg-white dark:bg-neutral-900 border border-[#EAEAEA] dark:border-neutral-800 shadow-sm transition-all ${isDimmed ? 'opacity-60' : ''} ${clickableClass}`}
+      className={`${viewMode === 'explore' ? 'p-6 gap-4 bg-white dark:bg-neutral-900 border-[#EAEAEA] dark:border-neutral-800' : 'p-5 gap-3 h-[320px] bg-white dark:bg-[#1F1F1F] border-[#EAEAEA] dark:border-neutral-700 shadow-md dark:shadow-black/50'} rounded-2xl flex flex-col border transition-all ${isDimmed ? 'opacity-60' : ''} ${clickableClass}`}
       onClick={() => onCardClick && onCardClick(id)}
     >
       {/* Header */}
@@ -163,7 +163,7 @@ export default function StudyGroupCard({
               ></div>
             </div>
           </div>
-          <div className="flex pb-[8px] pt-[2px] justify-between items-center w-full">
+          <div className="flex pb-[8px] -mt-[2px] justify-between items-center w-full">
             <div className="flex items-center w-fit">
               <button className="flex pt-1.5 pb-[7px] justify-center items-center rounded-full border-2 border-white dark:border-neutral-900 bg-[#4B0082] w-8 h-8 relative z-10">
                 <p className="text-[#BA7EF4] font-openSans text-[10px] font-bold leading-[15px]">
