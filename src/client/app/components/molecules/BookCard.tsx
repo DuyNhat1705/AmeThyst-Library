@@ -16,7 +16,6 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
       const token = localStorage.getItem('token');
       if (token) {
         const query = sessionStorage.getItem('currentSearchQuery') || '';
-        const searchMode = sessionStorage.getItem('currentSearchMode') || 'hybrid';
         const filtersStr = sessionStorage.getItem('currentFilters');
         const filters = filtersStr ? JSON.parse(filtersStr) : null;
         const hasFilters = filters && Object.keys(filters).length > 0;
@@ -33,7 +32,6 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
               searchHistoryId,
               bookId: id,
               query,
-              searchMode,
               filters
             })
           })

@@ -4,7 +4,7 @@ import { generateQueryEmbedding } from './embedding.services.mjs';
 /**
  * Clean coding: Helper to clean UTF-8 text anomalies.
  */
-function cleanText(text) {
+export function cleanText(text) {
   if (!text) return '';
   return text
     .replace(/â”€Ã©â”¬âŒ/g, 'Ré')
@@ -58,7 +58,7 @@ export const preProcessQuery = (query) => {
 /**
  * Helper to build dynamic SQL clauses for metadata filters.
  */
-function buildFilterSQL(filters, startingParamIdx = 2) {
+export function buildFilterSQL(filters, startingParamIdx = 2) {
   let clauses = [];
   let params = [];
   let paramIdx = startingParamIdx;

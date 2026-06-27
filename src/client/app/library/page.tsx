@@ -35,11 +35,12 @@ function LibraryPageContent() {
 
   // Search query and logging state
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-  const [debouncedQuery, setDebouncedQuery] = useState(initialSearchQuery);
+  const [submittedQuery, setSubmittedQuery] = useState(initialSearchQuery);
   const [logHistory, setLogHistory] = useState(false);
 
   // Sync state if URL changes externally (e.g. Back/Forward button)
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setGenres(searchParams.get('genres') ? searchParams.get('genres')!.split(',') : []);
     setBranches(searchParams.get('branches') ? searchParams.get('branches')!.split(',').map(Number) : []);
     setAvailableOnly(searchParams.get('availableOnly') === 'true');
@@ -48,29 +49,21 @@ function LibraryPageContent() {
 
     const urlQ = searchParams.get('q') || '';
     setSearchQuery(urlQ);
-    setDebouncedQuery(urlQ);
+    setSubmittedQuery(urlQ);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [searchParams]);
 
-  // Debounce effect for typing
+  // Debounce effect for typing search query
   useEffect(() => {
-    if (searchQuery === debouncedQuery) return;
+    if (searchQuery === submittedQuery) return;
 
     const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
+      setSubmittedQuery(searchQuery);
       setLogHistory(false); // Typing logs are always false (debounced)
-
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchQuery) {
-        params.set('q', searchQuery);
-      } else {
-        params.delete('q');
-      }
-      params.set('page', '1'); // Reset pagination on query change
-      router.push(`${pathname}?${params.toString()}`);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, debouncedQuery, searchParams, pathname, router]);
+  }, [searchQuery, submittedQuery]);
 
   // Helper to update URL query params
   const updateUrl = (updatedFilters: {
@@ -147,7 +140,7 @@ function LibraryPageContent() {
   const handleSearchTrigger = (query: string, isSubmit?: boolean) => {
     setSearchQuery(query);
     if (isSubmit) {
-      setDebouncedQuery(query);
+      setSubmittedQuery(query);
       setLogHistory(true); // Explicit submit triggers persistent log
 
       const params = new URLSearchParams(searchParams.toString());
@@ -168,7 +161,7 @@ function LibraryPageContent() {
     setStartYear('');
     setEndYear('');
     setSearchQuery('');
-    setDebouncedQuery('');
+    setSubmittedQuery('');
     setLogHistory(false);
     router.push(pathname);
   };
@@ -187,7 +180,7 @@ function LibraryPageContent() {
         }
         popularPublishes={
           <PopularPublishes
-            searchQuery={debouncedQuery}
+            searchQuery={submittedQuery}
             logHistory={logHistory}
             onFetchCompleted={() => setLogHistory(false)}
           />
