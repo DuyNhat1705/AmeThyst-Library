@@ -174,6 +174,6 @@ export const mockCreatedGroups: StudyGroup[] = Array.from({ length: 16 }).map((_
   ...mockStudyGroups[i % mockStudyGroups.length],
   id: `c${i + 1}`,
   userStatus: i % 5 === 0 ? 'upcoming' : i % 5 === 1 ? 'inprogress' : i % 5 === 2 ? 'completed' : i % 5 === 3 ? 'cancelled' : 'expired',
-  pendingApplicants: i % 3 === 0 ? 2 : 0,
+  pendingApplicants: [0, 2, 4, 0, 1, 3, 0, 2][i % 8],
   leader: { name: 'You', initials: 'ME' }
 }));

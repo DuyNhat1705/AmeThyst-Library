@@ -309,7 +309,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
             </div>
 
             {/* Pending Applicants for Creators (Right Column) */}
-            {canEdit && (group.pendingApplicants ?? 0) > 0 && (
+            {viewMode === 'created' && (group.pendingApplicants ?? 0) > 0 && (
               <div className="w-full md:w-1/3 flex flex-col gap-4 mt-4 md:mt-0 border border-[#EAEAEA] dark:border-neutral-800 p-4 md:p-6 rounded-xl relative shadow-sm h-fit">
                 <div className="flex justify-between items-center mb-2 border-b border-[#EAEAEA] dark:border-neutral-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -320,35 +320,48 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                   </div>
                 </div>
                 
-                <div className="flex flex-col gap-4">
-                  {Array.from({ length: group.pendingApplicants ?? 0 }).map((_, i) => (
-                    <div key={i} className="flex flex-col gap-3 border-b border-[#EAEAEA] dark:border-neutral-800 pb-4 last:border-0 last:pb-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-neutral-800 flex items-center justify-center font-bold text-gray-500 text-xs">
-                          {i === 0 ? 'SK' : 'LV'}
+                <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
+                  {Array.from({ length: group.pendingApplicants ?? 0 }).map((_, i) => {
+                    const names = ['Samuel K.', 'Lina V.', 'Marcus T.', 'Elena R.'];
+                    const initials = ['SK', 'LV', 'MT', 'ER'];
+                    const times = ['2h', '5h', '1d', '2d'];
+                    const quotes = [
+                      "I'm struggling with Green's Theorem...",
+                      "Looking for a group that stays focused.",
+                      "I have past exams to share!",
+                      "Need help preparing for the midterm."
+                    ];
+                    return (
+                      <div key={i} className="flex flex-col gap-3 border-b border-[#EAEAEA] dark:border-neutral-800 pb-4 last:border-0 last:pb-0 shrink-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-neutral-800 flex items-center justify-center font-bold text-gray-500 text-xs">
+                            {initials[i % initials.length]}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-openSans text-sm font-bold text-[#2E0052] dark:text-white">
+                              {names[i % names.length]}
+                            </span>
+                            <span className="font-openSans text-[11px] text-[#4C4451] dark:text-gray-400">
+                              Applied {times[i % times.length]} ago
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-openSans text-sm font-bold text-[#2E0052] dark:text-white">
-                            {i === 0 ? 'Samuel K.' : 'Lina V.'}
-                          </span>
-                          <span className="font-openSans text-[11px] text-[#4C4451] dark:text-gray-400">
-                            Applied {i === 0 ? '2h' : '5h'} ago
-                          </span>
+                        <div className="p-2 rounded-lg border border-[#F1F5F9] dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#4C4451] dark:text-gray-300 text-xs font-openSans italic line-clamp-3">
+                          "{quotes[i % quotes.length]}"
                         </div>
+                        {canEdit && (
+                          <div className="flex gap-2">
+                            <button className="flex-1 py-1.5 rounded-lg bg-[#86F2E4] hover:bg-[#6be4d4] text-black font-openSans font-bold text-xs transition-colors">
+                              Approve
+                            </button>
+                            <button className="flex-1 py-1.5 rounded-lg bg-[#F8EFE6] dark:bg-neutral-800 border border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-700 font-openSans font-bold text-xs transition-colors">
+                              Deny
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <div className="p-2 rounded-lg border border-[#F1F5F9] dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#4C4451] dark:text-gray-300 text-xs font-openSans italic line-clamp-3">
-                        "{i === 0 ? "I'm struggling with Green's Theorem..." : "Looking for a group that stays focused."}"
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="flex-1 py-1.5 rounded-lg bg-[#86F2E4] hover:bg-[#6be4d4] text-black font-openSans font-bold text-xs transition-colors">
-                          Approve
-                        </button>
-                        <button className="flex-1 py-1.5 rounded-lg bg-[#F8EFE6] dark:bg-neutral-800 border border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-700 font-openSans font-bold text-xs transition-colors">
-                          Deny
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

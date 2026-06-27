@@ -60,7 +60,7 @@ export default function StudyGroupCard({
     isDimmed = isFull || isPending;
     isUnclickable = isFull || isPending;
   } else if (viewMode === 'created') {
-    isDimmed = userStatus === 'completed' || userStatus === 'cancelled';
+    isDimmed = userStatus === 'completed' || userStatus === 'cancelled' || userStatus === 'expired';
     isUnclickable = false;
   } else if (viewMode === 'joined') {
     isDimmed = userApplicantStatus === 'denied' || userApplicantStatus === 'expired';
