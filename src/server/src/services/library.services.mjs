@@ -1,22 +1,5 @@
 import pool from '../config/postgres.mjs';
-
-/**
- * Hàm dọn dẹp các ký tự lỗi mã hóa UTF-8 thường gặp trong database
- */
-function cleanText(text) {
-  if (!text) return '';
-  return text
-    .replace(/â”€Ã©â”¬âŒ/g, 'Ré')
-    .replace(/â”€Ã©â”¬Â¿/g, 'è')
-    .replace(/â”€Ã©â”¬Ã¡/g, 'à')
-    .replace(/â• Ã‡â•¦Ã¥/g, 'å')
-    .replace(/â”œÃ³Î“Ã©Â¼Î“Ã‡Â£/g, '"')
-    .replace(/â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥/g, '"')
-    .replace(/â”€Ã©â”¬â–“/g, 'ô')
-    .replace(/â”€Ã©â”¬â”‚/g, 'ó')
-    .replace(/\t/g, ' ')
-    .trim();
-}
+import { cleanText, buildFilterSQL } from './search.services.mjs';
 
 /**
  * Lấy chi tiết một cuốn sách bằng ID
@@ -75,57 +58,66 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   const offset = (page - 1) * limit;
   const { genres = [], branches = [], availableOnly = false, startYear = null, endYear = null } = filters;
 
-  const whereClauses = [];
-  const queryParams = [];
-  let paramIndex = 1;
+  // 1. Prepare/Map filters for buildFilterSQL compatibility
+  const mappedFilters = {
+    genres: genres.includes('Others') ? [] : genres, 
+    publicationDate: { start: startYear, end: endYear }
+  };
 
-  const standardGenres = ['Mathematics', 'Physics', 'Biology', 'Computer Science', 'Fiction', 'Nonfiction', 'Philosophy', 'Psychology', 'Literature'];
-  const selectedStandard = genres.filter(g => g !== 'Others');
-  const hasOthers = genres.includes('Others');
+  // Call the helper starting at index 1
+  let { sql: helperSql, params: queryParams, nextIdx: paramIndex } = buildFilterSQL(mappedFilters, 1);
 
-  if (genres.length > 0) {
-    let genreCondition = '';
+  // 2. Handle the specialized/missing clauses manually
+  const extraClauses = [];
+
+  // Handle the 'Others' genre logic if present
+  if (genres.includes('Others')) {
+    const standardGenres = ['Mathematics', 'Physics', 'Biology', 'Computer Science', 'Fiction', 'Nonfiction', 'Philosophy', 'Psychology', 'Literature'];
+    const selectedStandard = genres.filter(g => g !== 'Others');
+    
+    let genreCondition = `(b.genres IS NULL OR NOT (b.genres && ARRAY[${standardGenres.map(g => `'${g}'`).join(',')}]))`;
+    
+    // If there were ALSO standard genres selected along with 'Others'
     if (selectedStandard.length > 0) {
       queryParams.push(selectedStandard);
-      genreCondition = `b.genres && $${paramIndex++}`;
+      genreCondition = `(b.genres && $${paramIndex++} OR ${genreCondition})`;
     }
-    if (hasOthers) {
-      const othersCondition = `(b.genres IS NULL OR NOT (b.genres && ARRAY[${standardGenres.map(g => `'${g}'`).join(',')}]))`;
-      if (genreCondition) {
-        genreCondition = `(${genreCondition} OR ${othersCondition})`;
-      } else {
-        genreCondition = othersCondition;
-      }
-    }
-    whereClauses.push(genreCondition);
+    extraClauses.push(genreCondition);
   }
 
+  // Handle branches (Not covered by buildFilterSQL)
   if (branches.length > 0) {
     queryParams.push(branches);
-    whereClauses.push(`l.branch_id = ANY($${paramIndex++})`);
+    extraClauses.push(`l.branch_id = ANY($${paramIndex++})`);
   }
 
+  // Handle availableOnly (Not covered by buildFilterSQL)
   if (availableOnly) {
-    whereClauses.push(`l.available_quantity > 0`);
+    extraClauses.push(`l.available_quantity > 0`);
   }
 
-  if (startYear !== null) {
-    queryParams.push(startYear);
-    whereClauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER >= $${paramIndex++}`);
+  // 3. Combine buildFilterSQL result with extra clauses
+  let finalWhereString = '';
+  let allClauses = [];
+
+  // Stripping leading ' AND ' if buildFilterSQL generated clauses
+  if (helperSql) {
+    allClauses.push(helperSql.replace(/^\s*AND\s*/i, ''));
+  }
+  if (extraClauses.length > 0) {
+    allClauses.push(...extraClauses);
   }
 
-  if (endYear !== null) {
-    queryParams.push(endYear);
-    whereClauses.push(`EXTRACT(YEAR FROM b.publication_date)::INTEGER <= $${paramIndex++}`);
+  if (allClauses.length > 0) {
+    finalWhereString = `WHERE ${allClauses.join(' AND ')}`;
   }
 
-  const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-
+  // 4. Execute Queries
   const countQuery = `
     SELECT COUNT(DISTINCT b.book_id) 
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
-    ${whereString}
+    ${finalWhereString}
   `;
 
   const limitParam = `$${paramIndex++}`;
@@ -135,7 +127,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
-    ${whereString}
+    ${finalWhereString}
     ORDER BY b.title ASC
     LIMIT ${limitParam} OFFSET ${offsetParam}
   `;

@@ -19,6 +19,7 @@ function LibraryPageContent() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Read initial states from URL
+  const initialSearchQuery = searchParams.get('q') || '';
   const urlGenres = searchParams.get('genres') ? searchParams.get('genres')!.split(',') : [];
   const urlBranches = searchParams.get('branches') ? searchParams.get('branches')!.split(',').map(Number) : [];
   const urlAvailableOnly = searchParams.get('availableOnly') === 'true';
@@ -32,13 +33,24 @@ function LibraryPageContent() {
   const [startYear, setStartYear] = useState<string>(urlStartYear);
   const [endYear, setEndYear] = useState<string>(urlEndYear);
 
+  // Search query and logging state
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [submittedQuery, setSubmittedQuery] = useState(initialSearchQuery);
+  const [logHistory, setLogHistory] = useState(false);
+
   // Sync state if URL changes externally (e.g. Back/Forward button)
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setGenres(searchParams.get('genres') ? searchParams.get('genres')!.split(',') : []);
     setBranches(searchParams.get('branches') ? searchParams.get('branches')!.split(',').map(Number) : []);
     setAvailableOnly(searchParams.get('availableOnly') === 'true');
     setStartYear(searchParams.get('startYear') || '');
     setEndYear(searchParams.get('endYear') || '');
+
+    const urlQ = searchParams.get('q') || '';
+    setSearchQuery(urlQ);
+    setSubmittedQuery(urlQ);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [searchParams]);
 
   // Helper to update URL query params
@@ -85,16 +97,19 @@ function LibraryPageContent() {
   // Immediate handlers for tags and checkboxes
   const handleGenresChange = (newGenres: string[]) => {
     setGenres(newGenres);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ genres: newGenres });
   };
 
   const handleBranchesChange = (newBranches: number[]) => {
     setBranches(newBranches);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ branches: newBranches });
   };
 
   const handleAvailableOnlyChange = (newAvailableOnly: boolean) => {
     setAvailableOnly(newAvailableOnly);
+    setLogHistory(true); // Filter change triggers persistent log
     updateUrl({ availableOnly: newAvailableOnly });
   };
 
@@ -102,6 +117,7 @@ function LibraryPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (startYear !== urlStartYear || endYear !== urlEndYear) {
+        setLogHistory(true); // Filter change triggers persistent log
         updateUrl({ startYear, endYear });
       }
     }, 500);
@@ -109,40 +125,80 @@ function LibraryPageContent() {
     return () => clearTimeout(timer);
   }, [startYear, endYear]);
 
+  const handleSearchTrigger = (query: string, isSubmit?: boolean) => {
+    setSearchQuery(query);
+    if (isSubmit) {
+      setSubmittedQuery(query);
+      setLogHistory(true); // Explicit submit triggers persistent log
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (query) {
+        params.set('q', query);
+      } else {
+        params.delete('q');
+      }
+      params.set('page', '1');
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
+
   const handleReset = () => {
     setGenres([]);
     setBranches([]);
     setAvailableOnly(false);
     setStartYear('');
     setEndYear('');
+    setSearchQuery('');
+    setSubmittedQuery('');
+    setLogHistory(false);
     router.push(pathname);
   };
 
+  const hasActiveFilters = genres.length > 0 || branches.length > 0 || availableOnly || !!startYear || !!endYear;
+
   return (
-    <HomeLayout
-      navbar={<NavBar />}
-      hero={<HeroSection />}
-      searchBar={<SearchBar onFilterClick={() => setIsFilterOpen(true)} />}
-      popularPublishes={<PopularPublishes />}
-      filterPanel={
-        <FilterPanel
-          isOpen={isFilterOpen}
-          onClose={() => setIsFilterOpen(false)}
-          selectedGenres={genres}
-          onGenresChange={handleGenresChange}
-          selectedBranches={branches}
-          onBranchesChange={handleBranchesChange}
-          availableOnly={availableOnly}
-          onAvailableOnlyChange={handleAvailableOnlyChange}
-          startYear={startYear}
-          endYear={endYear}
-          onStartYearChange={setStartYear}
-          onEndYearChange={setEndYear}
-          onReset={handleReset}
-        />
-      }
-      footer={<Footer />}
-    />
+    <>
+      <HomeLayout
+        navbar={<NavBar />}
+        hero={<HeroSection />}
+        searchBar={
+          <SearchBar
+            onFilterClick={() => setIsFilterOpen(true)}
+            onSearchTrigger={handleSearchTrigger}
+            value={searchQuery}
+            hasActiveFilters={hasActiveFilters}
+          />
+        }
+        popularPublishes={
+          <PopularPublishes
+            searchQuery={submittedQuery}
+            logHistory={logHistory}
+            onFetchCompleted={() => setLogHistory(false)}
+          />
+        }
+        filterPanel={
+          <FilterPanel
+            isOpen={isFilterOpen}
+            onClose={() => {
+              setIsFilterOpen(false);
+              setLogHistory(true);
+            }}
+            selectedGenres={genres}
+            onGenresChange={handleGenresChange}
+            selectedBranches={branches}
+            onBranchesChange={handleBranchesChange}
+            availableOnly={availableOnly}
+            onAvailableOnlyChange={handleAvailableOnlyChange}
+            startYear={startYear}
+            endYear={endYear}
+            onStartYearChange={setStartYear}
+            onEndYearChange={setEndYear}
+            onReset={handleReset}
+          />
+        }
+        footer={<Footer />}
+      />
+    </>
   );
 }
 

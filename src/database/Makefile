@@ -1,5 +1,5 @@
 export-databook:
-	docker exec -t amethyst_postgres pg_dump -U lib_admin -d postgres -t books > 01_databook.sql
+	docker exec -t amethyst_postgres pg_dump -U lib_admin -d postgres -t books -t immutable_array_to_string --clean --if-exists >> 01_databook.sql
 
 export-datalibrary:
 	docker exec -t amethyst_postgres pg_dump -U lib_admin -d postgres -t branches -t library > 02_datalibrary.sql

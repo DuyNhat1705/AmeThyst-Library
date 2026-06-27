@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
 import YearRangeFilter from '../molecules/YearRangeFilter';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -51,6 +52,8 @@ export default function FilterPanel({
   onEndYearChange,
   onReset
 }: FilterPanelProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -90,23 +93,23 @@ export default function FilterPanel({
 
       {/* Slide-out drawer panel */}
       <div
-        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] border-l border-[#C5C6CD] shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#C5C6CD]">
-          <h2 className="text-xl font-bold text-[#091426] font-manrope">Filters</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#C5C6CD] dark:border-neutral-800">
+          <h2 className="text-xl font-bold text-[#091426] dark:text-neutral-100 font-manrope">Filters</h2>
           <div className="flex items-center gap-4">
             <button
               onClick={onReset}
-              className="text-sm font-semibold text-[#006F66] hover:underline transition font-inter cursor-pointer"
+              className="text-sm font-semibold text-[#006F66] dark:text-teal-400 hover:underline transition font-inter cursor-pointer"
             >
               Reset All
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-100 transition text-[#45474C] active:scale-95 cursor-pointer"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition text-[#45474C] dark:text-neutral-400 active:scale-95 cursor-pointer"
               title="Close panel"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -121,7 +124,7 @@ export default function FilterPanel({
         <div className="flex-grow overflow-y-auto p-6 flex flex-col gap-8">
           {/* Section 1: Genres */}
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-semibold text-[#091426] font-inter">Genres</span>
+            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Genres</span>
             <div className="flex flex-wrap gap-2">
               {GENRES.map((genre) => (
                 <GenreTag
@@ -136,18 +139,18 @@ export default function FilterPanel({
 
           {/* Section 2: Campus Locations */}
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-semibold text-[#091426] font-inter">Campus Location</span>
+            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Campus Location</span>
             <div className="flex flex-col gap-3">
               {BRANCHES.map((branch) => (
                 <label
                   key={branch.id}
-                  className="flex items-center gap-3 cursor-pointer select-none text-[#45474C] hover:text-[#091426] font-inter text-sm font-medium"
+                  className="flex items-center gap-3 cursor-pointer select-none text-[#45474C] dark:text-neutral-300 hover:text-[#091426] dark:hover:text-white font-inter text-sm font-medium"
                 >
                   <input
                     type="checkbox"
                     checked={selectedBranches.includes(branch.id)}
                     onChange={() => toggleBranch(branch.id)}
-                    className="w-5 h-5 rounded-lg border-[#C5C6CD] text-[#006F66] focus:ring-[#006F66]"
+                    className="w-5 h-5 rounded-lg border-[#C5C6CD] dark:border-neutral-700 text-[#006F66] dark:text-teal dark:bg-neutral-800 focus:ring-[#006F66]"
                   />
                   <span>{branch.name} ({branch.short})</span>
                 </label>
@@ -164,10 +167,10 @@ export default function FilterPanel({
           />
 
           {/* Section 4: Availability */}
-          <div className="flex items-center justify-between p-4 rounded-xl border border-[#C5C6CD] bg-white shadow-xs">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-[#C5C6CD] dark:border-neutral-800 bg-white dark:bg-neutral-800 shadow-xs">
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#091426] font-inter">Available Only</span>
-              <span className="text-xs text-[#75777D] font-inter">Hide books currently out of stock</span>
+              <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Available Only</span>
+              <span className="text-xs text-[#75777D] dark:text-neutral-400 font-inter">Hide books currently out of stock</span>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -176,7 +179,7 @@ export default function FilterPanel({
                 onChange={(e) => onAvailableOnlyChange(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#006F66]"></div>
+              <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#006F66] dark:peer-checked:bg-teal"></div>
             </label>
           </div>
         </div>

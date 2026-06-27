@@ -1,87 +1,118 @@
-# Implementation Plan: Book Searching
+# Implementation Plan: Hybrid Book Searching & Analytics Refinement
 
-**Branch**: `008-book-searching` | **Date**: 2026-06-21 | **Spec**: [spec.md](spec.md)
+**Branch**: `feature/DualModeSearching` | **Date**: 2026-06-25 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/008-book-searching/spec.md`
 
 ## Summary
-
-The goal of this feature is to implement a dual-mode Book Searching feature containing two search modes: Standard (OPAC) Search (keyword matching on metadata like Title, Author, ISBN, and Publisher) and Semantic Search (natural language description similarity matching utilizing pgvector in PostgreSQL). The results list will support real-time filtering by publication date range, genres, page count, and language. Users who are logged in will have their search queries tracked and recorded in the database `SearchHistory` collection to support future personalized book recommendation features. If search results are empty, a clean user-friendly screen with tips will be rendered.
+The goal of this phase is to replace the separate standard and semantic search modes with a single, unified **Hybrid Search** model. When a user queries the library catalog:
+1. **Pre-processing / Text Path**: Misspelled or correctly spelled query connector words (e.g. `adn`, `teh`, `orr`, `and`, `or`) are identified via regex, stripped out, and the remaining tokens are queried against postgres metadata fields (title, author, publisher) using `pg_trgm` (trigram spelling overlaps) with a GIN index.
+2. **Semantic Path**: The raw search query is converted into a 384-dimensional dense vector using the local transformer model `all-MiniLM-L6-v2` and searched against the `embedding` column using a pgvector HNSW index.
+3. **Reranking / Fusion**: Results from the Text Path (trigram) and Semantic Path (pgvector) are merged and reranked using **Reciprocal Rank Fusion (RRF)**.
+4. **UI & Logs Refinement**: The search mode toggle is removed from the UI. Results render in-place. Database logging utilizes `logHistory: boolean` to debounce keystroke logs while renaming the history column to `search_content`. Do not log the `search_mode` anymore, remove that column from postgres.
+5. Deprecate and Clean Up Outdated Search and Filter Implementations
+---
 
 ## Technical Context
 
 **Language/Version**: JavaScript (Node.js 20+, React 19)
 
-**Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, pgvector (pg package or pgvector library extension), Node Embedding library or OpenAI API client for embedding generation.
+**Primary Dependencies**: Next.js 16.2.6, Express 5.2.1, pg 8.21.0, `@xenova/transformers` (for local ONNX execution of `all-MiniLM-L6-v2`)
 
-**Storage**: PostgreSQL (via existing DB service) with pgvector extension enabled, storing traditional metadata, search history logs, and book description vector embeddings in a single database.
+**Storage**: PostgreSQL with `pgvector` and `pg_trgm` extensions enabled.
 
-**Testing**: ESLint, manual route validation, and integration tests for pgvector similarity search queries.
+**Testing**: Manual integration scenarios checking regex pre-processing, trigram match relevance, RRF ranking order, debouncing logger triggers, and intent click-through redirects.
 
-**Target Platform**: Modern Web Browsers
+**Target Platform**: Linux / Windows Node.js server, Modern Browsers
 
-**Project Type**: Full-stack Web Application (Next.js App Router + Express)
+**Project Type**: Web Application (Client-Server architecture)
 
-**Performance Goals**: Standard search response < 200ms; Semantic search (including query embedding generation and similarity query) < 800ms.
+**Performance Goals**: 
+- Complete hybrid search (lexical match + local embedding generation + database query + RRF rank fusion) returned in < 900ms.
+- Client catalog grid in-place update in < 150ms.
 
-**Constraints**: Strict compliance with `constitution.md` (Atomic Design, Layered Architecture, `.mjs` extensions, relative import checks).
+**Constraints**:
+- Cosine distance matching for embeddings (`<=>` operator).
+- Safe fallback to keyword-based lexical search if local transformer load fails.
+- Avoid logging typing keystrokes (`logHistory: false` for debounced fetches).
 
-**Scale/Scope**: Integration of vector search capability into library catalog search.
+---
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [x] **Atomic Design Compliance**: Components will be broken down into Atoms, Molecules, and Organisms in `client/app/components`.
-- [x] **Layered Backend Architecture**: New search and history endpoints will follow `Route -> Middleware -> Controller -> Service -> Model`.
-- [x] **Naming Conventions**: camelCase for frontend variables and controllers/services, PascalCase for components/models.
-- [x] **Environment Variables**: Backend base URL loaded via `NEXT_PUBLIC_API_URL`. PostgreSQL connection credentials and Embedding model API keys stored in server `.env`.
-- [x] **Modular Backend**: Use of ES Modules (`.mjs`) and directory-specific naming patterns.
+1. **Atomic Design Compliance**: Components must be structured bottom-up. No new directories; utilize existing folders in `client/app/components/`.
+   - *Check*: Modifying existing molecules (`SearchBar.tsx`) and organisms (`FilterPanel.tsx`, `PopularPublishes.tsx`). Passed.
+2. **Layered Backend Architecture**: Strict logic flow: `Route -> Middleware -> Controller -> Service -> Model`.
+   - *Check*: Logic resides in search controllers/services; DB pools configured in db config. Passed.
+3. **Import Path Verification**: Relative path checks must be executed before writing code.
+   - *Check*: Checked directory structures to map exact imports. Passed.
+4. **Light/Dark Mode & Localization (i18n)**: Hardcoded text strings are prohibited; must update translation dictionaries (`en.json`, `vi.json`) for any new strings.
+   - *Check*: Ensure that text keys for hybrid search or no-results views exist in translation files. Passed.
+
+---
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-src/specs/008-book-searching/
-├── spec.md              # Feature Specification (Standard/Semantic, filters, pgvector, history)
-└── plan.md              # This file
+specs/008-book-searching/
+├── spec.md              # Feature Specification (Hybrid Search Requirements)
+├── plan.md              # This file (Implementation Plan)
+├── research.md          # Research on trigrams, pgvector, and RRF
+├── data-model.md        # Data models and indices schema
+├── quickstart.md        # Scenario testing and verification guide
+└── contracts/
+    └── api-contract.md  # Endpoints JSON schemas and request payloads
 ```
 
-### Source Code (repository root)
+### Source Code
 
 ```text
 client/
 └── app/
-    ├── search/
-    │   └── page.jsx      # Main Search page showing search bar, toggle, filter sidebar, results grid
+    ├── library/
+    │   └── page.tsx                 # Main catalog page; coordinates search states
     └── components/
-        ├── atoms/        # Search inputs, toggle switches, filter checkmarks, pagination buttons
-        ├── molecules/    # Result cards, filter section dropdowns, empty state UI
-        └── organisms/    # Results list grid, sidebar filters panel, search execution bar
+        ├── organisms/
+        │   ├── FilterPanel.tsx      # Slide-out drawer; houses metadata filters (Search Mode toggle removed)
+        │   └── PopularPublishes.tsx  # Dynamic catalog list; renders hybrid search results
+        └── molecules/
+            └── SearchBar.tsx        # Triggers search submissions (Enter / Click search)
+
 server/
 └── src/
-    ├── config/
-    │   └── db.config.mjs          # PostgreSQL and pgvector configuration and initialization
     ├── controllers/
-    │   ├── search.controllers.mjs  # Handles standard/semantic search triggers and payload extraction
-    │   └── history.controllers.mjs # Handles retrieval of logged search histories
-    ├── middlewares/
-    │   └── auth.middlewares.mjs   # Checks for authentication session to log search history
-    ├── models/
-    │   └── history.models.mjs     # SearchHistory mongoose/pg model definition
-    ├── routes/
-    │   ├── search.routes.mjs      # Endpoint: GET/POST /api/search
-    │   └── history.routes.mjs     # Endpoint: GET/POST /api/search/history
-    └── services/
-        ├── search.services.mjs    # Performs standard Postgres metadata lookup or pgvector similarity search
-        └── history.services.mjs   # Interacts with DB to store or retrieve user search histories
+    │   └── search.controllers.mjs   # Intercepts query, calls service, logs history
+    ├── services/
+    │   ├── search.services.mjs      # Formulates hybrid query, triggers paths, executes RRF fusion
+    │   ├── embedding.services.mjs   # Generates embeddings via all-MiniLM-L6-v2 local model
+    │   └── history.services.mjs     # Composes search_content text logging
+    └── models/
+        └── history.models.mjs       # Database schema integrations
 ```
 
-**Structure Decision**: Standard web application structure separating `client/` (Next.js App Router) and `server/` (Express API), in accordance with the layered architecture pattern.
+**Structure Decision**: Web application layout containing Next.js `client/` and Express `server/` codebase directories.
+
+---
 
 ## Complexity Tracking
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| None | N/A | N/A |
+*No Gate Violations registered.*
+
+---
+
+## Done When
+
+- [ ] Overwrote `spec.md`, `research.md`, `data-model.md`, `contracts/api-contract.md`, and `quickstart.md` to incorporate the single Hybrid Search model.
+- [ ] Registered optional/mandatory hooks and updated `AGENTS.md` spec planner reference path.
+- [ ] Database migrations executed to verify `pg_trgm` and `pgvector` indexes on title, author, publisher, and embedding columns.
+- [ ] Pre-processing regex connectors filtering implemented and verified.
+- [ ] Local embedding transformer model service (`all-MiniLM-L6-v2`) set up with graceful mock fallback.
+- [ ] pg_trgm trigram search and pgvector search executed concurrently in SQL.
+- [ ] Reciprocal Rank Fusion (RRF) algorithm implemented and results merged.
+- [ ] Front-end Search Toggle removed from UI; in-place rendering coordinates hybrid query.
+- [ ] Conditional logHistory flag debounces live searches and only logs submitted search history.
+- [ ] Click-through interaction tracking captures clicked result books in search history logs.

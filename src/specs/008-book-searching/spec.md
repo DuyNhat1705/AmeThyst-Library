@@ -1,93 +1,95 @@
 # Feature Specification: Book Searching
 
-**Feature Branch**: `008-book-searching`
+**Feature Branch**: `feature/DualModeSearching`
 
-**Created**: 2026-06-21
+**Created**: 2026-06-25
 
 **Status**: Draft
 
-**Input**: User description: "app feature: book searching. 2 mode: standard searching(OPAC) / semantic search. As a user, when using standard searching, i will want to find the books that match my input (title, author, isbn, publisher...). On the other hand, with semantic search, the result should match my description of the book content. It should allow me to filter search result with publication date, genres, number of pages, languages... In the case that no book match my request, give me the clear response. Thhis should be handled with ChromaDB (the real database will be added later in our project), and keep in mind that the history of search should later be used to predict user preferences (in case they have logged in )"
+**Input**: User description: "since the failure in handling typo in separate search, we integrate 2 modes into 1 hybrid search: when a user hits search, execute an exact text keyword match simultaneously. The searching backend will be typo-tolerance (thanks to help of trigram in postgres) and reranking the answer (with reciprocal rank fusion). (Text Path): A regex filter identifies misspelled connector strings and strips them out, separating the remaining fragments into standalone parameters + (Semantic Path): The raw query string is sent to your local transformer model (all-MiniLM-L6-v2). The database engine targets indexed columns, pg_trgm GIN index, it slices the strings into 3-character blocks to calculate structural spelling overlaps (typo tolerance) while the pgvector extension uses an HNSW graph index to evaluate the embedding column."
 
 ---
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Standard Search (OPAC) (Priority: P1)
+### User Story 1 - Hybrid Search (Priority: P1)
 
-As a library member, I want to perform a keyword-based search on classic book metadata (title, author, ISBN, publisher, category) so that I can quickly find a specific book that I already know exists.
+As a library member, I want to search for books by entering a single search query (which can contain metadata keywords, typos, or plot descriptions) and have the system return a unified list of highly relevant results sorted by overall similarity, so that I can easily discover books without manually toggling between standard and semantic search modes.
 
-**Why this priority**: This is the fundamental, expected search mechanism of any library system. It allows high-precision searching when the user has explicit keywords or book identifiers.
+**Why this priority**: Fundamental search mechanism of the library catalog. By executing keyword matching, trigram-based typo tolerance, and semantic search simultaneously, users get the best of all search modes in one click.
 
-**Independent Test**: Can be fully tested by selecting "Standard Search", entering an exact title, author name, or ISBN, and confirming that the correct matching books are returned in the results list.
+**Independent Test**: Can be tested by entering a query with a typo (e.g., "Hary Poter"), a plot description (e.g., "boy wizard battles dark lord"), or exact metadata (e.g., "J.K. Rowling") on the catalog search bar, and verifying that the catalog grid updates in-place to display the most relevant books at the top.
 
 **Acceptance Scenarios**:
-1. **Given** I am on the Book Search page and have selected "Standard Search" mode, **When** I input a query term (e.g., "Rowling" or "978-0747532699") and click Search, **Then** the system queries the metadata attributes (Title, Author, ISBN, Publisher) and returns all matching books.
-2. **Given** a list of search results, **When** I click on a book card, **Then** I am redirected to the book's details page.
+1. **Given** I am on the Library page, **When** I type a search query in the search bar and hit Enter (or click search), **Then** the search executes both exact keyword matching (on title, author, isbn, publisher), trigram-based typo-tolerant matching, and pgvector semantic matching simultaneously, returning the combined results sorted using Reciprocal Rank Fusion.
+2. **Given** a query with misspelled connector strings (e.g. "and", "or", "the" misspelled or misplaced), **When** I submit the query, **Then** the backend regex filter strips out those connector fragments, splits the remaining fragments into standalone parameters, and processes the search.
 
 ---
 
-### User Story 2 - Semantic Search (Priority: P1)
+### User Story 2 - Metadata Filtering in Hybrid Search (Priority: P2)
 
-As a library member who doesn't remember a book's title or author but recalls its plot or topic, I want to search using a natural language description (e.g., "a story about space exploration and finding alien artifacts") so that I can discover books matching my conceptual description.
+As a library user, I want to refine the unified hybrid search results using specific metadata filters (genres, publication year range, page count, and languages) so that I can narrow down my search to a precise subset of books.
 
-**Why this priority**: This is a key requirement that enables discovery and matches book content description instead of exact metadata keywords, leveraging pgvector similarity matching in PostgreSQL.
+**Why this priority**: Essential for filtering down results, particularly when the semantic or typo-tolerant matching returns broad candidates.
 
-**Independent Test**: Can be tested by selecting "Semantic Search", entering a description of a book's theme or plot, and confirming that books with conceptually relevant summaries/descriptions are returned at the top of the results list.
+**Independent Test**: Perform a hybrid search for "dystopian society", open the filter panel, select the genre "Science Fiction" and language "English", and verify that the results list updates in-place to only show books matching those filter criteria.
 
 **Acceptance Scenarios**:
-1. **Given** I am on the Book Search page and have selected "Semantic Search" mode, **When** I input a conceptual description of a book (e.g., "dystopian society where reading books is banned") and click Search, **Then** the system retrieves matching books from the PostgreSQL database using pgvector similarity search, sorted by relevance score.
+1. **Given** a list of hybrid search results displayed in-place on the catalog page, **When** I select filters (Genres, Year Range, Page Count, Languages) in the filter panel, **Then** the catalog grid updates in-place to only show books that satisfy all selected metadata filter conditions.
+2. **Given** that filters are applied, **When** I clear the filters, **Then** the full unfiltered hybrid search results are restored.
 
 ---
 
-### User Story 3 - Metadata Filtering (Priority: P2)
+### User Story 3 - Clear Response for No Matches (Priority: P1)
 
-As a researcher or reader browsing the library catalog, I want to narrow down search results using specific filters (Publication Date range, Genres/Categories, Number of Pages range, and Languages) so that I can quickly find books that match my specific reading constraints.
+As a library member, when my hybrid search query or filter combination returns zero results, I want to see a clear message indicating no matches were found along with search tips, so that I understand no books matched my criteria.
 
-**Why this priority**: Users need a way to refine large sets of results, particularly in semantic searches where similarity scores might return many broad matches.
+**Why this priority**: Essential for user experience to avoid confusing a zero-result state with application lag or failure.
 
-**Independent Test**: Perform a search, apply one or more filters (e.g., Genre = "Fantasy", Language = "English", Publication Date >= 2010), and verify that only books satisfying all selected conditions are displayed.
+**Independent Test**: Enter a search query with random gibberish (e.g., "qwertyuiopasdfg") and verify that a clear "No books found matching your request" message is displayed in the catalog grid.
 
 **Acceptance Scenarios**:
-1. **Given** a list of search results (from either standard or semantic search), **When** I open the filters panel and select specific genres, page counts, languages, or publication dates, **Then** the list instantly updates to show only books meeting these filters.
-2. **Given** that I have filters applied, **When** I click "Clear Filters", **Then** the original unfiltered search results are restored.
+1. **Given** a query or filter combination that matches no books, **When** the search is run, **Then** the catalog grid displays a clean "No books found matching your request." message along with suggestions (e.g., "Check spelling", "Remove filters").
 
 ---
 
-### User Story 4 - Clear Response for No Matches (Priority: P1)
+### User Story 4 - Debounced Search vs. Intent History Logging (Priority: P2)
 
-As a library member, when I search for a book that is not in the library collection or filter the results too restrictively, I want to see a clear, user-friendly message saying that no books match my request, along with helpful search suggestions, so that I understand there are no matching items.
+As a logged-in library member, I want my search interactions to be logged to my profile for personalization, but I want to prevent transient, character-by-character keystrokes from polluting my search history.
 
-**Why this priority**: Essential for good user experience. Without clear feedback, users may think the application has frozen, crashed, or returned an error.
+**Why this priority**: Search logs are critical for personalization, but logging every keystroke during debounced typing creates database bloat and inaccurate user history.
 
-**Independent Test**: Enter a random string of characters (e.g., "xyzabc12345") or apply extremely restrictive overlapping filters, and verify that the UI displays a clean "No books match your request" message rather than a blank page or server crash.
+**Independent Test**: 
+1. Type "hobbit" slowly in the search bar. Check that the catalog updates in-place (debounced), but no record is written to the `SearchHistory` table (since `logHistory` parameter is false).
+2. Press Enter or click the Search icon. Verify that a record is written to the `SearchHistory` table (since `logHistory` parameter is true).
 
 **Acceptance Scenarios**:
-1. **Given** a query or combination of filters that returns 0 matching books, **When** the search is executed, **Then** the system displays a prominent message: "No books found matching your request."
-2. **Given** the no-results screen, **When** it is displayed, **Then** the UI provides helpful tips (e.g., "Check spelling", "Remove filters", or "Try semantic search with different keywords").
+1. **Given** I am a logged-in user typing a query in the search bar, **When** the search is debounced and executed automatically to fetch results, **Then** the request is sent with `logHistory: false` and no search history entry is logged.
+2. **Given** I am a logged-in user, **When** I submit a search by pressing Enter, clicking the search icon, or changing filters, **Then** the request is sent with `logHistory: true` and the search details are persisted in the database.
 
 ---
 
-### User Story 5 - Search History & Preference Logging (Priority: P2)
+### User Story 5 - Click-Through Tracking (Intent vs. Passive Clicks) (Priority: P2)
 
-As a logged-in library member, I want the system to securely record my search queries, modes, and filters in my search history so that the library system can later analyze my preferences and provide personalized book recommendations.
+As a logged-in library member, when I click on a book from the hybrid search results list, I want the system to link this click with my active search history entry so that the system logs my high-intent interest in that specific book.
 
-**Why this priority**: Critical backend requirement to support downstream user preference prediction and recommendations.
+**Why this priority**: Essential data point for personalizing user recommendations. Clicks on search results show clear user intent.
 
-**Independent Test**: Log in as a user, execute standard and semantic searches with different filters, and check the database (or mock database endpoints) to verify that search logs are stored correctly with user reference, query, mode, filters, and timestamp.
+**Independent Test**: Log in, search for "harry potter", click on one of the search results, and verify that the clicked book's ID is recorded in the `clickedBookIds` array of the corresponding search history record in the database.
 
 **Acceptance Scenarios**:
-1. **Given** I am logged in to my account, **When** I run any book search, **Then** the system logs a `SearchHistory` entry containing my `userID`, `query`, `searchMode`, `appliedFilters`, and the `timestamp`.
-2. **Given** I am browsing as a guest (not logged in), **When** I run a book search, **Then** the search runs successfully but the system does not persist any search logs in the database.
+1. **Given** I am logged in and have executed a search that generated a history record, **When** I click a book card from the results grid, **Then** the system sends a click tracking request that appends the book's ID to `clickedBookIds` of that specific search history entry.
+2. **Given** I am browsing the general library page passively without an active search, **When** I click a book, **Then** no search history log is updated.
 
 ---
 
 ## Edge Cases
 
-- **Empty or Whitespace-only Input**: If the user submits an empty query or only whitespace, standard search should return either all books or prompt the user for input. Semantic search should handle this gracefully without triggering vector generation errors.
-- **Database / Extension Failure**: If the pgvector queries fail or the database connection is interrupted, semantic search should degrade gracefully by falling back to standard metadata keyword search and notifying the user.
-- **Malformed Filter Inputs**: Users inputting invalid page ranges (e.g., minimum pages > maximum pages) or invalid dates. The interface must validate these inputs or default them correctly.
-- **Books with Incomplete Metadata**: If some books in the database lack language, page counts, or publication dates, the filtering logic must handle `null` or `undefined` values without crashing or excluding books unless explicitly filtered out.
-- **Extremely Long Semantic Queries**: If a user pastes a massive block of text as a description, the embedding model must truncate the input appropriately without failing.
+- **Empty / Whitespace-only Input**: If the user submits an empty query, the system should return the default catalog view (Popular Publishes) and not trigger the embedding service or pg_trgm similarity calculations.
+- **Misspelled Connector Strings**: If a user inputs queries with typos in logical search connectors (e.g., "harry poter adn deathly hallows", where "adn" is a misspelled "and"), the regex filter must strip them out to avoid confusing the exact/trigram keyword matcher.
+- **Service / Database Failures**: If the embedding transformer model fails (e.g., service offline or out of memory) or the pgvector extension errors, the search should degrade gracefully by falling back to the text/trigram keyword matching path and notifying the user of the reduced search fidelity.
+- **Extreme Inputs**: If the user inputs a very long query (> 1000 characters), the search controller must truncate the string before embedding and keyword parsing to prevent buffer overflows or performance degradation.
+- **Filters returning no books**: If filters applied on top of a hybrid search yield 0 books, the search history must still log the query and filters if `logHistory` was true, but the catalog UI must display the user-friendly "no results" state.
 
 ---
 
@@ -95,25 +97,28 @@ As a logged-in library member, I want the system to securely record my search qu
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST provide a search UI with a clear toggle/selector to switch between **Standard (OPAC) Search** and **Semantic Search**.
-- **FR-002**: **Standard Search** MUST perform key-matching on Title, Author, ISBN, Publisher, and Category using partial matching.
-- **FR-003**: **Semantic Search** MUST compute embeddings for the search query and perform a vector similarity search using pgvector in PostgreSQL.
-- **FR-004**: The system MUST provide filters for:
-  - **Publication Date**: Start and end year/date.
-  - **Genres**: Multiple-choice checkbox list.
-  - **Number of Pages**: Min and max page counts.
-  - **Languages**: Multiple-choice checkbox list.
-- **FR-005**: The system MUST support combined vector similarity search and metadata filtering using PostgreSQL (integrating pgvector distance operations with standard WHERE clauses).
-- **FR-006**: The system MUST display a user-friendly message when a query returns zero results.
-- **FR-007**: The system MUST log the search details to the database under a `SearchHistory` model if a user is logged in.
-- **FR-008**: The system MUST NOT log search history for unauthenticated/guest users.
+- **FR-001**: The system MUST execute a single hybrid search when a query is submitted, combining the (1) exact text keyword path, (2) typo-tolerant trigram path, and (3) semantic path into one process.
+- **FR-002**: The backend MUST apply a regex filter to identify and strip out misspelled connector strings (e.g., "adn", "orr", "teh") from the search query, and split the remaining query text into standalone fragments for lexical/trigram matching.
+- **FR-003**: The semantic path MUST convert the raw search query into an embedding vector using a local transformer model (`all-MiniLM-L6-v2`) before querying the database.
+- **FR-004**: The database engine MUST run a pg_trgm trigram search (using a GIN index on text search fields) and a pgvector semantic search (using an HNSW index on the embedding field) simultaneously.
+- **FR-005**: The system MUST combine the results from the lexical/trigram and semantic paths and rerank them using Reciprocal Rank Fusion (RRF) to generate a single sorted result set.
+- **FR-006**: The catalog UI on the `/library` page MUST update in-place, replacing the default catalog list with hybrid search results, without using an overlay panel.
+- **FR-007**: The system MUST support filtering search results in-place by Genre, Publication Year range, Page Count, and Language.
+- **FR-008**: The search API MUST accept a boolean parameter `logHistory` to determine whether a search should be recorded in the database.
+- **FR-009**: The system MUST only write a new `SearchHistory` record to the database for authenticated users when `logHistory: true` is passed (on Enter keypress, search button click, or filter change).
+- **FR-010**: Debounced search requests triggered during typing MUST pass `logHistory: false` and must not write records to the `SearchHistory` table.
+- **FR-011**: The system MUST support tracking result clicks by associating a clicked book ID with the active `SearchHistory` entry via an API endpoint (`POST /api/search/history/click`) for logged-in users.
+- **FR-012**: If the local transformer embedding model is unavailable, the search MUST degrade gracefully to use the exact and trigram text matching paths, displaying a subtle warning to the user.
 
 ### Key Entities
 
-- **Book**: Represents a book resource in the system.
-  - *Attributes*: `id`, `title`, `author`, `isbn`, `publisher`, `publicationDate`, `genres` (array), `pageCount`, `language`, `description`, `coverImage`, `embedding` (vector type for pgvector similarity matches).
+- **Book**: Represents a book in the library database.
+  - *Attributes*: `id`, `title` (GIN index: `books_title_trgm_idx` using `gin_trgm_ops`), `author` (GIN index: `books_author_immutable_trgm_idx` using custom function), `isbn`, `publisher`, `publicationDate`, `genres` (array), `pageCount`, `language`, `description`, `coverImage`, `embedding` (vector type with HNSW index for pgvector similarity matches), `pg_trgm` (trigram matching for typo tolerance).
+  - * `immutable_array_to_string(arr text[], sep text)` -> Returns `text` [Volatility: IMMUTABLE] — **[NEWLY ENABLED]**. *Purpose*: Flattens array text vectors to support trigram indexes without crashing.
+
 - **SearchHistory**: Represents a log of a search query executed by a logged-in user.
-  - *Attributes*: `id`, `userId` (references User), `query`, `searchMode` (Standard/Semantic), `filters` (JSON object of applied filters), `timestamp`.
+  - *Attributes*: `id`, `userId` (references User), `search_content` (raw search query input text only), `filters` (JSON object of applied filters), `clickedBookIds` (array of strings, referencing Book.id), `timestamp`.
+
 
 ---
 
@@ -121,16 +126,16 @@ As a logged-in library member, I want the system to securely record my search qu
 
 ### Measurable Outcomes
 
-- **SC-001**: Standard searches must execute and render results in under 200ms.
-- **SC-002**: Semantic searches (including embedding generation and pgvector lookup) must execute and return results in under 800ms.
-- **SC-003**: Filtering updates the displayed result list in under 100ms (client-side or server-side).
-- **SC-004**: 100% of searches by authenticated users successfully write a record to `SearchHistory` database tables.
+- **SC-001**: The complete hybrid search (lexical, trigram, embedding generation, pgvector search, and RRF reranking) must execute and return results in under 900ms.
+- **SC-002**: Client-side in-place catalog grid updates must complete rendering within 150ms of receiving the response from the backend.
+- **SC-003**: 100% of searches with `logHistory: true` performed by authenticated users must successfully create a record in the `SearchHistory` table.
+- **SC-004**: 100% of debounced searches with `logHistory: false` must NOT write to the database, ensuring zero log pollution from typing.
+- **SC-005**: 100% of search result click-throughs by authenticated users must update the correct `clickedBookIds` array in the database.
 
 ---
 
 ## Assumptions
 
-- **Embedding Service**: A reliable embedding generation model (e.g., via HuggingFace transformers, local models, or OpenAI API) will be available to convert descriptions and queries into vectors.
-- **pgvector**: The PostgreSQL database will have the pgvector extension enabled, and the books table will feature a vector column for descriptions.
-- **Integration**: A mock/stub layer for pgvector and SearchHistory logging will be implemented first, as the "real database will be added later".
-- **User Session Context**: The frontend/backend integration exposes a user session context containing the current user's ID when they are authenticated.
+- **Local Transformer Model**: A local service or node-based model execution (e.g. via ONNX or Hugging Face Xenova/transformers) will run the `all-MiniLM-L6-v2` model to generate 384-dimensional embeddings.
+- **Database Indexing**: The PostgreSQL database supports and has enabled both `pg_trgm` and `pgvector` extensions, with a GIN index on text search columns (title, author, publisher) and an HNSW index on the book embedding column.
+- **User Authentication**: The server has access to the user's session context via auth middleware (`auth.middlewares.mjs`), which populates `req.user.id` when logged in.

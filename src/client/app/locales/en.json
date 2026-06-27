@@ -1,6 +1,7 @@
 {
   "navbar": {
     "library": "Library",
+    "search": "Search",
     "dashboard": "Dashboard",
     "study_together": "Study Together",
     "library_map": "Library Map",
@@ -27,7 +28,13 @@
     "search_placeholder": "Search...",
     "filter": "Filter",
     "no_books_found": "No books found",
-    "no_books_found_message": "We could not find any books matching your criteria."
+    "no_books_found_message": "We could not find any books matching your criteria.",
+    "search_mode": "Search Mode",
+    "standard": "Standard Search",
+    "semantic": "Semantic Search",
+    "standard_desc": "Search by title, author, publisher, or ISBN",
+    "semantic_desc": "Search by book concepts, plots, or topics",
+    "result": "Result"
   },
   "book": {
     "loading": "Preparing your reading experience...",
