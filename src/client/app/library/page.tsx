@@ -53,18 +53,6 @@ function LibraryPageContent() {
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [searchParams]);
 
-  // Debounce effect for typing search query
-  useEffect(() => {
-    if (searchQuery === submittedQuery) return;
-
-    const timer = setTimeout(() => {
-      setSubmittedQuery(searchQuery);
-      setLogHistory(false); // Typing logs are always false (debounced)
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, submittedQuery]);
-
   // Helper to update URL query params
   const updateUrl = (updatedFilters: {
     genres?: string[];
@@ -166,6 +154,8 @@ function LibraryPageContent() {
     router.push(pathname);
   };
 
+  const hasActiveFilters = genres.length > 0 || branches.length > 0 || availableOnly || !!startYear || !!endYear;
+
   return (
     <>
       <HomeLayout
@@ -176,6 +166,7 @@ function LibraryPageContent() {
             onFilterClick={() => setIsFilterOpen(true)}
             onSearchTrigger={handleSearchTrigger}
             value={searchQuery}
+            hasActiveFilters={hasActiveFilters}
           />
         }
         popularPublishes={

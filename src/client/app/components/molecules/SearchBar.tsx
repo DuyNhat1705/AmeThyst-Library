@@ -12,6 +12,7 @@ interface SearchBarProps {
   onChange?: (val: string) => void;
   onSearch?: () => void;
   placeholder?: string;
+  hasActiveFilters?: boolean;
 }
 
 export default function SearchBar({
@@ -20,7 +21,8 @@ export default function SearchBar({
   value,
   onChange,
   onSearch,
-  placeholder
+  placeholder,
+  hasActiveFilters = false
 }: SearchBarProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -103,7 +105,7 @@ export default function SearchBar({
       {onFilterClick && (
         <div className="relative">
           <Button 
-            variant="outline" 
+            variant={hasActiveFilters ? "primary" : "outline"} 
             className="flex items-center gap-2 py-2 px-4 h-auto rounded-xl cursor-pointer"
             onClick={onFilterClick}
           >
