@@ -1,4 +1,4 @@
-import { getBookById, getRecommendations, createReservation, getBooksList } from '../services/library.services.mjs';
+import { getBookById, getRecommendations, getRelatedBooks as getRelatedBooksService, createReservation, getBooksList } from '../services/library.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
@@ -47,6 +47,17 @@ const getBookRecommendations = async (req, res) => {
   }
 };
 
+const getRelatedBooks = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const related = await getRelatedBooksService(id);
+    res.json(related);
+  } catch (error) {
+    console.error('Error fetching related books:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 const reserveBook = async (req, res) => {
   try {
     const { userId, bookId } = req.body;
@@ -61,4 +72,4 @@ const reserveBook = async (req, res) => {
   }
 };
 
-export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook };
+export { getAllBooks, getBookDetails, getBookRecommendations, getRelatedBooks, reserveBook };

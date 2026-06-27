@@ -18,7 +18,7 @@ export default function BookPage() {
       try {
         const [bookRes, recsResponse] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}/recommendations`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}/related`)
         ]);
         
         const bookData = await bookRes.json();
