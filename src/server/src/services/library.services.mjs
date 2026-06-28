@@ -245,15 +245,7 @@ export const getRelatedBooks = async (id) => {
 /**
  * Xử lý đặt sách
  */
-export const createReservation = async (userId, book_id) => {
-  // Kiểm tra tồn kho
-  const checkQuery = 'SELECT available_quantity FROM public.library WHERE book_id = $1 AND available_quantity > 0';
-  const checkRes = await pool.query(checkQuery, [book_id]);
-  
-  if (checkRes.rows.length === 0) {
-    return { error: 'Book currently unavailable for reservation' };
-  }
-
+export const createReservation = async (userId, bookId, branchId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
