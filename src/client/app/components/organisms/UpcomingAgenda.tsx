@@ -24,6 +24,7 @@ function getIndicatorColor(type: string) {
     case 'book_return': return 'fill-[#061D32]';
     case 'room_reservation': return 'fill-[#009484]';
     case 'pin_expiry': return 'fill-[#BA1A1A]';
+    case 'reservation_expiry': return 'fill-[#E37400]';
     default: return 'fill-neutral-400';
   }
 }

@@ -57,7 +57,13 @@
     "scroll_left": "Scroll Left",
     "scroll_right": "Scroll Right",
     "availability_locations": "Availability & Locations",
-    "no_available_locations": "No location data available"
+    "shelf": "Shelf",
+    "no_location_data": "No location data available.",
+    "select_branch": "Select a branch to reserve",
+    "active_reservation": "Active Reservation",
+    "branch": "Branch",
+    "expires": "Expires",
+    "sign_in_to_reserve": "Please sign in to reserve books"
   },
   "footer": {
     "tagline": "Empowering students through accessible knowledge and community-driven learning.",
@@ -259,8 +265,14 @@
     "borrowed_return": "Return",
     "borrowed_renew": "Renew",
     "borrowed_status_borrowed": "Borrowed",
-    "borrowed_status_overdue": "Overdue",
-    "borrowed_status_returned": "Returned",
+    "borrowed_status_reserved": "Reserved",
+    "borrowed_status_pending": "Awaiting Pickup",
+    "borrowed_label_reserved": "Reserved:",
+    "borrowed_label_expires": "Expires:",
+    "borrowed_cancel": "Cancel",
+    "borrowed_view_pin": "View PIN",
+    "borrowed_generate_pin": "Generate PIN",
+    "borrowed_loading": "Loading borrow records...",
     "borrowed_table_title": "Title",
     "borrowed_table_author": "Author",
     "borrowed_table_borrowed": "Borrowed",
@@ -271,6 +283,7 @@
     "legend_room_reservation": "Room reservation",
     "legend_study_group": "Study group",
     "legend_pin_expiry": "PIN expiry",
+    "legend_reservation_expiry": "Reservation expiry",
     "agenda_title": "UPCOMING AGENDA",
     "agenda_today": "Today",
     "agenda_tomorrow": "Tomorrow",
@@ -312,5 +325,14 @@
     "loan_fees_lost_book": "Lost Book",
     "loan_fees_damage": "Damage",
     "loan_fees_processing": "Processing Fee"
+  },
+  "pin": {
+    "title": "Pickup PIN",
+    "expires_in": "Expires in {minutes}:{seconds}",
+    "expired": "PIN Expired",
+    "generated": "PIN Generated",
+    "close": "Close",
+    "expired_message": "This PIN has expired. Please generate a new one.",
+    "generating": "Generating PIN..."
   }
 }

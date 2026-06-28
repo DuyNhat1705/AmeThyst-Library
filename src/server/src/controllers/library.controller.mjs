@@ -1,4 +1,4 @@
-import { getBookById, getRecommendations, createReservation, getBooksList } from '../services/library.services.mjs';
+import { getBookById, getRecommendations, createReservation, getBooksList, cancelReservationById, getUserBorrowRecords, generatePickupPin, cleanupReservationPin } from '../services/library.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
@@ -25,7 +25,8 @@ const getAllBooks = async (req, res) => {
 const getBookDetails = async (req, res) => {
   try {
     const { id } = req.params;
-    const book = await getBookById(id);
+    const userId = req.user?.userId;
+    const book = await getBookById(id, userId);
     if (!book) {
       return res.status(404).json({ error: 'Book not found' });
     }
@@ -49,16 +50,107 @@ const getBookRecommendations = async (req, res) => {
 
 const reserveBook = async (req, res) => {
   try {
-    const { userId, bookId } = req.body;
-    const result = await createReservation(userId, bookId);
-    if (result.error) {
-      return res.status(400).json({ error: result.error });
+    const userId = req.user.userId;
+    const { bookId, branchId } = req.body;
+    
+    if (!bookId || !branchId) {
+      return res.status(400).json({ 
+        success: false, 
+        error: { code: 'MISSING_PARAMETERS', message: 'bookId and branchId are required' } 
+      });
     }
-    res.status(201).json(result.reservation);
+
+    const result = await createReservation(userId, bookId, branchId);
+    
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({ 
+        success: false, 
+        error: result.error 
+      });
+    }
+    
+    res.status(201).json({ success: true, data: result.reservation });
   } catch (error) {
     console.error('Error reserving book:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } 
+    });
+  }
+};
+
+const cancelReservation = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { reservationId } = req.params;
+
+    const result = await cancelReservationById(userId, reservationId);
+    
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({ 
+        success: false, 
+        error: result.error 
+      });
+    }
+    
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error cancelling reservation:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } 
+    });
+  }
+};
+
+const getMyBorrowRecords = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const result = await getUserBorrowRecords(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching borrow records:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook };
+const generatePin = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { reservationId } = req.params;
+
+    const result = await generatePickupPin(userId, reservationId);
+
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error generating pickup PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
+  }
+};
+
+const cleanupPin = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { reservationId } = req.params;
+    const cleaned = await cleanupReservationPin(userId, reservationId);
+    res.json({ success: true, cleaned });
+  } catch (error) {
+    console.error('Error cleaning up PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
+  }
+};
+
+export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook, cancelReservation, getMyBorrowRecords, generatePin, cleanupPin };

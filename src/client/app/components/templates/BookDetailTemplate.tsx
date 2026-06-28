@@ -38,11 +38,20 @@ export interface BookDetails {
   rating: string;
   coverImage: string;
   inventory?: {
+    branchId?: number;
     location: string;
     address: string;
     shelf: string;
     availableCopies: number;
   }[];
+  userReservation?: {
+    reservationId: string;
+    branchId: number;
+    branchName: string;
+    reserveDate: string;
+    expiresAt: string;
+    status: string;
+  } | null;
 }
 
 export interface RecommendedBook {
@@ -58,6 +67,9 @@ export interface BookDetailTemplateProps {
   loading: boolean;
   isReserving: boolean;
   reserved: boolean;
+  selectedBranchId: number | null;
+  onBranchSelect: (branchId: number | null) => void;
+  error: string | null;
   onReserve: () => void;
 }
 
@@ -67,6 +79,9 @@ export default function BookDetailTemplate({
   loading,
   isReserving,
   reserved,
+  selectedBranchId,
+  onBranchSelect,
+  error,
   onReserve,
 }: BookDetailTemplateProps) {
   const { t } = useI18n();
@@ -75,6 +90,13 @@ export default function BookDetailTemplate({
   if (!book) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 text-xl">{t('book.not_found')}</div>;
 
   const hasAvailability = book.inventory && book.inventory.some(loc => loc.availableCopies > 0);
+  const hasActiveReservation = book.userReservation && ['reserved', 'pending', 'borrowed'].includes(book.userReservation.status);
+
+  const handleBranchClick = (branchId: number | undefined, availableCopies: number) => {
+    if (availableCopies <= 0) return;
+    if (!branchId) return;
+    onBranchSelect(branchId === selectedBranchId ? null : branchId);
+  };
 
   return (
     <div className="bg-[#F8EFE6] dark:bg-[#091426] min-h-screen flex flex-col font-inter selection:bg-teal selection:text-white">
@@ -116,8 +138,18 @@ export default function BookDetailTemplate({
                 
                 {book.inventory && book.inventory.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {book.inventory.map((loc, idx) => (
-                      <div key={idx} className="flex flex-col p-4 rounded-lg border border-[#E0E0E0] dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm">
+                    {book.inventory.map((loc) => (
+                      <div 
+                        key={loc.branchId}
+                        className={`flex flex-col p-4 rounded-lg border bg-white dark:bg-neutral-800 shadow-sm transition-all duration-200 ${
+                          loc.availableCopies > 0 
+                            ? selectedBranchId === loc.branchId
+                              ? 'border-[#006F66] dark:border-[#FFB95F] ring-2 ring-[#006F66] dark:ring-[#FFB95F]'
+                              : 'border-[#E0E0E0] dark:border-neutral-700 hover:border-[#006F66] dark:hover:border-[#FFB95F] cursor-pointer'
+                            : 'border-[#E0E0E0] dark:border-neutral-700 opacity-60'
+                        }`}
+                        onClick={() => handleBranchClick(loc.branchId, loc.availableCopies)}
+                      >
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <div className="flex items-start gap-2">
                             <MapPinIcon />
@@ -126,24 +158,48 @@ export default function BookDetailTemplate({
                               <p className="text-xs text-[#6B7280] dark:text-neutral-400 mt-1">{loc.address}</p>
                             </div>
                           </div>
+                          {selectedBranchId === loc.branchId && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#006F66] dark:text-[#FFB95F] shrink-0">
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                              <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                          )}
                         </div>
                         <div className="mt-auto flex justify-between items-center text-sm pt-3 border-t border-[#F3F4F6] dark:border-neutral-700">
-                          <span className="text-[#45474C] dark:text-neutral-300">Shelf: <span className="font-medium text-[#006F66] dark:text-[#FFB95F]">{loc.shelf}</span></span>
+                          <span className="text-[#45474C] dark:text-neutral-300">{t('book.shelf')}: <span className="font-medium text-[#006F66] dark:text-[#FFB95F]">{loc.shelf}</span></span>
                           <span className={`font-semibold ${loc.availableCopies > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
-                            {loc.availableCopies} {loc.availableCopies === 1 ? 'copy' : 'copies'}
+                            {loc.availableCopies} {loc.availableCopies === 1 ? t('book.copy') : t('book.copies')}
                           </span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#6B7280]">{t('book.no_available_locations')}</p>
+                  <p className="text-sm text-[#6B7280]">{t('book.no_location_data')}</p>
+                )}
+
+                {hasActiveReservation && book.userReservation && (
+                  <div className="p-4 rounded-lg border border-[#006F66] dark:border-[#FFB95F] bg-[#006F66]/5 dark:bg-[#FFB95F]/5">
+                    <h4 className="font-semibold text-[#006F66] dark:text-[#FFB95F] mb-2">{t('book.active_reservation')}</h4>
+                    <div className="text-sm text-[#45474C] dark:text-neutral-300 space-y-1">
+                      <p>{t('book.branch')}: {book.userReservation.branchName}</p>
+                      {book.userReservation.expiresAt && (
+                        <p>{t('book.expires')}: {new Date(book.userReservation.expiresAt).toLocaleString()}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                  </div>
                 )}
                 
                 <div className="w-full max-w-sm mt-4">
                   <ActionButton 
                     onClick={onReserve} 
-                    disabled={isReserving || reserved || !hasAvailability}
+                    disabled={isReserving || reserved || !hasAvailability || !selectedBranchId || hasActiveReservation}
                     icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
                   >
                     {reserved ? t('book.reserved') : isReserving ? t('book.reserving') : t('book.reserve')}

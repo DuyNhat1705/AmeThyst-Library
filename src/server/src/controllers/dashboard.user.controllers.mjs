@@ -1,4 +1,4 @@
-import { fetchEventsByMonth, fetchAgenda, createPersonalTask } from '../services/dashboard.services.mjs';
+import { fetchEventsByMonth, fetchAgenda, createPersonalTask } from '../services/dashboard.user.services.mjs';
 
 const getEvents = async (req, res) => {
   try {

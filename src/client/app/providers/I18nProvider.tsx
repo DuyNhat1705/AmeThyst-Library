@@ -7,7 +7,7 @@ type Locale = 'en' | 'vi';
 
 interface I18nContextType {
   locale: Locale;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   toggleLocale: () => void;
 }
 

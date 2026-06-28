@@ -11,13 +11,22 @@ export default function BookPage() {
   const [loading, setLoading] = useState(true);
   const [isReserving, setIsReserving] = useState(false);
   const [reserved, setReserved] = useState(false);
+  const [selectedBranchId, setSelectedBranchId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
+        const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const [bookRes, recsResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`, { headers }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}/recommendations`)
         ]);
         
@@ -37,22 +46,41 @@ export default function BookPage() {
   }, [id]);
 
   const handleReserve = async () => {
-    if (!book) return;
+    if (!book || !selectedBranchId) return;
     setIsReserving(true);
+    setError(null);
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Please sign in to reserve books');
+        return;
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'user_123', bookId: book.id }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ bookId: book.id, branchId: selectedBranchId }),
       });
-      if (response.ok) {
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         setReserved(true);
-        const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`);
+        setSelectedBranchId(null);
+        const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         const updatedData = await updatedResponse.json();
         setBook(updatedData);
+      } else {
+        setError(data.error?.message || 'Failed to reserve book');
       }
     } catch (error) {
       console.error('Error reserving book:', error);
+      setError('An unexpected error occurred');
     } finally {
       setIsReserving(false);
     }
@@ -65,6 +93,9 @@ export default function BookPage() {
       loading={loading}
       isReserving={isReserving}
       reserved={reserved}
+      selectedBranchId={selectedBranchId}
+      onBranchSelect={setSelectedBranchId}
+      error={error}
       onReserve={handleReserve}
     />
   );

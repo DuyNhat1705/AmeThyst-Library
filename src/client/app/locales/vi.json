@@ -56,8 +56,14 @@
     "copies_remaining": "Còn lại",
     "scroll_left": "Cuộn trái",
     "scroll_right": "Cuộn phải",
-    "availability_locations": "Sẵn có & Vị trí",
-    "no_available_locations": "Không có sẵn ở đây"
+    "availability_locations": "Tình trạng & Địa điểm",
+    "shelf": "Kệ sách",
+    "no_location_data": "Không có dữ liệu địa điểm.",
+    "select_branch": "Chọn chi nhánh để đặt chỗ",
+    "active_reservation": "Đặt chỗ đang hoạt động",
+    "branch": "Chi nhánh",
+    "expires": "Hết hạn",
+    "sign_in_to_reserve": "Vui lòng đăng nhập để đặt sách"
   },
   "footer": {
     "tagline": "Trao quyền cho sinh viên thông qua kiến thức dễ tiếp cận và học tập cộng đồng.",
@@ -259,8 +265,14 @@
     "borrowed_return": "Trả sách",
     "borrowed_renew": "Gia hạn",
     "borrowed_status_borrowed": "Đang mượn",
-    "borrowed_status_overdue": "Quá hạn",
-    "borrowed_status_returned": "Đã trả",
+    "borrowed_status_reserved": "Đã đặt chỗ",
+    "borrowed_status_pending": "Chờ lấy sách",
+    "borrowed_label_reserved": "Ngày đặt:",
+    "borrowed_label_expires": "Hết hạn:",
+    "borrowed_cancel": "Hủy đặt chỗ",
+    "borrowed_view_pin": "Xem PIN",
+    "borrowed_generate_pin": "Tạo PIN",
+    "borrowed_loading": "Đang tải dữ liệu mượn sách...",
     "borrowed_table_title": "Tên sách",
     "borrowed_table_author": "Tác giả",
     "borrowed_table_borrowed": "Ngày mượn",
@@ -271,6 +283,7 @@
     "legend_room_reservation": "Đặt phòng",
     "legend_study_group": "Nhóm học",
     "legend_pin_expiry": "Hết hạn PIN",
+    "legend_reservation_expiry": "Hết hạn đặt chỗ",
     "agenda_title": "LỊCH TRÌNH SẮP TỚI",
     "agenda_today": "Hôm nay",
     "agenda_tomorrow": "Ngày mai",
@@ -312,5 +325,14 @@
     "loan_fees_lost_book": "Mất sách",
     "loan_fees_damage": "Hư hỏng",
     "loan_fees_processing": "Phí xử lý"
+  },
+  "pin": {
+    "title": "PIN lấy sách",
+    "expires_in": "Hết hạn sau {minutes}:{seconds}",
+    "expired": "PIN đã hết hạn",
+    "generated": "Đã tạo PIN",
+    "close": "Đóng",
+    "expired_message": "PIN này đã hết hạn. Vui lòng tạo PIN mới.",
+    "generating": "Đang tạo PIN..."
   }
 }
