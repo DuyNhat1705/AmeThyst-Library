@@ -357,5 +357,25 @@
     "close": "Close",
     "expired_message": "This PIN has expired. Please generate a new one.",
     "generating": "Generating PIN..."
+  },
+  "study_together": {
+    "title": "Study Together",
+    "description": "Find and join study groups to collaborate with your peers.",
+    "search_placeholder": "Search groups...",
+    "filter_all_subjects": "All Subjects",
+    "sort_by": "Sort by",
+    "sort_newest": "Newest",
+    "sort_availability": "Availability",
+    "status_available": "Available",
+    "status_full": "Full",
+    "join_group": "Join Group",
+    "request_to_join": "Request to Join",
+    "send": "Send",
+    "cancel": "Cancel",
+    "message_placeholder": "Introduce yourself and explain why you want to join (max 100 characters)...",
+    "time": "Time",
+    "address": "Location",
+    "room": "Room",
+    "status_pending": "Pending Request"
   }
 }

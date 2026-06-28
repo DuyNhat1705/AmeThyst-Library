@@ -205,9 +205,55 @@ export const getRecommendations = async (id) => {
 };
 
 /**
- * Xử lý đặt sách - Reserve a book at a specific branch
+ * Lấy sách cùng chủ đề (genres)
  */
-export const createReservation = async (userId, bookId, branchId) => {
+export const getRelatedBooks = async (id) => {
+  // 1. Lấy genres của sách hiện tại
+  const bookQuery = 'SELECT genres FROM public.books WHERE book_id = $1';
+  const bookRes = await pool.query(bookQuery, [id]);
+  
+  if (bookRes.rows.length === 0 || !bookRes.rows[0].genres || bookRes.rows[0].genres.length === 0) {
+    // Fallback: Nếu không có genres thì trả về random
+    return getRecommendations(id);
+  }
+  
+  const genres = bookRes.rows[0].genres;
+  
+  // 2. Tìm sách khác có ít nhất một genre chung (&&)
+  const recQuery = `
+    SELECT book_id, title, author, isbn, image_url
+    FROM public.books 
+    WHERE book_id != $1 AND genres && $2
+    ORDER BY RANDOM()
+    LIMIT 20
+  `;
+  const recRes = await pool.query(recQuery, [id, genres]);
+  
+  // Fallback: Nếu không tìm thấy sách cùng chủ đề, trả về random
+  if (recRes.rows.length === 0) {
+    return getRecommendations(id);
+  }
+  
+  return recRes.rows.map(book => ({
+    id: book.book_id,
+    title: cleanText(book.title),
+    author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
+    coverImage: book.image_url || null
+  }));
+};
+
+/**
+ * Xử lý đặt sách
+ */
+export const createReservation = async (userId, book_id) => {
+  // Kiểm tra tồn kho
+  const checkQuery = 'SELECT available_quantity FROM public.library WHERE book_id = $1 AND available_quantity > 0';
+  const checkRes = await pool.query(checkQuery, [book_id]);
+  
+  if (checkRes.rows.length === 0) {
+    return { error: 'Book currently unavailable for reservation' };
+  }
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');

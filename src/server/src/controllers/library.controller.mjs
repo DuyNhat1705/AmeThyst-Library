@@ -1,4 +1,4 @@
-import { getBookById, getRecommendations, createReservation, getBooksList, cancelReservationById, getUserBorrowRecords, generatePickupPin, cleanupReservationPin } from '../services/library.services.mjs';
+import { getBookById, getRecommendations, getRelatedBooks as getRelatedBooksService, createReservation, getBooksList, cancelReservationById, getUserBorrowRecords, generatePickupPin, cleanupReservationPin } from '../services/library.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
@@ -44,6 +44,17 @@ const getBookRecommendations = async (req, res) => {
     res.json(recommendations);
   } catch (error) {
     console.error('Error fetching recommendations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+const getRelatedBooks = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const related = await getRelatedBooksService(id);
+    res.json(related);
+  } catch (error) {
+    console.error('Error fetching related books:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -153,4 +164,4 @@ const cleanupPin = async (req, res) => {
   }
 };
 
-export { getAllBooks, getBookDetails, getBookRecommendations, reserveBook, cancelReservation, getMyBorrowRecords, generatePin, cleanupPin };
+export { getAllBooks, getBookDetails, getBookRecommendations, getRelatedBooks, reserveBook, cancelReservation, getMyBorrowRecords, generatePin, cleanupPin };
