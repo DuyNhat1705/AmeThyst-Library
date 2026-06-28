@@ -47,7 +47,7 @@ export default function PopularPublishes({
     const fetchBooks = async () => {
       setLoading(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const limit = 24;
 
         if (searchQuery || genres || branches || availableOnly || startYear || endYear) {

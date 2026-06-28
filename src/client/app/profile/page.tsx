@@ -6,7 +6,7 @@ import ProfileCard from '../components/molecules/ProfileCard';
 import { useRequireAuth, getAuthToken, updateStoredUser, logoutUser } from '../utils/user';
 import { useI18n } from '../providers/I18nProvider';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 
 export default function ProfilePage() {

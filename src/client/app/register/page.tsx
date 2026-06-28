@@ -14,13 +14,11 @@ const RegisterPage = () => {
     isLoading: false,
     error: null as string | null,
     validationErrors: {} as Record<string, string>,
-    isSuccess: false,
   });
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    role: "user",
     password: "",
     confirmPassword: "",
   });

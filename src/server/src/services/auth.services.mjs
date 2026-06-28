@@ -23,54 +23,88 @@ export const registerUser = async ({ email, password, username }) => {
   const existing = await findUserByEmail(email);
   if (existing) throw new Error('Email already exists');
 
+  const pendingRow = await getPendingByEmail(email);
+  if (pendingRow) {
+    if (new Date() > new Date(pendingRow.expired_at)) {
+      await deletePendingByEmail(email);
+    } else {
+      throw new Error('A verification email has already been sent. Please check your inbox.');
+    }
+  }
+
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  return await createUser({ email, passwordHash, username, phoneNumber, avatar, role });
+  const token = await withTransaction((client) =>
+    replacePendingUser(client, { email, passwordHash, username })
+  );
+
+  await sendVerificationEmail(email, token);
+  return { message: 'Verification email sent. Please check your inbox.' };
 };
 
-const loginUser = async ({ email, password }) => {
+// ─── Verify Email ─────────────────────────────────────────────────────────────
+
+export const verifyEmail = async ({ token }) => {
+  const row = await getPendingByToken(token);
+  if (!row) throw new Error('Invalid or expired verification link.');
+
+  if (new Date() > new Date(row.expired_at)) {
+    await deletePendingByToken(token);
+    throw new Error('Verification link has expired. Please register again.');
+  }
+
+  const existing = await findUserByEmail(row.email);
+  if (existing) {
+    await deletePendingByToken(token);
+    throw new Error('Email already exists.');
+  }
+
+  const user = await withTransaction(async (client) => {
+    const userRow = await insertUserFromPending({
+      email: row.email,
+      passwordHash: row.password_hash,
+      username: row.username,
+    }, client);
+    await deletePendingByToken(token, client);
+    return userRow;
+  });
+
+  return {
+    token: signToken(user.user_id, user.email),
+    user: buildUserPayload(user),
+  };
+};
+
+// ─── Resend Verification ──────────────────────────────────────────────────────
+
+export const resendVerificationEmailService = async ({ email }) => {
+  const pendingRow = await getPendingByEmail(email);
+  if (!pendingRow) {
+    throw new Error('No pending registration found for this email. Please register again.');
+  }
+
+  const newToken = await withTransaction((client) =>
+    replacePendingUser(client, {
+      email,
+      passwordHash: pendingRow.password_hash,
+      username: pendingRow.username,
+    })
+  );
+
+  await sendVerificationEmail(email, newToken);
+  return { message: 'Verification email resent successfully.' };
+};
+
+// ─── Login ────────────────────────────────────────────────────────────────────
+
+export const loginUser = async ({ email, password }) => {
   const user = await findUserByEmail(email);
-  if (!user) throw new Error('Invalid email or password');
+  if (!user || !user.password_hash) throw new Error('Invalid email or password');
 
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) throw new Error('Invalid email or password');
 
-  const safeRole = user.role || 'user';
-
-  const token = jwt.sign(
-    { userId: user.user_id, email: user.email, role: safeRole },
-    process.env.JWT_SECRET || 'your_super_secret_key_here',
-    { expiresIn: '7d' }
-  );
-
   return {
-    token,
-    user: {
-      userId: user.user_id,
-      email: user.email,
-      username: user.username,
-      avatar: user.avatar,
-      role: safeRole,
-    },
+    token: signToken(user.user_id, user.email),
+    user: buildUserPayload(user),
   };
 };
-
-const forgotPassword = async ({ email }) => {
-  const user = await findUserByEmail(email);
-  if (!user) throw new Error('Email does not exist');
-  return await sendOtp(email);
-};
-
-const resetPassword = async ({ email, newPassword }) => {
-  checkVerified(email);
-
-  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  await pool.query(
-    'UPDATE users SET password_hash = $1 WHERE email = $2',
-    [passwordHash, email]
-  );
-
-  clearOtp(email);
-  return { message: 'Password reset successfully' };
-};
-
-export { registerUser, loginUser, forgotPassword, resetPassword };

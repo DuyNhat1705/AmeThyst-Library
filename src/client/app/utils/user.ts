@@ -130,4 +130,10 @@ export function useRequireAuth(redirectTo: string = '/login'): void {
     }
   }, [router, redirectTo]);
 }
-
+/**
+ * Resolves the redirect path based on the user's role.
+ */
+export function getRedirectPathForUser(user: StoredUser | null): string {
+  if (!user) return '/login';
+  return '/library';
+}

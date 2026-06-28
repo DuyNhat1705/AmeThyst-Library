@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef} from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { FormField } from '../molecules';
 import { Button, ErrorMessage, SecurityIndicator, PasswordInput } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
@@ -20,7 +20,9 @@ interface ForgotPasswordCardProps {
   isLoading?: boolean;
   isSuccess?: boolean;
 }
-const OTP_TTL = 30; // seconds — must match server OTP_VERIFY_TTL
+
+const OTP_TTL = 60; // seconds — must match server OTP_VERIFY_TTL
+
 export default function ForgotPasswordCard({ 
   onBackToSignIn, 
   onSubmit, 
@@ -34,8 +36,9 @@ export default function ForgotPasswordCard({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isResending, setIsResending] = useState(false);
+  const isResendingRef = useRef(false);
   
-
     // OTP countdown
   const [secondsLeft, setSecondsLeft] = useState(OTP_TTL);
   const [otpExpired, setOtpExpired] = useState(false);
@@ -89,14 +92,22 @@ export default function ForgotPasswordCard({
   };
   
   const handleResend = async () => {
+    if (isResendingRef.current || isLoading) return;
+    isResendingRef.current = true;
+    setIsResending(true);
     setOtp('');
     setError('');
-    const result = await onSubmit({ step: 1, email });
-    if (result && result.success) {
-      setResendMessage(t('auth.otp_resent'));
-      startCountdown();
-    } else {
-      setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
+    try {
+      const result = await onSubmit({ step: 1, email });
+      if (result && result.success) {
+        setResendMessage(t('auth.otp_resent'));
+        startCountdown();
+      } else {
+        setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
+      }
+    } finally {
+      setIsResending(false);
+      isResendingRef.current = false;
     }
   };
 
@@ -188,8 +199,8 @@ export default function ForgotPasswordCard({
                     <Button
                       type="button"
                       className="w-full h-[52px] gap-2"
-                      isLoading={isLoading}
-                      disabled={isLoading}
+                      isLoading={isResending}
+                      disabled={isResending || isLoading}
                       onClick={handleResend}
                     >
                       {t('auth.resend_otp')}
