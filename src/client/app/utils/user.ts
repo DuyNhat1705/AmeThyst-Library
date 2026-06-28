@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function getInitials(name: string): string {
@@ -57,6 +57,7 @@ export function logoutUser(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
 }
 
 /**
@@ -68,7 +69,42 @@ export function updateStoredUser(partial: Partial<StoredUser>): StoredUser | nul
   if (!current) return null;
   const updated: StoredUser = { ...current, ...partial };
   localStorage.setItem('user', JSON.stringify(updated));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('user-updated', { detail: updated }));
+  }
   return updated;
+}
+
+/**
+ * Custom React hook that registers state for stored user updates
+ * and triggers re-renders on the custom 'user-updated' event.
+ */
+export function useStoredUser(): StoredUser | null {
+  const [user, setUser] = useState<StoredUser | null>(() =>
+    typeof window !== 'undefined' ? getLoggedInUser() : null
+  );
+
+  useEffect(() => {
+    const onCustom = (e: Event) => {
+      setUser((e as CustomEvent<StoredUser | null>).detail);
+    };
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'user') {
+        setUser(e.newValue ? JSON.parse(e.newValue) : null);
+      }
+    };
+
+    window.addEventListener('user-updated', onCustom);
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      window.removeEventListener('user-updated', onCustom);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  return user;
 }
 
 /**

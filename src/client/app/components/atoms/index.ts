@@ -5,6 +5,7 @@ export * from './ErrorMessage';
 export * from './NavLink';
 export * from './HamburgerIcon';
 export * from './SecurityIndicator';
+export * from './PasswordInput';
 export { default as ActionButton } from './ActionButton';
 export { default as Badge } from './Badge';
 export { default as Toast } from './Toast';

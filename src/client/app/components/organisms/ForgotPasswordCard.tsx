@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef} from 'react';
 import { FormField } from '../molecules';
-import { Button, ErrorMessage, SecurityIndicator } from '../atoms';
+import { Button, ErrorMessage, SecurityIndicator, PasswordInput } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
@@ -234,20 +234,18 @@ export default function ForgotPasswordCard({
                 </p>
                 <form onSubmit={handleStep3} className="w-full py-6 px-0 flex flex-col gap-6">
                   <div className="flex flex-col gap-2 w-full">
-                    <FormField
+                    <PasswordInput
                       label={t('auth.new_password_label')}
                       id="newPassword"
-                      type="password"
                       placeholder="••••••••"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
                       disabled={isLoading}
                     />
-                    <FormField
+                    <PasswordInput
                       label={t('auth.confirm_password_label')}
                       id="confirmPassword"
-                      type="password"
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}

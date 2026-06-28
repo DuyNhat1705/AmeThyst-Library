@@ -7,6 +7,7 @@ type Locale = 'en' | 'vi';
 
 interface I18nContextType {
   locale: Locale;
+  // The translation function takes a key and optional parameters for interpolation
   t: (key: string, params?: Record<string, string | number>) => string;
   toggleLocale: () => void;
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { FormField } from '../molecules';
-import { Button, SecurityIndicator, ErrorMessage } from '../atoms';
+import { Button, SecurityIndicator, ErrorMessage, PasswordInput } from '../atoms';
 import { getAuthToken } from '../../utils/user';
 import { calculatePasswordStrength, validateNewPassword } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
@@ -106,26 +106,23 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
         {error && <ErrorMessage message={error} />}
         {success && <ErrorMessage message={success} variant="success" />}
-        <FormField
+        <PasswordInput
           label={t('profile.current_password')}
           id="currentPassword"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="flex flex-col gap-2">
-          <FormField
+          <PasswordInput
             label={t('profile.new_password')}
             id="newPassword"
-            type="password"
             placeholder={t('profile.new_password_placeholder')}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-          <FormField
+          <PasswordInput
             label={t('profile.confirm_new_password')}
             id="confirmPassword"
-            type="password"
             placeholder={t('profile.confirm_new_password_placeholder')}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

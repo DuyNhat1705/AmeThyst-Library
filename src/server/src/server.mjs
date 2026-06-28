@@ -1,7 +1,7 @@
+import './config/env.mjs';
 import express from 'express';
 import cors from 'cors';
 import passport from './config/passport.mjs';
-import dotenv from 'dotenv';
 import libraryRoutes from './routes/library.mjs';
 import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
@@ -10,7 +10,6 @@ import { clearAllPins, cleanupExpiredPins } from './services/library.services.mj
 import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
 
-dotenv.config();
 
 const app = express();
 app.use(cors());

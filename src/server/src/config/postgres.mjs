@@ -1,7 +1,6 @@
 import pg from 'pg';
-import dotenv from 'dotenv';
+import './env.mjs';
 
-dotenv.config();
 
 const { Pool } = pg;
 

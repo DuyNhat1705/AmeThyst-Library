@@ -27,10 +27,10 @@ export default function ProfileCard({ label, value, onUpdate, editable = true }:
 
   return (
     <div
-      className={`p-4 border border-transparent ${editable ? 'hover:border-[#486C7E] cursor-pointer' : 'opacity-60'} rounded-lg transition-all bg-[#FFF] shadow-sm`}
+      className={`p-4 border ${editable ? 'border-transparent hover:border-slate-500 dark:hover:border-slate-400 cursor-pointer' : 'border-transparent opacity-60'} rounded-lg transition-all bg-white dark:bg-neutral-800 shadow-sm`}
       onClick={() => editable && !isEditing && setIsEditing(true)}
     >
-      <h3 className="text-sm text-[#45474C] font-semibold">{label}</h3>
+      <h3 className="text-sm text-neutral-500 dark:text-neutral-400 font-semibold">{label}</h3>
       {isEditing ? (
         <Input
           value={tempValue}
@@ -38,10 +38,10 @@ export default function ProfileCard({ label, value, onUpdate, editable = true }:
           onBlur={handleSave}
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
           autoFocus
-          className="h-8 border-0 border-b border-[#486C7E] rounded-none bg-transparent px-0 focus:ring-0"
+          className="h-8 border-0 border-b border-slate-500 dark:border-slate-400 rounded-none bg-transparent px-0 focus:ring-0 text-neutral-800 dark:text-neutral-200"
         />
       ) : (
-        <p className={`text-base ${value ? 'text-[#091426]' : 'text-[#A1A3A7]'}`}>
+        <p className={`text-base ${value ? 'text-neutral-800 dark:text-neutral-200' : 'text-neutral-400 dark:text-neutral-500'}`}>
           {value || t('profile.not_provided')}
         </p>
       )}

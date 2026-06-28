@@ -8,6 +8,7 @@ import { useI18n } from '../providers/I18nProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+
 export default function ProfilePage() {
   const { t } = useI18n();
   useRequireAuth();
@@ -16,14 +17,26 @@ export default function ProfilePage() {
     fullName: "",
     email: "",
     phoneNumber: "",
-    department: "Information Technology", // mock data
+    department: "Information Technology",
+    avatarUrl: "",
+    role: "user",
+    borrowNum: 0,
+  });
+  const [savedProfile, setSavedProfile] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    department: "Information Technology",
+    avatarUrl: "",
+    role: "user",
+    borrowNum: 0,
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     const token = getAuthToken();
-    if (!token) return; // Wait until requireAuth redirects if no token
+    if (!token) return;
 
     fetch(`${API}/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -39,30 +52,58 @@ export default function ProfilePage() {
       })
       .then((data) => {
         if (!data) return;
-        setProfile((prev) => ({
-          ...prev,
+        const loaded = {
           fullName: data.username || "",
           email: data.email || "",
           phoneNumber: data.phone_number || "",
-          // department không lấy từ API, giữ nguyên mock data hiện có
-        }));
+          department: "Information Technology",
+          avatarUrl: data.avatar || "",
+          role: data.role || "user",
+          borrowNum: data.borrow_num || 0,
+        };
+        setProfile(loaded);
+        setSavedProfile(loaded);
         updateStoredUser({
           username: data.username,
           email: data.email,
-          phone_number: data.phone_number,
+          avatar: data.avatar,
         });
       })
       .catch((err) => setError(err.message));
   }, [t]);
 
-  const handleUpdate = async (field: string, value: string) => {
-    // Department là mock data, không thể cập nhật
-    if (field === 'department') return;
+  const [phoneError, setPhoneError] = useState('');
 
+  const handleLocalUpdate = (field: string, value: string) => {
+    if (field === 'department') return;
+    if (field === 'phoneNumber') {
+      setPhoneError('');
+    }
+    setProfile((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCancel = () => {
+    setProfile(savedProfile);
+    setPhoneError('');
+  };
+
+  const handleSaveChanges = async () => {
     const token = getAuthToken();
     const body: Record<string, string> = {};
-    if (field === 'fullName') body.username = value;
-    if (field === 'phoneNumber') body.phoneNumber = value;
+
+    if (profile.fullName !== savedProfile.fullName) {
+      body.username = profile.fullName;
+    }
+    if (profile.phoneNumber !== savedProfile.phoneNumber) {
+      const phoneRegex = /^\d{9,10}$/;
+      if (!phoneRegex.test(profile.phoneNumber)) {
+        setPhoneError(t('profile.phone_validation_error'));
+        return;
+      }
+      body.phoneNumber = profile.phoneNumber;
+    }
+
+    if (Object.keys(body).length === 0) return;
 
     try {
       const res = await fetch(`${API}/user/profile`, {
@@ -86,11 +127,18 @@ export default function ProfilePage() {
       }
       const updated = await res.json();
 
-      setProfile((prev) => ({ ...prev, [field]: value }));
+      const newProfile = {
+        ...profile,
+        fullName: updated.username || profile.fullName,
+        phoneNumber: updated.phone_number || profile.phoneNumber,
+      };
+
+      setProfile(newProfile);
+      setSavedProfile(newProfile);
       updateStoredUser({
         username: updated.username,
         email: updated.email,
-        phone_number: updated.phone_number,
+        avatar: profile.avatarUrl,
       });
       setMessage(t('profile.updated_success'));
       setError('');
@@ -100,6 +148,16 @@ export default function ProfilePage() {
     }
   };
 
+  const handleAvatarUpdate = (newAvatarUrl: string) => {
+    setProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+    setSavedProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+    updateStoredUser({ avatar: newAvatarUrl });
+  };
+
+  const isChanged =
+    profile.fullName !== savedProfile.fullName ||
+    profile.phoneNumber !== savedProfile.phoneNumber;
+
   const getDepartmentValue = (dept: string) => {
     if (dept === "Information Technology") {
       return t('profile.department_it');
@@ -108,17 +166,53 @@ export default function ProfilePage() {
   };
 
   return (
-    <ProfileTemplate username={profile.fullName}>
-      <h1 className="text-2xl font-bold mb-6 text-[#091426] dark:text-neutral-200">{t('profile.personal_info')}</h1>
+    <ProfileTemplate
+      username={profile.fullName}
+      avatarUrl={profile.avatarUrl}
+      role={profile.role}
+      borrowNum={profile.borrowNum}
+      onAvatarUpdate={handleAvatarUpdate}
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-200 dark:border-neutral-700 pb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-200">{t('profile.personal_info')}</h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{t('profile.personal_info_desc') || 'Manage your personal information, role status, and avatar.'}</p>
+        </div>
+      </div>
 
       {message && <p className="mb-4 text-green-600 font-medium">{message}</p>}
       {error && <p className="mb-4 text-red-500 font-medium">{error}</p>}
 
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleUpdate('fullName', v)} />
+        <ProfileCard label={t('profile.full_name')} value={profile.fullName} onUpdate={(v) => handleLocalUpdate('fullName', v)} />
         <ProfileCard label={t('profile.email_address')} value={profile.email} onUpdate={() => {}} editable={false} />
-        <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleUpdate('phoneNumber', v)} />
+        <div className="flex flex-col">
+          <ProfileCard label={t('profile.phone_number')} value={profile.phoneNumber} onUpdate={(v) => handleLocalUpdate('phoneNumber', v)} />
+          {phoneError && (
+            <p className="text-red-600 dark:text-red-400 text-xs mt-1.5 px-1 font-medium">
+              {phoneError}
+            </p>
+          )}
+        </div>
         <ProfileCard label={t('profile.department')} value={getDepartmentValue(profile.department)} onUpdate={() => {}} editable={false} />
+      </div>
+
+      <div className="mt-8 flex justify-end space-x-4">
+        <button
+          onClick={handleCancel}
+          disabled={!isChanged}
+          className="px-6 py-2.5 rounded-lg font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 border border-slate-300 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-slate-500"
+        >
+          {t('profile.cancel')}
+        </button>
+        <button
+          onClick={handleSaveChanges}
+          disabled={!isChanged}
+          className="px-6 py-2.5 rounded-lg font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed focus:ring-emerald-500"
+        >
+          {t('profile.save_changes')}
+        </button>
       </div>
     </ProfileTemplate>
   );

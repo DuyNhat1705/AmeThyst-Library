@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { FormField, OAuthButtons } from '../molecules';
-import { Button } from '../atoms';
+import { Button, PasswordInput } from '../atoms';
 import { useI18n } from '../../providers/I18nProvider';
 
 interface Credentials {
@@ -46,10 +46,9 @@ export default function LoginFormCard({
           disabled={isLoading}
         />
 
-        <FormField
+        <PasswordInput
           label={t('auth.password_label')}
           id="password"
-          type="password"
           placeholder="••••••••"
           value={credentials.password}
           onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}

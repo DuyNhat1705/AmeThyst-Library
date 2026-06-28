@@ -1,5 +1,10 @@
-import { registerUser, loginUser, forgotPassword, resetPassword } from '../services/auth.services.mjs';
-import { verifyOtp } from '../services/otp.service.mjs';
+import {
+  registerUser, loginUser,
+  verifyEmail, resendVerificationEmailService,
+} from '../services/auth.services.mjs';
+import { verifyOtp, forgotPassword, resetPassword } from '../services/otp.service.mjs';
+import passport from '../config/passport.mjs';
+import { signToken, buildUserPayload } from '../utils/authHelpers.mjs';
 
 const register = async (req, res) => {
   try {
@@ -51,4 +56,34 @@ const reset = async (req, res) => {
   }
 };
 
-export { register, login, forgot, verify, reset };
+export const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    const result = await resendVerificationEmailService({ email });
+    res.status(200).json(result);
+  } catch (err) {
+    const status = err.message.includes('No pending') ? 400 : 500;
+    res.status(status).json({ error: err.message });
+  }
+};
+
+
+export const googleAuth = passport.authenticate('google', {
+  scope: ['profile', 'email'],
+  session: false,
+});
+
+export const googleCallback = [
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
+    session: false,
+  }),
+  (req, res) => {
+    const token = signToken(req.user.user_id, req.user.email);
+    const user = buildUserPayload(req.user);
+    res.redirect(
+      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`
+    );
+  },
+];

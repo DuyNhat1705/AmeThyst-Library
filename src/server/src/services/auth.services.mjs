@@ -1,12 +1,25 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import pool from '../config/postgres.mjs';
-import { findUserByEmail, createUser } from '../models/auth.models.mjs';
-import { sendOtp, checkVerified, clearOtp } from './otp.service.mjs';
+import bcrypt from 'bcryptjs';
+import {
+  findUserByEmail,
+  getPendingByToken,
+  getPendingByEmail,
+  deletePendingByToken,
+  deletePendingByEmail,
+  insertUserFromPending,
+} from '../models/auth.models.mjs';
+import { sendVerificationEmail } from '../utils/mailer.mjs';
+import {
+  signToken,
+  buildUserPayload,
+  withTransaction,
+  replacePendingUser,
+  SALT_ROUNDS,
+} from '../utils/authHelpers.mjs';
 
-const SALT_ROUNDS = 10;
 
-const registerUser = async ({ email, password, username, phoneNumber, avatar, role }) => {
+// ─── Register ─────────────────────────────────────────────────────────────────
+
+export const registerUser = async ({ email, password, username }) => {
   const existing = await findUserByEmail(email);
   if (existing) throw new Error('Email already exists');
 

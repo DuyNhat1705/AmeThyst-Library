@@ -1,4 +1,12 @@
-import { saveOtp, getOtp, markVerified, deleteOtp } from '../utils/otpStore.mjs';
+import bcrypt from 'bcryptjs';
+import pool from '../config/postgres.mjs';
+import {
+  findUserByEmail,
+  saveOtpDB,
+  getOtpDB,
+  markVerifiedDB,
+  deleteOtpDB,
+} from '../models/auth.models.mjs';
 import { sendOTPEmail } from '../utils/mailer.mjs';
 
 export const sendOtp = async (email) => {

@@ -3,21 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '../atoms/Button';
-import { isLoggedIn, getLoggedInUser, StoredUser, getLoggedInUserInitials } from '../../utils/user';
+import { getLoggedInUserInitials, useStoredUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
 
 export default function AuthActions() {
   const { t } = useI18n();
   const [mounted, setMounted] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState<StoredUser | null>(null);
+  const user = useStoredUser();
 
   useEffect(() => {
     setMounted(true);
-    if (isLoggedIn()) {
-      setLoggedIn(true);
-      setUser(getLoggedInUser());
-    }
   }, []);
 
   // Place holder to avoid hydration mismatch by rendering a consistent layout size during SSR/hydration
@@ -25,7 +20,7 @@ export default function AuthActions() {
     return <div className="h-10 w-24"></div>;
   }
 
-  if (!loggedIn || !user) {
+  if (!user) {
     return (
       <div className="flex items-center gap-4">
         <Link href="/login" className="hidden sm:block font-inter text-sm font-semibold text-[#FFF] hover:text-[#486C7E] transition-colors">
@@ -44,7 +39,7 @@ export default function AuthActions() {
   }
 
   const initials = getLoggedInUserInitials() || '?';
-
+  const activeAvatarUrl = user.avatar ?? undefined;
 
   return (
     <div className="flex items-center gap-4">
@@ -64,10 +59,19 @@ export default function AuthActions() {
       </button>
       {/* Account Avatar */}
       <Link href="/profile">
-        <div className="w-10 h-10 bg-[#486C7E] rounded-full text-white flex items-center justify-center font-bold hover:scale-105 transition-transform cursor-pointer">
-          {initials}
-        </div>
+        {activeAvatarUrl ? (
+          <img
+            src={activeAvatarUrl}
+            alt={user.username}
+            className="w-10 h-10 rounded-full object-cover border border-neutral-700 hover:scale-105 transition-transform cursor-pointer"
+          />
+        ) : (
+          <div className="w-10 h-10 bg-[#486C7E] rounded-full text-white flex items-center justify-center font-bold hover:scale-105 transition-transform cursor-pointer">
+            {initials}
+          </div>
+        )}
       </Link>
     </div>
   );
 }
+

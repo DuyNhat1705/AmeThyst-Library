@@ -1,5 +1,7 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { getUserById, getUserWithPassword, updateUser, updatePassword } from '../models/user.models.mjs';
+import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
+import { updateAvatarService } from '../services/user.services.mjs';
 
 const getProfile = async (req, res) => {
   try {
@@ -14,6 +16,20 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { username, phoneNumber, avatar } = req.body;
+
+    if (username !== undefined) {
+      if (typeof username !== 'string' || !username.trim()) {
+        return res.status(400).json({ error: 'Username cannot be empty' });
+      }
+    }
+
+    if (phoneNumber !== undefined && phoneNumber !== null) {
+      const phoneRegex = /^\d{9,10}$/;
+      if (typeof phoneNumber !== 'string' || !phoneRegex.test(phoneNumber)) {
+        return res.status(400).json({ error: 'Invalid phone number format. Must be 9-10 digits.' });
+      }
+    }
+
     const user = await updateUser(req.user.userId, { username, phoneNumber, avatar });
     res.status(200).json(user);
   } catch (err) {
@@ -43,4 +59,17 @@ const changePassword = async (req, res) => {
   }
 };
 
-export { getProfile, updateProfile, changePassword };
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const file = req.file;
+    const { avatarUrl } = req.body;
+
+    const updatedUser = await updateAvatarService(userId, file, avatarUrl);
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export { getProfile, updateProfile, changePassword, uploadAvatar };

@@ -8,9 +8,13 @@ import { useI18n } from '../../providers/I18nProvider';
 interface ProfileTemplateProps {
   children: React.ReactNode;
   username: string;
+  avatarUrl?: string;
+  role?: string;
+  borrowNum?: number;
+  onAvatarUpdate?: (newUrl: string) => void;
 }
 
-export default function ProfileTemplate({ children, username }: ProfileTemplateProps) {
+export default function ProfileTemplate({ children, username, avatarUrl, role, borrowNum, onAvatarUpdate }: ProfileTemplateProps) {
   const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
@@ -38,7 +42,8 @@ export default function ProfileTemplate({ children, username }: ProfileTemplateP
       )}
 
       <div className="flex flex-1 bg-[#F8EFE6] dark:bg-[#091426]">
-        <Sidebar username={username} />
+        <Sidebar username={username} avatarUrl={avatarUrl} role={role} borrowNum={borrowNum} onAvatarUpdate={onAvatarUpdate} />
+
         <main className="flex-1 overflow-y-auto p-8">
           {children}
         </main>
