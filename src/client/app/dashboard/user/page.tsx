@@ -60,7 +60,7 @@ export default function UserDashboardPage() {
               title: `Pickup due: ${record.title}`,
               time: '',
               location: '',
-              type: 'reservation_due',
+              type: 'reservation_expiry',
               date: dateStr,
             };
           });

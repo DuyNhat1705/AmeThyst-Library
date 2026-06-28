@@ -337,7 +337,7 @@ export const cancelReservationById = async (userId, reservationId) => {
 
     return {
       reservationId,
-      status: 'expired'
+      status: 'cancelled'
     };
   } catch (error) {
     await client.query('ROLLBACK');
@@ -359,7 +359,6 @@ export const getUserBorrowRecords = async (userId) => {
       bb.status,
       bb.borrow_date,
       bb.due_date,
-      rb.return_date,
       bb.reserve_date,
       bb.expired_at,
       bb.pin,
@@ -371,49 +370,36 @@ export const getUserBorrowRecords = async (userId) => {
     FROM public.borrow_book bb
     JOIN public.books b ON bb.book_id = b.book_id
     JOIN public.branches br ON bb.branch_id = br.branch_id
-    LEFT JOIN public.return_book rb ON bb.borrow_id = rb.borrow_id
     WHERE bb.user_id = $1
     ORDER BY 
       CASE bb.status 
         WHEN 'pending' THEN 1
         WHEN 'borrowed' THEN 2
-        WHEN 'expired' THEN 3
+        WHEN 'reserved' THEN 3
       END,
       bb.borrow_date DESC NULLS LAST,
       bb.reserve_date DESC NULLS LAST
   `;
   const result = await pool.query(query, [userId]);
   
-  const current = [];
-  const history = [];
+  const records = result.rows.map(row => ({
+    id: row.borrow_id,
+    bookId: row.book_id,
+    title: cleanText(row.title),
+    author: row.author ? row.author.map(cleanText).join(', ') : 'Unknown Author',
+    coverImage: row.image_url || null,
+    branchId: row.branch_id,
+    branchName: row.branch_name,
+    branchAddress: row.branch_address,
+    status: row.status,
+    borrowDate: row.borrow_date,
+    dueDate: row.due_date,
+    reserveDate: row.reserve_date,
+    expiresAt: row.expired_at,
+    pin: row.pin || null
+  }));
   
-  for (const row of result.rows) {
-    const record = {
-      id: row.borrow_id,
-      bookId: row.book_id,
-      title: cleanText(row.title),
-      author: row.author ? row.author.map(cleanText).join(', ') : 'Unknown Author',
-      coverImage: row.image_url || null,
-      branchId: row.branch_id,
-      branchName: row.branch_name,
-      branchAddress: row.branch_address,
-      status: row.status,
-      borrowDate: row.borrow_date,
-      dueDate: row.due_date,
-      returnDate: row.return_date,
-      reserveDate: row.reserve_date,
-      expiresAt: row.expired_at,
-      pin: row.pin || null
-    };
-    
-    if (['reserved', 'pending', 'borrowed'].includes(row.status)) {
-      current.push(record);
-    } else {
-      history.push(record);
-    }
-  }
-  
-  return { current, history };
+  return { current: records };
 };
 
 /**

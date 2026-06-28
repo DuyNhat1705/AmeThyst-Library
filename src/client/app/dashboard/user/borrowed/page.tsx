@@ -36,17 +36,14 @@ export default function BorrowedBooksPage() {
 
         if (!response.ok) {
           setCurrentBooks([]);
-          setHistoryBooks([]);
           return;
         }
 
         const data = await response.json();
         setCurrentBooks(data.current || []);
-        setHistoryBooks(data.history || []);
       } catch (err) {
         console.error('Error fetching borrow records:', err);
         setCurrentBooks([]);
-        setHistoryBooks([]);
       } finally {
         setLoading(false);
       }
