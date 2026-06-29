@@ -71,6 +71,7 @@ export interface BookDetailTemplateProps {
   onBranchSelect: (branchId: number | null) => void;
   error: string | null;
   onReserve: () => void;
+  userRole?: string;
 }
 
 export default function BookDetailTemplate({
@@ -83,12 +84,14 @@ export default function BookDetailTemplate({
   onBranchSelect,
   error,
   onReserve,
+  userRole = '',
 }: BookDetailTemplateProps) {
   const { t } = useI18n();
 
   if (loading) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 animate-pulse text-lg">{t('book.loading')}</div>;
   if (!book) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 text-xl">{t('book.not_found')}</div>;
 
+  const canReserve = userRole === 'user';
   const hasAvailability = book.inventory && book.inventory.some(loc => loc.availableCopies > 0);
   const hasActiveReservation = book.userReservation && ['reserved', 'pending', 'borrowed'].includes(book.userReservation.status);
 
@@ -142,13 +145,13 @@ export default function BookDetailTemplate({
                       <div 
                         key={loc.branchId}
                         className={`flex flex-col p-4 rounded-lg border bg-white dark:bg-neutral-800 shadow-sm transition-all duration-200 ${
-                          loc.availableCopies > 0 
+                          loc.availableCopies > 0 && canReserve
                             ? selectedBranchId === loc.branchId
                               ? 'border-[#006F66] dark:border-[#FFB95F] ring-2 ring-[#006F66] dark:ring-[#FFB95F]'
                               : 'border-[#E0E0E0] dark:border-neutral-700 hover:border-[#006F66] dark:hover:border-[#FFB95F] cursor-pointer'
                             : 'border-[#E0E0E0] dark:border-neutral-700 opacity-60'
                         }`}
-                        onClick={() => handleBranchClick(loc.branchId, loc.availableCopies)}
+                        onClick={() => canReserve && handleBranchClick(loc.branchId, loc.availableCopies)}
                       >
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <div className="flex items-start gap-2">
@@ -196,15 +199,17 @@ export default function BookDetailTemplate({
                   </div>
                 )}
                 
-                <div className="w-full max-w-sm mt-4">
-                  <ActionButton 
-                    onClick={onReserve} 
-                    disabled={isReserving || reserved || !hasAvailability || !selectedBranchId || hasActiveReservation}
-                    icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
-                  >
-                    {reserved ? t('book.reserved') : isReserving ? t('book.reserving') : t('book.reserve')}
-                  </ActionButton>
-                </div>
+                {canReserve && (
+                  <div className="w-full max-w-sm mt-4">
+                    <ActionButton 
+                      onClick={onReserve} 
+                      disabled={isReserving || reserved || !hasAvailability || !selectedBranchId || hasActiveReservation}
+                      icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+                    >
+                      {reserved ? t('book.reserved') : isReserving ? t('book.reserving') : t('book.reserve')}
+                    </ActionButton>
+                  </div>
+                )}
               </div>
             </div>
           </div>
