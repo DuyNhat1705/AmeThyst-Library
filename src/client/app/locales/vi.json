@@ -349,6 +349,33 @@
     "loan_fees_damage": "Hư hỏng",
     "loan_fees_processing": "Phí xử lý"
   },
+  "librarian": {
+    "dashboard_title": "Thủ thư",
+    "sidebar_calendar": "Xem Lịch",
+    "sidebar_loan_confirmation": "Xác nhận mượn sách",
+    "sidebar_inventory_placeholder": "Quản lý kho (Sắp ra mắt)",
+    "sidebar_analytics_placeholder": "Phân tích (Sắp ra mắt)"
+  },
+  "verification": {
+    "modal_title": "Xác nhận mượn sách",
+    "pin_label": "Nhập mã PIN do người dùng cung cấp:",
+    "search_button": "Tìm kiếm / Xác minh",
+    "cancel_button": "Hủy",
+    "confirm_button": "Xác nhận mượn",
+    "borrower_section": "Thông tin độc giả",
+    "books_section": "Sách đã đăng ký",
+    "eligibility_eligible": "Đủ điều kiện",
+    "eligibility_suspended": "Vi phạm quá hạn / Tạm ngưng",
+    "error_invalid_pin": "Mã PIN xác minh không hợp lệ hoặc đã hết hạn.",
+    "toast_success": "Đã xác nhận thành công đơn mượn sách cho độc giả: {name}",
+    "placeholder_empty": "Nhấp 'Mở cửa sổ xác nhận' để bắt đầu xác minh mượn sách.",
+    "phase_input_title": "Nhập mã PIN",
+    "phase_data_header": "Chi tiết đơn mượn",
+    "skeleton_loading": "Đang tải thông tin độc giả...",
+    "shortcut_esc": "Esc: Đóng",
+    "shortcut_enter": "Enter: Xác minh PIN",
+    "shortcut_confirm": "F8: Xác nhận mượn"
+  },
   "pin": {
     "title": "PIN lấy sách",
     "expires_in": "Hết hạn sau {minutes}:{seconds}",

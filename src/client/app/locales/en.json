@@ -349,6 +349,33 @@
     "loan_fees_damage": "Damage",
     "loan_fees_processing": "Processing Fee"
   },
+  "librarian": {
+    "dashboard_title": "Librarian",
+    "sidebar_calendar": "Calendar View",
+    "sidebar_loan_confirmation": "Book Loan Confirmation",
+    "sidebar_inventory_placeholder": "Inventory Management (Coming Soon)",
+    "sidebar_analytics_placeholder": "Analytics (Coming Soon)"
+  },
+  "verification": {
+    "modal_title": "Confirm Book Loan",
+    "pin_label": "Enter PIN provided by user:",
+    "search_button": "Search / Verify",
+    "cancel_button": "Cancel",
+    "confirm_button": "Confirm Loan",
+    "borrower_section": "Borrower Profile",
+    "books_section": "Registered Books",
+    "eligibility_eligible": "Eligible",
+    "eligibility_suspended": "Overdue Violations / Suspended",
+    "error_invalid_pin": "Invalid or expired verification PIN code.",
+    "toast_success": "Successfully confirmed book loan order for borrower: {name}",
+    "placeholder_empty": "Click 'Open Confirmation Modal' to start verifying a book loan.",
+    "phase_input_title": "Enter PIN",
+    "phase_data_header": "Loan Order Details",
+    "skeleton_loading": "Loading borrower information...",
+    "shortcut_esc": "Esc: Close",
+    "shortcut_enter": "Enter: Verify PIN",
+    "shortcut_confirm": "F8: Confirm Loan"
+  },
   "pin": {
     "title": "Pickup PIN",
     "expires_in": "Expires in {minutes}:{seconds}",

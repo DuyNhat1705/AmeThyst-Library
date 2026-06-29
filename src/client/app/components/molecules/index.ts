@@ -15,4 +15,6 @@ export type { BorrowedBook, BookStatus } from './BorrowedBookCard';
 export { default as BorrowedHistoryTable } from './BorrowedHistoryTable';
 export { default as FeeRow } from './FeeRow';
 export { default as AvatarUploader } from './AvatarUploader';
+export { default as CalendarView } from './CalendarView';
+export { default as BorrowerInfoPanel } from './BorrowerInfoPanel';
 

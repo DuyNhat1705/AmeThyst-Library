@@ -6,14 +6,16 @@ import { AuthActions } from '../molecules';
 import { ThemeToggle } from '../atoms/ThemeToggle';
 import { LanguageToggle } from '../atoms/LanguageToggle';
 import { useI18n } from '../../providers/I18nProvider';
+import { getLoggedInUser, getDashboardPath } from '../../utils/user';
 
 export default function NavBar() {
   const pathname = usePathname();
   const { t } = useI18n();
+  const user = getLoggedInUser();
 
   const navItems = [
     { label: t('navbar.library'), href: '/library' },
-    { label: t('navbar.dashboard'), href: '/dashboard/user' },
+    { label: t('navbar.dashboard'), href: getDashboardPath(user) },
     { label: t('navbar.study_together'), href: '/study-together' },
     { label: t('navbar.library_map'), href: '/map' }
   ];

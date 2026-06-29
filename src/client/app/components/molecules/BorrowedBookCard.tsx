@@ -1,3 +1,5 @@
+"use client";
+
 import { useI18n } from '../../providers/I18nProvider';
 import { useState, useEffect } from 'react';
 

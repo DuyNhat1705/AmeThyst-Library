@@ -16,3 +16,6 @@ export { default as DashboardSidebar } from './DashboardSidebar';
 export { default as UpcomingAgenda } from './UpcomingAgenda';
 export { default as FeesBreakdownPanel } from './FeesBreakdownPanel';
 export { default as PinModal } from './PinModal';
+export { default as LibrarianDashboardSidebar } from './LibrarianDashboardSidebar';
+export { default as VerificationModal } from './VerificationModal';
+export { default as BookLoanConfirmationPanel } from './BookLoanConfirmationPanel';

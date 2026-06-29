@@ -20,7 +20,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
     const user = getLoggedInUser();
-    if ((user?.role || 'user') !== 'user') {
+    const role = user?.role || 'user';
+    if (role !== 'user' && role !== 'librarian') {
       setNotification({ message: t('dashboard.auth_forbidden'), type: 'error' });
       setAuthState('forbidden');
       setTimeout(() => router.push('/'), 2000);
