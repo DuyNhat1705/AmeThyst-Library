@@ -11,6 +11,7 @@ export { default as RegisterFormCard } from './RegisterFormCard';
 export { default as ForgotPasswordCard } from './ForgotPasswordCard';
 export { default as Sidebar } from './Sidebar';
 export { default as BookDetailHero } from './BookDetailHero';
+export { default as LibrarianAnnouncementsPanel } from './LibrarianAnnouncementsPanel';
 export { default as RecommendationCarousel } from './RecommendationCarousel';
 export { default as DashboardSidebar } from './DashboardSidebar';
 export { default as UpcomingAgenda } from './UpcomingAgenda';

@@ -351,10 +351,11 @@
   },
   "librarian": {
     "dashboard_title": "Thủ thư",
-    "sidebar_calendar": "Xem Lịch",
-    "sidebar_loan_confirmation": "Xác nhận mượn sách",
-    "sidebar_inventory_placeholder": "Quản lý kho (Sắp ra mắt)",
-    "sidebar_analytics_placeholder": "Phân tích (Sắp ra mắt)"
+    "sidebar_overview": "Lịch & Tổng quan",
+    "sidebar_books": "Quản lý sách",
+    "sidebar_rooms": "Đặt phòng",
+    "sidebar_announcements": "Thông báo",
+    "sidebar_pin_verification": "Xác minh mã PIN"
   },
   "verification": {
     "modal_title": "Xác nhận mượn sách",
@@ -404,5 +405,21 @@
     "address": "Địa điểm",
     "room": "Phòng",
     "status_pending": "Chờ phê duyệt"
+  },
+  "announcements": {
+    "page_title": "Thông báo",
+    "all_announcements": "Tất cả thông báo",
+    "status_new": "Mới",
+    "status_active": "ĐANG HOẠT ĐỘNG",
+    "status_draft": "BẢN NHÁP",
+    "status_expired": "ĐÃ HẾT HẠN",
+    "editor_title": "Trình soạn thảo thông báo",
+    "save_draft": "Lưu bản nháp",
+    "publish_now": "Đăng ngay",
+    "announcement_title": "Tiêu đề thông báo",
+    "expiry_date": "Ngày hết hạn",
+    "pin_to_homepage": "Ghim lên trang chủ",
+    "content_body": "Nội dung",
+    "delete": "Xóa"
   }
 }

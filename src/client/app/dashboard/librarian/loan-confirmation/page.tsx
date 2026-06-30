@@ -5,9 +5,11 @@ import { BookLoanConfirmationPanel } from '../../../components/organisms';
 export default function LoanConfirmationPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-[#1A2E44] dark:text-neutral-100 font-hankenGrotesk">
-        Book Loan Confirmation
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-manrope text-[40px] font-bold leading-[54.5px] text-black dark:text-neutral-100">
+          PIN Verification
+        </h1>
+      </div>
       <BookLoanConfirmationPanel />
     </div>
   );

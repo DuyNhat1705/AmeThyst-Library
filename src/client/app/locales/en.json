@@ -351,10 +351,11 @@
   },
   "librarian": {
     "dashboard_title": "Librarian",
-    "sidebar_calendar": "Calendar View",
-    "sidebar_loan_confirmation": "Book Loan Confirmation",
-    "sidebar_inventory_placeholder": "Inventory Management (Coming Soon)",
-    "sidebar_analytics_placeholder": "Analytics (Coming Soon)"
+    "sidebar_overview": "Calendar & Overview",
+    "sidebar_books": "Books Management",
+    "sidebar_rooms": "Room Reservations",
+    "sidebar_announcements": "Announcements",
+    "sidebar_pin_verification": "PIN Verification"
   },
   "verification": {
     "modal_title": "Confirm Book Loan",
@@ -404,5 +405,21 @@
     "address": "Location",
     "room": "Room",
     "status_pending": "Pending Request"
+  },
+  "announcements": {
+    "page_title": "Announcements",
+    "all_announcements": "All Announcements",
+    "status_new": "New",
+    "status_active": "ACTIVE",
+    "status_draft": "DRAFT",
+    "status_expired": "EXPIRED",
+    "editor_title": "Announcement Editor",
+    "save_draft": "Save Draft",
+    "publish_now": "Publish Now",
+    "announcement_title": "Announcement Title",
+    "expiry_date": "Expiry Date",
+    "pin_to_homepage": "Pin to Homepage",
+    "content_body": "Content Body",
+    "delete": "Delete"
   }
 }
