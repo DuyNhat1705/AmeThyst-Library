@@ -350,12 +350,30 @@
     "loan_fees_processing": "Processing Fee"
   },
   "librarian": {
-    "dashboard_title": "Librarian",
+    "dashboard_title": "LIBRARIAN",
     "sidebar_overview": "Calendar & Overview",
-    "sidebar_books": "Books Management",
-    "sidebar_rooms": "Room Reservations",
+    "sidebar_books": "Books",
+    "sidebar_rooms": "Rooms",
     "sidebar_announcements": "Announcements",
-    "sidebar_pin_verification": "PIN Verification"
+    "sidebar_pin_verification": "PIN Verification",
+    "subtab_book_management": "book management",
+    "subtab_book_pickup": "book pickup",
+    "subtab_book_return": "book return",
+    "subtab_inspection": "inspection",
+    "search_placeholder": "Search title, author, or ISBN...",
+    "all_categories": "All Categories",
+    "add_book": "Add Book",
+    "table_cover": "Cover",
+    "table_title": "Title",
+    "table_author": "Author",
+    "table_isbn": "ISBN",
+    "table_category": "Category",
+    "table_availability": "Availability",
+    "table_status": "Status",
+    "table_actions": "Actions",
+    "page_of": "Page {current} of {total}",
+    "status_active": "Active",
+    "status_inactive": "Inactive"
   },
   "verification": {
     "modal_title": "Confirm Book Loan",
@@ -375,7 +393,11 @@
     "skeleton_loading": "Loading borrower information...",
     "shortcut_esc": "Esc: Close",
     "shortcut_enter": "Enter: Verify PIN",
-    "shortcut_confirm": "F8: Confirm Loan"
+    "shortcut_confirm": "F8: Confirm Loan",
+    "page_title": "Verify User PIN",
+    "enter_code_label": "ENTER VERIFICATION CODE",
+    "verify_button": "VERIFY PIN",
+    "clear_button": "CLEAR"
   },
   "pin": {
     "title": "Pickup PIN",

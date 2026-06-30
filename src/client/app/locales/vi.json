@@ -350,12 +350,30 @@
     "loan_fees_processing": "Phí xử lý"
   },
   "librarian": {
-    "dashboard_title": "Thủ thư",
+    "dashboard_title": "THỦ THƯ",
     "sidebar_overview": "Lịch & Tổng quan",
-    "sidebar_books": "Quản lý sách",
-    "sidebar_rooms": "Đặt phòng",
+    "sidebar_books": "Sách",
+    "sidebar_rooms": "Phòng",
     "sidebar_announcements": "Thông báo",
-    "sidebar_pin_verification": "Xác minh mã PIN"
+    "sidebar_pin_verification": "Xác minh mã PIN",
+    "subtab_book_management": "quản lý sách",
+    "subtab_book_pickup": "nhận sách",
+    "subtab_book_return": "trả sách",
+    "subtab_inspection": "kiểm tra",
+    "search_placeholder": "Tìm kiếm theo tiêu đề, tác giả hoặc ISBN...",
+    "all_categories": "Tất cả danh mục",
+    "add_book": "Thêm sách",
+    "table_cover": "Bìa",
+    "table_title": "Tiêu đề",
+    "table_author": "Tác giả",
+    "table_isbn": "ISBN",
+    "table_category": "Danh mục",
+    "table_availability": "Khả dụng",
+    "table_status": "Trạng thái",
+    "table_actions": "Thao tác",
+    "page_of": "Trang {current} / {total}",
+    "status_active": "Hoạt động",
+    "status_inactive": "Không hoạt động"
   },
   "verification": {
     "modal_title": "Xác nhận mượn sách",
@@ -375,7 +393,11 @@
     "skeleton_loading": "Đang tải thông tin độc giả...",
     "shortcut_esc": "Esc: Đóng",
     "shortcut_enter": "Enter: Xác minh PIN",
-    "shortcut_confirm": "F8: Xác nhận mượn"
+    "shortcut_confirm": "F8: Xác nhận mượn",
+    "page_title": "Xác minh mã PIN người dùng",
+    "enter_code_label": "NHẬP MÃ XÁC MINH",
+    "verify_button": "XÁC MINH PIN",
+    "clear_button": "XÓA"
   },
   "pin": {
     "title": "PIN lấy sách",

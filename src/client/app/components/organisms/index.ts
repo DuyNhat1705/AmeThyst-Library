@@ -20,3 +20,5 @@ export { default as PinModal } from './PinModal';
 export { default as LibrarianDashboardSidebar } from './LibrarianDashboardSidebar';
 export { default as VerificationModal } from './VerificationModal';
 export { default as BookLoanConfirmationPanel } from './BookLoanConfirmationPanel';
+export { default as LibrarianBookManagement } from './LibrarianBookManagement';
+export { default as InlinePinVerification } from './InlinePinVerification';

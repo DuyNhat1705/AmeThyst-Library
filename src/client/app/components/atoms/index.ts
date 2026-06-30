@@ -12,4 +12,6 @@ export { default as Toast } from './Toast';
 export { default as StatusBadge } from './StatusBadge';
 export { default as Amount } from './Amount';
 export { default as OTPInput } from './OTPInput';
+export { default as AvailabilityBadge } from './AvailabilityBadge';
+export { default as StatusDot } from './StatusDot';
 

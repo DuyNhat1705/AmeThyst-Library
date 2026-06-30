@@ -4,26 +4,28 @@
 
 **Created**: 2026-06-29
 
+**Updated**: 2026-06-30 (UI redesign per Figma export)
+
 **Status**: Draft
 
-**Input**: User description: "Librarian PIN Verification UI — a librarian dashboard with PIN-based verification workflow for confirming book loans, including calendar view and book loan confirmation modal."
+**Input**: User description: "Librarian PIN Verification UI — a librarian dashboard with PIN-based verification workflow for confirming book loans, including book management table, calendar view and book loan confirmation modal."
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Navigate Librarian Dashboard with Two Tabs (Priority: P1)
+### User Story 1 - Navigate Librarian Dashboard with Sidebar Nav (Priority: P1)
 
-As a librarian, I want to access the Librarian Dashboard with a navigation sidebar so that I can switch between the Calendar view and Book Loan Confirmation workflow.
+As a librarian, I want to access the Librarian Dashboard with a navigation sidebar so that I can switch between Book Management, Room Reservations, Announcements, and PIN Verification.
 
-**Why this priority**: This is the foundational navigation structure. Without the dashboard shell and tab switching, neither the calendar nor the PIN verification workflow can be accessed.
+**Why this priority**: This is the foundational navigation structure. Without the dashboard shell and sidebar navigation, none of the librarian workflows can be accessed.
 
-**Independent Test**: Can be fully tested by loading the Librarian Dashboard page and verifying the sidebar reads "Librarian Dashboard", contains exactly two tabs (Calendar View, Book Loan Confirmation), and clicking each tab renders the corresponding view.
+**Independent Test**: Can be fully tested by loading the Librarian Dashboard page and verifying the sidebar header reads "LIBRARIAN", contains four nav items (Books, Rooms, Announcements, PIN Verification), and clicking each renders the corresponding view.
 
 **Acceptance Scenarios**:
 
-1. **Given** a librarian is logged in, **When** they navigate to the Librarian Dashboard, **Then** the sidebar header displays "Librarian Dashboard" or "Librarian".
-2. **Given** the Librarian Dashboard is loaded, **When** the librarian views the sidebar, **Then** exactly two primary tabs are visible: "Calendar View" and "Book Loan Confirmation".
-3. **Given** the sidebar displays the tab list, **When** the librarian clicks "Calendar View", **Then** the calendar grid is rendered in the main content area.
-4. **Given** the sidebar displays the tab list, **When** the librarian clicks "Book Loan Confirmation", **Then** a workspace with an "Open Confirmation Modal" trigger button is rendered.
+1. **Given** a librarian is logged in, **When** they navigate to the Librarian Dashboard, **Then** the sidebar header displays "LIBRARIAN".
+2. **Given** the Librarian Dashboard is loaded, **When** the librarian views the sidebar, **Then** four nav items are visible: "Books", "Rooms", "Announcements", and "PIN Verification".
+3. **Given** the sidebar displays the nav items, **When** the librarian clicks "Books", **Then** the book management table with sub-tabs, search bar, and Add Book button is rendered in the main content area.
+4. **Given** the sidebar displays the nav items, **When** the librarian clicks "PIN Verification", **Then** the Book Loan Confirmation workspace with an "Open Confirmation Modal" trigger button is rendered.
 
 ---
 
@@ -101,27 +103,28 @@ As a librarian, I want to view a monthly/weekly calendar with color-coded event 
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST provide a Librarian Dashboard accessible to librarian users with a sidebar displaying the header "Librarian Dashboard" or "Librarian".
-- **FR-002**: The dashboard sidebar MUST contain exactly two primary navigation tabs: "Calendar View" and "Book Loan Confirmation".
-- **FR-003**: The sidebar MUST include placeholder zones for future librarian-specific tabs (Inventory Management, Analytics) that are visually present but inactive.
-- **FR-004**: The Calendar View tab MUST reuse the existing `DashboardCalendar` molecule component (from `components/molecules/DashboardCalendar.tsx`) — no new calendar component is required.
-- **FR-005**: The reused `DashboardCalendar` MUST render its existing month/week views with color-coded event blocks (event types already defined in the existing component).
-- **FR-006**: Clicking a date on the calendar MUST open the existing quick-view side panel showing event summaries for that date (behavior inherited from the existing component).
-- **FR-007**: The Book Loan Confirmation tab MUST display a workspace with a trigger button labeled "Open Confirmation Modal".
-- **FR-008**: Clicking "Open Confirmation Modal" MUST open a modal overlay titled "Confirm Book Loan" / "Xác nhận mượn sách" with a close [X] button.
-- **FR-009**: The modal MUST display an OTP-style PIN input consisting of 6 discrete digit slots with auto-focus on the first slot upon modal open.
-- **FR-010**: Each digit slot MUST mask the typed character securely as the user types.
-- **FR-011**: The PIN field MUST auto-advance focus to the next slot when a digit is entered.
-- **FR-012**: The modal MUST provide a "Search / Verify" text button adjacent to the PIN input to trigger manual validation.
-- **FR-013**: Upon successful PIN validation, the modal MUST transition to a data overlay state showing a dual-column layout.
-- **FR-014**: The left column MUST display the borrower profile: full name (emphasized), library ID number, department/faculty, and a colored eligibility badge (green for eligible, red for overdue/suspended).
-- **FR-015**: The right column MUST display a scrollable list of registered book entries for the pending order, each showing a cover thumbnail placeholder, book title, author name, and unique asset ID.
-- **FR-016**: The modal footer MUST contain a low-emphasis "Cancel" button (flat, gray) and a high-contrast accent "Confirm Loan" button.
-- **FR-017**: The system MUST support the following keyboard shortcuts: Esc (close modal), Enter (validate PIN from input state), F8 or Ctrl+Enter (trigger confirm loan action).
-- **FR-018**: Entering an invalid or expired PIN MUST display red error borders on all 6 digit slots with inline error text: "Invalid or expired verification PIN code."
-- **FR-019**: During PIN validation processing, the system MUST display a pulsing skeleton placeholder in the details area rather than a blank or frozen state.
-- **FR-020**: Upon successful loan confirmation, the modal MUST close and a non-blocking toast notification MUST appear stating: "Successfully confirmed book loan order for borrower: [Borrower Name]".
-- **FR-021**: The system MUST allow canceling the transaction at any point via the Cancel button or Esc key, closing the modal without processing.
+- **FR-001**: The system MUST provide a Librarian Dashboard accessible to librarian users with a sidebar displaying the header "LIBRARIAN".
+- **FR-002**: The dashboard sidebar MUST contain four navigation items: "Books", "Rooms", "Announcements", "PIN Verification".
+- **FR-003**: The sidebar MUST use specific SVG icons for each nav item matching the Figma design: books icon, rooms/building icon, announcements/bell icon, PIN verification/key icon.
+- **FR-004**: The top navigation bar (NavBar) MUST display a notification bell icon and a user avatar circle with user initials (fallback "AM") in addition to existing toggles.
+- **FR-005**: The main "Books" page MUST display a heading "Books" with sub-tabs: "book management", "book pickup", "book return", "inspection".
+- **FR-006**: The book management area MUST include a search bar with search icon, a category dropdown labeled "All Categories", and an "Add Book" button with plus icon.
+- **FR-007**: The book management area MUST render a table with columns: Cover, Title, Author, ISBN, Category, Availability, Status, Actions.
+- **FR-008**: Each table row MUST show a book cover thumbnail, title (bold), author name, ISBN in monospace font, category, availability badge (green "X / Y available" or neutral "0 / Y available"), status indicator (green dot + "Active" or gray dot + "Inactive"), and action icons (edit pencil, delete trash).
+- **FR-009**: The table MUST include pagination with page number buttons, previous/next arrows, and a "Page X of Y" label.
+- **FR-010**: The modal MUST display an OTP-style PIN input consisting of 6 discrete digit slots with auto-focus on the first slot upon modal open.
+- **FR-011**: Each digit slot MUST mask the typed character securely as the user types.
+- **FR-012**: The PIN field MUST auto-advance focus to the next slot when a digit is entered.
+- **FR-013**: The modal MUST provide a "Search / Verify" text button adjacent to the PIN input to trigger manual validation.
+- **FR-014**: Upon successful PIN validation, the modal MUST transition to a data overlay state showing a dual-column layout.
+- **FR-015**: The left column MUST display the borrower profile: full name (emphasized), library ID number, department/faculty, and a colored eligibility badge (green for eligible, red for overdue/suspended).
+- **FR-016**: The right column MUST display a scrollable list of registered book entries for the pending order, each showing a cover thumbnail placeholder, book title, author name, and unique asset ID.
+- **FR-017**: The modal footer MUST contain a low-emphasis "Cancel" button (flat, gray) and a high-contrast accent "Confirm Loan" button.
+- **FR-018**: The system MUST support the following keyboard shortcuts: Esc (close modal), Enter (validate PIN from input state), F8 or Ctrl+Enter (trigger confirm loan action).
+- **FR-019**: Entering an invalid or expired PIN MUST display red error borders on all 6 digit slots with inline error text: "Invalid or expired verification PIN code."
+- **FR-020**: During PIN validation processing, the system MUST display a pulsing skeleton placeholder in the details area rather than a blank or frozen state.
+- **FR-021**: Upon successful loan confirmation, the modal MUST close and a non-blocking toast notification MUST appear stating: "Successfully confirmed book loan order for borrower: [Borrower Name]".
+- **FR-022**: The system MUST allow canceling the transaction at any point via the Cancel button or Esc key, closing the modal without processing.
 
 ### Key Entities
 

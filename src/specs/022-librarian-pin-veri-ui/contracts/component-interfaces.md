@@ -4,6 +4,134 @@
 
 This document defines the React component interfaces (props contracts), state shapes, and event contracts for the Librarian PIN Verification UI feature. All components follow the existing project conventions (Atomic Design, i18n via `t()` hook, Tailwind dark mode classes).
 
+## Figma Redesign Component Tree (added 2026-06-30)
+
+The Figma export introduces a comprehensive librarian dashboard. The component hierarchy follows Atomic Design:
+
+```
+Page: /dashboard/librarian
+└── LibrarianDashboardLayout (Template)
+    ├── NavBar (Organism) — updated with bell icon + user avatar
+    ├── [Flex row]
+    │   ├── LibrarianDashboardSidebar (Organism) — LIBRARIAN header + nav items
+    │   └── <children> (page content)
+    └── Footer (Organism)
+
+Page: /dashboard/librarian (Books — default)
+└── LibrarianBookManagement (Organism)
+    ├── SubTabBar (Molecule) — book management / pickup / return / inspection
+    ├── Search bar + Category dropdown + Add Book button
+    ├── Book table
+    │   ├── BookTableHeader (Molecule) — column labels
+    │   ├── BookTableRow (Molecule) — data rows ×N
+    │   │   ├── AvailabilityBadge (Atom) — "X / Y available" pill
+    │   │   └── StatusDot (Atom) — green/gray dot
+    │   └── BookTablePagination (Molecule) — page nav
+    └── (table wrapper)
+```
+
+## New Atom Components
+
+### 1. AvailabilityBadge
+
+**File**: `client/app/components/atoms/AvailabilityBadge.tsx`
+
+```typescript
+interface AvailabilityBadgeProps {
+  available: number;
+  total: number;
+}
+```
+
+- Green background + teal text when `available > 0`
+- Neutral background + dark text when `available === 0`
+- Text format: `"{available} / {total} available"`
+
+### 2. StatusDot
+
+**File**: `client/app/components/atoms/StatusDot.tsx`
+
+```typescript
+interface StatusDotProps {
+  active: boolean;
+}
+```
+
+- Green dot (`#5EEAD4`) when `active === true`
+- Gray dot (`#74777D`) when `active === false`
+
+## New Molecule Components
+
+### 1. SubTabBar
+
+**File**: `client/app/components/molecules/SubTabBar.tsx`
+
+```typescript
+interface SubTabBarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+```
+
+Tabs: `book_management`, `book_pickup`, `book_return`, `inspection`
+
+- Active tab: bottom border black, font-black weight
+- Inactive: font-bold, hover effect
+
+### 2. BookTableHeader
+
+**File**: `client/app/components/molecules/BookTableHeader.tsx`
+
+Static component — renders column labels from i18n keys.
+
+Columns: Cover, Title, Author, ISBN, Category, Availability, Status, Actions
+
+### 3. BookTableRow
+
+**File**: `client/app/components/molecules/BookTableRow.tsx`
+
+```typescript
+interface BookEntry {
+  coverSrc: string;
+  title: string;
+  author: string;
+  isbn: string;
+  category: string;
+  available: number;
+  total: number;
+  active: boolean;
+}
+
+interface BookTableRowProps {
+  book: BookEntry;
+  hasBorder?: boolean;
+}
+```
+
+### 4. BookTablePagination
+
+**File**: `client/app/components/molecules/BookTablePagination.tsx`
+
+```typescript
+interface BookTablePaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+```
+
+## New Organism Components
+
+### 1. LibrarianBookManagement
+
+**File**: `client/app/components/organisms/LibrarianBookManagement.tsx`
+
+Self-contained organism that assembles the book management view:
+- Sub-tab navigation
+- Search bar + category dropdown + Add Book button
+- Book table with header, rows, pagination
+- Uses mock data internally (no backend integration)
+
 ## 1. OTPInput (Atom)
 
 **File**: `client/app/components/atoms/OTPInput.tsx`

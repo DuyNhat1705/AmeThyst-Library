@@ -17,4 +17,8 @@ export { default as FeeRow } from './FeeRow';
 export { default as AvatarUploader } from './AvatarUploader';
 export { default as CalendarView } from './CalendarView';
 export { default as BorrowerInfoPanel } from './BorrowerInfoPanel';
+export { default as SubTabBar } from './SubTabBar';
+export { default as BookTableHeader } from './BookTableHeader';
+export { default as BookTableRow } from './BookTableRow';
+export { default as BookTablePagination } from './BookTablePagination';
 
