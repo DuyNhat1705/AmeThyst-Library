@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { FormField, OAuthButtons } from '../molecules';
 import { Button, SecurityIndicator, ErrorMessage, PasswordInput } from '../atoms';
 import { calculatePasswordStrength, validatePassword } from '../../utils/password';
+import { validateEmail } from '../../utils/validation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../../providers/I18nProvider';
@@ -42,10 +43,10 @@ export default function RegisterFormCard({
   const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-    // Client-side email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setState(prev => ({ ...prev, error: t('auth.invalid_email_format') }));
+    // Client-side email validation
+    const emailValidationError = validateEmail(formData.email);
+    if (emailValidationError) {
+      setState(prev => ({ ...prev, error: t(emailValidationError) }));
       return;
     }
 

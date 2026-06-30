@@ -11,10 +11,11 @@ interface ProfileTemplateProps {
   avatarUrl?: string;
   role?: string;
   borrowNum?: number;
+  maxBorrowLimit?: number;
   onAvatarUpdate?: (newUrl: string) => void;
 }
 
-export default function ProfileTemplate({ children, username, avatarUrl, role, borrowNum, onAvatarUpdate }: ProfileTemplateProps) {
+export default function ProfileTemplate({ children, username, avatarUrl, role, borrowNum, maxBorrowLimit = 5, onAvatarUpdate }: ProfileTemplateProps) {
   const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
@@ -42,7 +43,7 @@ export default function ProfileTemplate({ children, username, avatarUrl, role, b
       )}
 
       <div className="flex flex-1 bg-[#F8EFE6] dark:bg-[#091426]">
-        <Sidebar username={username} avatarUrl={avatarUrl} role={role} borrowNum={borrowNum} onAvatarUpdate={onAvatarUpdate} />
+        <Sidebar username={username} avatarUrl={avatarUrl} role={role} borrowNum={borrowNum} maxBorrowLimit={maxBorrowLimit} onAvatarUpdate={onAvatarUpdate} />
 
         <main className="flex-1 overflow-y-auto p-8">
           {children}

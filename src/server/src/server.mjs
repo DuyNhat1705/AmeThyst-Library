@@ -1,3 +1,4 @@
+import 'sharp';
 import './config/env.mjs';
 import express from 'express';
 import cors from 'cors';

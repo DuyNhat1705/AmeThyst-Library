@@ -24,6 +24,19 @@ const SERVER_ERROR_MAP: Record<string, string> = {
   'Email already exists.': 'auth.email_already_exists',
   'A verification email has already been sent. Please check your inbox.': 'auth.verification_already_sent',
   'No pending registration found for this email. Please register again.': 'auth.registration_expired',
+
+  // Profile / Avatar Errors
+  'File size exceeds 2MB limit': 'profile.avatar_size_error',
+  'Invalid file type, only images are allowed!': 'profile.avatar_type_error',
+  'Invalid URL format': 'profile.avatar_url_invalid',
+  'No avatar file or URL provided': 'profile.avatar_upload_failed',
+  'User not found or failed to update avatar': 'profile.avatar_upload_failed',
+  'Phone number must contain only digits and be exactly 9 or 10 digits.': 'profile.phone_validation_error',
+  'Invalid phone number format. Must be 9-10 digits.': 'profile.phone_validation_error',
+  'Full Name is required': 'profile.full_name_required',
+  'Username cannot be empty': 'profile.full_name_required',
+  'Email is required': 'auth.email_required',
+  'Invalid email format': 'auth.invalid_email_format',
 };
 
 export function mapServerError(rawMsg: string | null | undefined, t: (key: string) => string, fallbackKey?: string): string {

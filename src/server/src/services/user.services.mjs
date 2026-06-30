@@ -1,7 +1,7 @@
 import pool from '../config/postgres.mjs';
 import cloudinary from '../config/cloudinary.config.mjs';
 
-const uploadToCloudinary = (fileBuffer) => {
+export const uploadToCloudinary = (fileBuffer) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { folder: 'avatars' },

@@ -44,7 +44,7 @@ export default function SecurityPage() {
         setUsername(data.username || '');
         setAvatarUrl(data.avatar || '');
         setRole(data.role || 'user');
-        setIsGoogleAccount(!!data.is_google_account);
+        setIsGoogleAccount(!!data.isGoogleAccount);
       })
       .catch((err) => console.error(err))
       .finally(() => setIsLoading(false));

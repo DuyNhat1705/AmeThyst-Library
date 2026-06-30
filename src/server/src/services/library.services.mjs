@@ -1,6 +1,8 @@
 import pool from '../config/postgres.mjs';
 import { cleanText, buildFilterSQL } from './search.services.mjs';
 
+export const MAX_BORROW_LIMIT = 5;
+
 /**
  * Lấy chi tiết một cuốn sách bằng ID
  */
@@ -261,7 +263,6 @@ export const createReservation = async (userId, bookId, branchId) => {
     }
 
     // 0.5 Check user's borrow_num against limit
-    const MAX_BORROW_LIMIT = 5;
     const userBorrowQuery = 'SELECT borrow_num FROM public.users WHERE user_id = $1';
     const userBorrowResult = await client.query(userBorrowQuery, [userId]);
     const currentBorrowNum = userBorrowResult.rows[0].borrow_num || 0;

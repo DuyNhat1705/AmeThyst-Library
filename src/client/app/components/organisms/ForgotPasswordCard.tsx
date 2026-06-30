@@ -6,6 +6,7 @@ import { Button, ErrorMessage, SecurityIndicator, PasswordInput } from '../atoms
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
+import { validateEmail } from '../../utils/validation';
 
 export interface SubmitData {
   step: 1 | 2 | 3;
@@ -71,6 +72,11 @@ export default function ForgotPasswordCard({
 
   const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailValidationError = validateEmail(email);
+    if (emailValidationError) {
+      setError(t(emailValidationError));
+      return;
+    }
     const result = await onSubmit({ step: 1, email });
     if (result && result.success) { 
       setError(''); 
