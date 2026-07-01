@@ -4,9 +4,6 @@ import { cleanText, buildFilterSQL } from './search.services.mjs';
 /**
  * Lấy chi tiết một cuốn sách bằng ID
  */
-/**
- * Lấy chi tiết một cuốn sách bằng ID
- */
 export const getBookById = async (id, userId = null) => {
   const query = `
     SELECT 
@@ -82,9 +79,6 @@ export const getBookById = async (id, userId = null) => {
   };
 };
 
-/**
- * Lấy danh sách sách có phân trang
- */
 /**
  * Lấy danh sách sách có phân trang
  */
