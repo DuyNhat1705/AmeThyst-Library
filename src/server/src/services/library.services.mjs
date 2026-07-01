@@ -85,65 +85,33 @@ export const getBookById = async (id, userId = null) => {
 /**
  * Lấy danh sách sách có phân trang
  */
+/**
+ * Lấy danh sách sách có phân trang
+ */
 export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   const offset = (page - 1) * limit;
   const { genres = [], branches = [], availableOnly = false, startYear = null, endYear = null } = filters;
 
-  // 1. Prepare/Map filters for buildFilterSQL compatibility
-  const mappedFilters = {
-    genres: genres.includes('Others') ? [] : genres, 
+  // 1. Pack unified configurations directly into the helper call starting at index 1
+  const searchFilters = {
+    genres,
+    branches,
+    availableOnly,
     publicationDate: { start: startYear, end: endYear }
   };
 
-  // Call the helper starting at index 1
-  let { sql: helperSql, params: queryParams, nextIdx: paramIndex } = buildFilterSQL(mappedFilters, 1);
+  let { sql: filterSql, params: queryParams, nextIdx: paramIndex } = buildFilterSQL(searchFilters, 1);
 
-  // 2. Handle the specialized/missing clauses manually
-  const extraClauses = [];
-
-  // Handle the 'Others' genre logic if present
-  if (genres.includes('Others')) {
-    const standardGenres = ['Mathematics', 'Physics', 'Biology', 'Computer Science', 'Fiction', 'Nonfiction', 'Philosophy', 'Psychology', 'Literature'];
-    const selectedStandard = genres.filter(g => g !== 'Others');
-    
-    let genreCondition = `(b.genres IS NULL OR NOT (b.genres && ARRAY[${standardGenres.map(g => `'${g}'`).join(',')}]))`;
-    
-    // If there were ALSO standard genres selected along with 'Others'
-    if (selectedStandard.length > 0) {
-      queryParams.push(selectedStandard);
-      genreCondition = `(b.genres && $${paramIndex++} OR ${genreCondition})`;
-    }
-    extraClauses.push(genreCondition);
-  }
-
-  // Handle branches (Not covered by buildFilterSQL)
-  if (branches.length > 0) {
-    queryParams.push(branches);
-    extraClauses.push(`l.branch_id = ANY($${paramIndex++})`);
-  }
-
-  // Handle availableOnly (Not covered by buildFilterSQL)
-  if (availableOnly) {
-    extraClauses.push(`l.available_quantity > 0`);
-  }
-
-  // 3. Combine buildFilterSQL result with extra clauses
+  // 2. Strip leading ' AND ' to construct pristine SQL conditional blocks
   let finalWhereString = '';
-  let allClauses = [];
-
-  // Stripping leading ' AND ' if buildFilterSQL generated clauses
-  if (helperSql) {
-    allClauses.push(helperSql.replace(/^\s*AND\s*/i, ''));
-  }
-  if (extraClauses.length > 0) {
-    allClauses.push(...extraClauses);
+  if (filterSql) {
+    finalWhereString = `WHERE ${filterSql.replace(/^\s*AND\s*/i, '')}`;
   }
 
-  if (allClauses.length > 0) {
-    finalWhereString = `WHERE ${allClauses.join(' AND ')}`;
-  }
-
-  // 4. Execute Queries
+  // 3. Prepare Dynamic Pagination Indices
+  const limitParam = `$${paramIndex++}`;
+  const offsetParam = `$${paramIndex++}`;
+  
   const countQuery = `
     SELECT COUNT(DISTINCT b.book_id) 
     FROM public.books b
@@ -151,9 +119,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     ${finalWhereString}
   `;
 
-  const limitParam = `$${paramIndex++}`;
-  const offsetParam = `$${paramIndex++}`;
-  
   const booksQuery = `
     SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url
     FROM public.books b
@@ -163,6 +128,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     LIMIT ${limitParam} OFFSET ${offsetParam}
   `;
 
+  // 4. Execute Queries concurrently
   const [countRes, booksRes] = await Promise.all([
     pool.query(countQuery, queryParams),
     pool.query(booksQuery, [...queryParams, limit, offset])
@@ -183,7 +149,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     currentPage: page
   };
 };
-
 /**
  * Lấy gợi ý sách ngẫu nhiên từ database để tạo tính năng khám phá sách
  */

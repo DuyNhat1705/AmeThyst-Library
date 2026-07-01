@@ -58,6 +58,7 @@ export const preProcessQuery = (query) => {
 /**
  * Helper to build dynamic SQL clauses for metadata filters.
  */
+
 export function buildFilterSQL(filters, startingParamIdx = 2) {
   let clauses = [];
   let params = [];
@@ -67,14 +68,31 @@ export function buildFilterSQL(filters, startingParamIdx = 2) {
     return { sql: '', params, nextIdx: paramIdx };
   }
 
-  // 1. Genres filter (overlaps operator &&)
+  // 1. Genres filter (Handles standard lists AND specialized 'Others' logic)
   if (filters.genres && Array.isArray(filters.genres) && filters.genres.length > 0) {
-    clauses.push(`b.genres && $${paramIdx}::text[]`);
-    params.push(filters.genres);
-    paramIdx++;
+    const genres = filters.genres;
+    
+    if (genres.includes('Others')) {
+      const standardGenres = ['Mathematics', 'Physics', 'Biology', 'Computer Science', 'Fiction', 'Nonfiction', 'Philosophy', 'Psychology', 'Literature'];
+      const selectedStandard = genres.filter(g => g !== 'Others');
+      
+      let genreCondition = `(b.genres IS NULL OR NOT (b.genres && ARRAY[${standardGenres.map(g => `'${g}'`).join(',')}]))`;
+      
+      if (selectedStandard.length > 0) {
+        clauses.push(`(b.genres && $${paramIdx}::text[] OR ${genreCondition})`);
+        params.push(selectedStandard);
+        paramIdx++;
+      } else {
+        clauses.push(genreCondition);
+      }
+    } else {
+      clauses.push(`b.genres && $${paramIdx}::text[]`);
+      params.push(genres);
+      paramIdx++;
+    }
   }
 
-  // 2. Publication Date/Year filter (extracting year)
+  // 2. Publication Date/Year filter
   if (filters.publicationDate) {
     const { start, end } = filters.publicationDate;
     if (start) {
@@ -95,11 +113,23 @@ export function buildFilterSQL(filters, startingParamIdx = 2) {
     }
   }
 
-  // 3. Languages filter (matches array list)
+  // 3. Languages filter
   if (filters.languages && Array.isArray(filters.languages) && filters.languages.length > 0) {
     clauses.push(`b.language_code = ANY($${paramIdx}::text[])`);
     params.push(filters.languages);
     paramIdx++;
+  }
+
+  // 4. Branches mapping filter
+  if (filters.branches && Array.isArray(filters.branches) && filters.branches.length > 0) {
+    clauses.push(`l.branch_id = ANY($${paramIdx}::int[])`);
+    params.push(filters.branches);
+    paramIdx++;
+  }
+
+  // 5. Available quantity metric evaluation
+  if (filters.availableOnly) {
+    clauses.push(`l.available_quantity > 0`);
   }
 
   const sql = clauses.length > 0 ? ' AND ' + clauses.join(' AND ') : '';
@@ -114,7 +144,9 @@ const fetchDefaultCatalog = async (filters) => {
   const sql = `
     SELECT b.book_id, b.title, b.author, b.description, b.genres, b.isbn, b.publisher, b.publication_date, b.num_pages, b.language_code, b.image_url
     FROM books b
+    LEFT JOIN library l ON b.book_id = l.book_id
     WHERE 1=1 ${filterSql}
+    GROUP BY b.book_id
     ORDER BY b.title ASC
     LIMIT 50
   `;
@@ -132,12 +164,14 @@ const executeTextSearch = async (cleanQuery, filters) => {
            similarity(b.title, $1) AS title_sim,
            similarity(immutable_array_to_string(b.author, ' '), $1) AS author_sim
     FROM books b
+    LEFT JOIN library l ON b.book_id = l.book_id
     WHERE (
       b.title % $1 OR 
       immutable_array_to_string(b.author, ' ') % $1 OR 
       b.publisher % $1 OR
       b.isbn ILIKE $2
     ) ${filterSql}
+    GROUP BY b.book_id
     ORDER BY greatest(similarity(b.title, $1), similarity(immutable_array_to_string(b.author, ' '), $1)) DESC
     LIMIT 100
   `;
@@ -159,7 +193,9 @@ const executeSemanticSearch = async (rawQuery, cleanQuery, filters) => {
       SELECT b.book_id, b.title, b.author, b.description, b.genres, b.isbn, b.publisher, b.publication_date, b.num_pages, b.language_code, b.image_url,
              (b.embedding <=> $1::vector) AS distance
       FROM books b
+      LEFT JOIN library l ON b.book_id = l.book_id
       WHERE b.embedding IS NOT NULL ${filterSql}
+      GROUP BY b.book_id
       ORDER BY distance ASC
       LIMIT 100
     `;
