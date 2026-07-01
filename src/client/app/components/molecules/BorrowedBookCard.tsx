@@ -23,7 +23,6 @@ export interface BorrowedBook {
 
 interface Props {
   book: BorrowedBook;
-  onReturn?: (id: string) => void;
   onRenew?: (id: string) => void;
   onCancel?: (id: string) => void;
   onViewPin?: (id: string) => void;
@@ -48,7 +47,7 @@ const statusText: Record<BookStatus, string> = {
   reserved: 'text-[#1E8E3E] dark:text-green-300',
 };
 
-export default function BorrowedBookCard({ book, onReturn, onRenew, onCancel, onViewPin, onGeneratePin }: Props) {
+export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, onGeneratePin }: Props) {
   const { t } = useI18n();
   const [, setTick] = useState(0);
 
@@ -133,10 +132,7 @@ export default function BorrowedBookCard({ book, onReturn, onRenew, onCancel, on
         </div>
         <div className="flex gap-2 mt-2">
           {effectiveStatus === 'borrowed' && (
-            <>
-              <button onClick={() => onReturn?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full bg-black text-white dark:bg-neutral-100 dark:text-black hover:opacity-80 transition-opacity">{t('dashboard.borrowed_return')}</button>
-              <button onClick={() => onRenew?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full border border-[#E8E2D5] dark:border-neutral-600 text-[#43474D] dark:text-neutral-300 hover:bg-[#F8EFE6] dark:hover:bg-neutral-700 transition-colors">{t('dashboard.borrowed_renew')}</button>
-            </>
+            <button disabled className="w-full py-1.5 text-[11px] font-bold rounded-full border border-dashed border-[#E8E2D5] dark:border-neutral-600 text-[#75777D] dark:text-neutral-500 cursor-not-allowed opacity-60">{t('dashboard.borrowed_renew')}</button>
           )}
           {effectiveStatus === 'reserved' && (
             <>

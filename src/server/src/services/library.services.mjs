@@ -520,7 +520,7 @@ export const generatePickupPin = async (userId, borrowId) => {
 
     for (let attempt = 0; attempt < 3; attempt++) {
       const pin = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 15 * 1000);
+      const expiresAt = new Date(Date.now() + 180 * 1000);
 
       try {
         const updated = await pool.query(
@@ -596,5 +596,221 @@ export const clearAllPins = async () => {
   } catch (error) {
     console.error('Error clearing all pending PINs:', error);
     return 0;
+  }
+};
+
+/**
+ * Find a borrow record by PIN (must not be expired)
+ */
+export const findBorrowRecordByPin = async (pin) => {
+  console.log('[loan-flow] findBorrowRecordByPin called with pin:', pin);
+  const query = `
+    SELECT
+      bb.borrow_id,
+      bb.user_id,
+      bb.branch_id,
+      bb.book_id,
+      bb.status,
+      bb.reserve_date,
+      u.username,
+      u.gender,
+      u.phone_number,
+      u.email,
+      b.title as book_title,
+      b.author as book_author,
+      b.publisher as book_publisher,
+      b.genres as book_genres,
+      b.price as book_price
+    FROM public.borrow_book bb
+    JOIN public.users u ON bb.user_id = u.user_id
+    JOIN public.books b ON bb.book_id = b.book_id
+    WHERE bb.pin = $1 AND bb.expired_at > NOW()
+  `;
+  console.log('[loan-flow] Executing query...');
+  const result = await pool.query(query, [pin]);
+  console.log('[loan-flow] Query returned', result.rows.length, 'rows');
+  if (result.rows.length > 0) {
+    console.log('[loan-flow] Found record: borrow_id=' + result.rows[0].borrow_id + ', branch_id=' + result.rows[0].branch_id + ', status=' + result.rows[0].status);
+  } else {
+    console.log('[loan-flow] No matching record found (PIN may be expired or invalid)');
+  }
+  return result.rows.length > 0 ? result.rows[0] : null;
+};
+
+/**
+ * Check if a user is eligible to borrow (no overdue books, not suspended)
+ */
+export const checkUserEligibility = async (userId) => {
+  const overdueQuery = `
+    SELECT COUNT(*) as overdue_count
+    FROM public.borrow_book
+    WHERE user_id = $1 AND status = 'borrowed' AND due_date < NOW()
+  `;
+  const userQuery = `SELECT user_id FROM public.users WHERE user_id = $1`;
+
+  const [overdueRes, userRes] = await Promise.all([
+    pool.query(overdueQuery, [userId]),
+    pool.query(userQuery, [userId])
+  ]);
+
+  if (userRes.rows.length === 0) {
+    return { eligible: false, reason: 'User not found.' };
+  }
+
+  const overdueCount = parseInt(overdueRes.rows[0].overdue_count);
+  if (overdueCount > 0) {
+    return { eligible: false, reason: 'User has overdue books.' };
+  }
+
+  return { eligible: true, reason: 'User is eligible.' };
+};
+
+/**
+ * Verify a PIN and return borrower + book details with branch check
+ */
+export const verifyPin = async (pin, librarianBranchId) => {
+  console.log('[loan-flow] === verifyPin service ===');
+  console.log('[loan-flow] pin:', pin, 'librarianBranchId:', librarianBranchId);
+
+  const record = await findBorrowRecordByPin(pin);
+  if (!record) {
+    console.log('[loan-flow] Record not found, returning 404');
+    return { error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' }, statusCode: 404 };
+  }
+
+  console.log('[loan-flow] Record found. record.branch_id:', record.branch_id, 'librarianBranchId:', librarianBranchId);
+  if (record.branch_id !== librarianBranchId) {
+    console.log('[loan-flow] Branch mismatch! Returning 403');
+    return { error: { code: 'WRONG_BRANCH', message: 'You have arrived at the wrong book borrowing branch.' }, statusCode: 403 };
+  }
+
+  console.log('[loan-flow] Branch matched, returning borrower+book details');
+  return {
+    borrowId: record.borrow_id,
+    borrower: {
+      username: record.username,
+      gender: record.gender,
+      phone_number: record.phone_number,
+      email: record.email
+    },
+    book: {
+      title: record.book_title,
+      author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
+      publisher: record.book_publisher,
+      genre: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
+      price: record.book_price
+    }
+  };
+};
+
+/**
+ * Confirm a loan: update status to borrowed, set due_date, create calendar event, nullify expired_reserve
+ */
+export const confirmLoan = async (borrowId) => {
+  console.log('[loan-flow] === confirmLoan service ===');
+  console.log('[loan-flow] borrowId:', borrowId);
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    console.log('[loan-flow] Transaction started');
+
+    const recordQuery = 'SELECT user_id, book_id, branch_id FROM public.borrow_book WHERE borrow_id = $1';
+    const recordRes = await client.query(recordQuery, [borrowId]);
+    console.log('[loan-flow] Record lookup:', recordRes.rows.length, 'rows');
+
+    if (recordRes.rows.length === 0) {
+      console.log('[loan-flow] Record not found, rolling back');
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Borrow record not found.' }, statusCode: 404 };
+    }
+
+    const { user_id, book_id } = recordRes.rows[0];
+    console.log('[loan-flow] user_id:', user_id, 'book_id:', book_id);
+
+    const eligibility = await checkUserEligibility(user_id);
+    console.log('[loan-flow] Eligibility:', JSON.stringify(eligibility));
+    if (!eligibility.eligible) {
+      console.log('[loan-flow] User ineligible, rolling back');
+      await client.query('ROLLBACK');
+      return { error: { code: 'USER_INELIGIBLE', message: 'Borrower has overdue books or is suspended. Cannot confirm loan.' }, statusCode: 409 };
+    }
+
+    const updateQuery = `
+      UPDATE public.borrow_book
+      SET status = 'borrowed', due_date = NOW() + INTERVAL '14 days'
+      WHERE borrow_id = $1
+      RETURNING due_date
+    `;
+    const updateRes = await client.query(updateQuery, [borrowId]);
+    console.log('[loan-flow] Update result:', updateRes.rows.length, 'rows');
+
+    if (updateRes.rows.length === 0) {
+      console.log('[loan-flow] Update returned no rows, rolling back');
+      await client.query('ROLLBACK');
+      return { error: { code: 'UPDATE_FAILED', message: 'Failed to update borrow record.' }, statusCode: 500 };
+    }
+
+    const dueDate = updateRes.rows[0].due_date;
+    console.log('[loan-flow] due_date:', dueDate);
+
+    await client.query('COMMIT');
+    console.log('[loan-flow] Transaction committed');
+
+    return { borrowId, status: 'borrowed', due_date: dueDate };
+  } catch (error) {
+    console.error('[loan-flow] EXCEPTION in confirmLoan service:', error.message);
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Cancel a loan: delete borrow record and increment book quantity
+ */
+export const cancelLoan = async (borrowId) => {
+  console.log('[loan-flow] === cancelLoan service ===');
+  console.log('[loan-flow] borrowId:', borrowId);
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    console.log('[loan-flow] Transaction started');
+
+    const recordQuery = 'SELECT book_id, branch_id FROM public.borrow_book WHERE borrow_id = $1';
+    const recordRes = await client.query(recordQuery, [borrowId]);
+    console.log('[loan-flow] Record lookup:', recordRes.rows.length, 'rows');
+
+    if (recordRes.rows.length === 0) {
+      console.log('[loan-flow] Record not found, rolling back');
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Borrow record not found.' }, statusCode: 404 };
+    }
+
+    const { book_id, branch_id } = recordRes.rows[0];
+    console.log('[loan-flow] book_id:', book_id, 'branch_id:', branch_id);
+
+    await client.query(
+      'DELETE FROM public.borrow_book WHERE borrow_id = $1',
+      [borrowId]
+    );
+    console.log('[loan-flow] Borrow record deleted');
+
+    await client.query(
+      'UPDATE public.library SET quantity = quantity + 1 WHERE book_id = $1 AND branch_id = $2',
+      [book_id, branch_id]
+    );
+    console.log('[loan-flow] Book quantity incremented');
+
+    await client.query('COMMIT');
+    console.log('[loan-flow] Transaction committed');
+
+    return { borrowId, status: 'cancelled' };
+  } catch (error) {
+    console.error('[loan-flow] EXCEPTION in cancelLoan service:', error.message);
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
   }
 };

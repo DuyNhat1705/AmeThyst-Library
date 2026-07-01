@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AuthActions } from '../molecules';
 import { ThemeToggle } from '../atoms/ThemeToggle';
@@ -11,7 +11,13 @@ import { getLoggedInUser, getDashboardPath } from '../../utils/user';
 export default function NavBar() {
   const pathname = usePathname();
   const { t } = useI18n();
-  const user = getLoggedInUser();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const user = mounted ? getLoggedInUser() : null;
 
   const navItems = [
     { label: t('navbar.library'), href: '/library' },

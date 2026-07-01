@@ -69,7 +69,7 @@ export const verifyEmail = async ({ token }) => {
   });
 
   return {
-    token: signToken(user.user_id, user.email),
+    token: signToken(user.user_id, user.email, user.role, user.branch_id),
     user: buildUserPayload(user),
   };
 };
@@ -104,7 +104,7 @@ export const loginUser = async ({ email, password }) => {
   if (!isMatch) throw new Error('Invalid email or password');
 
   return {
-    token: signToken(user.user_id, user.email),
+    token: signToken(user.user_id, user.email, user.role, user.branch_id),
     user: buildUserPayload(user),
   };
 };
