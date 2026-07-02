@@ -17,19 +17,19 @@ interface Props {
   books: BorrowedBook[];
 }
 
-const statusKey: Record<BookStatus, string> = {
+const statusKey: Record<string, string> = {
   borrowed: 'dashboard.borrowed_status_borrowed',
   pending: 'dashboard.borrowed_status_pending',
   expired: 'dashboard.borrowed_status_expired',
 };
 
-const statusBg: Record<BookStatus, string> = {
+const statusBg: Record<string, string> = {
   borrowed: 'bg-[#E8F0FE] dark:bg-blue-900/30',
   pending: 'bg-[#FFF3E0] dark:bg-orange-900/30',
   expired: 'bg-[#F3F4F6] dark:bg-neutral-700/30',
 };
 
-const statusText: Record<BookStatus, string> = {
+const statusText: Record<string, string> = {
   borrowed: 'text-[#1A73E8] dark:text-blue-300',
   pending: 'text-[#E37400] dark:text-orange-300',
   expired: 'text-[#75777D] dark:text-neutral-400',

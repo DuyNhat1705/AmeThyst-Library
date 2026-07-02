@@ -22,14 +22,17 @@ export default function StudyGroup() {
 
       {/* Group Grid - 3 columns, 2 rows */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {GROUPS.map((group) => (
-          <StudyGroupCard 
-            key={group.id}
-            name={group.name}
-            members={group.members}
-            isFindMore={group.isFindMore}
-          />
-        ))}
+        {GROUPS.map((group) => {
+          const Card = StudyGroupCard as any;
+          return (
+            <Card 
+              key={group.id}
+              name={group.name}
+              members={group.members}
+              isFindMore={group.isFindMore}
+            />
+          );
+        })}
       </div>
     </div>
   );

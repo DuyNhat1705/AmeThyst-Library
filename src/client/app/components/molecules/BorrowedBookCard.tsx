@@ -113,7 +113,7 @@ export default function BorrowedBookCard({ book, onReturn, onRenew, onCancel, on
           {computedDueDate && (
             <div className="flex justify-between text-[11px]">
               <span className="text-[#75777D] dark:text-neutral-400">{t('dashboard.borrowed_label_due')}</span>
-              <span className={`font-medium ${book.status === 'overdue' ? 'text-[#D93025] dark:text-red-300' : 'text-black dark:text-neutral-200'}`}>{new Date(computedDueDate).toLocaleDateString()}</span>
+              <span className={`font-medium ${(book.status as string) === 'overdue' ? 'text-[#D93025] dark:text-red-300' : 'text-black dark:text-neutral-200'}`}>{new Date(computedDueDate).toLocaleDateString()}</span>
             </div>
           )}
           {book.reserveDate && (

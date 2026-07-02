@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from 'react';
-import { StudyGroup } from '../../../study-together/mockData';
+import { StudyGroup } from '../../study-together/mockData';
 import { Button } from '../atoms/Button';
 
 interface StudyGroupInfoModalProps {
