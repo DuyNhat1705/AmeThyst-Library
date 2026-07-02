@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from '../../providers/I18nProvider';
-import { StatusBadge } from '../atoms';
+import { StatusBadge, BookCover, Skeleton } from '../atoms';
 
 export interface BorrowerInfo {
   fullName: string;
@@ -23,12 +23,6 @@ interface BorrowerInfoPanelProps {
   isLoading?: boolean;
 }
 
-function SkeletonBlock({ className }: { className?: string }) {
-  return (
-    <div className={`animate-pulse bg-neutral-200 dark:bg-neutral-700 rounded ${className || ''}`} />
-  );
-}
-
 export default function BorrowerInfoPanel({ borrower, books, isLoading }: BorrowerInfoPanelProps) {
   const { t } = useI18n();
 
@@ -36,21 +30,21 @@ export default function BorrowerInfoPanel({ borrower, books, isLoading }: Borrow
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <SkeletonBlock className="h-5 w-32" />
-          <SkeletonBlock className="h-6 w-48" />
-          <SkeletonBlock className="h-4 w-36" />
-          <SkeletonBlock className="h-4 w-40" />
-          <SkeletonBlock className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-36" />
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-6 w-20 rounded-full" />
         </div>
         <div className="space-y-3">
-          <SkeletonBlock className="h-5 w-40" />
+          <Skeleton className="h-5 w-40" />
           {[1, 2].map((i) => (
             <div key={i} className="flex gap-3 p-3">
-              <SkeletonBlock className="h-16 w-12 rounded" />
+              <Skeleton className="h-16 w-12 rounded" />
               <div className="space-y-2 flex-1">
-                <SkeletonBlock className="h-4 w-3/4" />
-                <SkeletonBlock className="h-3 w-1/2" />
-                <SkeletonBlock className="h-3 w-1/3" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/3" />
               </div>
             </div>
           ))}
@@ -75,7 +69,7 @@ export default function BorrowerInfoPanel({ borrower, books, isLoading }: Borrow
           {borrower.department}
         </p>
         <StatusBadge
-          status={borrower.eligibility === 'eligible' ? 'active' : 'inactive'}
+          variant={borrower.eligibility === 'eligible' ? 'active' : 'pending'}
           label={t(`verification.eligibility_${borrower.eligibility}`)}
         />
       </div>
@@ -86,13 +80,12 @@ export default function BorrowerInfoPanel({ borrower, books, isLoading }: Borrow
         <div className="max-h-48 overflow-y-auto space-y-2">
           {books.map((book, i) => (
             <div key={i} className="flex gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-              <div className="w-12 h-16 bg-neutral-200 dark:bg-neutral-700 rounded flex items-center justify-center text-xs text-neutral-400 shrink-0">
-                {book.coverUrl ? (
-                  <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover rounded" />
-                ) : (
-                  <span>No Cover</span>
-                )}
-              </div>
+              <BookCover
+                src={book.coverUrl || undefined}
+                alt={book.title}
+                className="w-12 h-16 rounded"
+                containerClassName="w-12 h-16 rounded shrink-0"
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                   {book.title}

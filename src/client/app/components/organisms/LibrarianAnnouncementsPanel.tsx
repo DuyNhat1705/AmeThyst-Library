@@ -2,18 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
-
-export type AnnouncementStatus = 'ACTIVE' | 'DRAFT' | 'EXPIRED';
-
-export interface Announcement {
-  id: string;
-  title: string;
-  status: AnnouncementStatus;
-  date: string;
-  expiryDate: string;
-  content: string;
-  isPinned: boolean;
-}
+import ToggleSwitch from '../atoms/ToggleSwitch';
+import AnnouncementListItem, { type Announcement, type AnnouncementStatus } from '../molecules/AnnouncementListItem';
 
 const initialMockAnnouncements: Announcement[] = [
   {
@@ -217,24 +207,14 @@ export default function LibrarianAnnouncementsPanel() {
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
           {announcements.map((ann) => (
-            <div 
+            <AnnouncementListItem
               key={ann.id}
+              announcement={ann}
+              isSelected={selectedId === ann.id}
               onClick={() => setSelectedId(ann.id)}
-              className={`p-4 rounded-lg cursor-pointer transition-all ${
-                selectedId === ann.id 
-                  ? 'bg-amber-50 dark:bg-amber-900/20 border-l-4 border-slate-900 dark:border-amber-500' 
-                  : 'bg-white dark:bg-slate-800/50 border border-neutral-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
-              } ${ann.status === 'EXPIRED' ? 'opacity-60' : ''}`}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${getStatusBadgeStyles(ann.status)}`}>
-                  {getStatusTranslation(ann.status)}
-                </span>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">{ann.date}</span>
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">{ann.title}</h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">{ann.content}</p>
-            </div>
+              getStatusBadgeStyles={getStatusBadgeStyles}
+              getStatusTranslation={getStatusTranslation}
+            />
           ))}
         </div>
       </div>
@@ -298,14 +278,11 @@ export default function LibrarianAnnouncementsPanel() {
               
               <div className="flex items-end pb-4">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <div className={`relative w-12 h-6 rounded-full transition-colors ${editIsPinned ? 'bg-amber-600' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${editIsPinned ? 'translate-x-6' : ''}`}></div>
-                  </div>
-                  <input 
-                    type="checkbox"
-                    className="sr-only"
+                  <ToggleSwitch
                     checked={editIsPinned}
-                    onChange={(e) => setEditIsPinned(e.target.checked)}
+                    onChange={setEditIsPinned}
+                    activeColor="bg-amber-600"
+                    inactiveColor="bg-slate-300 dark:bg-slate-700"
                   />
                   <span className="text-xs font-bold text-neutral-600 dark:text-neutral-400 tracking-wider">
                     {t('announcements.pin_to_homepage')}

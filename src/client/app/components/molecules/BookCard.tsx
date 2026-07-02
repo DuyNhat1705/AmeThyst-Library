@@ -1,6 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import BookCover from '../atoms/BookCover';
 
 interface BookCardProps {
   id: string;
@@ -59,23 +59,12 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
       className="flex flex-col gap-3 group cursor-pointer block"
     >
       {/* Book Cover Container */}
-      <div className="relative w-full aspect-[3/4] bg-[#EAEAEA] dark:bg-neutral-700 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
-        <img
+      <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
+        <BookCover
           src={image}
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          onError={(e) => {
-            const currentSrc = (e.target as HTMLImageElement).src;
-            if (currentSrc.includes('/b/olid/') && !currentSrc.includes('?fallback=1')) {
-              const parts = currentSrc.split('/b/olid/');
-              if (parts[1]) {
-                const olid = parts[1].replace('-L.jpg', '');
-                (e.target as HTMLImageElement).src = `https://covers.openlibrary.org/b/id/${olid}-L.jpg?fallback=1`;
-                return;
-              }
-            }
-            (e.target as HTMLImageElement).src = "/Rectangle1248.png";
-          }}
+          className="group-hover:scale-105 transition-transform duration-300"
+          containerClassName="w-full h-full"
         />
       </div>
       {/* Book Info */}

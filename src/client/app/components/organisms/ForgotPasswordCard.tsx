@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { FormField } from '../molecules';
-import { Button, ErrorMessage, SecurityIndicator, PasswordInput } from '../atoms';
+import { Button, ErrorMessage, SecurityIndicator, PasswordInput, OtpExpiredBanner } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
@@ -191,10 +191,7 @@ export default function ForgotPasswordCard({
                 {otpExpired ? (
                   /* Expired UI */
                   <div className="w-full py-6 flex flex-col gap-4">
-                    <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 flex flex-col gap-1">
-                      <p className="text-sm font-semibold text-red-600 dark:text-red-400">{t('auth.otp_expired')}</p>
-                      <p className="text-sm text-red-500 dark:text-red-400">{t('auth.otp_expired_message')}</p>
-                    </div>
+                    <OtpExpiredBanner title={t('auth.otp_expired')} message={t('auth.otp_expired_message')} />
                     {error && <ErrorMessage message={error} />}
                     <Button
                       type="button"

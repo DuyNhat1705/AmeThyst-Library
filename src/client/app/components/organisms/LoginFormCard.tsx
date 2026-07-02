@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { FormField, OAuthButtons } from '../molecules';
-import { Button, PasswordInput } from '../atoms';
+import { Button, PasswordInput, Divider } from '../atoms';
 import { useI18n } from '../../providers/I18nProvider';
 
 interface Credentials {
@@ -69,11 +69,7 @@ export default function LoginFormCard({
           {t('auth.login_button')}
         </Button>
 
-        <div className="flex items-center gap-4 my-2">
-          <div className="flex-1 h-px bg-[#C5C6CD] dark:bg-neutral-600"></div>
-          <span className="text-[#45474C] dark:text-neutral-400 text-xs font-medium tracking-[0.02em]">{t('auth.or')}</span>
-          <div className="flex-1 h-px bg-[#C5C6CD] dark:bg-neutral-600"></div>
-        </div>
+        <Divider label={t('auth.or')} />
 
         <OAuthButtons label={t('auth.sign_in_google')} disabled={isLoading} />
 

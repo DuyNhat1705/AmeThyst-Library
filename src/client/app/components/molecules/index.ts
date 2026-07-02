@@ -21,4 +21,5 @@ export { default as SubTabBar } from './SubTabBar';
 export { default as BookTableHeader } from './BookTableHeader';
 export { default as BookTableRow } from './BookTableRow';
 export { default as BookTablePagination } from './BookTablePagination';
+export { default as AnnouncementListItem } from './AnnouncementListItem';
 

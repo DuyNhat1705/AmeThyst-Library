@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { useI18n } from '../../providers/I18nProvider';
+import FooterLinkSection from '../atoms/FooterLinkSection';
 
 export default function Footer() {
   const { t } = useI18n();
@@ -24,33 +25,32 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links Sections */}
-          <div>
-            <h4 className="font-manrope font-bold mb-6">{t('footer.section_library')}</h4>
-            <ul className="flex flex-col gap-4 text-[#A1A3A9] font-inter text-sm">
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.all_books')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.categories')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.new_arrivals')}</a></li>
-            </ul>
-          </div>
+          <FooterLinkSection
+            title={t('footer.section_library')}
+            links={[
+              { label: t('footer.all_books'), href: '#' },
+              { label: t('footer.categories'), href: '#' },
+              { label: t('footer.new_arrivals'), href: '#' },
+            ]}
+          />
 
-          <div>
-            <h4 className="font-manrope font-bold mb-6">{t('footer.section_community')}</h4>
-            <ul className="flex flex-col gap-4 text-[#A1A3A9] font-inter text-sm">
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.study_groups')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.events')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.forums')}</a></li>
-            </ul>
-          </div>
+          <FooterLinkSection
+            title={t('footer.section_community')}
+            links={[
+              { label: t('footer.study_groups'), href: '#' },
+              { label: t('footer.events'), href: '#' },
+              { label: t('footer.forums'), href: '#' },
+            ]}
+          />
 
-          <div>
-            <h4 className="font-manrope font-bold mb-6">{t('footer.section_support')}</h4>
-            <ul className="flex flex-col gap-4 text-[#A1A3A9] font-inter text-sm">
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.help_center')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.privacy_policy')}</a></li>
-              <li><a href="#" className="hover:text-teal transition-colors">{t('footer.terms_of_service')}</a></li>
-            </ul>
-          </div>
+          <FooterLinkSection
+            title={t('footer.section_support')}
+            links={[
+              { label: t('footer.help_center'), href: '#' },
+              { label: t('footer.privacy_policy'), href: '#' },
+              { label: t('footer.terms_of_service'), href: '#' },
+            ]}
+          />
         </div>
 
         {/* Bottom Bar */}

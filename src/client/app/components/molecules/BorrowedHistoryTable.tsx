@@ -1,5 +1,6 @@
 import { useI18n } from '../../providers/I18nProvider';
 import type { BookStatus } from './BorrowedBookCard';
+import BookCover from '../atoms/BookCover';
 
 interface BorrowedBook {
   id: string;
@@ -54,15 +55,12 @@ export default function BorrowedHistoryTable({ books }: Props) {
             <tr key={book.id} className="border-b border-[#F2EDE3] dark:border-neutral-700/50 last:border-0 hover:bg-[#F8F3E9]/50 dark:hover:bg-neutral-700/30 transition-colors">
               <td className="py-4 px-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-11 rounded bg-[#EAEAEA] dark:bg-neutral-700 shrink-0 flex items-center justify-center overflow-hidden">
-                    {(book.coverImage || book.cover) ? (
-                      <img src={book.coverImage || book.cover} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="opacity-40">
-                        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" fill="#75777D" />
-                      </svg>
-                    )}
-                  </div>
+                  <BookCover
+                    src={book.coverImage || book.cover}
+                    alt={book.title}
+                    className="w-8 h-11 rounded"
+                    containerClassName="w-8 h-11 rounded shrink-0"
+                  />
                   <span className="font-manrope text-sm font-bold text-black dark:text-neutral-100">{book.title}</span>
                 </div>
               </td>

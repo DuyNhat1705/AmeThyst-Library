@@ -2,6 +2,7 @@
 
 import { useI18n } from '../../providers/I18nProvider';
 import { useState, useEffect } from 'react';
+import BookCover from '../atoms/BookCover';
 
 export type BookStatus = 'borrowed' | 'pending' | 'reserved';
 
@@ -86,15 +87,12 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
 
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-xl p-5 flex gap-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="w-20 h-28 rounded-lg bg-[#EAEAEA] dark:bg-neutral-700 shrink-0 flex items-center justify-center overflow-hidden">
-        {coverSrc ? (
-          <img src={coverSrc} alt={book.title} className="w-full h-full object-cover" />
-        ) : (
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="opacity-40">
-            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" fill="#75777D" />
-          </svg>
-        )}
-      </div>
+      <BookCover
+        src={coverSrc}
+        alt={book.title}
+        className="w-20 h-28 rounded-lg shrink-0"
+        containerClassName="w-20 h-28 rounded-lg shrink-0"
+      />
       <div className="flex flex-col gap-2 min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-manrope text-sm font-bold text-black dark:text-neutral-100 leading-tight line-clamp-2">{book.title}</h3>

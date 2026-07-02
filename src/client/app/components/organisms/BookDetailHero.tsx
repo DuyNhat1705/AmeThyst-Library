@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import BookCover from '../atoms/BookCover';
 
 interface BookDetailHeroProps {
   title: string;
@@ -12,23 +12,11 @@ export default function BookDetailHero({ title, author, description, coverImage,
 
   if (compact) {
     return (
-      <div className="relative w-full aspect-[3/4.5] md:aspect-[3/4.2] overflow-hidden rounded-3xl transition-transform duration-500 bg-[#EAEAEA] dark:bg-neutral-700">
-        <img
+      <div className="relative w-full aspect-[3/4.5] md:aspect-[3/4.2] overflow-hidden rounded-3xl transition-transform duration-500">
+        <BookCover
           src={coverImage}
           alt={title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            const currentSrc = (e.target as HTMLImageElement).src;
-            if (currentSrc.includes('/b/olid/') && !currentSrc.includes('?fallback=1')) {
-              const parts = currentSrc.split('/b/olid/');
-              if (parts[1]) {
-                const olid = parts[1].replace('-L.jpg', '');
-                (e.target as HTMLImageElement).src = `https://covers.openlibrary.org/b/id/${olid}-L.jpg?fallback=1`;
-                return;
-              }
-            }
-            (e.target as HTMLImageElement).src = "/Rectangle1248.png";
-          }}
+          containerClassName="w-full h-full"
         />
       </div>
     );
@@ -36,23 +24,11 @@ export default function BookDetailHero({ title, author, description, coverImage,
 
   return (
     <div className="flex flex-col md:flex-row gap-12 w-full">
-      <div className="w-full md:w-[479px] shrink-0 bg-[#EAEAEA] dark:bg-neutral-700 rounded-3xl overflow-hidden shadow-lg">
-        <img
+      <div className="w-full md:w-[479px] shrink-0 rounded-3xl overflow-hidden shadow-lg">
+        <BookCover
           src={coverImage}
           alt={title}
-          className="w-full h-auto object-cover"
-          onError={(e) => {
-            const currentSrc = (e.target as HTMLImageElement).src;
-            if (currentSrc.includes('/b/olid/') && !currentSrc.includes('?fallback=1')) {
-              const parts = currentSrc.split('/b/olid/');
-              if (parts[1]) {
-                const olid = parts[1].replace('-L.jpg', '');
-                (e.target as HTMLImageElement).src = `https://covers.openlibrary.org/b/id/${olid}-L.jpg?fallback=1`;
-                return;
-              }
-            }
-            (e.target as HTMLImageElement).src = "/Rectangle1248.png";
-          }}
+          containerClassName="w-full"
         />
       </div>
       <div className="flex flex-col gap-6 flex-grow">
