@@ -40,7 +40,7 @@ export default function UserDashboardPage() {
           fetch(`${API_BASE}/dashboard/events`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`${API_BASE}/api/library/my-borrowed`, {
+          fetch(`${API_BASE}/dashboard/user/my-borrowed`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         ]);

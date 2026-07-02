@@ -30,7 +30,7 @@ export default function BorrowedBooksPage() {
           return;
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/my-borrowed`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/my-borrowed`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -71,7 +71,7 @@ export default function BorrowedBooksPage() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -91,7 +91,7 @@ export default function BorrowedBooksPage() {
 
       setGeneratingPinId(id);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}/pin`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${id}/pin`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

@@ -45,6 +45,7 @@ export default function InlinePinVerification() {
   const [error, setError] = useState<string | null>(null);
   const [verifiedData, setVerifiedData] = useState<VerifyData | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<'confirm' | 'cancel' | null>(null);
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -105,27 +106,25 @@ export default function InlinePinVerification() {
 
   const handleVerify = async () => {
     const pin = digits.join('');
-    console.log('[loan-flow] === handleVerify ===');
-    console.log('[loan-flow] PIN entered:', pin);
+
     if (pin.length !== SLOT_COUNT) {
-      console.log('[loan-flow] PIN incomplete, returning');
+
       return;
     }
 
     const token = getToken();
     if (!token) {
-      console.log('[loan-flow] No token found');
+
       setError('Please sign in');
       return;
     }
-    console.log('[loan-flow] Token found, making API call');
 
     setLoading(true);
     setError(null);
 
     try {
-      const url = `${API_URL}/api/library/verify-pin`;
-      console.log('[loan-flow] POST', url);
+      const url = `${API_URL}/dashboard/librarian/verify-pin`;
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -134,22 +133,19 @@ export default function InlinePinVerification() {
         },
         body: JSON.stringify({ pin }),
       });
-      console.log('[loan-flow] Response status:', response.status);
 
       const data = await response.json();
-      console.log('[loan-flow] Response body:', JSON.stringify(data, null, 2));
 
       if (!response.ok || !data.success) {
-        console.log('[loan-flow] Verification failed:', data.message);
+
         setError(data.message || 'PIN verification failed');
         return;
       }
 
-      console.log('[loan-flow] Verification succeeded, data:', JSON.stringify(data.data, null, 2));
       setVerifiedData(data.data);
       setStep('details');
     } catch (err) {
-      console.error('[loan-flow] Network error:', err);
+
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -157,16 +153,24 @@ export default function InlinePinVerification() {
   };
 
   const handleConfirmLoan = async () => {
-    console.log('[loan-flow] === handleConfirmLoan ===');
+    setConfirmAction('confirm');
+  };
+
+  const handleCancelLoan = async () => {
+    setConfirmAction('cancel');
+  };
+
+  const executeConfirmLoan = async () => {
+    setConfirmAction(null);
+
     if (!verifiedData) {
-      console.log('[loan-flow] No verified data, returning');
+
       return;
     }
-    console.log('[loan-flow] borrow_id:', verifiedData.borrowId);
 
     const token = getToken();
     if (!token) {
-      console.log('[loan-flow] No token found');
+
       setError('Please sign in');
       return;
     }
@@ -175,8 +179,8 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const url = `${API_URL}/api/library/confirm-loan`;
-      console.log('[loan-flow] POST', url);
+      const url = `${API_URL}/dashboard/librarian/confirm-loan`;
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -185,39 +189,36 @@ export default function InlinePinVerification() {
         },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
-      console.log('[loan-flow] Response status:', response.status);
 
       const data = await response.json();
-      console.log('[loan-flow] Response body:', JSON.stringify(data, null, 2));
 
       if (!response.ok || !data.success) {
-        console.log('[loan-flow] Confirm failed:', data.message);
+
         setError(data.message || 'Loan confirmation failed');
         return;
       }
 
-      console.log('[loan-flow] Loan confirmed, due_date:', data.data.due_date);
       setResultMessage(`Loan confirmed. Due date: ${new Date(data.data.due_date).toLocaleDateString()}`);
       setStep('done');
     } catch (err) {
-      console.error('[loan-flow] Network error:', err);
+
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancelLoan = async () => {
-    console.log('[loan-flow] === handleCancelLoan ===');
+  const executeCancelLoan = async () => {
+    setConfirmAction(null);
+
     if (!verifiedData) {
-      console.log('[loan-flow] No verified data, returning');
+
       return;
     }
-    console.log('[loan-flow] borrow_id:', verifiedData.borrowId);
 
     const token = getToken();
     if (!token) {
-      console.log('[loan-flow] No token found');
+
       setError('Please sign in');
       return;
     }
@@ -226,8 +227,8 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const url = `${API_URL}/api/library/cancel-loan`;
-      console.log('[loan-flow] POST', url);
+      const url = `${API_URL}/dashboard/librarian/cancel-loan`;
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -236,22 +237,19 @@ export default function InlinePinVerification() {
         },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
-      console.log('[loan-flow] Response status:', response.status);
 
       const data = await response.json();
-      console.log('[loan-flow] Response body:', JSON.stringify(data, null, 2));
 
       if (!response.ok || !data.success) {
-        console.log('[loan-flow] Cancel failed:', data.message);
+
         setError(data.message || 'Loan cancellation failed');
         return;
       }
 
-      console.log('[loan-flow] Loan cancelled');
       setResultMessage('Loan cancelled. Book returned to inventory.');
       setStep('done');
     } catch (err) {
-      console.error('[loan-flow] Network error:', err);
+
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -264,6 +262,7 @@ export default function InlinePinVerification() {
     setError(null);
     setVerifiedData(null);
     setResultMessage(null);
+    setConfirmAction(null);
     focusSlot(0);
   };
 
@@ -313,6 +312,7 @@ export default function InlinePinVerification() {
                 <p className="text-[#43474D] dark:text-neutral-400 font-hankenGrotesk text-xs font-bold leading-4 tracking-[0.2em] mb-1">NAME</p>
                 <p className="text-[#000] dark:text-neutral-100 font-hankenGrotesk text-base font-medium">{borrower.username}</p>
               </div>
+
               <div>
                 <p className="text-[#43474D] dark:text-neutral-400 font-hankenGrotesk text-xs font-bold leading-4 tracking-[0.2em] mb-1">GENDER</p>
                 <p className="text-[#000] dark:text-neutral-100 font-hankenGrotesk text-base font-medium">{borrower.gender || 'N/A'}</p>
@@ -352,6 +352,39 @@ export default function InlinePinVerification() {
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
                 <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            {confirmAction && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white dark:bg-neutral-800 rounded-xl p-8 max-w-sm w-full mx-4 shadow-xl">
+                  <h3 className="text-lg font-bold text-black dark:text-neutral-100 mb-2">
+                    {confirmAction === 'confirm' ? 'Confirm Loan' : 'Cancel Loan'}
+                  </h3>
+                  <p className="text-sm text-[#43474D] dark:text-neutral-400 mb-6">
+                    {confirmAction === 'confirm'
+                      ? `Are you sure you want to confirm this loan for "${book.title}"?`
+                      : `Are you sure you want to cancel this loan for "${book.title}"? This action cannot be undone.`}
+                  </p>
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={() => setConfirmAction(null)}
+                      disabled={loading}
+                      className="px-5 py-2 rounded-full border border-[#E8E2D5] dark:border-neutral-600 text-sm font-medium text-[#43474D] dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                    >
+                      Go Back
+                    </button>
+                    <button
+                      onClick={confirmAction === 'confirm' ? executeConfirmLoan : executeCancelLoan}
+                      disabled={loading}
+                      className={`px-5 py-2 rounded-full text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ${
+                        confirmAction === 'confirm' ? 'bg-green-600' : 'bg-red-500'
+                      }`}
+                    >
+                      {loading ? 'Processing...' : 'Yes, Proceed'}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 

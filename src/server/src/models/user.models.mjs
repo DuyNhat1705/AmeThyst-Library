@@ -2,7 +2,7 @@ import pool from '../config/postgres.mjs';
 
 const getUserById = async (userId) => {
   const result = await pool.query(
-    "SELECT user_id, email, username, phone_number, avatar, role, borrow_num, (password_hash = 'GOOGLE_AUTH') AS is_google_account FROM users WHERE user_id = $1",
+    "SELECT user_id, email, username, gender, phone_number, avatar, role, borrow_num, (password_hash = 'GOOGLE_AUTH') AS is_google_account FROM users WHERE user_id = $1",
     [userId]
   );
   return result.rows[0] || null;
@@ -10,7 +10,7 @@ const getUserById = async (userId) => {
 
 const getUserWithPassword = async (userId) => {
   const result = await pool.query(
-    'SELECT user_id, email, username, phone_number, avatar, role, password_hash FROM users WHERE user_id = $1',
+    'SELECT user_id, email, username, gender, phone_number, avatar, role, password_hash FROM users WHERE user_id = $1',
     [userId]
   );
   return result.rows[0] || null;
@@ -23,7 +23,7 @@ const updateUser = async (userId, { username, phoneNumber, avatar }) => {
          phone_number = COALESCE($2, phone_number),
          avatar = COALESCE($3, avatar)
      WHERE user_id = $4
-     RETURNING user_id, email, username, phone_number, avatar, role`,
+     RETURNING user_id, email, username, gender, phone_number, avatar, role`,
     [username, phoneNumber, avatar, userId]
   );
   return result.rows[0];

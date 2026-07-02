@@ -64,7 +64,7 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
       setTick(t => t + 1);
       const token = localStorage.getItem('token');
       if (token) {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${book.id}/pin/cleanup`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${book.id}/pin/cleanup`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         }).catch(() => {});
