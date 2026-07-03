@@ -9,6 +9,7 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "start": "node src/server.mjs",
     "dev": "nodemon src/server.mjs"
   },
@@ -31,7 +32,9 @@
     "pg": "^8.21.0"
   },
   "devDependencies": {
+    "@vitest/ui": "^4.1.9",
     "dotenv": "^17.4.2",
+    "supertest": "^7.0.0",
     "vitest": "^4.1.9"
   }
 }

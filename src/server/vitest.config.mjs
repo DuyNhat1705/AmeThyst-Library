@@ -2,6 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    globals: true, // Bật cái này để nhận diện describe, test, expect giống Jest
+    globals: true,
+    api: {
+      host: '127.0.0.1',
+      port: 8080,
+    },
   },
 });
