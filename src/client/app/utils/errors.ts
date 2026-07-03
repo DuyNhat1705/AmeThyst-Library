@@ -16,7 +16,6 @@ const SERVER_ERROR_MAP: Record<string, string> = {
   'New password must be at least 8 characters': 'auth.password_min_length',
   'Password must be at least 8 characters': 'auth.password_min_length',
   'Password must contain at least one uppercase letter': 'auth.password_require_uppercase',
-  'Password must contain at least one lowercase letter': 'auth.password_require_lowercase',
   'Password must contain at least one number': 'auth.password_require_digit',
   'Password must contain at least one special character': 'auth.password_require_special',
   'Invalid or expired verification link.': 'auth.verification_failed',

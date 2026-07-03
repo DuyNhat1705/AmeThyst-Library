@@ -145,7 +145,6 @@
     "register_failed": "Đăng ký thất bại",
     "password_min_length": "Mật khẩu phải có ít nhất 8 ký tự",
     "password_require_uppercase": "Mật khẩu phải chứa ít nhất một chữ cái viết hoa",
-    "password_require_lowercase": "Mật khẩu phải chứa ít nhất một chữ cái viết thường",
     "password_require_digit": "Mật khẩu phải chứa ít nhất một chữ số",
     "password_require_special": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt",
     "login_failed": "Đăng nhập thất bại",

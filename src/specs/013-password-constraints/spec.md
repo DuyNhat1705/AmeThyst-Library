@@ -22,11 +22,10 @@ As a new user registering for an account, I want the system to enforce a strong 
 
 1. **Given** a user is on the registration page, **When** they enter a password with fewer than 8 characters, **Then** they see a validation error indicating the password is too short and registration is disabled.
 2. **Given** a user is on the registration page, **When** they enter a password that does not contain an uppercase letter, **Then** they see a validation error indicating an uppercase letter is required and registration is disabled.
-3. **Given** a user is on the registration page, **When** they enter a password that does not contain a lowercase letter, **Then** they see a validation error indicating a lowercase letter is required and registration is disabled.
-4. **Given** a user is on the registration page, **When** they enter a password that does not contain a digit, **Then** they see a validation error indicating a digit is required and registration is disabled.
-5. **Given** a user is on the registration page, **When** they enter a password that does not contain a special character, **Then** they see a validation error indicating a special character is required and registration is disabled.
-6. **Given** a user is on the registration page, **When** they enter a password that matches all criteria but does not match the confirm password field, **Then** they see an error indicating passwords do not match and registration is disabled.
-7. **Given** a user is on the registration page, **When** they enter a password that satisfies all constraints and matches the confirm password field, **Then** the registration is allowed.
+3. **Given** a user is on the registration page, **When** they enter a password that does not contain a digit, **Then** they see a validation error indicating a digit is required and registration is disabled.
+4. **Given** a user is on the registration page, **When** they enter a password that does not contain a special character, **Then** they see a validation error indicating a special character is required and registration is disabled.
+5. **Given** a user is on the registration page, **When** they enter a password that matches all criteria but does not match the confirm password field, **Then** they see an error indicating passwords do not match and registration is disabled.
+6. **Given** a user is on the registration page, **When** they enter a password that satisfies all constraints and matches the confirm password field, **Then** the registration is allowed.
 
 ---
 
@@ -71,11 +70,10 @@ As a user typing a password, I want to see a visual indicator of the password's 
 
 - **FR-001**: The password MUST contain at least 8 characters.
 - **FR-002**: The password MUST contain at least one uppercase alphabetical character (A-Z).
-- **FR-003**: The password MUST contain at least one lowercase alphabetical character (a-z).
-- **FR-004**: The password MUST contain at least one numeric digit (0-9).
-- **FR-005**: The password MUST contain at least one special character (non-alphanumeric symbol).
-- **FR-006**: The system MUST validate that the password and the confirmation password are identical before allowing submission.
-- **FR-007**: The system MUST provide clear, localized user feedback explaining which specific password constraint has failed.
+- **FR-003**: The password MUST contain at least one numeric digit (0-9).
+- **FR-004**: The password MUST contain at least one special character (non-alphanumeric symbol).
+- **FR-005**: The system MUST validate that the password and the confirmation password are identical before allowing submission.
+- **FR-006**: The system MUST provide clear, localized user feedback explaining which specific password constraint has failed.
 
 ### Key Entities
 

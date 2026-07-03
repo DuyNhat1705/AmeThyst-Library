@@ -145,7 +145,6 @@
     "register_failed": "Registration failed",
     "password_min_length": "Password must be at least 8 characters",
     "password_require_uppercase": "Password must contain at least one uppercase letter",
-    "password_require_lowercase": "Password must contain at least one lowercase letter",
     "password_require_digit": "Password must contain at least one number",
     "password_require_special": "Password must contain at least one special character",
     "login_failed": "Login failed",
