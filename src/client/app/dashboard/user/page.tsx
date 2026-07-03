@@ -46,7 +46,8 @@ export default function UserDashboardPage() {
         ]);
 
         const eventsData = eventsRes.ok ? await eventsRes.json() : { events: [] };
-        const borrowedData = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
+        const borrowedJson = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
+        const borrowedData = borrowedJson.data || borrowedJson;
 
         const events = eventsData.events || [];
 

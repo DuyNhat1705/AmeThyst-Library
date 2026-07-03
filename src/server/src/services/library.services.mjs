@@ -387,4 +387,67 @@ export const clearAllPins = async () => {
   }
 };
 
+/**
+ * Automatically cancel reservations that have been in 'reserved' status
+ * for more than 7 days (reserve_date + 7 days < NOW()).
+ * Deletes the borrow_book record, restores available_quantity, and decrements borrow_num.
+ */
+export const cleanupExpiredReservations = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const expiredQuery = `
+      SELECT borrow_id, book_id, branch_id, user_id
+      FROM public.borrow_book
+      WHERE status = 'reserved' AND reserve_date + INTERVAL '7 days' < NOW()
+      FOR UPDATE
+    `;
+    const expired = await client.query(expiredQuery);
+
+    if (expired.rows.length === 0) {
+      await client.query('COMMIT');
+      return 0;
+    }
+
+    const ids = expired.rows.map(r => r.borrow_id);
+    await client.query(
+      'DELETE FROM public.borrow_book WHERE borrow_id = ANY($1)',
+      [ids]
+    );
+
+    const perBranch = {};
+    const perUser = {};
+    for (const row of expired.rows) {
+      const key = `${row.book_id}:${row.branch_id}`;
+      perBranch[key] = perBranch[key] || { book_id: row.book_id, branch_id: row.branch_id, count: 0 };
+      perBranch[key].count++;
+      perUser[row.user_id] = (perUser[row.user_id] || 0) + 1;
+    }
+
+    for (const b of Object.values(perBranch)) {
+      await client.query(
+        'UPDATE public.library SET available_quantity = available_quantity + $1 WHERE book_id = $2 AND branch_id = $3',
+        [b.count, b.book_id, b.branch_id]
+      );
+    }
+
+    for (const [userId, count] of Object.entries(perUser)) {
+      await client.query(
+        'UPDATE public.users SET borrow_num = GREATEST(borrow_num - $1, 0) WHERE user_id = $2',
+        [count, userId]
+      );
+    }
+
+    await client.query('COMMIT');
+    return expired.rows.length;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error cleaning up expired reservations:', error);
+    return 0;
+  } finally {
+    client.release();
+  }
+};
+
 

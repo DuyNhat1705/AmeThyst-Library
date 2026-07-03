@@ -2,9 +2,9 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
+import { getToken, apiFetch } from '../../utils/apiClient';
 
 const SLOT_COUNT = 6;
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 type Step = 'pin' | 'details' | 'done';
 
@@ -99,22 +99,15 @@ export default function InlinePinVerification() {
     }
   };
 
-  const getToken = () => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('token');
-  };
-
   const handleVerify = async () => {
     const pin = digits.join('');
 
     if (pin.length !== SLOT_COUNT) {
-
       return;
     }
 
     const token = getToken();
     if (!token) {
-
       setError('Please sign in');
       return;
     }
@@ -123,29 +116,20 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const url = `${API_URL}/dashboard/librarian/verify-pin`;
-
-      const response = await fetch(url, {
+      const result = await apiFetch<VerifyData>('/dashboard/librarian/verify-pin', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-
-        setError(data.message || 'PIN verification failed');
+      if (!result.success) {
+        setError(result.message || 'PIN verification failed');
         return;
       }
 
-      setVerifiedData(data.data);
+      setVerifiedData(result.data!);
       setStep('details');
     } catch (err) {
-
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -164,13 +148,11 @@ export default function InlinePinVerification() {
     setConfirmAction(null);
 
     if (!verifiedData) {
-
       return;
     }
 
     const token = getToken();
     if (!token) {
-
       setError('Please sign in');
       return;
     }
@@ -179,29 +161,20 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const url = `${API_URL}/dashboard/librarian/confirm-loan`;
-
-      const response = await fetch(url, {
+      const result = await apiFetch<ConfirmData>('/dashboard/librarian/confirm-loan', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-
-        setError(data.message || 'Loan confirmation failed');
+      if (!result.success) {
+        setError(result.message || 'Loan confirmation failed');
         return;
       }
 
-      setResultMessage(`Loan confirmed. Due date: ${new Date(data.data.due_date).toLocaleDateString()}`);
+      setResultMessage(`Loan confirmed. Due date: ${new Date(result.data!.due_date).toLocaleDateString()}`);
       setStep('done');
     } catch (err) {
-
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -212,13 +185,11 @@ export default function InlinePinVerification() {
     setConfirmAction(null);
 
     if (!verifiedData) {
-
       return;
     }
 
     const token = getToken();
     if (!token) {
-
       setError('Please sign in');
       return;
     }
@@ -227,29 +198,20 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const url = `${API_URL}/dashboard/librarian/cancel-loan`;
-
-      const response = await fetch(url, {
+      const result = await apiFetch('/dashboard/librarian/cancel-loan', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-
-        setError(data.message || 'Loan cancellation failed');
+      if (!result.success) {
+        setError(result.message || 'Loan cancellation failed');
         return;
       }
 
       setResultMessage('Loan cancelled. Book returned to inventory.');
       setStep('done');
     } catch (err) {
-
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);

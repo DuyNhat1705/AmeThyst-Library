@@ -7,7 +7,7 @@ import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
 import dashboardRoutes from './routes/dashboard.user.routes.mjs';
 import dashboardLibrarianRoutes from './routes/dashboard.librarian.routes.mjs';
-import { clearAllPins, cleanupExpiredPins } from './services/library.services.mjs';
+import { runStartupPinCleanup, startPeriodicPinCleanup } from './utils/pinScheduler.mjs';
 import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
 
@@ -26,20 +26,8 @@ app.use(historyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-clearAllPins().then(count => {
-  if (count > 0) {
-    console.log(`Cleared ${count} pending PIN(s) on startup`);
-  }
-}).catch(err => {
-  console.error('Startup PIN cleanup failed:', err);
-});
-
-setInterval(async () => {
-  const cleaned = await cleanupExpiredPins();
-  if (cleaned > 0) {
-    console.log(`Cleaned up ${cleaned} expired PIN(s)`);
-  }
-}, 60 * 1000);
+runStartupPinCleanup();
+startPeriodicPinCleanup();
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
