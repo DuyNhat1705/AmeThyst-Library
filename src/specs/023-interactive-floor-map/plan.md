@@ -1,19 +1,21 @@
 # Implementation Plan: Interactive Floor Plan Map
 
-**Branch**: `023-interactive-floor-map` | **Date**: 2026-07-01 | **Spec**: [spec.md](spec.md)
+**Branch**: `023-interactive-floor-map` | **Date**: 2026-07-03 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/023-interactive-floor-map/spec.md`
 
 ## Summary
-Implement a fully responsive and interactive library floor map feature supporting multiple maps (Map 1 for NVC branch, Map 2 for Linh Trung branch). The UI combines a 2D floor layout PNG background (`mapCS1.png` or `map_cs2.png`) from `client/app/assets/MapImages/` overlaid with an interactive SVG coordinates layer (`map_layout1.svg` or `Map_layout_2.svg`). Hovering highlights room elements and clicking opens a side drawer details panel displaying database room records, availability, and a 3D visualization preview from the Map's `3D/` asset directory.
+Implement a fully responsive and interactive library floor map feature supporting multiple maps (Map 1 for NVC branch, Map 2 for Linh Trung branch). The UI combines a 2D floor layout PNG background (`mapCS1.png` or `map_cs2.png`) from `client/app/assets/MapImages/` overlaid with an interactive SVG coordinates layer. Hovering highlights room elements and clicking opens a side drawer details panel displaying database room records, availability, and a 3D visualization preview.
 
 The map route is configured at `/map` in `client/app/map/page.tsx`, directly binding to the navigation bar's LIMA map tab link.
 
 Special layout rules are applied dynamically based on the space's capacity:
-- If `capacity = 1`, only the name, description, and 3D preview (`room_{room_id}.png`) are shown (no reservation or other attributes are shown).
-- If `capacity > 1`, all room attributes are shown, and reservation/calendar elements are displayed exclusively for logged-in users (guests see a login CTA prompt).
+- If `capacity = 0`, only the name, description, and 3D preview are shown (no reservation, stats, or other attributes are shown).
+- If `capacity > 0`, all room attributes (including projectors) are shown, and reservation/calendar elements are displayed exclusively for logged-in users (guests see a login CTA prompt).
 
-The 3D visualization preview images are loaded from `client/app/assets/MapImages/3D/room_{room_id}.png`, mapping the database primary key `room_id` dynamically.
+The 3D visualization preview images are loaded from the database's `img_url` column. If null, they fall back to a dynamic Next.js server-side API route `/api/assets/3D/[id]` which reads and streams raw PNG buffers from `client/app/assets/MapImages/3D/room_{room_id}.png` dynamically without file duplication.
+
+---
 
 ## Technical Context
 
@@ -22,6 +24,8 @@ The 3D visualization preview images are loaded from `client/app/assets/MapImages
 **Primary Dependencies**: React 19, Next.js 16, Tailwind CSS v4, Express 5.x, pg 8.x (PostgreSQL client)
 
 **Storage**: PostgreSQL (tables: `study_room`, `room_avail`, `reserve_room`)
+- Updated schema: `study_room` table includes `projector_num` (int4, default 0, check >= 0) and `img_url` (text).
+- Constraint update: Changed capacity check constraint `chk_capacity_positive` from `>= 1` to `>= 0`.
 
 **Testing**: Jest (for backend API controller, service, and model tests)
 
@@ -38,21 +42,21 @@ The 3D visualization preview images are loaded from `client/app/assets/MapImages
 - Absolute pixel layout alignment must be scaled responsively using responsive SVGs (`viewBox`).
 - Interactivity must not be occluded (overlay elements must use `pointer-events: none` container / `pointer-events: auto` shapes).
 - Strict adherence to project's Light/Dark mode and localization constraints.
-- Conditional render logic in details panel based on capacity (informative vs. reservable space) and authentication status (member booking calendar vs. guest login prompt).
-- Static assets directory is located at `client/app/assets/MapImages/`.
-- Frontend route directory is at `client/app/map/page.tsx` corresponding to URL path `/map`.
+- State tracking and handlers track selected room using numeric `roomId` to match primary key database schemas.
+- Visual drawer styles matching `FilterPanel` (absolute top offset `top-[84px] h-[calc(100vh-84px)]` and background `#FFF8EB`).
+- Scroll lock on outer document body when sidebar panel is open.
 
-**Scale/Scope**: Two branches/maps: Map 1 (NVC, 15 room/zone elements), Map 2 (LT, 9 room/zone elements).
+---
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*Passed. Re-checked post-implementation.*
 
 - **Principle I: Component-Driven & Reusability**: Yes. Interactive map rendered via atomic component `<FloorMap />` and details panel via `<RoomDetailPanel />`, matching `FilterPanel` structures.
-- **Principle II: State Management & Data Fetching**: Yes. activeMap state and loading/error/success states handled explicitly. URL constants configured dynamically via environment variables.
-- **Principle III: Responsive & Beautiful Design**: Yes. Uses Tailwind CSS layout alignment and micro-interactions for highlights.
+- **Principle II: State Management & Data Fetching**: Yes. Selected room tracked via numeric `selectedRoomId`. Details queried from backend by `roomId` (and falls back to `name`).
+- **Principle III: Responsive & Beautiful Design**: Yes. Uses Tailwind CSS layout alignment, theme-synchronized backgrounds (`bg-background text-foreground`), and micro-interactions for highlights.
 - **Principle V: Error Handling & Accessibility**: Yes. Displays graceful fallbacks for missing 3D images and database connection errors.
-- **Principle IX: Light/Dark Mode & Localization (i18n)**: Yes. Styled using Tailwind CSS v4 dark mode utilities. Text strings localized via translation keys in `en.json` and `vi.json`.
+- **Principle IX: Light/Dark Mode & Localization (i18n)**: Yes. Styled using Tailwind CSS v4 dark mode utilities. Text strings localized via translation keys in `en.json` and `vi.json` (including the new `projector` count).
 - **Backend Architecture & Casing**: Yes. Strictly follows Controller -> Service -> Model layer chain. Filenames use ES Modules `.mjs` naming conventions.
 
 ---
@@ -78,9 +82,14 @@ specs/023-interactive-floor-map/
 ```text
 client/
 ├── app/
+│   ├── api/
+│   │   └── assets/
+│   │       └── 3D/
+│   │           └── [id]/
+│   │               └── route.ts     # Next.js dynamic API route to stream 3D assets
 │   ├── assets/
 │   │   └── MapImages/
-│   │       ├── 3D/          # Contains room_1.png to room_23.png
+│   │       ├── 3D/          # Original location of room_1.png to room_23.png
 │   │       ├── LayoutCS1.png
 │   │       ├── Layout_cs2.png
 │   │       ├── mapCS1.png
@@ -91,8 +100,8 @@ client/
 │       └── page.tsx         # Next.js floor map page (/map)
 └── components/
     └── library/
-        ├── FloorMap.tsx     # Map renderer with absolute SVG overlay
-        └── RoomDetailPanel.tsx # Side-drawer details slide-out panel
+        ├── FloorMap.tsx     # Map renderer with absolute SVG overlay (numeric IDs click)
+        └── RoomDetailPanel.tsx # Side-drawer details slide-out panel (scroll-locked)
  
 server/
 └── src/
@@ -106,8 +115,25 @@ server/
         └── room.services.mjs
 ```
 
-**Structure Decision**: Web application layout utilizing a fat Service layer in the backend Express service and modular reusable React components in the frontend client.
+---
 
-## Complexity Tracking
+## Completed Implementations & Verification
 
-*No violations identified.*
+1. **Backend Rooms REST Schema & API Route**:
+   - Created room routes in Express `/api/rooms/details` and `/api/rooms/availability`.
+   - Verified that the backend successfully resolves details and booking slots.
+   - Tested model, controller, and service layer modules via backend Jest mock tests.
+
+2. **Frontend Routing & Numeric ID State Flow**:
+   - Created map tab page `/map`.
+   - Configured absolute vector highlighting SVG layers aligned responsively over 2D background PNG images.
+   - Wired handlers to pass numeric database primary keys `selectedRoomId` (1 to 24) on space clicks.
+
+3. **Drawer Panel UI & Scroll Lock**:
+   - Programmed the side drawer details panel layout to match `FilterPanel` offsets (`top-[84px]`).
+   - Added automatic document overflow toggle (`document.body.style.overflow = 'hidden'`) when active.
+   - Set up conditional stats and scheduling lists for reservable spaces (`capacity > 0`).
+
+4. **Dynamic 3D Asset Retrival**:
+   - Programmed custom API route `/api/assets/3D/[id]` to read and stream original files.
+   - Integrated logic to fetch image previews from database `imgUrl` column, falling back to local streamed path.

@@ -12,6 +12,8 @@ interface RoomDetails {
   tvNum: number;
   boardNum: number;
   socketNum: number;
+  projectorNum: number;
+  imgUrl: string | null;
   capacity: number;
   description: string;
 }
@@ -78,7 +80,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
         const json = await res.json();
         if (json.success && json.data) {
           setRoomDetails(json.data);
-          setImgSrc(`/api/assets/3D/${json.data.roomId}`);
+          setImgSrc(json.data.imgUrl || `/api/assets/3D/${json.data.roomId}`);
         } else {
           throw new Error('Room details currently unavailable');
         }
@@ -93,9 +95,9 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
     fetchDetails();
   }, [isOpen, roomId, branchId, backendUrl]);
 
-  // Fetch Availability if capacity > 1 and logged in
+  // Fetch Availability if capacity > 0 and logged in
   useEffect(() => {
-    if (!isOpen || !roomDetails || roomDetails.capacity <= 1 || !user) {
+    if (!isOpen || !roomDetails || roomDetails.capacity <= 0 || !user) {
       setAvailability([]);
       return;
     }
@@ -243,8 +245,8 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                 </p>
               </div>
 
-              {/* Room Stats (Conditional on Capacity > 1) */}
-              {roomDetails.capacity > 1 ? (
+              {/* Room Stats (Conditional on Capacity > 0) */}
+              {roomDetails.capacity > 0 ? (
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
                     Room Details
@@ -279,6 +281,14 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                       <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('floor_map.panel.whiteboard')}</span>
                       <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-0.5">
                         {roomDetails.boardNum || t('floor_map.panel.none')}
+                      </span>
+                    </div>
+
+                    {/* Projectors */}
+                    <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 flex flex-col justify-center">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('floor_map.panel.projector')}</span>
+                      <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-0.5">
+                        {roomDetails.projectorNum || t('floor_map.panel.none')}
                       </span>
                     </div>
                   </div>

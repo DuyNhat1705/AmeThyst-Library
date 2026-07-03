@@ -15,6 +15,8 @@ export const findRoomByNameAndBranch = async (name, branchId) => {
       tv_num AS "tvNum",
       board_num AS "boardNum",
       socket_num AS "socketNum",
+      projector_num AS "projectorNum",
+      img_url AS "imgUrl",
       capacity,
       description
     FROM study_room
@@ -38,6 +40,8 @@ export const findRoomById = async (roomId) => {
       tv_num AS "tvNum",
       board_num AS "boardNum",
       socket_num AS "socketNum",
+      projector_num AS "projectorNum",
+      img_url AS "imgUrl",
       capacity,
       description
     FROM study_room
