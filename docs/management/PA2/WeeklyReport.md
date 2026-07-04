@@ -5,26 +5,11 @@ Reviewed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh, Nguyễn Nhựt Huy, Nguy
 
 Editied by: Vũ Duy Nhất
 
-## Meeting Minutes: 6/6/2026
-Nội dung họp
-- Nói về PA2
-- việc linking giữa fe và be, việc gửi http request/payload giữa fe và be
-- Đặt tên endpoint
-	+ /books/:id: User bấm vào cuốn sách và trang thông tin chi tiết của sách tương ứng đc render
-	+ /books/:id/borrow-book: 
-	+ /users/:id/edit-name: User sử dung chức năng đổi tên
-- Việc phân loại các function vào folder chức năng tương ứng ở fe và be
-- Nói về việc merge code: khi 1 thành viên hoàn thành 1 feature nào đó, báo cho PM để merge ngay nhánh đó vào dev, sau đó thành viên đó sẽ merge lại nhánh dev vào nhánh feature của mình
-
-
-- Nói về database schema, tên các trường dữ liệu cho user
-- Nói về việc thu thập dữ lieu, các trường dữ liệu hiện có
-- Nói về GUI base cho user
-- Nói về set up SpecKit, SSD
-- Nói về cách tái sử dung style, nên mở một file style.js khai báo các thể loại style là object (tailwind css syntax hoặc syntax css thường) và export ra để component nào cần thì import vào sử dụng
-
-- Gia: gửi các field name của book database
-- Minh: gửi các field name của user database
+## 1. Meeting Minutes: 6/6/2026 - Sprint Planning
+### 1.1. Implementation tasks
+### 1.2. Design tasks
+### 1.3. Document tasks
+### 1.4. Self-learning tasks
 ## Meeting Minutes: 20/6/2026
 Nội dung họp
     - Tổng kết những gì đã làm được trong tuần qua (đánh giá cách tổ chức code, web hiện tại)
