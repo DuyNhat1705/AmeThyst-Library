@@ -5,9 +5,9 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.0
+    Version: 1.1
 
-Performed by: Nguyễn Lê Hoàng Khải | Reviewed by: Vũ Duy Nhất | Edited by: Nguyễn Lê Hoàng Khải
+Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất
 
 ## Revision History
 | Date | Version | Description | Author |
@@ -21,18 +21,18 @@ Performed by: Nguyễn Lê Hoàng Khải | Reviewed by: Vũ Duy Nhất | Edited 
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
   - [2. Project Overview](#2-project-overview)
-    - [2.1. Project Objectives](#21-project-objectives)
-    - [2.2. Scope of Work](#22-scope-of-work)
-      - [2.2.1. Target Users](#221-target-users)
-      - [2.2.2. Target Environments](#222-target-environments)
-    - [2.3. Project Deliverables](#23-project-deliverables)
-    - [2.4. Assumptions \& Constraints](#24-assumptions--constraints)
+    - [2.1 Project Objectives](#21-project-objectives)
+    - [2.2 Scope of Work](#22-scope-of-work)
+      - [2.2.1 Target Users](#221-target-users)
+      - [2.2.2 Target Environments](#222-target-environments)
+    - [2.3 Project Deliverables](#23-project-deliverables)
+    - [2.4 Assumptions \& Constraints](#24-assumptions--constraints)
   - [3. Project Organization](#3-project-organization)
-    - [3.1. Team Structure and Roles](#31-team-structure-and-roles)
-    - [3.2. Risk Management](#32-risk-management)
+    - [3.1 Team Structure and Roles](#31-team-structure-and-roles)
+    - [3.2 Risk Management](#32-risk-management)
   - [4. Project Plan](#4-project-plan)
-    - [4.2. Schedule Overview](#42-schedule-overview)
-    - [4.3. Detailed Build Plan](#43-detailed-build-plan)
+    - [4.2 Schedule Overview](#42-schedule-overview)
+    - [4.3 Detailed Build Plan](#43-detailed-build-plan)
     - [Sprint 1 (23 May – 6 Jun 2026) — Team Assignment](#sprint-1-23-may--6-jun-2026--team-assignment)
     - [Sprint 2 (7 – 28 Jun 2026) — Team Assignment](#sprint-2-7--28-jun-2026--team-assignment)
   - [5. AI Usage Notes](#5-ai-usage-notes)
@@ -43,7 +43,7 @@ Our project is a Modern Library Management System designed for everyone, combini
 
 ## 2. Project Overview
 
-### 2.1. Project Objectives
+### 2.1 Project Objectives
 
 The primary goal of this project is to build a system that maximizes the management of all library resources — encompassing both books and rooms — while delivering a convenient, modern, and highly accessible experience to every user.
 
@@ -51,20 +51,20 @@ The primary goal of this project is to build a system that maximizes the managem
 - **Optimize library assets:** Help staff manage book stock, monitor study room bookings, and review usage and financial data in real time.
 - **Modernize the user experience:** Use AI to make finding books more intuitive and personalized to individual reading habits.
 
-### 2.2. Scope of Work
+### 2.2 Scope of Work
 
-#### 2.2.1. Target Users
+#### 2.2.1 Target Users
 
 - **Users seeking reference materials:** Students who need to quickly locate, reserve, and borrow physical books or textbooks for coursework and research.
 - **Users seeking collaboration:** Users who want to connect with peers, form study groups, find study partners, and book collaborative spaces.
 - **Users seeking quiet, focused spaces:** Users who need a quiet, structured environment for self-study, assignments, or individual projects.
 
-#### 2.2.2. Target Environments
+#### 2.2.2 Target Environments
 
 - **Web application:** Responsive interface compatible with major desktop and mobile browsers (Chrome, Safari, Edge).
 - **Cross-platform access:** Accessible from any major operating system (Windows, macOS, Linux, iOS, Android) without requiring local installation.
 
-### 2.3. Project Deliverables
+### 2.3 Project Deliverables
 
 The final product will be a fully operational web platform with integrated frontend, backend, and database components, covering the following functional modules:
 
@@ -83,7 +83,7 @@ The final product will be a fully operational web platform with integrated front
 - Complete documentation for all five Project Assignments (PAs).
 - Spec Kit artifacts for all implemented functional groups, including UI/UX wireframes, architecture diagrams, database schemas, and system workflows.
 
-### 2.4. Assumptions & Constraints
+### 2.4 Assumptions & Constraints
 
 **Assumptions**
 
@@ -106,7 +106,7 @@ The final product will be a fully operational web platform with integrated front
 
 ## 3. Project Organization
 
-### 3.1. Team Structure and Roles
+### 3.1 Team Structure and Roles
 
 The team consists of five members, each holding a primary specialization while also contributing as a full-stack engineer across the project.
 
@@ -120,7 +120,7 @@ The team consists of five members, each holding a primary specialization while a
 
 Decision-making follows a consensus-first approach; if consensus cannot be reached, the team defaults to a majority vote, with the Project Manager holding final authority on non-technical deadlocks and the Technical Lead on purely technical disputes.
 
-### 3.2. Risk Management
+### 3.2 Risk Management
 
 ||Risk|Likelihood|Impact|Mitigation Strategy|
 |---|---|---|---|---|
@@ -134,7 +134,7 @@ Decision-making follows a consensus-first approach; if consensus cannot be reach
 
 This project plan is not a final version and may be subject to change and finish throughout the remaining PAs.
 
-### 4.2. Schedule Overview
+### 4.2 Schedule Overview
 
 | Sprint | PA | Duration | Dates | Status | Key Deliverables / Main Tasks |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -144,7 +144,7 @@ This project plan is not a final version and may be subject to change and finish
 | **Sprint 4** | PA4 | 2-3 weeks | # | Planned | Revised Use-Case Specification, Software Architecture (C4 Model), Deployment Diagram, Implement 2 Functional Groups |
 | **Sprint 5** | PA5 | 2-3 weeks | # | Planned | Test Plan & Test Cases, Final Product Demo, Reflective Report, Final Submission |
 
-### 4.3. Detailed Build Plan
+### 4.3 Detailed Build Plan
 
 Note: Review tasks are not logged as separate items, but an internal review policy is strictly followed. Documents are collectively reviewed by the team once drafted. Meanwhile, development tasks undergo self-testing by the implementer and a mandatory code review by the Project Manager (Vũ Duy Nhất) prior to merging.
 
