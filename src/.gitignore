@@ -36,7 +36,6 @@ yarn-error.log*
 /client/.pnp
 /client/.pnp.*
 /client/.yarn/*
-/client/app/assets/MapImages
 !/client/.yarn/patches
 !/client/.yarn/plugins
 !/client/.yarn/releases
