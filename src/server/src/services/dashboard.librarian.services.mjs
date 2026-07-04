@@ -120,9 +120,9 @@ export const verifyPin = async (pin, librarianBranchId) => {
 
 
 /**
- * Confirm a loan: update status to borrowed, set due_date, create calendar event, nullify expired_reserve
+ * Confirm a borrowing: update status to borrowed, set due_date, create calendar event, nullify expired_reserve
  */
-export const confirmLoan = async (borrowId) => {
+export const confirmBorrowing = async (borrowId) => {
 
 
 
@@ -156,13 +156,13 @@ export const confirmLoan = async (borrowId) => {
 
 
       await client.query('ROLLBACK');
-      return { error: { code: 'USER_INELIGIBLE', message: 'Borrower has overdue books or is suspended. Cannot confirm loan.' }, statusCode: 409 };
+      return { error: { code: 'USER_INELIGIBLE', message: 'Borrower has overdue books or is suspended. Cannot confirm borrowing.' }, statusCode: 409 };
     }
 
 
     const updateQuery = `
       UPDATE public.borrow_book
-      SET status = 'borrowed', due_date = NOW() + INTERVAL '14 days'
+      SET status = 'borrowed', due_date = NOW() + INTERVAL '14 days', pin = NULL, expired_at = NULL
       WHERE borrow_id = $1
       RETURNING due_date
     `;
@@ -199,9 +199,9 @@ export const confirmLoan = async (borrowId) => {
 
 
 /**
- * Cancel a loan: delete borrow record and increment book quantity
+ * Cancel a borrowing: delete borrow record and increment book quantity
  */
-export const cancelLoan = async (borrowId) => {
+export const cancelBorrowing = async (borrowId) => {
 
 
 

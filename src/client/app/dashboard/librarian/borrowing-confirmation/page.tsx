@@ -1,5 +1,5 @@
 import InlinePinVerification from '../../../components/organisms/InlinePinVerification';
 
-export default function LoanConfirmationPage() {
+export default function BorrowingConfirmationPage() {
   return <InlinePinVerification />;
 }

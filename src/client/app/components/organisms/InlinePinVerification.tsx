@@ -136,15 +136,15 @@ export default function InlinePinVerification() {
     }
   };
 
-  const handleConfirmLoan = async () => {
+  const handleConfirmBorrowing = async () => {
     setConfirmAction('confirm');
   };
 
-  const handleCancelLoan = async () => {
+  const handleCancelBorrowing = async () => {
     setConfirmAction('cancel');
   };
 
-  const executeConfirmLoan = async () => {
+  const executeConfirmBorrowing = async () => {
     setConfirmAction(null);
 
     if (!verifiedData) {
@@ -161,18 +161,18 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const result = await apiFetch<ConfirmData>('/dashboard/librarian/confirm-loan', {
+      const result = await apiFetch<ConfirmData>('/dashboard/librarian/confirm-borrowing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
 
       if (!result.success) {
-        setError(result.message || 'Loan confirmation failed');
+        setError(result.message || 'Borrowing confirmation failed');
         return;
       }
 
-      setResultMessage(`Loan confirmed. Due date: ${new Date(result.data!.due_date).toLocaleDateString()}`);
+      setResultMessage(`Borrowing confirmed. Due date: ${new Date(result.data!.due_date).toLocaleDateString()}`);
       setStep('done');
     } catch (err) {
       setError('Network error. Please try again.');
@@ -181,7 +181,7 @@ export default function InlinePinVerification() {
     }
   };
 
-  const executeCancelLoan = async () => {
+  const executeCancelBorrowing = async () => {
     setConfirmAction(null);
 
     if (!verifiedData) {
@@ -198,18 +198,18 @@ export default function InlinePinVerification() {
     setError(null);
 
     try {
-      const result = await apiFetch('/dashboard/librarian/cancel-loan', {
+      const result = await apiFetch('/dashboard/librarian/cancel-borrowing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ borrow_id: verifiedData.borrowId }),
       });
 
       if (!result.success) {
-        setError(result.message || 'Loan cancellation failed');
+        setError(result.message || 'Borrowing cancellation failed');
         return;
       }
 
-      setResultMessage('Loan cancelled. Book returned to inventory.');
+      setResultMessage('Borrowing cancelled. Book returned to inventory.');
       setStep('done');
     } catch (err) {
       setError('Network error. Please try again.');
@@ -321,12 +321,12 @@ export default function InlinePinVerification() {
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                 <div className="bg-white dark:bg-neutral-800 rounded-xl p-8 max-w-sm w-full mx-4 shadow-xl">
                   <h3 className="text-lg font-bold text-black dark:text-neutral-100 mb-2">
-                    {confirmAction === 'confirm' ? 'Confirm Loan' : 'Cancel Loan'}
+                    {confirmAction === 'confirm' ? 'Confirm Borrowing' : 'Cancel Borrowing'}
                   </h3>
                   <p className="text-sm text-[#43474D] dark:text-neutral-400 mb-6">
                     {confirmAction === 'confirm'
-                      ? `Are you sure you want to confirm this loan for "${book.title}"?`
-                      : `Are you sure you want to cancel this loan for "${book.title}"? This action cannot be undone.`}
+                      ? `Are you sure you want to confirm this borrowing for "${book.title}"?`
+                      : `Are you sure you want to cancel this borrowing for "${book.title}"? This action cannot be undone.`}
                   </p>
                   <div className="flex gap-3 justify-end">
                     <button
@@ -337,7 +337,7 @@ export default function InlinePinVerification() {
                       Go Back
                     </button>
                     <button
-                      onClick={confirmAction === 'confirm' ? executeConfirmLoan : executeCancelLoan}
+                      onClick={confirmAction === 'confirm' ? executeConfirmBorrowing : executeCancelBorrowing}
                       disabled={loading}
                       className={`px-5 py-2 rounded-full text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ${
                         confirmAction === 'confirm' ? 'bg-green-600' : 'bg-red-500'
@@ -352,22 +352,22 @@ export default function InlinePinVerification() {
 
             <div className="flex justify-center items-start gap-4 w-full">
               <button
-                onClick={handleConfirmLoan}
+                onClick={handleConfirmBorrowing}
                 disabled={loading}
                 className="cursor-pointer flex py-3 px-12 items-center gap-2 rounded-full bg-green-600 disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
               >
                 <span className="text-white font-hankenGrotesk text-xs font-bold leading-4 tracking-[0.1em]">
-                  {loading ? 'Processing...' : 'Confirm Loan'}
+                  {loading ? 'Processing...' : 'Confirm Borrowing'}
                 </span>
               </button>
 
               <button
-                onClick={handleCancelLoan}
+                onClick={handleCancelBorrowing}
                 disabled={loading}
                 className="cursor-pointer flex py-3 px-12 items-center gap-2 rounded-full bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
               >
                 <span className="text-white font-hankenGrotesk text-xs font-bold leading-4 tracking-[0.1em]">
-                  {loading ? 'Processing...' : 'Cancel Loan'}
+                  {loading ? 'Processing...' : 'Cancel Borrowing'}
                 </span>
               </button>
             </div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import StudyGroupCard from '../molecules/StudyGroupCard';
 import { StudyGroup } from '../../study-together/mockData';
-import { useI18n } from '../../providers/I18nProvider';
+
 
 interface StudyGroupGridProps {
   groups: StudyGroup[];
@@ -12,7 +12,6 @@ interface StudyGroupGridProps {
 }
 
 export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, pendingRequests = [] }: StudyGroupGridProps) {
-  const { t } = useI18n();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 

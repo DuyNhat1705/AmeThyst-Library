@@ -1,4 +1,4 @@
-import { verifyPin as verifyPinService, confirmLoan as confirmLoanService, cancelLoan as cancelLoanService } from '../services/dashboard.librarian.services.mjs';
+import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService } from '../services/dashboard.librarian.services.mjs';
 
 
 const verifyPin = async (req, res) => {
@@ -38,7 +38,7 @@ const verifyPin = async (req, res) => {
 };
 
 
-const confirmLoan = async (req, res) => {
+const confirmBorrowing = async (req, res) => {
 
 
   try {
@@ -53,7 +53,7 @@ const confirmLoan = async (req, res) => {
     }
 
 
-    const result = await confirmLoanService(borrow_id);
+    const result = await confirmBorrowingService(borrow_id);
 
 
 
@@ -64,7 +64,7 @@ const confirmLoan = async (req, res) => {
     }
 
 
-    res.json({ success: true, data: { borrowId: result.borrowId, status: result.status, due_date: result.due_date }, message: 'Loan confirmed successfully' });
+    res.json({ success: true, data: { borrowId: result.borrowId, status: result.status, due_date: result.due_date }, message: 'Borrowing confirmed successfully' });
   } catch (error) {
 
 
@@ -74,7 +74,7 @@ const confirmLoan = async (req, res) => {
 };
 
 
-const cancelLoan = async (req, res) => {
+const cancelBorrowing = async (req, res) => {
 
 
   try {
@@ -89,7 +89,7 @@ const cancelLoan = async (req, res) => {
     }
 
 
-    const result = await cancelLoanService(borrow_id);
+    const result = await cancelBorrowingService(borrow_id);
 
 
 
@@ -100,7 +100,7 @@ const cancelLoan = async (req, res) => {
     }
 
 
-    res.json({ success: true, data: { borrowId: result.borrowId, status: result.status }, message: 'Loan cancelled successfully. Book quantity updated.' });
+    res.json({ success: true, data: { borrowId: result.borrowId, status: result.status }, message: 'Borrowing cancelled successfully. Book quantity updated.' });
   } catch (error) {
 
 
@@ -110,5 +110,5 @@ const cancelLoan = async (req, res) => {
 };
 
 
-export { verifyPin, confirmLoan, cancelLoan };
+export { verifyPin, confirmBorrowing, cancelBorrowing };
 

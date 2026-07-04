@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
 import ToggleSwitch from '../atoms/ToggleSwitch';
 import YearRangeFilter from '../molecules/YearRangeFilter';
-import { useI18n } from '../../providers/I18nProvider';
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -53,7 +52,6 @@ export default function FilterPanel({
   onEndYearChange,
   onReset
 }: FilterPanelProps) {
-  const { t } = useI18n();
 
   useEffect(() => {
     if (isOpen) {
