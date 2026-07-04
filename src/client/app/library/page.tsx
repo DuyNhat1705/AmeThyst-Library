@@ -97,33 +97,19 @@ function LibraryPageContent() {
   // Immediate handlers for tags and checkboxes
   const handleGenresChange = (newGenres: string[]) => {
     setGenres(newGenres);
-    setLogHistory(true); // Filter change triggers persistent log
-    updateUrl({ genres: newGenres });
   };
 
   const handleBranchesChange = (newBranches: number[]) => {
     setBranches(newBranches);
-    setLogHistory(true); // Filter change triggers persistent log
-    updateUrl({ branches: newBranches });
   };
 
   const handleAvailableOnlyChange = (newAvailableOnly: boolean) => {
     setAvailableOnly(newAvailableOnly);
-    setLogHistory(true); // Filter change triggers persistent log
-    updateUrl({ availableOnly: newAvailableOnly });
   };
 
-  // Debounced sync for year inputs
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (startYear !== urlStartYear || endYear !== urlEndYear) {
-        setLogHistory(true); // Filter change triggers persistent log
-        updateUrl({ startYear, endYear });
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [startYear, endYear]);
+  const handleYearSubmit = () => {
+    // Year changes will be applied when the filter panel is hidden
+  };
 
   const handleSearchTrigger = (query: string, isSubmit?: boolean) => {
     setSearchQuery(query);
@@ -148,13 +134,28 @@ function LibraryPageContent() {
     setAvailableOnly(false);
     setStartYear('');
     setEndYear('');
-    setSearchQuery('');
-    setSubmittedQuery('');
     setLogHistory(false);
-    router.push(pathname);
   };
 
   const hasActiveFilters = genres.length > 0 || branches.length > 0 || availableOnly || !!startYear || !!endYear;
+
+  // Check if current filter states differ from URL search params
+  const hasFilterChanges = () => {
+    const arraysEqual = (a: any[], b: any[]) => {
+      if (a.length !== b.length) return false;
+      const sortedA = [...a].sort();
+      const sortedB = [...b].sort();
+      return sortedA.every((val, index) => val === sortedB[index]);
+    };
+
+    return (
+      !arraysEqual(genres, urlGenres) ||
+      !arraysEqual(branches, urlBranches) ||
+      availableOnly !== urlAvailableOnly ||
+      startYear !== urlStartYear ||
+      endYear !== urlEndYear
+    );
+  };
 
   return (
     <>
@@ -181,7 +182,10 @@ function LibraryPageContent() {
             isOpen={isFilterOpen}
             onClose={() => {
               setIsFilterOpen(false);
-              setLogHistory(true);
+              if (hasFilterChanges()) {
+                setLogHistory(true);
+                updateUrl({ genres, branches, availableOnly, startYear, endYear });
+              }
             }}
             selectedGenres={genres}
             onGenresChange={handleGenresChange}
@@ -193,6 +197,7 @@ function LibraryPageContent() {
             endYear={endYear}
             onStartYearChange={setStartYear}
             onEndYearChange={setEndYear}
+            onYearSubmit={handleYearSubmit}
             onReset={handleReset}
           />
         }

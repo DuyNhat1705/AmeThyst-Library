@@ -16,6 +16,7 @@ interface FilterPanelProps {
   endYear: string;
   onStartYearChange: (year: string) => void;
   onEndYearChange: (year: string) => void;
+  onYearSubmit: () => void;
   onReset: () => void;
 }
 
@@ -50,6 +51,7 @@ export default function FilterPanel({
   endYear,
   onStartYearChange,
   onEndYearChange,
+  onYearSubmit,
   onReset
 }: FilterPanelProps) {
   const { t } = useI18n();
@@ -93,7 +95,7 @@ export default function FilterPanel({
 
       {/* Slide-out drawer panel */}
       <div
-        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col overflow-y-auto scrollbar-thin [scrollbar-color:#C5C6CD_transparent] dark:[scrollbar-color:theme(colors.neutral.700)_transparent] ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -164,6 +166,7 @@ export default function FilterPanel({
             endYear={endYear}
             onStartYearChange={onStartYearChange}
             onEndYearChange={onEndYearChange}
+            onYearSubmit={onYearSubmit}
           />
 
           {/* Section 4: Availability */}

@@ -149,11 +149,11 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   const getStatusText = (status: string) => {
     switch (status) {
       case 'free':
-        return t('common.available') || 'Available';
+        return t('available') || 'Available';
       case 'reserved':
-        return t('common.reserved') || 'Reserved';
+        return t('reserved') || 'Reserved';
       case 'pending':
-        return t('common.pending') || 'Pending';
+        return t('pending') || 'Pending';
       default:
         return status;
     }
@@ -175,11 +175,11 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
       />
 
       {/* Slide-out drawer panel */}
-      <div
-        className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
+        <div
+      className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col overflow-y-auto scrollbar-thin [scrollbar-color:#C5C6CD_transparent] dark:[scrollbar-color:theme(colors.neutral.700)_transparent] ${
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}
+>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
           <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
