@@ -70,16 +70,6 @@ export default function Sidebar({
             <Link href="/profile/security" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#EAEAEA] active:bg-[#D4D4D4] dark:hover:bg-neutral-700 dark:active:bg-neutral-600 transition-all text-[#091426] dark:text-neutral-200">
               <span>🔒</span> {t('profile.security_link')}
             </Link>
-            {isBorrowerRole(role) && (
-              <Link href="/dashboard/user/borrowed" className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EAEAEA] active:bg-[#D4D4D4] dark:hover:bg-neutral-700 dark:active:bg-neutral-600 transition-all text-[#091426] dark:text-neutral-200">
-                <span className="flex items-center gap-3">
-                  <span>📚</span> {t('profile.borrow_books_link')}
-                </span>
-                <span className="bg-[#006F66] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[22px] text-center">
-                  {borrowNum}
-                </span>
-              </Link>
-            )}
           </nav>
 
           {/* Borrowing Information Widget — only relevant for the 'user' role */}

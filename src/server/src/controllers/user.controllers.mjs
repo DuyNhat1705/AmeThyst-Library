@@ -20,40 +20,51 @@ const getProfile = async (req, res) => {
   }
 };
 
+const ALLOWED_PROFILE_FIELDS = [
+  'username',
+  'phoneNumber',
+  'occupation',
+  'birthDate',
+  'gender',
+  'hometown',
+  'description',
+  'avatar'
+];
+
 const updateProfile = async (req, res) => {
   try {
-    const { username, phoneNumber, occupation, birthDate, gender, hometown, description, avatar } = req.body;
+    const updateData = {};
+    for (const field of ALLOWED_PROFILE_FIELDS) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field] === '' ? null : req.body[field];
+      }
+    }
 
-    if (username !== undefined) {
-      if (typeof username !== 'string' || !username.trim()) {
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    if (updateData.username !== undefined) {
+      if (typeof updateData.username !== 'string' || !updateData.username.trim()) {
         return res.status(400).json({ error: 'Username cannot be empty' });
       }
     }
 
-    if (phoneNumber !== undefined && phoneNumber !== null && phoneNumber !== '') {
+    if (updateData.phoneNumber !== undefined && updateData.phoneNumber !== null) {
       const phoneRegex = /^\d{9,10}$/;
-      if (typeof phoneNumber !== 'string' || !phoneRegex.test(phoneNumber)) {
+      if (typeof updateData.phoneNumber !== 'string' || !phoneRegex.test(updateData.phoneNumber)) {
         return res.status(400).json({ error: 'Invalid phone number format. Must be 9-10 digits.' });
       }
     }
 
-    if (gender !== undefined && gender !== null && gender !== '') {
-      const normalizedGender = gender.toLowerCase();
+    if (updateData.gender !== undefined && updateData.gender !== null) {
+      const normalizedGender = updateData.gender.toLowerCase();
       if (normalizedGender !== 'male' && normalizedGender !== 'female' && normalizedGender !== 'other') {
         return res.status(400).json({ error: 'Invalid gender value. Must be male, female, or other.' });
       }
     }
 
-    const user = await updateUser(req.user.userId, {
-      username,
-      phoneNumber,
-      occupation,
-      birthDate: birthDate || null,
-      gender: gender || null,
-      hometown,
-      description,
-      avatar
-    });
+    const user = await updateUser(req.user.userId, updateData);
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -73,7 +84,7 @@ const changePassword = async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
     if (!isMatch) return res.status(400).json({ error: 'Current password is incorrect' });
 
-    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     await updatePassword(req.user.userId, passwordHash);
 
     res.status(200).json({ message: 'Password updated successfully' });

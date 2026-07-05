@@ -30,34 +30,55 @@ const getUserWithPassword = async (userId) => {
   return result.rows[0] || null;
 };
 
-const updateUser = async (userId, { username, phoneNumber, occupation, birthDate, gender, hometown, description, avatar }) => {
-  const result = await pool.query(
-    // phần này có nên dùng COALESCE để giữ nguyên giá trị cũ nếu không có giá trị mới được cung cấp ko, có gì sửa giúp t <3
-    `UPDATE users 
-     SET username = COALESCE($1, username),
-         phone_number = COALESCE($2, phone_number),
-         occupation = COALESCE($3, occupation),
-         birth_date = COALESCE($4, birth_date),
-         gender = COALESCE($5, gender),
-         hometown = COALESCE($6, hometown),
-         description = COALESCE($7, description),
-         avatar = COALESCE($8, avatar)
-     WHERE user_id = $9
-     RETURNING 
-       user_id AS "userId", 
-       email, 
-       username, 
-       phone_number AS "phoneNumber", 
-       avatar, 
-       role,
-       borrow_num AS "borrowNum",
-       occupation,
-       birth_date AS "birthDate",
-       gender,
-       hometown,
-       description`,
-    [username, phoneNumber, occupation, birthDate, gender, hometown, description, avatar, userId]
-  );
+const USER_FIELD_MAP = {
+  username: 'username',
+  phoneNumber: 'phone_number',
+  occupation: 'occupation',
+  birthDate: 'birth_date',
+  gender: 'gender',
+  hometown: 'hometown',
+  description: 'description',
+  avatar: 'avatar',
+};
+
+const updateUser = async (userId, fields) => {
+  const setClauses = [];
+  const values = [];
+  let index = 1;
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value !== undefined && USER_FIELD_MAP[key]) {
+      setClauses.push(`${USER_FIELD_MAP[key]} = $${index}`);
+      values.push(value);
+      index++;
+    }
+  }
+
+  if (setClauses.length === 0) {
+    return getUserById(userId);
+  }
+
+  values.push(userId);
+  const query = `
+    UPDATE users 
+    SET ${setClauses.join(', ')}
+    WHERE user_id = $${index}
+    RETURNING 
+      user_id AS "userId", 
+      email, 
+      username, 
+      phone_number AS "phoneNumber", 
+      avatar, 
+      role,
+      borrow_num AS "borrowNum",
+      occupation,
+      birth_date AS "birthDate",
+      gender,
+      hometown,
+      description
+  `;
+
+  const result = await pool.query(query, values);
   return result.rows[0];
 };
 
