@@ -5,28 +5,16 @@ Reviewed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh, Nguyễn Nhựt Huy, Nguy
 
 Editied by: Vũ Duy Nhất
 
-## 1. Meeting Minutes: 6/6/2026 - Sprint Planning
-### 1.1. Implementation tasks
-### 1.2. Design tasks
-### 1.3. Document tasks
-### 1.4. Self-learning tasks
-## Meeting Minutes: 20/6/2026
-Nội dung họp
-    - Tổng kết những gì đã làm được trong tuần qua (đánh giá cách tổ chức code, web hiện tại)
-    - Bàn về những đối tượng cụ thể cho user (không thu hẹp)
-    - Nói về xác thực 1 lớp cho create acc, set hình ảnh cho email gửi verify otp, otp expire chỉnh xuống 30s, xử lý lưu hình avatar trên cloud r lưu url vào db
-    - Nói về wishlist + Thêm thông tin về (location (name trong branches); address; shelf; quantity available) vao trang view book details
-    - Nói về phần filter của Gia
-    - Nói về SpecKit (workflow của agent) và evidence
-    - Nói về việc đổi agent (open code, antigravity), đổi lõi model của agent (specify integration switch agy, agy auth login)
-    - Nói về cách organize cho folder database, file makefile, file gitignore, file package.json và package-lock.json
-    - Nói về AI Usage Note, và các project planning, vision document (khá ngắn)
-    - Hướng dẫn đọc erd, giải thích thắc mắc + đánh giá database hiện tại(exercise)
-    - Nói về role librarian, role admin (dựa theo các thiết kế trên figma) + thêm field mới vào table users, branches
-    - Các task cho tuần tiếp theo, ý tưởng triển khai cho các task
-    - Bonus (khuyến khích tìm tòi học hỏi công nghệ mới, ko fomo, sắp xếp code, hiểu code, đồ án reference)
-## Meeting Minutes: 28/6/2026
-
+## I. Meeting Minutes:  21/6/2026
+- **Team member present:**
+  - Vũ Duy Nhất
+  - Trần Lê Hoàng Gia
+  - Phan Lê Anh Minh
+  - Nguyễn Nhựt Huy
+  - Nguyễn Lê Hoàng Khải
+- **Status Report:**
+## II. Meeting Minutes: 28/6/2026
+### 2. Meeting Minutes
 Nội dung họp
  + Tổng kết những gì đạt được trong tuần qua (có thể đề cặp qua phương pháp, tech stack,... để thực hiện chức năng đó)
  + Ý tưởng nhóm 3 chức năng phối hợp room reserve + study group + library map
@@ -39,3 +27,4 @@ Nội dung họp
  + Thư viện jest và unit test
  + Công việc tuần sau và ý tưởng triển khai
  + Bonus
+## III. Task on Jira
