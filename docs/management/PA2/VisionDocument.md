@@ -4,7 +4,7 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.0
+    Version: 1.1
 
 Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy
 
@@ -12,6 +12,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 | Date | Version | Description | Author |
 | :--- | :--- | :--- | :--- |
 | 04/07/2026 | 1.0 | Drafted initial sections: Introduction, Positioning, Stakeholder and User Descriptions, Non-Functional Requirements | Nguyễn Lê Hoàng Khải |
+| 04/07/2026 | 1.1 | Drafted initial sections: Product Overview, Product Features | Nguyễn Nhựt Huy |
 
 ## Table of Contents
 - [Vision Document](#vision-document)
@@ -38,10 +39,15 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
       - [4.2.2 Dependencies](#422-dependencies)
   - [5. Product Features](#5-product-features)
   - [6. Non-Functional Requirements](#6-non-functional-requirements)
-    - [6.1 Product Requirements](#61-product-requirements)
-    - [6.2 Organizational Requirements](#62-organizational-requirements)
-    - [6.3 External Requirements](#63-external-requirements)
-    - [6.4 Priority Notes](#64-priority-notes)
+    - [6.1 Applicable Standards](#61-applicable-standards)
+    - [6.2 Hardware and Platform Requirements](#62-hardware-and-platform-requirements)
+    - [6.3 Performance Requirements](#63-performance-requirements)
+    - [6.4 Environmental Requirements](#64-environmental-requirements)
+    - [6.5 Quality Ranges](#65-quality-ranges)
+    - [6.6 Design Constraints](#66-design-constraints)
+    - [6.7 External Constraints and Dependencies](#67-external-constraints-and-dependencies)
+    - [6.8 Documentation Requirements](#68-documentation-requirements)
+    - [6.9 Priority of Non-Functional Requirements](#69-priority-of-non-functional-requirements)
   - [7. AI Usage Notes](#7-ai-usage-notes)
 
 ## 1. Introduction
@@ -57,7 +63,7 @@ This Vision Document is intended for all project stakeholders, including the tea
 | Document | Version | Date | Author(s) |
 | :--- | :--- | :--- | :--- |
 | Project Proposal.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Nguyễn Lê Hoàng Khải |
-| Existing Application Survey (AppSurvey.md) | 1.0 | PA1 (23 May – 6 Jun 2026) | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
+| AppSurvey.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
 | Team Contract.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Nguyễn Nhựt Huy |
 | Planning Report.md | — | PA1 (23 May – 6 Jun 2026) | Vũ Duy Nhất |
 | Project Plan.md | 1.1 | PA2 (7 Jun – 12 Jul 2026) | Nguyễn Lê Hoàng Khải, Vũ Duy Nhất |
@@ -193,42 +199,101 @@ The system is developed as a standalone software product and does not rely on an
 
 ## 6. Non-Functional Requirements
 
- 
-### 6.1 Product Requirements
- 
-| ID | Category | Requirement | Priority |
-| :--- | :--- | :--- | :--- |
-| NFR-01 | Usability | A first-time user shall be able to complete a book reservation without external help, after viewing the in-app usage guidelines provided in the User Assistance feature. | High |
-| NFR-02 | Efficiency (Performance) | Catalog and semantic search queries shall return results within an average of 2–3 seconds under normal load. | High |
-| NFR-03 | Efficiency (Performance) | PIN-based book pickup/return verification shall be confirmed by the system within a few seconds of PIN entry, so that a single circulation transaction at the desk stays short. | High |
-| NFR-04 | Reliability | Study-room and book reservation data shall remain consistent under concurrent bookings — the system must prevent two users from being confirmed for the same room/time slot or the same physical copy. | High |
-| NFR-05 | Reliability | Core services (authentication, book search, reservation) shall be available during the project's demo/grading windows, with unplanned downtime minimized. | Medium |
-| NFR-06 | Security | User passwords and personal profile data must be stored securely (e.g., hashed passwords); only users with a registered account (via direct registration or Google OAuth) may access borrowing and reservation features. | High |
-| NFR-07 | Portability | The web application shall render correctly on the latest versions of major browsers (Chrome, Safari, Edge) across desktop and mobile viewports, without requiring local installation. | Medium |
- 
-### 6.2 Organizational Requirements
- 
-| ID | Category | Requirement | Priority |
-| :--- | :--- | :--- | :--- |
-| NFR-08 | Development process | The system shall be implemented using the team's agreed technology stack — React (Next.js) for the front end, Express.js for the back end, and PostgreSQL as the primary datastore — as defined in the Project Plan. | High |
-| NFR-09 | Development process | All source code shall follow the team's Git workflow (feature/doc branches, mandatory peer-reviewed pull requests into `dev`) and naming/coding conventions defined in the Team Contract. | Medium |
-| NFR-10 | Documentation standard | All project documentation (Vision, SRS, Project Plan, reports) shall be written and maintained in Markdown within the shared GitHub repository, per the Team Contract's documentation standards. | Medium |
-| NFR-11 | Delivery process | Features shall be delivered incrementally across the team's 5-sprint Scrum roadmap, with each sprint's scope tracked on the Jira board. | High |
- 
-### 6.3 External Requirements
- 
-| ID | Category | Requirement | Priority |
-| :--- | :--- | :--- | :--- |
-| NFR-12 | Regulatory / Ethical | Any use of generative AI tools in producing code or documentation shall be disclosed per the course's AI Usage declaration policy (see Section 7). | High |
-| NFR-13 | Interoperability | Authentication shall support Google OAuth as an external identity provider, in addition to standard email/password registration. | Medium |
-| NFR-14 | Legislative / Privacy | User personal data (profile information, borrowing history) shall only be used internally for account management and the AI recommendation feature, and shall not be exposed to unauthorized parties. | Medium |
- 
-### 6.4 Priority Notes
- 
-- **High-priority** items are treated as constraints the architecture must satisfy from the start (e.g., authentication security, reservation data consistency, use of the agreed tech stack), since violating them would require significant rework later.
-- **Medium-priority** items are important for a polished, professional deliverable but can be refined incrementally across sprints without blocking core functionality.
-- Performance and reliability targets above (NFR-02 through NFR-05) are stated as goals appropriate for a course project; they may be tightened or formally load-tested in later assignments (SRS/Supplementary Specification) once the corresponding use cases are detailed.
+### 6.1 Applicable Standards
 
+- REST API design will follow conventional HTTP method/status-code semantics for consistency between the Next.js front end and Express.js back end.
+- No formal industry data-exchange standard (e.g., MARC/MARC21 for library records) is adopted; the team will use its own PostgreSQL schema, as no interoperability with external library systems is required for this project.
+- Internationalization (i18n) is a mandated internal standard: the interface must fully support both English and Vietnamese, with all user-facing text sourced from centralized dictionaries (`en.json`/`vi.json`) rather than hardcoded strings.
+
+### 6.2 Hardware and Platform Requirements
+
+- The system shall run as a responsive web application accessible from major desktop and mobile browsers (Chrome, Safari, Edge).
+- The system shall be accessible across all major operating systems (Windows, macOS, Linux, iOS, Android) without requiring local installation.
+- The back end, database, and any AI/embedding services shall run on a standard cloud platform-as-a-service tier (e.g., Render, Railway, or a comparable free/low-cost tier), sized for course-project-scale traffic rather than production-scale library usage.
+- Client devices require only a modern browser and standard internet connectivity; no special hardware (e.g., barcode scanners) is required for the patron-facing web app, unlike the desk-side barcode workflows seen in the Application Survey.
+- In development, the front end runs on port `3000` and the back end on port `5000`; the frontend-backend connection is configured via environment variables (`NEXT_PUBLIC_API_URL` on the client, `PORT` on the server) rather than hardcoded values.
+
+### 6.3 Performance Requirements
+
+- Catalog and semantic search queries shall return results within an average of 2–3 seconds under normal load.
+- PIN-based book pickup/return verification shall be confirmed by the system within a few seconds of PIN entry, so that a single circulation transaction at the desk stays short.
+- The system shall support at least 50 concurrent users performing search and reservation actions without noticeable degradation, an estimate appropriate for course demo and grading purposes rather than full-scale institutional deployment.
+- The study-room booking grid shall reflect newly confirmed reservations for other users within a few seconds, so concurrent users see up-to-date availability.
+- All standard read-only page views that fetch data from the backend (e.g., book details, study group info, study room details) shall load and render within 1–2 seconds under normal load, excluding the more complex semantic search and AI recommendation flows which are covered separately.
+
+### 6.4 Environmental Requirements
+
+- Patrons are expected to access the system primarily from personal laptops or mobile phones, both on and off the library premises.
+- Librarians and admins are expected to use the system at fixed front-desk or office workstations inside the library building.
+- A stable broadband or Wi-Fi/mobile-data connection is assumed for all users; no offline mode is planned, since both reservation and PIN verification require real-time server communication.
+- The system is deployed to a single cloud region appropriate for the team's target demo audience (Vietnam/Southeast Asia), rather than a globally distributed, multi-region deployment.
+
+### 6.5 Quality Ranges
+
+| Quality Attribute | Requirement | Priority |
+| :--- | :--- | :--- |
+| Usability | A first-time user shall be able to complete a book reservation without external help, after viewing the in-app usage guidelines provided in the User Assistance feature. | High |
+| Usability | Librarian and Admin staff shall be able to use all system functions after four hours of training. After this training, the average number of errors made by experienced staff shall not exceed two per hour of system use. | Medium |
+| Reliability | Study-room and book reservation data shall remain consistent under concurrent bookings — the system must prevent two users from being confirmed for the same room/time slot or the same physical copy. | High |
+| Reliability | Core services (authentication, book search, reservation) shall be available during the project's demo/grading windows, with unplanned downtime minimized. | Medium |
+| Security | User passwords and personal profile data must be stored securely (e.g., hashed passwords); only users with a registered account (via direct registration or Google OAuth) may access borrowing and reservation features. | High |
+| Security | Fine/penalty payments made through the in-app payment gateway shall be processed via the provider's certified, secure checkout flow; the system itself shall never store raw card numbers, wallet credentials, or other sensitive payment data, and each transaction shall be logged with a status (pending/success/failed) tied to the user's fine record. | High |
+| Robustness | If the database or AI recommendation/search service becomes temporarily unavailable, the system shall degrade gracefully — e.g., falling back to basic keyword search or hiding the recommendation panel — rather than crashing or blocking core borrowing/reservation flows. | Medium |
+| Fault tolerance | If a PIN verification step fails or times out during a checkout/return transaction, the system shall not mark the book or room as transferred, and shall allow the user or librarian to safely retry without creating a duplicate transaction. | Medium |
+| Usability (Theme) | The interface shall support Light/Dark mode, initially resolving to the user's OS-level preference (falling back to Light mode if undetected), with the chosen theme persisted across sessions via LocalStorage. | Medium |
+| Localization | All user-facing text (labels, placeholders, error messages) shall be available in both English and Vietnamese via centralized translation dictionaries; no hardcoded UI text is permitted. | High |
+
+### 6.6 Design Constraints
+
+- The system shall be implemented using the team's agreed technology stack — React (Next.js) for the front end, Express.js for the back end, and PostgreSQL as the primary datastore — as defined in the Project Plan.
+- All source code shall follow the team's Git workflow (feature/doc branches, mandatory peer-reviewed pull requests into `dev`) and naming/coding conventions defined in the Team Contract.
+- Front-end components shall follow an Atomic Design structure (Atoms → Molecules → Organisms → Templates/Pages), with global state limited to simple cases (e.g., theme, user session) handled via React Context; all backend data-fetching must explicitly handle `loading`, `error`, and `success` states.
+- Back-end source code shall strictly follow a Layered Architecture, with every request passing through the chain `Route → Middleware(s) → Controller → Service → Model` and business logic kept out of routes/controllers; the backend shall be written using ES Modules (`.mjs`), per the project constitution.
+- The AI-powered semantic search and recommendation features shall be built using the tools identified in the Application Survey (e.g., an embedding model such as Ollama's `nomic-embed-text` or OpenAI's `text-embedding-3-small`, paired with a vector store such as ChromaDB or Neo4j) rather than a custom-trained model, to stay feasible within the 5-sprint timeline.
+- No mandated cloud vendor is fixed at this stage; hosting choice is left to whichever platform the team can operate within its budget (student/free tiers).
+
+### 6.7 External Constraints and Dependencies
+
+- Authentication shall support Google OAuth as an external identity provider, in addition to standard email/password registration — the system therefore depends on the availability of this third-party service.
+- Any use of generative AI tools in producing code or documentation shall be disclosed per the course's AI Usage declaration policy.
+- Features shall be delivered incrementally across the team's 5-sprint Scrum roadmap, with each sprint's scope tracked on the Jira board — the project timeline is therefore constrained by the course schedule.
+- Fine/penalty settlement is supported through an in-app payment flow integrated with a third-party payment gateway (e.g., VNPay, Momo, or Stripe) — the system therefore depends on the availability, API, and transaction fees of the chosen gateway provider.
+- The backend base URL shall never be hardcoded in frontend source code; it must be loaded dynamically via environment variables, per the project constitution.
+
+### 6.8 Documentation Requirements
+
+- All project documentation (Vision, SRS, Project Plan, reports) shall be written and maintained in Markdown within the shared GitHub repository, per the Team Contract's documentation standards.
+- In-app user guidance (usage guidelines, direct support channel, library floor plans and policies) is planned as part of the User Assistance feature; no separate printed user manual is currently planned.
+- Online help is delivered as static in-app guideline pages plus a direct support/contact channel, rather than a searchable knowledge base or ticketing system with formal SLAs, given the course-project scope.
+- Not applicable: installation, labeling, and packaging requirements — the system is a web application requiring no local installation or physical packaging.
+
+### 6.9 Priority of Non-Functional Requirements
+
+| Requirement (summary) | Priority | Stability | Benefit | Effort | Risk |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Patron self-service usability | High | High | High | Medium | Medium |
+| Staff usability after training | Medium | High | Medium | Low | Low |
+| Search performance (2–3s) | High | Medium | High | Medium | Medium |
+| PIN verification speed | High | High | High | Low | Low |
+| Reservation data consistency | High | High | High | Medium | High |
+| Service availability | Medium | Medium | Medium | Medium | Medium |
+| Password/account security | High | High | High | Medium | High |
+| Payment gateway security (fine settlement) | High | Medium | High | High | High |
+| Robustness (graceful degradation) | Medium | Medium | Medium | Medium | Medium |
+| Fault tolerance (safe PIN retry) | Medium | Medium | Medium | Medium | Medium |
+| Cross-browser/platform support | Medium | High | Medium | Low | Low |
+| Agreed tech stack (Next.js/Express/PostgreSQL) | High | High | High | Low | Low |
+| Git workflow & coding conventions | Medium | High | Medium | Low | Low |
+| Markdown documentation standard | Medium | High | Low | Low | Low |
+| Sprint-based incremental delivery | High | High | High | Medium | Medium |
+| AI usage disclosure | High | High | Low | Low | Low |
+| Google OAuth support | Medium | Medium | Medium | Low | Low |
+| Open Library Covers API dependency | Medium | Medium | Medium | Low | Medium |
+| Theme system (Light/Dark mode) | Medium | High | Medium | Medium | Low |
+| Localization (English/Vietnamese) | High | High | High | Medium | Medium |
+| Layered backend architecture (.mjs) | High | High | Medium | Medium | Medium |
+| Env-var based API configuration | High | High | Medium | Low | Low |
+| Next.js Image optimization | Medium | High | Low | Low | Low |
 
 ## 7. AI Usage Notes
 This document was drafted with the assistance of an AI tool, declared as follows:
@@ -253,14 +318,14 @@ AI Tool 2
 AI Tool 3
 
 - **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** July 5, 2026
+- **Access time:** June 7, 2026 to July 12, 2026
 - **Prompt:** "What should I write in this section?", "Please write this into a markdown skeleton so I can easily fill it in", "Ask me questions so I can fill in these fields accurately"
 - **Purpose:** To break down the required structure for the "Stakeholder and User Descriptions" section, and to draft the content in professional English using tailored questionnaires.
 - **Content generated by AI:** A comprehensive Markdown boilerplate for the Stakeholder/User sections, and finalized, professional English content for Section 3.1 (Stakeholder Summary), 3.2 (User Summary), 3.3 (User Environment), and Section 3.4 (Summary of Key Stakeholder or User Needs) with placeholders left for future competition analysis.
 - **Student's work and validation:** Provided precise architectural, role-based, and feature specifications for the smart library system (Group 03 - AmeThyst, Instructor, Node.js/Express.js/React stack, PostgreSQL with Docker, reader online reservations/study groups, and librarian/admin workflows) and validated the structured translation to match the actual project implementation.
 ---
 - **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** July 5, 2026
+- **Access time:** June 7, 2026 to July 12, 2026
 - **Prompt:** "What should I write in this section? Please suggest a markdown template in English", "Ask me questions so I can fill in the information myself"
 - **Purpose:** To draft the Product Overview (Product Perspective, Assumptions and Dependencies) and to consolidate multiple overlapping sections of the User Environment into a cohesive, structured format.
 - **Content generated by AI:** A standardized Markdown template and finalized English content for sections 4.1 (Product Perspective) and 4.2 (Assumptions and Dependencies), along with a unified, professionally written section 3.3 (User Environment).
