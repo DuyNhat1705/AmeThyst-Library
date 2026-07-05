@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '../../providers/I18nProvider';
+import { useCountdownFromDate } from '../../hooks/useCountdown';
 
 interface Props {
   pin: string;
@@ -13,25 +14,7 @@ interface Props {
 
 export default function PinModal({ pin, expiresAt, isOpen, onClose }: Props) {
   const { t } = useI18n();
-  const [remaining, setRemaining] = useState({ minutes: 0, seconds: 0 });
-  const [expired, setExpired] = useState(false);
-
-  const calcRemaining = useCallback(() => {
-    const now = Date.now();
-    const exp = new Date(expiresAt).getTime();
-    const diff = Math.max(0, Math.floor((exp - now) / 1000));
-    const minutes = Math.floor(diff / 60);
-    const seconds = diff % 60;
-    setRemaining({ minutes, seconds });
-    setExpired(diff <= 0);
-  }, [expiresAt]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    calcRemaining();
-    const interval = setInterval(calcRemaining, 1000);
-    return () => clearInterval(interval);
-  }, [isOpen, calcRemaining]);
+  const { minutes, seconds, isExpired } = useCountdownFromDate(expiresAt);
 
   useEffect(() => {
     if (isOpen) {
@@ -78,13 +61,13 @@ export default function PinModal({ pin, expiresAt, isOpen, onClose }: Props) {
             </div>
           </div>
 
-          {expired ? (
+          {isExpired ? (
             <p className="text-[#D93025] dark:text-red-300 text-sm font-medium">
               {t('pin.expired')}
             </p>
           ) : (
             <p className="text-[#75777D] dark:text-neutral-400 text-sm">
-              {t('pin.expires_in', { minutes: String(remaining.minutes).padStart(2, '0'), seconds: String(remaining.seconds).padStart(2, '0') })}
+              {t('pin.expires_in', { minutes: String(minutes).padStart(2, '0'), seconds: String(seconds).padStart(2, '0') })}
             </p>
           )}
 

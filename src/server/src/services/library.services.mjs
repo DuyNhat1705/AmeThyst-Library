@@ -47,7 +47,7 @@ export const getBookById = async (id, userId = null) => {
       SELECT bb.*, br.name as branch_name 
       FROM public.borrow_book bb
       JOIN public.branches br ON bb.branch_id = br.branch_id
-      WHERE bb.user_id = $1 AND bb.book_id = $2 AND bb.status IN ('reserved', 'pending')
+      WHERE bb.user_id = $1 AND bb.book_id = $2 AND bb.status IN ('reserved', 'pending', 'borrowed')
       ORDER BY bb.reserve_date DESC LIMIT 1
     `;
     const reservationResult = await pool.query(reservationQuery, [userId, id]);
@@ -202,16 +202,11 @@ export const getRelatedBooks = async (id) => {
     coverImage: book.image_url || null
   }));
 };
-
-/**
- * Xử lý đặt sách
- */
 export const createReservation = async (userId, bookId, branchId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // 0. Check if user exists
     const userCheck = await client.query('SELECT user_id FROM public.users WHERE user_id = $1', [userId]);
     if (userCheck.rows.length === 0) {
       await client.query('ROLLBACK');
@@ -234,7 +229,6 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
-    // 1. Check if book exists at the specified branch with row locking
     const inventoryQuery = `
       SELECT available_quantity, shelf 
       FROM public.library 
@@ -253,7 +247,6 @@ export const createReservation = async (userId, bookId, branchId) => {
 
     const { available_quantity } = inventoryResult.rows[0];
 
-    // 2. Check if book is available
     if (available_quantity <= 0) {
       await client.query('ROLLBACK');
       return { 
@@ -262,28 +255,25 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
-    // 3. Check for duplicate reservation (user cannot have multiple active reservations for same book)
     const duplicateQuery = `
       SELECT borrow_id FROM public.borrow_book 
-      WHERE user_id = $1 AND book_id = $2 AND status IN ('reserved', 'pending')
+      WHERE user_id = $1 AND book_id = $2 AND status IN ('reserved', 'pending', 'borrowed')
     `;
     const duplicateResult = await client.query(duplicateQuery, [userId, bookId]);
     
     if (duplicateResult.rows.length > 0) {
       await client.query('ROLLBACK');
       return { 
-        error: { code: 'ALREADY_RESERVED', message: 'You already have an active reservation for this book' },
+        error: { code: 'ALREADY_RESERVED', message: 'You already have an active reservation or borrow for this book' },
         statusCode: 400
       };
     }
 
-    // 4. Decrement available quantity
     await client.query(
       'UPDATE public.library SET available_quantity = available_quantity - 1 WHERE book_id = $1 AND branch_id = $2',
       [bookId, branchId]
     );
 
-    // 5. Insert reservation into borrow_book table
     const insertQuery = `
       INSERT INTO public.borrow_book (user_id, book_id, branch_id, status)
       VALUES ($1, $2, $3, 'reserved')
@@ -292,18 +282,15 @@ export const createReservation = async (userId, bookId, branchId) => {
     const insertResult = await client.query(insertQuery, [userId, bookId, branchId]);
     const { borrow_id, reserve_date } = insertResult.rows[0];
 
-    // 6.5 Increment user's borrow_num
     await client.query(
       'UPDATE public.users SET borrow_num = borrow_num + 1 WHERE user_id = $1',
       [userId]
     );
 
-    // 7. Get branch name for response
     const branchQuery = 'SELECT name, address FROM public.branches WHERE branch_id = $1';
     const branchResult = await client.query(branchQuery, [branchId]);
     const { name: branchName, address: branchAddress } = branchResult.rows[0];
 
-    // 8. Get shelf for response
     const shelf = inventoryResult.rows[0].shelf || 'N/A';
 
     await client.query('COMMIT');
@@ -328,187 +315,6 @@ export const createReservation = async (userId, bookId, branchId) => {
   }
 };
 
-/**
- * Hủy đặt sách - Cancel a reservation
- */
-export const cancelReservationById = async (userId, reservationId) => {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-
-    // 1. Check if reservation exists and belongs to user
-    const checkQuery = `
-      SELECT borrow_id, book_id, branch_id, status 
-      FROM public.borrow_book 
-      WHERE borrow_id = $1 AND user_id = $2
-    `;
-    const checkResult = await client.query(checkQuery, [reservationId, userId]);
-    
-    if (checkResult.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return { 
-        error: { code: 'NOT_FOUND', message: 'Reservation not found' },
-        statusCode: 404
-      };
-    }
-
-    const reservation = checkResult.rows[0];
-
-    // 2. Check if reservation can be cancelled (pending or reserved)
-    if (reservation.status !== 'pending' && reservation.status !== 'reserved') {
-      await client.query('ROLLBACK');
-      return { 
-        error: { code: 'CANNOT_CANCEL', message: 'Only pending or reserved reservations can be cancelled' },
-        statusCode: 400
-      };
-    }
-
-    // 3. Increment available quantity
-    await client.query(
-      'UPDATE public.library SET available_quantity = available_quantity + 1 WHERE book_id = $1 AND branch_id = $2',
-      [reservation.book_id, reservation.branch_id]
-    );
-
-    // 4. Delete reservation from borrow_book
-    await client.query(
-      'DELETE FROM public.borrow_book WHERE borrow_id = $1',
-      [reservationId]
-    );
-
-    // 5. Decrement user's borrow_num
-    await client.query(
-      'UPDATE public.users SET borrow_num = GREATEST(borrow_num - 1, 0) WHERE user_id = $1',
-      [userId]
-    );
-
-    await client.query('COMMIT');
-
-    return {
-      reservationId,
-      status: 'cancelled'
-    };
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
-};
-
-/**
- * Lấy danh sách mượn sách của người dùng
- */
-export const getUserBorrowRecords = async (userId) => {
-  const query = `
-    SELECT 
-      bb.borrow_id,
-      bb.book_id,
-      bb.branch_id,
-      bb.status,
-      bb.borrow_date,
-      bb.due_date,
-      bb.reserve_date,
-      bb.expired_at,
-      bb.pin,
-      b.title,
-      b.author,
-      b.image_url,
-      br.name as branch_name,
-      br.address as branch_address
-    FROM public.borrow_book bb
-    JOIN public.books b ON bb.book_id = b.book_id
-    JOIN public.branches br ON bb.branch_id = br.branch_id
-    WHERE bb.user_id = $1
-    ORDER BY 
-      CASE bb.status 
-        WHEN 'pending' THEN 1
-        WHEN 'borrowed' THEN 2
-        WHEN 'reserved' THEN 3
-      END,
-      bb.borrow_date DESC NULLS LAST,
-      bb.reserve_date DESC NULLS LAST
-  `;
-  const result = await pool.query(query, [userId]);
-  
-  const records = result.rows.map(row => ({
-    id: row.borrow_id,
-    bookId: row.book_id,
-    title: cleanText(row.title),
-    author: row.author ? row.author.map(cleanText).join(', ') : 'Unknown Author',
-    coverImage: row.image_url || null,
-    branchId: row.branch_id,
-    branchName: row.branch_name,
-    branchAddress: row.branch_address,
-    status: row.status,
-    borrowDate: row.borrow_date,
-    dueDate: row.due_date,
-    reserveDate: row.reserve_date,
-    expiresAt: row.expired_at,
-    pin: row.pin || null
-  }));
-  
-  return { current: records };
-};
-
-/**
- * Generate a 6-digit pickup PIN for a reservation
- */
-export const generatePickupPin = async (userId, borrowId) => {
-  try {
-    const check = await pool.query(
-      `SELECT borrow_id, user_id FROM public.borrow_book WHERE borrow_id = $1 AND user_id = $2 AND status IN ('reserved', 'pending')`,
-      [borrowId, userId]
-    );
-
-    if (check.rows.length === 0) {
-      return { error: { code: 'RESERVATION_NOT_FOUND', message: 'Reservation not found or invalid status' }, statusCode: 404 };
-    }
-
-    const active = await pool.query(
-      `SELECT pin, expired_at FROM public.borrow_book WHERE borrow_id = $1 AND pin IS NOT NULL AND expired_at > NOW()`,
-      [borrowId]
-    );
-
-    if (active.rows.length > 0) {
-      return { pin: active.rows[0].pin, expiresAt: active.rows[0].expired_at };
-    }
-
-    await pool.query(
-      `UPDATE public.borrow_book SET pin = NULL, expired_at = NULL, status = 'reserved' WHERE borrow_id = $1`,
-      [borrowId]
-    );
-
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const pin = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 15 * 1000);
-
-      try {
-        const updated = await pool.query(
-          `UPDATE public.borrow_book SET pin = $1, expired_at = $2, status = 'pending' WHERE borrow_id = $3`,
-          [pin, expiresAt, borrowId]
-        );
-
-        if (updated.rowCount > 0) {
-          return { pin, expiresAt };
-        }
-      } catch (err) {
-        if (err.code === '23505') {
-          continue;
-        }
-        throw err;
-      }
-    }
-
-    return { error: { code: 'PIN_GENERATION_FAILED', message: 'Failed to generate unique PIN after 3 attempts' }, statusCode: 500 };
-  } catch (error) {
-    console.error('Error generating pickup PIN:', error);
-    throw error;
-  }
-};
-
-/**
- * Cleanup expired PINs: revert pending reservations with expired PINs back to reserved
- */
 export const cleanupExpiredPins = async () => {
   try {
     const query = `
@@ -521,23 +327,6 @@ export const cleanupExpiredPins = async () => {
   } catch (error) {
     console.error('Error cleaning up expired PINs:', error);
     return 0;
-  }
-};
-
-/**
- * Cleanup a specific reservation's expired PIN
- */
-export const cleanupReservationPin = async (userId, borrowId) => {
-  try {
-    const result = await pool.query(
-      `UPDATE public.borrow_book SET pin = NULL, expired_at = NULL, status = 'reserved'
-       WHERE borrow_id = $1 AND user_id = $2 AND status = 'pending'`,
-      [borrowId, userId]
-    );
-    return result.rowCount > 0;
-  } catch (error) {
-    console.error('Error cleaning up reservation PIN:', error);
-    return false;
   }
 };
 
@@ -558,3 +347,68 @@ export const clearAllPins = async () => {
     return 0;
   }
 };
+
+/**
+ * Automatically cancel reservations that have been in 'reserved' status
+ * for more than 7 days (reserve_date + 7 days < NOW()).
+ * Deletes the borrow_book record, restores available_quantity, and decrements borrow_num.
+ */
+export const cleanupExpiredReservations = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const expiredQuery = `
+      SELECT borrow_id, book_id, branch_id, user_id
+      FROM public.borrow_book
+      WHERE status = 'reserved' AND reserve_date + INTERVAL '7 days' < NOW()
+      FOR UPDATE
+    `;
+    const expired = await client.query(expiredQuery);
+
+    if (expired.rows.length === 0) {
+      await client.query('COMMIT');
+      return 0;
+    }
+
+    const ids = expired.rows.map(r => r.borrow_id);
+    await client.query(
+      'DELETE FROM public.borrow_book WHERE borrow_id = ANY($1)',
+      [ids]
+    );
+
+    const perBranch = {};
+    const perUser = {};
+    for (const row of expired.rows) {
+      const key = `${row.book_id}:${row.branch_id}`;
+      perBranch[key] = perBranch[key] || { book_id: row.book_id, branch_id: row.branch_id, count: 0 };
+      perBranch[key].count++;
+      perUser[row.user_id] = (perUser[row.user_id] || 0) + 1;
+    }
+
+    for (const b of Object.values(perBranch)) {
+      await client.query(
+        'UPDATE public.library SET available_quantity = available_quantity + $1 WHERE book_id = $2 AND branch_id = $3',
+        [b.count, b.book_id, b.branch_id]
+      );
+    }
+
+    for (const [userId, count] of Object.entries(perUser)) {
+      await client.query(
+        'UPDATE public.users SET borrow_num = GREATEST(borrow_num - $1, 0) WHERE user_id = $2',
+        [count, userId]
+      );
+    }
+
+    await client.query('COMMIT');
+    return expired.rows.length;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error cleaning up expired reservations:', error);
+    return 0;
+  } finally {
+    client.release();
+  }
+};
+
+

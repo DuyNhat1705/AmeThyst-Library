@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
+import { AgendaEventRow } from '../atoms';
 
 interface AgendaEvent {
   id: number;
@@ -16,17 +17,6 @@ interface UpcomingAgendaProps {
   tomorrow: AgendaEvent[];
   onAddTask?: () => void;
   isLoading?: boolean;
-}
-
-function getIndicatorColor(type: string) {
-  switch (type) {
-    case 'study_group': return 'fill-[#6E5191]';
-    case 'book_return': return 'fill-[#061D32]';
-    case 'room_reservation': return 'fill-[#009484]';
-    case 'pin_expiry': return 'fill-[#BA1A1A]';
-    case 'reservation_expiry': return 'fill-[#E37400]';
-    default: return 'fill-neutral-400';
-  }
 }
 
 export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }: UpcomingAgendaProps) {
@@ -57,28 +47,14 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
             ) : (
               <div className="flex flex-col gap-5">
                 {today.map((ev) => (
-                  <div key={ev.id} className="flex items-start gap-4">
-                    <div className="pt-1 w-12 shrink-0">
-                      <span className="text-[rgba(67,71,77,0.60)] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                        {ev.time || t('dashboard.agenda_all_day')}
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3 min-w-0">
-                      <svg width="6" height="12" viewBox="0 0 6 12" className="pt-1.5 shrink-0">
-                        <rect y="6" width="5.06" height="6" rx="2.53" className={getIndicatorColor(ev.type)} />
-                      </svg>
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-black dark:text-neutral-100 font-manrope text-sm font-bold leading-[17.5px] truncate">
-                          {ev.title}
-                        </span>
-                        {ev.location && (
-                          <span className="text-[rgba(67,71,77,0.70)] dark:text-neutral-400 font-manrope text-xs leading-4 truncate">
-                            {ev.location}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <AgendaEventRow
+                    key={ev.id}
+                    time={ev.time}
+                    title={ev.title}
+                    location={ev.location}
+                    type={ev.type}
+                    allDayLabel={t('dashboard.agenda_all_day')}
+                  />
                 ))}
               </div>
             )}
@@ -96,28 +72,14 @@ export default function UpcomingAgenda({ today, tomorrow, onAddTask, isLoading }
             ) : (
               <div className="flex flex-col gap-5">
                 {tomorrow.map((ev) => (
-                  <div key={ev.id} className="flex items-start gap-4">
-                    <div className="pt-1 w-12 shrink-0">
-                      <span className="text-[rgba(67,71,77,0.60)] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                        {ev.time || t('dashboard.agenda_all_day')}
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3 min-w-0">
-                      <svg width="6" height="12" viewBox="0 0 6 12" className="pt-1.5 shrink-0">
-                        <rect y="6" width="5.06" height="6" rx="2.53" className={getIndicatorColor(ev.type)} />
-                      </svg>
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-black dark:text-neutral-100 font-manrope text-sm font-bold leading-[17.5px] truncate">
-                          {ev.title}
-                        </span>
-                        {ev.location && (
-                          <span className="text-[rgba(67,71,77,0.70)] dark:text-neutral-400 font-manrope text-xs leading-4 truncate">
-                            {ev.location}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <AgendaEventRow
+                    key={ev.id}
+                    time={ev.time}
+                    title={ev.title}
+                    location={ev.location}
+                    type={ev.type}
+                    allDayLabel={t('dashboard.agenda_all_day')}
+                  />
                 ))}
               </div>
             )}

@@ -1,41 +1,77 @@
-import { fetchEventsByMonth, fetchAgenda, createPersonalTask } from '../services/dashboard.user.services.mjs';
+import { generatePickupPin, cleanupReservationPin, cancelReservationById, getUserBorrowRecords } from '../services/dashboard.user.services.mjs';
 
-const getEvents = async (req, res) => {
+const generatePin = async (req, res) => {
   try {
-    const { month, year } = req.query;
     const userId = req.user.userId;
-    if (!month || !year) {
-      return res.status(400).json({ error: 'month and year are required' });
+    const { reservationId } = req.params;
+
+    const result = await generatePickupPin(userId, reservationId);
+
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({
+        success: false,
+        error: result.error
+      });
     }
-    const events = await fetchEventsByMonth(userId, parseInt(month), parseInt(year));
-    res.json({ events });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error generating pickup PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
   }
 };
 
-const getAgenda = async (req, res) => {
+const cleanupPin = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const result = await fetchAgenda(userId);
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const { reservationId } = req.params;
+    const cleaned = await cleanupReservationPin(userId, reservationId);
+    res.json({ success: true, cleaned });
+  } catch (error) {
+    console.error('Error cleaning up PIN:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+    });
   }
 };
 
-const createEvent = async (req, res) => {
+const cancelReservation = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { title, date, time, location, type, description } = req.body;
-    if (!title || !date || !type) {
-      return res.status(400).json({ error: 'title, date, and type are required' });
+    const { reservationId } = req.params;
+
+    const result = await cancelReservationById(userId, reservationId);
+    
+    if (result.error) {
+      return res.status(result.statusCode || 400).json({ 
+        success: false, 
+        error: result.error 
+      });
     }
-    const event = await createPersonalTask(userId, { title, date, time, location, type, description });
-    res.status(201).json({ message: 'Event created', event });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error cancelling reservation:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } 
+    });
   }
 };
 
-export { getEvents, getAgenda, createEvent };
+const getMyBorrowRecords = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const result = await getUserBorrowRecords(userId);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error fetching borrow records:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+export { generatePin, cleanupPin, cancelReservation, getMyBorrowRecords };

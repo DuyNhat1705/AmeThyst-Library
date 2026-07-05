@@ -93,7 +93,7 @@ export const googleCallback = [
     session: false,
   }),
   (req, res) => {
-    const token = signToken(req.user.user_id, req.user.email);
+    const token = signToken(req.user.user_id, req.user.email, req.user.role, req.user.branch_id);
     const user = buildUserPayload(req.user);
     res.redirect(
       `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`

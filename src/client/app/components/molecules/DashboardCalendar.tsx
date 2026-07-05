@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
+import { CalendarDayCell, CalendarLegendItem, CalendarEventDot } from '../atoms';
 
 interface CalendarEvent {
   date: string;
@@ -30,28 +31,6 @@ function getMonthGrid(year: number, month: number) {
   for (let d = 1; d <= daysInMonth; d++) grid.push(d);
   while (grid.length % 7 !== 0) grid.push(null);
   return grid;
-}
-
-function getEventTypeColor(type: string) {
-  switch (type) {
-    case 'book_return': return 'bg-[#061D32]';
-    case 'room_reservation': return 'bg-[#009484]';
-    case 'study_group': return 'bg-[#6E5191]';
-    case 'pin_expiry': return 'bg-[#BA1A1A]';
-    case 'reservation_expiry': return 'bg-[#E37400]';
-    default: return 'bg-neutral-400';
-  }
-}
-
-function getEventTypeDot(type: string) {
-  switch (type) {
-    case 'book_return': return 'bg-[#061D32]';
-    case 'room_reservation': return 'bg-[#009484]';
-    case 'study_group': return 'bg-[#6E5191]';
-    case 'pin_expiry': return 'bg-[#BA1A1A]';
-    case 'reservation_expiry': return 'bg-[#E37400]';
-    default: return 'bg-neutral-400';
-  }
 }
 
 function getWeekStart(date: Date) {
@@ -176,28 +155,12 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
               const isToday = dateStr === todayStr;
               const dayEvents = eventsByDate[dateStr] || [];
               return (
-                <div
+                <CalendarDayCell
                   key={dateStr}
-                  className={`h-32 p-2 border-r border-b border-[#E8E2D5] dark:border-neutral-700 flex flex-col items-start gap-1 overflow-hidden ${
-                    isToday ? 'bg-[rgba(248,243,233,0.50)] dark:bg-neutral-700/50' : ''
-                  }`}
-                >
-                  <div className={`flex items-center justify-center w-7 h-7 rounded-full ${isToday ? 'bg-black dark:bg-neutral-100' : ''}`}>
-                    <span className={`font-hankenGrotesk text-xs font-bold leading-4 ${isToday ? 'text-white dark:text-black' : 'text-[#1D1C16] dark:text-neutral-300'}`}>
-                      {day}
-                    </span>
-                  </div>
-                  {dayEvents.slice(0, 2).map((ev, i) => (
-                    <span key={i} className={`${getEventTypeColor(ev.type)} text-white dark:text-black text-[10px] leading-[15px] px-2 py-0.5 rounded-full truncate w-full`}>
-                      {ev.title}
-                    </span>
-                  ))}
-                  {dayEvents.length > 2 && (
-                    <span className="text-[#43474D] dark:text-neutral-400 font-manrope text-[10px] font-bold leading-[15px]">
-                      +{dayEvents.length - 2}
-                    </span>
-                  )}
-                </div>
+                  day={day}
+                  isToday={isToday}
+                  events={dayEvents}
+                />
               );
             })}
           </div>
@@ -209,10 +172,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
               { label: t('dashboard.legend_pin_expiry'), color: 'bg-[#BA1A1A]' },
               { label: t('dashboard.legend_reservation_expiry'), color: 'bg-[#E37400]' },
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2">
-                <div className={`rounded-full w-3 h-3 ${item.color}`} />
-                <span className="text-[#43474D] dark:text-neutral-400 font-manrope text-xs font-medium leading-4">{item.label}</span>
-              </div>
+              <CalendarLegendItem key={item.label} label={item.label} color={item.color} />
             ))}
           </div>
         </>
@@ -271,7 +231,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
                       <div className="flex-1 flex flex-col gap-2">
                         {row.events.map((ev, i) => (
                           <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#F8F3E9] dark:bg-neutral-700/50">
-                            <div className={`w-2 h-2 rounded-full shrink-0 ${getEventTypeDot(ev.type)}`} />
+                            <CalendarEventDot type={ev.type} />
                             <span className="text-black dark:text-neutral-100 font-manrope text-sm font-medium">{ev.title}</span>
                           </div>
                         ))}
@@ -306,7 +266,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
               ) : (
                 dayEvents.map((ev, i) => (
                   <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-[#F8F3E9] dark:bg-neutral-700/50">
-                    <div className={`w-3 h-3 rounded-full shrink-0 ${getEventTypeDot(ev.type)}`} />
+                    <CalendarEventDot type={ev.type} size="md" />
                     <div className="flex flex-col gap-0.5">
                       <span className="text-black dark:text-neutral-100 font-manrope text-sm font-bold">{ev.title}</span>
                       <span className="text-[#75777D] dark:text-neutral-400 font-manrope text-xs">{ev.type.replace('_', ' ')}</span>

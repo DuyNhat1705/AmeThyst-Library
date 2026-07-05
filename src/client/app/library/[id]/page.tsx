@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import BookDetailTemplate, { BookDetails, RecommendedBook } from '../../components/templates/BookDetailTemplate';
+import { getLoggedInUser } from '../../utils/user';
 
 export default function BookPage() {
   const { id } = useParams();
@@ -13,6 +14,8 @@ export default function BookPage() {
   const [reserved, setReserved] = useState(false);
   const [selectedBranchId, setSelectedBranchId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const user = typeof window !== 'undefined' ? getLoggedInUser() : null;
+  const userRole = user?.role || '';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +100,7 @@ export default function BookPage() {
       onBranchSelect={setSelectedBranchId}
       error={error}
       onReserve={handleReserve}
+      userRole={userRole}
     />
   );
 }

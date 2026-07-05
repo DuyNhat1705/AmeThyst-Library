@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
+import ToggleSwitch from '../atoms/ToggleSwitch';
 import YearRangeFilter from '../molecules/YearRangeFilter';
-import { useI18n } from '../../providers/I18nProvider';
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -54,7 +54,6 @@ export default function FilterPanel({
   onYearSubmit,
   onReset
 }: FilterPanelProps) {
-  const { t } = useI18n();
 
   useEffect(() => {
     if (isOpen) {
@@ -175,15 +174,10 @@ export default function FilterPanel({
               <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Available Only</span>
               <span className="text-xs text-[#75777D] dark:text-neutral-400 font-inter">Hide books currently out of stock</span>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={availableOnly}
-                onChange={(e) => onAvailableOnlyChange(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 dark:bg-neutral-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#006F66] dark:peer-checked:bg-teal"></div>
-            </label>
+            <ToggleSwitch
+              checked={availableOnly}
+              onChange={onAvailableOnlyChange}
+            />
           </div>
         </div>
       </div>

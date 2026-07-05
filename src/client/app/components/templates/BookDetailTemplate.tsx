@@ -8,22 +8,7 @@ import RecommendationCarousel from '../organisms/RecommendationCarousel';
 import NavBar from '../organisms/NavBar';
 import Footer from '../organisms/Footer';
 import { useI18n } from '../../providers/I18nProvider';
-
-const PublisherIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#006F66] dark:text-[#FFB95F]"><path d="M4 22V4c0-.5.2-1 .6-1.4C5 2.2 5.5 2 6 2h12c.5 0 1 .2 1.4.6.4.4.6.9.6 1.4v18H4Z"/><path d="M12 18h.01"/><path d="M12 14h.01"/><path d="M12 10h.01"/><path d="M8 18h.01"/><path d="M8 14h.01"/><path d="M8 10h.01"/><path d="M16 18h.01"/><path d="M16 14h.01"/><path d="M16 10h.01"/></svg>
-);
-const CalendarIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#006F66] dark:text-[#FFB95F]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-);
-const PageIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#006F66] dark:text-[#FFB95F]"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z"/></svg>
-);
-const StarIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#006F66] dark:text-[#FFB95F]"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-);
-const MapPinIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#006F66] dark:text-[#FFB95F] mt-1 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-);
+import { PublisherIcon, CalendarIcon, PageIcon, StarIcon, MapPinIcon } from '../atoms/BookIcons';
 
 export interface BookDetails {
   id: string;
@@ -71,6 +56,7 @@ export interface BookDetailTemplateProps {
   onBranchSelect: (branchId: number | null) => void;
   error: string | null;
   onReserve: () => void;
+  userRole?: string;
 }
 
 export default function BookDetailTemplate({
@@ -83,12 +69,14 @@ export default function BookDetailTemplate({
   onBranchSelect,
   error,
   onReserve,
+  userRole = '',
 }: BookDetailTemplateProps) {
   const { t } = useI18n();
 
   if (loading) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 animate-pulse text-lg">{t('book.loading')}</div>;
   if (!book) return <div className="min-h-screen bg-[#F8EFE6] dark:bg-[#091426] flex items-center justify-center font-inter text-navy dark:text-neutral-200 text-xl">{t('book.not_found')}</div>;
 
+  const canReserve = userRole === 'user';
   const hasAvailability = book.inventory && book.inventory.some(loc => loc.availableCopies > 0);
   const hasActiveReservation = book.userReservation && ['reserved', 'pending', 'borrowed'].includes(book.userReservation.status);
 
@@ -142,13 +130,13 @@ export default function BookDetailTemplate({
                       <div 
                         key={loc.branchId}
                         className={`flex flex-col p-4 rounded-lg border bg-white dark:bg-neutral-800 shadow-sm transition-all duration-200 ${
-                          loc.availableCopies > 0 
+                          loc.availableCopies > 0 && canReserve
                             ? selectedBranchId === loc.branchId
                               ? 'border-[#006F66] dark:border-[#FFB95F] ring-2 ring-[#006F66] dark:ring-[#FFB95F]'
                               : 'border-[#E0E0E0] dark:border-neutral-700 hover:border-[#006F66] dark:hover:border-[#FFB95F] cursor-pointer'
                             : 'border-[#E0E0E0] dark:border-neutral-700 opacity-60'
                         }`}
-                        onClick={() => handleBranchClick(loc.branchId, loc.availableCopies)}
+                        onClick={() => canReserve && handleBranchClick(loc.branchId, loc.availableCopies)}
                       >
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <div className="flex items-start gap-2">
@@ -196,15 +184,17 @@ export default function BookDetailTemplate({
                   </div>
                 )}
                 
-                <div className="w-full max-w-sm mt-4">
-                  <ActionButton 
-                    onClick={onReserve} 
-                    disabled={isReserving || reserved || !hasAvailability || !selectedBranchId || hasActiveReservation}
-                    icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
-                  >
-                    {reserved ? t('book.reserved') : isReserving ? t('book.reserving') : t('book.reserve')}
-                  </ActionButton>
-                </div>
+                {canReserve && (
+                  <div className="w-full max-w-sm mt-4">
+                    <ActionButton 
+                      onClick={onReserve} 
+                      disabled={isReserving || reserved || !hasAvailability || !selectedBranchId || hasActiveReservation}
+                      icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+                    >
+                      {reserved ? t('book.reserved') : isReserving ? t('book.reserving') : t('book.reserve')}
+                    </ActionButton>
+                  </div>
+                )}
               </div>
             </div>
           </div>

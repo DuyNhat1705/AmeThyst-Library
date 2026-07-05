@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useI18n } from '../../../providers/I18nProvider';
 import { BorrowedBookCard, BorrowedHistoryTable } from '../../../components/molecules';
 import { PinModal } from '../../../components/organisms';
+import { apiFetch } from '../../../utils/apiClient';
 import type { BorrowedBook } from '../../../components/molecules';
 
 type Tab = 'current' | 'history';
@@ -24,23 +25,12 @@ export default function BorrowedBooksPage() {
     const fetchBorrowRecords = async () => {
       setLoading(true);
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/my-borrowed`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!response.ok) {
+        const result = await apiFetch<{ current: BorrowedBook[] }>('/dashboard/user/my-borrowed');
+        if (result.success) {
+          setCurrentBooks(result.data?.current || []);
+        } else {
           setCurrentBooks([]);
-          return;
         }
-
-        const data = await response.json();
-        setCurrentBooks(data.current || []);
       } catch (err) {
         console.error('Error fetching borrow records:', err);
         setCurrentBooks([]);
@@ -68,15 +58,8 @@ export default function BorrowedBooksPage() {
 
   const handleCancelReservation = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.ok) {
+      const result = await apiFetch(`/dashboard/user/reserve/${id}`, { method: 'DELETE' });
+      if (result.success) {
         setCurrentBooks(prev => prev.filter(book => book.id !== id));
       }
     } catch (err) {
@@ -86,23 +69,13 @@ export default function BorrowedBooksPage() {
 
   const handleGeneratePin = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
       setGeneratingPinId(id);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve/${id}/pin`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.data) {
+      const result = await apiFetch<{ pin: string; expiresAt: string }>(`/dashboard/user/reserve/${id}/pin`, { method: 'POST' });
+      if (result.success && result.data) {
         setCurrentBooks(prev => prev.map(book =>
-          book.id === id ? { ...book, pin: data.data.pin, status: 'pending', expiresAt: data.data.expiresAt } : book
+          book.id === id ? { ...book, pin: result.data!.pin, status: 'pending', expiresAt: result.data!.expiresAt } : book
         ));
-        setPinModal({ open: true, pin: data.data.pin, expiresAt: data.data.expiresAt });
+        setPinModal({ open: true, pin: result.data.pin, expiresAt: result.data.expiresAt });
       }
     } catch (err) {
       console.error('Error generating PIN:', err);

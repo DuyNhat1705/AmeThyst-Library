@@ -109,12 +109,14 @@ export function useStoredUser(): StoredUser | null {
 
 /**
  * Redirects the user to the specified path if they are already logged in.
+ * If no path is given, resolves based on the user's role.
  */
-export function useRedirectIfLoggedIn(redirectTo: string = '/library'): void {
+export function useRedirectIfLoggedIn(redirectTo?: string): void {
   const router = useRouter();
   useEffect(() => {
     if (isLoggedIn()) {
-      router.push(redirectTo);
+      const target = redirectTo || getRedirectPathForUser(getLoggedInUser());
+      router.push(target);
     }
   }, [router, redirectTo]);
 }
@@ -135,5 +137,16 @@ export function useRequireAuth(redirectTo: string = '/login'): void {
  */
 export function getRedirectPathForUser(user: StoredUser | null): string {
   if (!user) return '/login';
+  if (user.role === 'librarian') return '/dashboard/librarian';
+  if (user.role === 'admin') return '/dashboard';
   return '/library';
+}
+
+/**
+ * Returns the dashboard path based on user's role.
+ */
+export function getDashboardPath(user: StoredUser | null): string {
+  if (!user) return '/login';
+  if (user.role === 'librarian') return '/dashboard/librarian';
+  return '/dashboard/user';
 }

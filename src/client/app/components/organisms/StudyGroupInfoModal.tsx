@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import { StudyGroup } from '../../study-together/mockData';
-import { Button } from '../atoms/Button';
+import { Button, GroupInfoRow, CapacityBar, MemberCard, ModalCloseButton } from '../atoms';
 
 interface StudyGroupInfoModalProps {
   isOpen: boolean;
@@ -41,9 +41,6 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
   }, [isOpen]);
 
   if (!isOpen || !group) return null;
-
-  // Calculate capacity percentage
-  const capacityPercent = Math.min(100, Math.round((group.currentMembers / group.maxMembers) * 100));
 
   // Determine subject badge color (reuse from card)
   const getSubjectColor = (subj: string) => {
@@ -138,40 +135,15 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                     <span className="font-inter text-sm font-medium">Edit Settings</span>
                   </button>
                 )}
-                <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
+                <ModalCloseButton onClick={onClose} />
               </div>
             </div>
 
             {/* Time & Location Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-              <div className="flex flex-col items-start gap-1">
-                <p className="text-[#45464D] dark:text-gray-400 font-inter text-xs font-semibold leading-3 tracking-wider">
-                  TIME RANGE
-                </p>
-                <p className="text-[#0D1C2E] dark:text-white font-inter text-lg font-semibold leading-relaxed">
-                  {group.time}
-                </p>
-              </div>
-              <div className="flex flex-col items-start gap-1">
-                <p className="text-[#45464D] dark:text-gray-400 font-inter text-xs font-semibold leading-3 tracking-wider">
-                  LOCATION
-                </p>
-                <p className="text-[#0D1C2E] dark:text-white font-inter text-lg font-semibold leading-relaxed">
-                  {group.address}
-                </p>
-              </div>
-              <div className="flex flex-col items-start gap-1">
-                <p className="text-[#45464D] dark:text-gray-400 font-inter text-xs font-semibold leading-3 tracking-wider">
-                  ROOM
-                </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-[#0D1C2E] dark:text-white font-inter text-lg font-semibold leading-relaxed">
-                    {group.room}
-                  </p>
-                </div>
-              </div>
+              <GroupInfoRow label="TIME RANGE" value={group.time} />
+              <GroupInfoRow label="LOCATION" value={group.address} />
+              <GroupInfoRow label="ROOM" value={group.room} />
             </div>
           </div>
 
@@ -235,23 +207,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                     </p>
                   </div>
 
-                  {/* Capacity Bar */}
-                  <div className="flex flex-col items-end gap-2">
-                    <p className="text-[#45464D] dark:text-gray-400 font-inter text-xs font-semibold leading-3 tracking-wider uppercase">
-                      CAPACITY
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-32 h-2 rounded-full bg-[#E6EEFF] dark:bg-neutral-700 overflow-hidden relative">
-                        <div 
-                          className="absolute left-0 top-0 h-full rounded-full bg-[#091426] dark:bg-[#D4B895] transition-all duration-500"
-                          style={{ width: `${capacityPercent}%` }}
-                        />
-                      </div>
-                      <p className="text-[#000] dark:text-white font-inter text-sm font-bold leading-relaxed">
-                        {group.currentMembers} of {group.maxMembers} filled
-                      </p>
-                    </div>
-                  </div>
+                  <CapacityBar current={group.currentMembers} max={group.maxMembers} />
                 </div>
 
                 {/* Leader Card */}
@@ -282,26 +238,13 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {otherMembers.map((member, idx) => (
-                      <div key={idx} className="flex p-3 items-center justify-between border border-[#C6C6CD] dark:border-neutral-800 bg-[#FFF] dark:bg-neutral-900 rounded-xl w-full">
-                        <div className="flex items-center gap-3 overflow-hidden">
-                          <div className="flex flex-col items-center justify-center rounded-xl bg-gray-100 dark:bg-neutral-800 w-10 h-10 overflow-hidden shadow-inner shrink-0">
-                            <span className="text-sm font-bold text-gray-500 dark:text-gray-300">{member.initials}</span>
-                          </div>
-                          <div className="flex flex-col items-start overflow-hidden">
-                            <p className="text-[#000] dark:text-white font-inter text-sm font-bold leading-5 truncate w-full">
-                              {member.name}
-                            </p>
-                            <p className="text-[#45464D] dark:text-gray-400 font-inter text-[10px] leading-[14px] tracking-wider uppercase truncate w-full">
-                              {member.role}
-                            </p>
-                          </div>
-                        </div>
-                        {canEdit && (
-                          <button className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors shrink-0" title="Kick Member">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                          </button>
-                        )}
-                      </div>
+                      <MemberCard
+                        key={idx}
+                        name={member.name}
+                        initials={member.initials}
+                        role={member.role}
+                        canKick={canEdit}
+                      />
                     ))}
                   </div>
                 </div>

@@ -40,13 +40,14 @@ export default function UserDashboardPage() {
           fetch(`${API_BASE}/dashboard/events`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`${API_BASE}/api/library/my-borrowed`, {
+          fetch(`${API_BASE}/dashboard/user/my-borrowed`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         ]);
 
         const eventsData = eventsRes.ok ? await eventsRes.json() : { events: [] };
-        const borrowedData = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
+        const borrowedJson = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
+        const borrowedData = borrowedJson.data || borrowedJson;
 
         const events = eventsData.events || [];
 

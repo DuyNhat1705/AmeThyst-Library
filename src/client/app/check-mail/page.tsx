@@ -7,6 +7,7 @@ import RegisterTemplate from '../components/templates/RegisterTemplate';
 import { useI18n } from '../providers/I18nProvider';
 import { Button, ErrorMessage } from '../components/atoms';
 import { mapServerError } from '../utils/errors';
+import { useCountdown } from '../hooks/useCountdown';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -19,9 +20,8 @@ function CheckEmailContent() {
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const [resendError, setResendError] = useState('');
-  const [cooldown, setCooldown] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isResendingRef = useRef(false);
+  const { secondsLeft: cooldown, isActive: cooldownActive, start: startCooldown, stop: stopCooldown, reset: resetCooldown } = useCountdown(60);
 
   useEffect(() => {
     if (!email) {
@@ -29,14 +29,8 @@ function CheckEmailContent() {
     }
   }, [email, router]);
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
   const handleResend = async () => {
-    if (!email || cooldown > 0 || isResending || isResendingRef.current) return;
+    if (!email || cooldownActive || isResending || isResendingRef.current) return;
 
     isResendingRef.current = true;
     setIsResending(true);
@@ -59,18 +53,8 @@ function CheckEmailContent() {
       }
 
       setResendMessage(t('auth.resend_verification_success'));
-      setCooldown(60);
-
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setCooldown((prev) => {
-          if (prev <= 1) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      resetCooldown();
+      startCooldown();
     } catch (err: unknown) {
       const raw = err instanceof Error ? err.message : undefined;
       setResendError(mapServerError(raw, t, 'auth.something_went_wrong'));
@@ -109,12 +93,12 @@ function CheckEmailContent() {
         <Button
           type="button"
           onClick={handleResend}
-          disabled={cooldown > 0 || isResending}
+          disabled={cooldownActive || isResending}
           isLoading={isResending}
           className="w-full h-[52px]"
           variant="primary"
         >
-          {cooldown > 0
+          {cooldownActive
             ? t('auth.resend_verification_cooldown').replace('{seconds}', String(cooldown))
             : t('auth.resend_verification')}
         </Button>
