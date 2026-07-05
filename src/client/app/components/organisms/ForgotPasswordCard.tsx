@@ -2,12 +2,11 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { FormField } from '../molecules';
-import { Button, ErrorMessage, SecurityIndicator, PasswordInput, OtpExpiredBanner } from '../atoms';
+import { Button, ErrorMessage, SecurityIndicator, PasswordInput } from '../atoms';
 import { validateNewPassword, calculatePasswordStrength } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
 import { validateEmail } from '../../utils/validation';
-import { useCountdown } from '../../hooks/useCountdown';
 
 export interface SubmitData {
   step: 1 | 2 | 3;
@@ -41,14 +40,34 @@ export default function ForgotPasswordCard({
   const [isResending, setIsResending] = useState(false);
   const isResendingRef = useRef(false);
   
-  const { secondsLeft, isExpired, start, stop, reset } = useCountdown(OTP_TTL);
+    // OTP countdown
+  const [secondsLeft, setSecondsLeft] = useState(OTP_TTL);
+  const [otpExpired, setOtpExpired] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const passwordStrength = useMemo(() => calculatePasswordStrength(newPassword), [newPassword]);
+  
+  const startCountdown = () => {
+    setSecondsLeft(OTP_TTL);
+    setOtpExpired(false);
+    setResendMessage('');
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          setOtpExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   useEffect(() => {
-    if (step === 2) { reset(); start(); }
-    return stop;
+    if (step === 2) startCountdown();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [step]);
 
   const handleStep1 = async (e: React.FormEvent) => {
@@ -88,8 +107,7 @@ export default function ForgotPasswordCard({
       const result = await onSubmit({ step: 1, email });
       if (result && result.success) {
         setResendMessage(t('auth.otp_resent'));
-        reset();
-        start();
+        startCountdown();
       } else {
         setError(mapServerError(result?.error, t, 'auth.email_not_exist'));
       }
@@ -176,10 +194,13 @@ export default function ForgotPasswordCard({
                   })()}
                 </p>
                 
-                {isExpired ? (
+                {otpExpired ? (
                   /* Expired UI */
                   <div className="w-full py-6 flex flex-col gap-4">
-                    <OtpExpiredBanner title={t('auth.otp_expired')} message={t('auth.otp_expired_message')} />
+                    <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 flex flex-col gap-1">
+                      <p className="text-sm font-semibold text-red-600 dark:text-red-400">{t('auth.otp_expired')}</p>
+                      <p className="text-sm text-red-500 dark:text-red-400">{t('auth.otp_expired_message')}</p>
+                    </div>
                     {error && <ErrorMessage message={error} />}
                     <Button
                       type="button"

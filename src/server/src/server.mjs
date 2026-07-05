@@ -3,7 +3,7 @@ import './config/env.mjs';
 import express from 'express';
 import cors from 'cors';
 import passport from './config/passport.mjs';
-import libraryRoutes from './routes/library.mjs';
+import libraryRoutes from './routes/library.routes.mjs';
 import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
 import dashboardRoutes from './routes/dashboard.user.routes.mjs';
