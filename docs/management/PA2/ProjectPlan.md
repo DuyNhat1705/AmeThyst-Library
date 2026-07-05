@@ -12,8 +12,8 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
 ## Revision History
 | Date | Version | Description | Author |
 | :--- | :--- | :--- | :--- |
-| 01/07/2026 | 1.0 | Drafted initial sections: Introduction, Project Overview, and Project Organization. | Nguyễn Lê Hoàng Khải |
-| 03/07/2026 | 1.1 | Updated Project Plan with detailed schedules and tasks for Sprints 1 and 2. | Nguyễn Lê Hoàng Khải |
+| 01/07/2026 | 1.0 | Drafted initial sections: Introduction, Project Overview, and Project Organization | Nguyễn Lê Hoàng Khải |
+| 03/07/2026 | 1.1 | Updated Project Plan with detailed schedules and tasks for Sprints 1 and 2 | Nguyễn Lê Hoàng Khải |
 
 ## Table of Contents
 
@@ -140,82 +140,133 @@ This project plan is not a final version and may be subject to change and finish
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Sprint 1** | PA1 | 2 weeks | 23 May – 6 Jun, 2026 | Completed | Project Proposal, Existing App Survey, Team Contract, Dev Tools & Process Setup, Framework Setup |
 | **Sprint 2** | PA2 | 2 weeks | 7 Jun – 12 July, 2026 | Completed | Project Plan, Vision Document, Spec Kit Initialization, AI Usage & Weekly Report; ERD/DB Schema, Figma UI Design, Start working on several Functional Groups |
-| **Sprint 3** | PA3 | 2-3 weeks | # | Planned | Revised Project Plan, Revised Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, Implement 1 Functional Group |
-| **Sprint 4** | PA4 | 2-3 weeks | # | Planned | Revised Use-Case Specification, Software Architecture (C4 Model), Deployment Diagram, Implement 2 Functional Groups |
-| **Sprint 5** | PA5 | 2-3 weeks | # | Planned | Test Plan & Test Cases, Final Product Demo, Reflective Report, Final Submission |
+| **Sprint 3** | PA3 | 2-3 weeks | — | Planned | Revised Project Plan, Revised Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, Implement 1 Functional Group |
+| **Sprint 4** | PA4 | 2-3 weeks | — | Planned | Revised Use-Case Specification, Software Architecture (C4 Model), Deployment Diagram, Implement 2 Functional Groups |
+| **Sprint 5** | PA5 | 2-3 weeks | — | Planned | Test Plan & Test Cases, Final Product Demo, Reflective Report, Final Submission |
 
 ### 4.3 Detailed Build Plan
 
 Note: Review tasks are not logged as separate items, but an internal review policy is strictly followed. Documents are collectively reviewed by the team once drafted. Meanwhile, development tasks undergo self-testing by the implementer and a mandatory code review by the Project Manager (Vũ Duy Nhất) prior to merging.
 
 ### Sprint 1 (23 May – 6 Jun 2026) — Team Assignment
-| Tasks | Due Date | Assignee |
+
+**Summary:** Completed the initial project setup, including the Project Proposal, Existing App Survey, and Team Contract. Dedicated time to researching and evaluating development tools, followed by aligning the team on and onboarding to the tools selected for use. Delivered the foundational documentation required to give all members a clear, shared understanding of the upcoming project.
+  
+#### Vũ Duy Nhất (4 tasks)
+
+| Type | Task | Due Date |
 | :--- | :--- | :--- |
-| **Document** | | |
-| Write Project Proposal | Jun 6 | Nguyễn Lê Hoàng Khải |
-| Write Existing App Survey | Jun 6 | Phan Lê Anh Minh |
-| Write Team Contract | Jun 6 | Nguyễn Nhựt Huy |
-| Take screenshot of required tools (GitHub, Jira, VS Code, AI Coding Acc...) | Jun 6 | Nguyễn Lê Hoàng Khải |
-| Write Weekly Report | Jun 6 | Vũ Duy Nhất |
-| Write Planning Report | Jun 6 | Vũ Duy Nhất |
-| Write Review Report | Jun 6 | Vũ Duy Nhất |
-| Finalize at least 10 usecase groups for the web | May 31 | All Members |
-| **Development** | | |
-| Complete the Framework (React NextJs + ExpressJs) | May 30 | Vũ Duy Nhất |
-| UI/UX Design for the Website | Jun 6 | Nguyễn Nhựt Huy |
-| Collect data of books | Jun 6 | Trần Lê Hoàng Gia |
+| Document | Write Weekly Report | Jun 6 |
+| Document | Write Planning Report | Jun 6 |
+| Document | Write Review Report | Jun 6 |
+| Development | Complete the Framework (React NextJs + ExpressJs) | May 30 |
+
+#### Nguyễn Nhựt Huy (2 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write Team Contract | Jun 6 |
+| Development | UI/UX Design for the Website | Jun 6 |
+
+#### Trần Lê Hoàng Gia (1 task)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Development | Collect data of books | Jun 6 |
+
+#### Nguyễn Lê Hoàng Khải (2 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write Project Proposal | Jun 6 |
+| Document | Take screenshot of required tools (GitHub, Jira, VS Code, AI Coding Acc...) | Jun 6 |
+
+#### Phan Lê Anh Minh (1 task)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write Existing App Survey | Jun 6 |
+
+#### All Members (1 task)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Finalize at least 10 usecase groups for the web | May 31 |
 
 ### Sprint 2 (7 Jun – 12 July 2026) — Team Assignment
-| Tasks | Due Date | Assignee |
+
+**Summary:** Completed the required documentation, including the Project Plan, Vision Document, Spec Kit Initialization, and AI Usage & Weekly Report. Additionally designed the ERD/DB Schema and set up the database connection to build familiarity with the database. Prepared Figma UI designs in advance for the pages supporting the core features. Used Spec Kit to implement the Authentication, Book Searching, and Book Borrowing functional groups, along with the interfaces for several pages based on the Figma designs.
+
+#### Vũ Duy Nhất (13 tasks)
+
+| Type | Task | Due Date |
 | :--- | :--- | :--- |
-| **Document** | | |
-| Identify database schema for storing data for user and book | Jun 13 | Trần Lê Hoàng Gia |
-| Draw ERD for user usecases | Jun 13 | Vũ Duy Nhất |
-| Draw usecase diagram | Jun 16 | Vũ Duy Nhất |
-| Draw ERD for librarian usecases | Jun 23 | Vũ Duy Nhất |
-| Complete collecting evidence for SpecKit self-training | Jun 27 | Vũ Duy Nhất |
-| Update ERD and Database structure based on member opinion | Jun 27 | Vũ Duy Nhất |
-| Write Document introducing intersection of Room Reserve + Library | Jun 27 | Vũ Duy Nhất |
-| Write Weekly Report | Jul 4 | Vũ Duy Nhất |
-| Write SpecKit document to summarize all members' knowledge + prepare for SpecKit files generated in initializing process | Jul 4 | Vũ Duy Nhất |
-| Write AI Usage Report | Jul 11 | Vũ Duy Nhất |
-| Write Planning Report + Review Report | Jul 11 | Vũ Duy Nhất |
-| Write Project Plan (15 points) | Jul 11 | Nguyễn Lê Hoàng Khải |
-| Write Vision Document (20 points) | Jul 11 | Nguyễn Nhựt Huy |
-| **Development** | | |
-| Storing Data into PostgreSQL based on ERD | Jun 15 | Trần Lê Hoàng Gia |
-| Set up USER table for storing user data based on ERD | Jun 16 | Trần Lê Hoàng Gia |
-| Design DashBoard/Book Borrowing Page on Figma | Jun 17 | Phan Lê Anh Minh |
-| Design DashBoard/Room Reservation Page on Figma | Jun 17 | Phan Lê Anh Minh |
-| Complete View Book Details based on Figma | Jun 18 | Nguyễn Lê Hoàng Khải |
-| Complete Home Page based on Figma | Jun 18 | Nguyễn Nhựt Huy |
-| Complete Account Register, Account Login in Authentication | Jun 20 | Phan Lê Anh Minh |
-| Complete DashBoard/Profile/Personal Info Page + Settings | Jun 20 | Nguyễn Nhựt Huy |
-| Refactoring user tables, borrow_books, return_books based on meeting discussion | Jun 23 | Vũ Duy Nhất |
-| Add Single-Factor Authentication (SFA) for Create Account (Register) | Jun 24 | Phan Lê Anh Minh |
-| Add resend OTP button + decrease expire time of OTP to 30s | Jun 24 | Phan Lê Anh Minh |
-| Complete DashBoard/Book Borrowing (All Reservations + Borrow History) | Jun 24 | Nguyễn Nhựt Huy |
-| Complete DashBoard/Loan & Fees Page based on Figma | Jun 24 | Nguyễn Nhựt Huy |
-| Complete DashBoard/Recommended Books Page based on Figma | Jun 24 | Nguyễn Lê Hoàng Khải |
-| Complete updating data in books table | Jun 27 | Trần Lê Hoàng Gia |
-| Complete Profile Management | Jun 27 | Phan Lê Anh Minh |
-| Complete Semantic Search with Plot description, Semantic search by theme | Jun 27 | Trần Lê Hoàng Gia |
-| Complete Search by title, Search by author/category, Search with no result | Jun 27 | Trần Lê Hoàng Gia |
-| Complete Filter feature for books prioritizing by 13 genres | Jun 27 | Trần Lê Hoàng Gia |
-| Complete Authentication (Login, Register, Forget pwd) for Librarian | Jun 27 | Phan Lê Anh Minh |
-| Complete Book Borrowing + Pin Verification for Book | Jun 27 | Nguyễn Nhựt Huy |
-| Complete studytogether/studygroup Page | Jun 27 | Nguyễn Lê Hoàng Khải |
-| Complete dashboard/yourstudygroup (Groups I created + Group I joined) | Jun 27 | Nguyễn Lê Hoàng Khải |
-| Overview and Merge Code | Jun 28 | Vũ Duy Nhất |
-| Fill data into study_room table and room_avail table | Jul 1 | Trần Lê Hoàng Gia |
-| Complete dashboard/librarian/announcements page based on Figma | Jul 1 | Nguyễn Lê Hoàng Khải |
-| Redesign based on Discussion in the Meeting | Jul 1 | Phan Lê Anh Minh |
-| Write unit test (≥10 test cases) for register usecase (all relevant modules if possible) | Jul 4 | Phan Lê Anh Minh |
-| Complete dashboard/librarian/pin-verification page based on Figma and its function | Jul 4 | Nguyễn Nhựt Huy |
-| Complete Library Map page based on Figma and complete whole Library Map feature | Jul 4 | Trần Lê Hoàng Gia |
-| Overview and Merge code | Jul 4 | Vũ Duy Nhất |
-| Complete partially AI recommendation feature | Jul 11 | Trần Lê Hoàng Gia |
-| Complete Announcements feature for Librarian | Jul 11 | Phan Lê Anh Minh |
+| Document | Draw ERD for user usecases | Jun 13 |
+| Document | Draw usecase diagram | Jun 16 |
+| Document | Draw ERD for librarian usecases | Jun 23 |
+| Document | Complete collecting evidence for SpecKit self-training | Jun 27 |
+| Document | Update ERD and Database structure based on member opinion | Jun 27 |
+| Document | Write Document introducing intersection of Room Reserve + Library | Jun 27 |
+| Document | Write Weekly Report | Jul 4 |
+| Document | Write SpecKit document to summarize all members' knowledge + prepare for SpecKit files generated in initializing process | Jul 4 |
+| Document | Write AI Usage Report | Jul 11 |
+| Document | Write Planning Report + Review Report | Jul 11 |
+| Development | Refactoring user tables, borrow_books, return_books based on meeting discussion | Jun 23 |
+| Development | Overview and Merge Code | Jun 28 |
+| Development | Overview and Merge code | Jul 4 |
+
+#### Nguyễn Nhựt Huy (7 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write Vision Document (20 points) | Jul 11 |
+| Development | Complete Home Page based on Figma | Jun 18 |
+| Development | Complete DashBoard/Profile/Personal Info Page + Settings | Jun 20 |
+| Development | Complete DashBoard/Book Borrowing (All Reservations + Borrow History) | Jun 24 |
+| Development | Complete DashBoard/Loan & Fees Page based on Figma | Jun 24 |
+| Development | Complete Book Borrowing + Pin Verification for Book | Jun 27 |
+| Development | Complete dashboard/librarian/pin-verification page based on Figma and its function | Jul 4 |
+
+#### Trần Lê Hoàng Gia (10 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Identify database schema for storing data for user and book | Jun 13 |
+| Development | Storing Data into PostgreSQL based on ERD | Jun 15 |
+| Development | Set up USER table for storing user data based on ERD | Jun 16 |
+| Development | Complete updating data in books table | Jun 27 |
+| Development | Complete Semantic Search with Plot description, Semantic search by theme | Jun 27 |
+| Development | Complete Search by title, Search by author/category, Search with no result | Jun 27 |
+| Development | Complete Filter feature for books prioritizing by 13 genres | Jun 27 |
+| Development | Fill data into study_room table and room_avail table | Jul 1 |
+| Development | Complete Library Map page based on Figma and complete whole Library Map feature | Jul 4 |
+| Development | Complete partially AI recommendation feature | Jul 11 |
+
+#### Nguyễn Lê Hoàng Khải (6 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write Project Plan (15 points) | Jul 11 |
+| Development | Complete View Book Details based on Figma | Jun 18 |
+| Development | Complete DashBoard/Recommended Books Page based on Figma | Jun 24 |
+| Development | Complete studytogether/studygroup Page | Jun 27 |
+| Development | Complete dashboard/yourstudygroup (Groups I created + Group I joined) | Jun 27 |
+| Development | Complete dashboard/librarian/announcements page based on Figma | Jul 1 |
+
+#### Phan Lê Anh Minh (10 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Development | Design DashBoard/Book Borrowing Page on Figma | Jun 17 |
+| Development | Design DashBoard/Room Reservation Page on Figma | Jun 17 |
+| Development | Complete Account Register, Account Login in Authentication | Jun 20 |
+| Development | Add Single-Factor Authentication (SFA) for Create Account (Register) | Jun 24 |
+| Development | Add resend OTP button + decrease expire time of OTP to 30s | Jun 24 |
+| Development | Complete Profile Management | Jun 27 |
+| Development | Complete Authentication (Login, Register, Forget pwd) for Librarian | Jun 27 |
+| Development | Redesign based on Discussion in the Meeting | Jul 1 |
+| Development | Write unit test (≥10 test cases) for register usecase (all relevant modules if possible) | Jul 4 |
+| Development | Complete Announcements feature for Librarian | Jul 11 |
 
 ## 5. AI Usage Notes
 This document was drafted with the assistance of an AI tool, declared as follows:
