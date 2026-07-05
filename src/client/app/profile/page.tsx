@@ -86,8 +86,8 @@ export default function ProfilePage() {
 
         // Map database response fields (camelCase from SQL aliases)
         const formatBirthDate = data.birthDate
-          ? new Date(data.birthDate).toISOString().split('T')[0]
-          : "";
+        ? new Date(data.birthDate).toLocaleDateString('sv-SE')
+        : "";
 
         const loaded: ProfileState = {
           fullName: data.username || "",
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                 type="text"
                 value={profile.phoneNumber}
                 onChange={(e) => handleLocalUpdate('phoneNumber', e.target.value)}
-                placeholder={t('auth.phone_placeholder') || "Enter phone number"}
+                placeholder={t('profile.phone_placeholder') || "Enter phone number"}
                 error={phoneError}
               />
             </div>
