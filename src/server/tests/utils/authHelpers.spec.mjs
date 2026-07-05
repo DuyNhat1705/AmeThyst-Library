@@ -43,6 +43,7 @@ describe('Auth Helpers - authHelpers', () => {
         username: 'testuser',
         avatar: 'avatar.png',
         role: 'admin',
+        branch_id: null,
       });
       expect(payload.password_hash).toBeUndefined();
     });
@@ -55,10 +56,10 @@ describe('Auth Helpers - authHelpers', () => {
 
       const jwtSpy = vi.spyOn(jwt, 'sign').mockReturnValue('mock-jwt-token');
 
-      const token = signToken(123, 'user@example.com');
+      const token = signToken(123, 'user@example.com', 'user');
 
       expect(jwtSpy).toHaveBeenCalledWith(
-        { userId: 123, email: 'user@example.com' },
+        { userId: 123, email: 'user@example.com', role: 'user', branch_id: null },
         'my_super_secret_key',
         { expiresIn: '7d' }
       );
