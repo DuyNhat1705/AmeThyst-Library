@@ -15,6 +15,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 
 ## Table of Contents
 - [Vision Document](#vision-document)
+  - [Revision History](#revision-history)
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
     - [1.1 References](#11-references)
@@ -23,13 +24,18 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [2.2 Product Position Statement](#22-product-position-statement)
   - [3. Stakeholder and User Descriptions](#3-stakeholder-and-user-descriptions)
     - [3.1 Stakeholder Summary](#31-stakeholder-summary)
-    - [3.2 User Summary](#32-user-summary)
+    - [3.2. User Summary](#32-user-summary)
+      - [User Class 1: Readers (Library Patrons)](#user-class-1-readers-library-patrons)
+      - [User Class 2: Librarians](#user-class-2-librarians)
+      - [User Class 3: System Administrators (Admin)](#user-class-3-system-administrators-admin)
     - [3.3 User Environment](#33-user-environment)
-    - [3.4 Summary of Key Stakeholder or User Needs](#34-summary-of-key-stakeholder-or-user-needs)
+    - [3.4. Summary of Key Stakeholder or User Needs](#34-summary-of-key-stakeholder-or-user-needs)
     - [3.5 Alternatives and Competition](#35-alternatives-and-competition)
   - [4. Product Overview](#4-product-overview)
     - [4.1 Product Perspective](#41-product-perspective)
     - [4.2 Assumptions and Dependencies](#42-assumptions-and-dependencies)
+      - [4.2.1 Assumptions](#421-assumptions)
+      - [4.2.2 Dependencies](#422-dependencies)
   - [5. Product Features](#5-product-features)
   - [6. Non-Functional Requirements](#6-non-functional-requirements)
     - [6.1 Product Requirements](#61-product-requirements)
@@ -91,32 +97,58 @@ These documents are stored in the team's shared Google Drive and version-control
 | Project Manager (Vũ Duy Nhất) | Team lead responsible for overall coordination | Manages timelines, assigns tasks via Jira, resolves resourcing conflicts, and makes final calls in deadlocked decisions |
 | Library (hypothetical adopting organization) | The organization the system is modeled to serve, represented indirectly through the survey of real-world library systems and the team's own assumptions about library operations | Would, in a real deployment, define institutional policies (borrowing limits, fines, room-booking rules) that constrain system behavior |
 
-### 3.2 User Summary
+### 3.2. User Summary
+The system targets three primary direct user classes interacting with the web application:
 
-| Name | Description | Responsibilities | Stakeholder |
-| :--- | :--- | :--- | :--- |
-| Patron / User | Any person who wants to borrow physical books or reserve a study room at the library | Searches the catalog, reserves books and study rooms, completes PIN-based pickup/return, and forms or joins study groups | Represented directly through requirements elicitation within the team; also represented by the Course Instructor/TA as an academic stand-in for real end users |
-| Librarian | Front-line staff who operate day-to-day circulation | Processes physical book pickups and returns via PIN verification, manages book inventory, monitors room reservations, and responds to user support requests | Library (hypothetical) |
-| Admin | Staff or managers responsible for system-wide oversight | Monitors usage statistics and trends, manages study-room configuration, and oversees platform-wide settings and reports | Library (hypothetical) |
+#### User Class 1: Readers (Library Patrons)
+*   **Who they are:** Students, researchers, or general members of the library who need to browse, reserve books, book study rooms, and interact with the library community.
+*   **Technical Literacy:** Basic to Intermediate. They are familiar with standard web applications and online reservation systems, requiring an intuitive and responsive user interface.
+*   **Frequency of Use:** Frequent. Patrons access the application regularly to check return deadlines, book rooms for upcoming study sessions, or join library-hosted study groups.
+
+#### User Class 2: Librarians
+*   **Who they are:** On-site library staff responsible for managing physical assets, interacting with patrons at the desk, and overseeing daily inventory.
+*   **Technical Literacy:** Intermediate. Capable of operating internal management systems, verifying digital receipts, and handling data entry.
+*   **Frequency of Use:** Intensive. Librarians remain logged into the system throughout their daily working shifts to process check-outs, returns, and notifications.
+
+#### User Class 3: System Administrators (Admin)
+*   **Who they are:** High-level administrators or technical staff who manage the platform's user base, security, and overall operational statistics.
+*   **Technical Literacy:** Advanced. Proficient in data management, role-based access control (RBAC), and interpreting system analytics.
+*   **Frequency of Use:** Occasional to Moderate. Admins access the system to audit user accounts, adjust permissions, or review high-level platform statistics and charts.
 
 ### 3.3 User Environment
 
-- **Number of users:** The system is designed to scale to the library's entire patron base (potentially thousands of users), plus a small number of librarian and admin accounts per branch.
-- **Task cycle:** A typical patron session is short and goal-directed — search or browse, reserve a book or room, then a separate brief in-person visit to complete pickup/return via PIN verification. Librarian and admin sessions are longer, recurring throughout a work shift (processing multiple transactions per hour).
-- **Environmental constraints:** Patrons access the system primarily from personal laptops or mobile phones, both on and off campus; librarians and admins use the system at fixed front-desk or office workstations inside the library building, where a stable network connection can be assumed.
-- **Current platforms in use:** Based on the Application Survey, comparable institutions currently rely on separate or partially integrated systems — an on-premises catalog portal (e.g., University of Chicago Library), a cloud-based back-office system (e.g., Papyrus Library Cloud), or a hybrid SaaS platform (e.g., Accessit Library) — none of which is assumed to already exist at the target institution; this project treats the target library as an as-is manual/paper-based operation being replaced.
-- **Integration needs:** The system currently has no requirement that login be restricted to a specific institution's accounts — any patron may register directly or sign in via Google OAuth. The system is not assumed to integrate with any pre-existing legacy library system, since none is specified for this project.
+The operational context, platforms, and infrastructural environment in which the various user roles interact with the system are detailed below:
 
-### 3.4 Summary of Key Stakeholder or User Needs
+* **User Base and Scalability:**
+    * The system is engineered to scale effectively to support the library's entire patron base (potentially hundreds of active readers).
+    * Simultaneously, it supports a smaller, concurrent pool of librarian and administrative accounts allocated per library branch.
 
-| Need | Priority | Concerns | Current Solution | Proposed Solution |
-| :--- | :--- | :--- | :--- | :--- |
-| Check book/room availability before visiting | High | Wasted trips when a book is unavailable or a room is already booked | Manual inquiry at the front desk, or no visibility at all | Real-time online availability and reservation for both books and study rooms |
-| Fast physical checkout/return | High | Long queues and manual paperwork at the circulation desk | Staff manually record loans and returns on paper or in a basic ledger | 6-digit PIN verification for quick pickup/return, eliminating manual paperwork |
-| Effective book discovery | Medium | Keyword search fails when the user doesn't know exact titles/authors, or misremembers details | Traditional keyword/catalog search only | AI-powered semantic search (by plot, theme, or character) alongside traditional search |
-| Fair, conflict-free room booking | Medium | Double bookings and disputes over room usage among groups | Ad-hoc, first-come sign-up sheets or verbal arrangements | Structured, real-time booking grid with instant policy checks |
-| Efficient inventory & operations management | Medium | Staff spend significant time on manual record-keeping instead of patron service | Manual tracking of stock, fines, and usage | Centralized dashboard for inventory, bookings, and usage statistics for librarians/admins |
-| Personalized book recommendations | Low–Medium | Users unsure what to read next; information overload in a large catalog | No recommendation mechanism, or generic "popular titles" lists | AI recommendation engine based on individual borrowing/reading history |
+* **Hardware & Platforms:**
+    * **For Readers (Patrons):** The system is a responsive Web application accessible via standard modern mobile and desktop web browsers (e.g., Google Chrome, Safari, Microsoft Edge). Users primarily access the platform from personal laptops or mobile smartphones, both on and off campus.
+    * **For Librarians and Admins:** The system is accessed via desktop computers (PCs/Laptops) at fixed front-desk reception areas or back-office workstations inside the library building, utilizing larger screens to efficiently manage dense dashboards and data grids.
+
+* **Operational Context & Task Cycles:**
+    * **Readers (Patrons):** Sessions are typically short and goal-directed (e.g., browsing the catalog, searching for materials, or reserving books/study rooms from home or while commuting). Optimized web performance is required to accommodate varying network speeds. In-person interactions are brief, focusing on quick book location lookups or checking into reserved rooms via PIN verification.
+    * **Librarians and Admins:** Sessions are long and recurring throughout a work shift, involving high-frequency transaction processing (multiple actions per hour). They operate within a stable, reliable, and wired library network infrastructure, requiring instant UI feedback during physical workflows (e.g., verifying book conditions upon return or processing handovers).
+
+* **Current Platforms & Integration Scope:**
+    * **Baseline Status:** Unlike comparable institutions that rely on fragmented on-premises portals, cloud-based back-offices, or hybrid SaaS platforms (e.g., University of Chicago Library, Papyrus, Accessit), this project treats the target library as a greenfield deployment, replacing an "as-is" manual or paper-based operation.
+    * **System Integration:** The system operates without legacy constraints and does not integrate with any pre-existing legacy library infrastructure.
+    * **Authentication Integration:** There is no restriction to specific institutional accounts; any patron can register directly on the platform or authenticate via Google OAuth for streamlined access.
+
+* **Cooperating Systems & Technical Infrastructure:**
+    * The application is built using a modern decoupled architecture consisting of a **React** frontend and a **Node.js (Express.js)** backend. 
+    * Data persistence is managed via a **PostgreSQL** database. 
+    * The entire ecosystem is containerized and orchestrated using **Docker** to ensure consistency across development, testing, and production environments.
+
+### 3.4. Summary of Key Stakeholder or User Needs
+
+| User Class / Stakeholder | Current Pain Point | Core User Need |
+| :--- | :--- | :--- |
+| **User Class 1: Readers (Patrons)** | *   Wasting time commuting to the library only to find that the desired books are out of stock or study rooms are fully occupied.<br>*   Difficulty discovering new books that match their reading history and lack of an official platform to find study partners or academic groups within the library. | *   Requires a real-time online reservation system for both books and study rooms before arriving at the library.<br>*   Needs a personalized interface that suggests relevant books based on interests, along with integrated library study group features. |
+| **User Class 2: Librarians** | *   Tedious manual workflows when verifying physical book handovers, updating inventory counts, and tracking book damage.<br>*   Difficulty contacting or sending urgent announcements/overdue reminders to specific students efficiently. | *   Requires an automated management dashboard to process check-outs/returns and instantly update book status.<br>*   Needs a centralized notification system to broadcast announcements or target specific users regarding borrowing deadlines. |
+| **User Class 3: Admins** | *   Lack of high-level overview tools to track overall platform growth, active user metrics, and reading trends.<br>*   Managing user roles, upgrading permissions, or handling policy violations (banning users) via raw databases is inefficient and risky. | *   Requires visual analytics charts and statistics to easily monitor library platform activities.<br>*   Needs full role-based access control (RBAC) management tools to securely view, upgrade, downgrade, or ban accounts. |
+| **Instructor / Client** | *   Difficult to evaluate whether the full-stack architecture can robustly handle concurrent library reservations and role management. | *   Clear, well-structured software specifications and a containerized, working prototype delivered strictly on schedule. |
 
 ### 3.5 Alternatives and Competition
 
@@ -132,8 +164,30 @@ None of the surveyed alternatives combines real-time book and study-room reserva
 ## 4. Product Overview
 
 ### 4.1 Product Perspective
+The system is developed as a standalone software product and does not rely on any pre-existing larger systems for its core operations. 
+
+* **System Context:** 
+  * The product is a completely standalone system.
+* **Hardware Interfaces:** 
+  * The software does not directly interface with specialized hardware components. It operates on standard server infrastructure for deployment and is accessed via standard user end-devices.
+* **Software Interfaces:** 
+  * **Client-side:** The system executes within modern, standard web browsers (e.g., Google Chrome, Mozilla Firefox, Microsoft Edge, Safari).
+  * **Server-side:** The application interacts with its dedicated database management system and hosting operating system.
+* **Communications Interfaces:** 
+  * The system utilizes standard web communication protocols, primarily HTTP and HTTPS, for handling client-server requests and data transmissions.
+* **Memory/Storage Constraints:** 
+  * [To be determined / Not applicable at this stage]
+
+---
 
 ### 4.2 Assumptions and Dependencies
+
+#### 4.2.1 Assumptions
+* **User Capability & Connectivity:** It is assumed that end-users possess basic computer literacy, have access to a modern web browser, and maintain a continuous, stable internet connection to access the system’s cloud-hosted services.
+* **Independent Data Management:** It is assumed that the development team is solely responsible for generating, managing, and initializing all necessary mock data, configuration setups, and system assets without relying on external stakeholders.
+
+#### 4.2.2 Dependencies
+* **Standard Web Environment:** The proper rendering and execution of the system depend entirely on the compatibility and compliance of the client's web browsers with modern web standards (HTML5, CSS3, and ECMAScript specifications).
 
 ## 5. Product Features
 
@@ -195,3 +249,19 @@ AI Tool 2
 - **Purpose:** To restructure and rewrite the Project Plan into clear, professional report language, and to draft the Team Structure and Risk Management content.
 - **Content generated by AI:** Well-structure project plan document based on content student prepared.
 - **Student's work and validation:** All AI-generated content was reviewed against TeamContract.md and ProjectProposal.md for accuracy, and edited to ensure it reflects the team's actual roles, decisions, and risk assessment.
+
+AI Tool 3
+
+- **Tool name:** Gemini, Google
+- **Access time:** July 5, 2026
+- **Prompt:** "What should I write in this section?", "Please write this into a markdown skeleton so I can easily fill it in", "Ask me questions so I can fill in these fields accurately"
+- **Purpose:** To break down the required structure for the "Stakeholder and User Descriptions" section, and to draft the content in professional English using tailored questionnaires.
+- **Content generated by AI:** A comprehensive Markdown boilerplate for the Stakeholder/User sections, and finalized, professional English content for Section 3.1 (Stakeholder Summary), 3.2 (User Summary), 3.3 (User Environment), and Section 3.4 (Summary of Key Stakeholder or User Needs) with placeholders left for future competition analysis.
+- **Student's work and validation:** Provided precise architectural, role-based, and feature specifications for the smart library system (Group 03 - AmeThyst, Instructor, Node.js/Express.js/React stack, PostgreSQL with Docker, reader online reservations/study groups, and librarian/admin workflows) and validated the structured translation to match the actual project implementation.
+
+- **Tool name:** Gemini, Google
+- **Access time:** July 5, 2026
+- **Prompt:** "What should I write in this section? Please suggest a markdown template in English", "Ask me questions so I can fill in the information myself"
+- **Purpose:** To draft the Product Overview (Product Perspective, Assumptions and Dependencies) and to consolidate multiple overlapping sections of the User Environment into a cohesive, structured format.
+- **Content generated by AI:** A standardized Markdown template and finalized English content for sections 4.1 (Product Perspective) and 4.2 (Assumptions and Dependencies), along with a unified, professionally written section 3.3 (User Environment).
+- **Student's work and validation:** Provided explicit project constraints (standalone system, web browser interface, no external dependencies, and manual-to-digital transition context) and manually reviewed the generated text to ensure it aligned precisely with the system design and project scope.
