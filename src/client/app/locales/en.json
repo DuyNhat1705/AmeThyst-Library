@@ -402,5 +402,25 @@
     "address": "Location",
     "room": "Room",
     "status_pending": "Pending Request"
+  },
+  "floor_map": {
+    "title": "Interactive Floor Map",
+    "select_branch": "Select Library Branch",
+    "branch_nvc": "Nguyen Van Cu (Branch 1)",
+    "branch_lt": "Linh Trung (Branch 2)",
+    "panel": {
+      "capacity": "Capacity",
+      "tv": "TV Screens",
+      "whiteboard": "Whiteboards",
+      "sockets": "Power Sockets",
+      "projector": "Projectors",
+      "available_slots": "Today's Availability",
+      "book_now": "Book Room",
+      "not_available": "Availability details currently unavailable",
+      "unavailable_room": "Unreservable / Details Unavailable",
+      "please_login": "Please log in to book this room.",
+      "people": "people",
+      "none": "None"
+    }
   }
 }

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { useI18n } from '../../providers/I18nProvider';
-import { StudyGroup } from '../../../study-together/mockData';
+import { StudyGroup } from '../../study-together/mockData';
 
 interface RequestToJoinModalProps {
   isOpen: boolean;

@@ -10,6 +10,7 @@ import dashboardRoutes from './routes/dashboard.user.routes.mjs';
 import { clearAllPins, cleanupExpiredPins } from './services/library.services.mjs';
 import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
+import roomRoutes from './routes/room.routes.mjs';
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(passport.initialize());
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/api/rooms', roomRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);
