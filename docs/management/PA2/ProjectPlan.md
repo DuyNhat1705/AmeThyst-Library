@@ -18,6 +18,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
 ## Table of Contents
 
 - [Project Plan](#project-plan)
+  - [Revision History](#revision-history)
   - [Table of Contents](#table-of-contents)
   - [1. Introduction](#1-introduction)
   - [2. Project Overview](#2-project-overview)
@@ -34,7 +35,18 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
     - [4.2 Schedule Overview](#42-schedule-overview)
     - [4.3 Detailed Build Plan](#43-detailed-build-plan)
     - [Sprint 1 (23 May – 6 Jun 2026) — Team Assignment](#sprint-1-23-may--6-jun-2026--team-assignment)
-    - [Sprint 2 (7 – 28 Jun 2026) — Team Assignment](#sprint-2-7--28-jun-2026--team-assignment)
+      - [Vũ Duy Nhất (4 tasks)](#vũ-duy-nhất-4-tasks)
+      - [Nguyễn Nhựt Huy (2 tasks)](#nguyễn-nhựt-huy-2-tasks)
+      - [Trần Lê Hoàng Gia (1 task)](#trần-lê-hoàng-gia-1-task)
+      - [Nguyễn Lê Hoàng Khải (2 tasks)](#nguyễn-lê-hoàng-khải-2-tasks)
+      - [Phan Lê Anh Minh (1 task)](#phan-lê-anh-minh-1-task)
+      - [All Members (1 task)](#all-members-1-task)
+    - [Sprint 2 (7 Jun – 12 July 2026) — Team Assignment](#sprint-2-7-jun--12-july-2026--team-assignment)
+      - [Vũ Duy Nhất (13 tasks)](#vũ-duy-nhất-13-tasks)
+      - [Nguyễn Nhựt Huy (7 tasks)](#nguyễn-nhựt-huy-7-tasks)
+      - [Trần Lê Hoàng Gia (10 tasks)](#trần-lê-hoàng-gia-10-tasks)
+      - [Nguyễn Lê Hoàng Khải (6 tasks)](#nguyễn-lê-hoàng-khải-6-tasks)
+      - [Phan Lê Anh Minh (10 tasks)](#phan-lê-anh-minh-10-tasks)
   - [5. AI Usage Notes](#5-ai-usage-notes)
 
 ## 1. Introduction
@@ -47,7 +59,9 @@ Our project is a Modern Library Management System designed for everyone, combini
 
 The primary goal of this project is to build a system that maximizes the management of all library resources — encompassing both books and rooms — while delivering a convenient, modern, and highly accessible experience to every user.
 
+- **Provide an easy-to-use interface for users:** Simplify how users interact with the system, from searching for books to reserving study rooms, without requiring technical expertise.
 - **Speed up physical checkouts:** Eliminate manual paperwork and long queues when borrowing books or booking study rooms.
+- **Enable early availability checking**: Allow users to check book and study room availability in advance, reducing wasted trips and unnecessary waiting.
 - **Optimize library assets:** Help staff manage book stock, monitor study room bookings, and review usage and financial data in real time.
 - **Modernize the user experience:** Use AI to make finding books more intuitive and personalized to individual reading habits.
 
@@ -69,13 +83,13 @@ The primary goal of this project is to build a system that maximizes the managem
 The final product will be a fully operational web platform with integrated frontend, backend, and database components, covering the following functional modules:
 
 1. **User Authentication & Authorization** — Supports single sign-on (SSO) via Google Account as well as standard self-registration.
-2. **User Profile & History** — A customizable dashboard for users to view, edit, and manage personal information, and to track their in-system transaction history.
-3. **Book Search & Management** — Advanced filtering and search capabilities to efficiently locate library resources.
-4. **Room Booking System** — Reservation of physical spaces for individual or collaborative group study sessions.
-5. **AI Recommendation Engine** — Analyzes user reading history to generate personalized book recommendations.
-6. **Checkout & Borrowing Management** — Secure PIN-based authentication for in-person borrowing and returns, synchronized automatically with the central database.
-7. **Librarian Dashboard** — Operational tools for library staff to update records, oversee circulation, and manage room reservations.
-8. **Admin Dashboard** — Visual analytics and statistics on system metrics such as trending books and usage reports.
+2. **Profile Management** — A customizable dashboard for users to view, edit, and manage personal information, and to track their in-system transaction history.
+3. **AdvanceSearching Feature** — Advanced filtering and search capabilities to efficiently locate library resources.
+4. **Borrow & Reserving Feature** — Reservation of physical study spaces, combined with secure PIN-based authentication for in-person book borrowing and returns, synchronized automatically with the central database.
+5. **Study Groups** — Enables users to create or join study groups and coordinate collaborative study sessions with peers.
+6. **AI Recommendations** — Analyzes user reading history to generate personalized book recommendations.
+7. **Librarian Administration** — Operational tools for library staff to update records, oversee circulation, and manage room reservations.
+8. **Admin Administration** — Visual analytics and statistics on system metrics such as trending books and usage reports.
 9. **User Assistance** — Provides comprehensive support features, including an interactive onboarding tour for new users, a responsive library floor map for locating specific zones and resources, and accessible documentation detailing system guides and library policies.
 
 **Documentation deliverables:**
