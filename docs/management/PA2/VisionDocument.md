@@ -4,7 +4,7 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.1
+    Version: 1.2
 
 Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy
 
@@ -13,6 +13,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 | :--- | :--- | :--- | :--- |
 | 04/07/2026 | 1.0 | Drafted initial sections: Introduction, Positioning, Stakeholder and User Descriptions, Non-Functional Requirements | Nguyễn Lê Hoàng Khải |
 | 04/07/2026 | 1.1 | Drafted initial sections: Product Overview, Product Features | Nguyễn Nhựt Huy |
+| 06/07/2026 | 1.2 | Added detailed Product Features descriptions (Sections 5.1–5.9) — Authentication, Profile Management, Borrow & Reserving, Searching, Librarian Admin, Admin Admin, AI Recommendations, Study Groups, User Assistance; added Key Workflows section (5.10) with Book Reservation and Pickup Workflow (PIN Verification) Mermaid flowchart; expanded Table of Contents for Section 5; added AI Usage entry for Draw.io-to-Mermaid conversion | Nguyễn Nhựt Huy |
 
 ## Table of Contents
 - [Vision Document](#vision-document)
@@ -38,6 +39,17 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
       - [4.2.1 Assumptions](#421-assumptions)
       - [4.2.2 Dependencies](#422-dependencies)
   - [5. Product Features](#5-product-features)
+    - [5.1. Authentication](#51-authentication)
+    - [5.2. Profile Management](#52-profile-management)
+    - [5.3. Borrow \& Reserving Feature](#53-borrow--reserving-feature)
+    - [5.4. Searching Feature](#54-searching-feature)
+    - [5.5. Librarian Administration](#55-librarian-administration)
+    - [5.6. Admin Administration](#56-admin-administration)
+    - [5.7. AI Recommendations](#57-ai-recommendations)
+    - [5.8. Study Groups](#58-study-groups)
+    - [5.9. User Assistance](#59-user-assistance)
+  - [5.10. Key Workflows](#510-key-workflows)
+    - [5.10.1. Book Reservation and Pickup Workflow (PIN Verification)](#5101-book-reservation-and-pickup-workflow-pin-verification)
   - [6. Non-Functional Requirements](#6-non-functional-requirements)
     - [6.1 Applicable Standards](#61-applicable-standards)
     - [6.2 Hardware and Platform Requirements](#62-hardware-and-platform-requirements)
@@ -197,6 +209,101 @@ The system is developed as a standalone software product and does not rely on an
 
 ## 5. Product Features
 
+### 5.1. Authentication
+The Authentication module handles secure user registration, login, and password recovery, supporting both traditional email/password credentials and quick integration via Google OAuth. This feature is critical to ensure that only verified accounts and authorized personnel can access the library’s digital resources and physical facilities. It protects sensitive user accounts from unauthorized access while streamlined OAuth login options minimize friction during entry. Both standard library members and system administrators benefit from this secure, reliable gatekeeping system.
+
+### 5.2. Profile Management
+Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, upcoming room reservations, and wallet balance. It also allows individuals to update personal details, change passwords, and top up funds to pay for rental or late fees. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities and financial balances independently.
+
+### 5.3. Borrow & Reserving Feature
+This core module enables users to reserve physical books and book available study rooms for specific time slots in real-time. To streamline the physical pickup process and eliminate tedious paperwork, the system generates a unique 6-digit PIN code upon online reservation, which librarians can quickly verify at the counter. This feature addresses the traditional long queues and scheduling conflicts, making resource allocation much faster and more transparent. Both students looking for efficient access to materials/spaces and librarians processing daily physical checkouts benefit significantly from this automation.
+
+### 5.4. Searching Feature
+The Searching Feature is a powerful search engine that goes beyond traditional keyword matching by integrating AI-powered semantic search alongside standard filters like title, author, and category. Users can find specific reference materials simply by typing in obscure plot descriptions, themes, or character archetypes (e.g., "a boy who discovers he is a wizard"). This advanced capability is essential for academic research where exact titles are often forgotten, saving students immense time during their literature review. Students and researchers are the primary beneficiaries, as they can discover relevant academic texts instantly and intuitively.
+
+### 5.5. Librarian Administration
+Librarian Administration empowers library staff to efficiently oversee daily physical operations, including managing book inventories, posting announcements, and tracking active borrows. It bridges the gap between online requests and physical book assets by providing librarians with tools to block users with unpaid overdue fines or manage depleted book copies. This administrative suite ensures high data integrity and reliability, as human staff can safely supervise a massive backend database. Librarians benefit from reduced manual workflows, while the entire student body enjoys a well-maintained, up-to-date library catalog.
+
+### 5.6. Admin Administration
+Admin Administration provides high-level system administrators with a comprehensive dashboard containing visual charts on system usage, popular book trends, and peak study room hours. It also grants full control over user roles, enabling administrators to assign or revoke librarian privileges and suspend non-compliant accounts. This data-driven module is required for continuous system maintenance, security oversight, and strategic resource allocation. System administrators and university executives benefit most, as it provides the actionable insights needed to optimize overall library operations.
+
+### 5.7. AI Recommendations
+Leveraging machine learning models, the AI Recommendations feature automatically suggests at least three similar books on any book detail page based on genres, tags, and user preferences. It adapts gracefully by displaying trending materials for new users with no history and smartly excludes books that the user has already borrowed. This feature enhances academic discovery, helping students stumble upon unexpected but highly relevant educational resources they might not have actively searched for. Students benefit from a highly personalized, Netflix-like browsing experience tailored specifically to their academic tastes.
+
+### 5.8. Study Groups
+The Study Groups module fosters a highly collaborative learning environment by allowing users to create study sessions, post requirements, and find matching study companions. Group creators can seamlessly manage member applications, coordinate physical study room bookings, and automatically notify participants if any schedule changes occur. This feature is necessary to bridge social gaps within the university, helping students connect based on shared academic topics or difficult courses. Students benefit immensely from this community-driven feature, making collaborative exam prep and group projects much easier to organize.
+
+### 5.9. User Assistance
+User Assistance enhances student satisfaction by offering a self-paced onboarding tour, dynamic library floor maps with zone details, and accessible user guides. The interactive map responds smoothly to zoom/drag gestures, allowing students to check seat availability and resource locations before their arrival. This is essential for new students or visitors navigating a large physical library campus, effectively reducing confusion and anxiety. New and existing students benefit from this seamless physical-to-digital guidance, making every visit to the library stress-free.
+
+---
+
+## 5.10. Key Workflows
+
+Here are the two most critical workflows within the Library Management System, illustrating how digital actions trigger physical interactions.
+
+### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
+This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN.
+
+```mermaid
+flowchart TB
+ subgraph Reservation["1. Book Reservation"]
+        B{"Is the book available?"}
+        A["User requests to borrow a book"]
+        B1@{ label: "Show 'Out of Stock' message" }
+        C["System holds the book & updates calendar"]
+        D{"Does User collect it on time?"}
+        D1["Reservation expires"]
+        E["Proceed to collection"]
+  end
+ subgraph Collection["2. Book Collection"]
+        G{"Is the PIN valid?"}
+        F["User generates a pickup PIN"]
+        G1["PIN expires / Show error"]
+        H["Librarian verifies details & hands over the book"]
+  end
+ subgraph Management["3. During the Borrowing"]
+        I{"User wants to renew?"}
+        J{"Renewal limit reached?"}
+        J1@{ label: "Show 'Limit Reached' message" }
+        J2["Extend due date"]
+        K["Proceed to return book"]
+  end
+ subgraph Return["4. Book Return"]
+        L["User returns the book"]
+        M{"What is the book status?"}
+        N1["Mark as returned successfully"]
+        N2["Charge late fee"]
+        N3["Charge partial compensation fee"]
+        N4["Charge full replacement fee"]
+  end
+    A --> B
+    B -- No --> B1
+    B -- Yes --> C
+    C --> D
+    D -- No --> D1
+    D -- Yes --> E
+    F --> G
+    G -- No --> G1
+    G -- Yes --> H
+    H --> I
+    I -- Yes --> J
+    J -- Yes --> J1
+    J -- No --> J2
+    I -- No --> K
+    J1 --> K
+    J2 --> K
+    K --> L
+    L --> M
+    M -- On Time & Perfect --> N1
+    M -- Overdue --> N2
+    M -- Damaged --> N3
+    M -- Lost --> N4
+    E -.-> F
+
+    B1@{ shape: rect}
+    J1@{ shape: rect}
+```
 ## 6. Non-Functional Requirements
 
 ### 6.1 Applicable Standards
@@ -330,3 +437,13 @@ AI Tool 3
 - **Purpose:** To draft the Product Overview (Product Perspective, Assumptions and Dependencies) and to consolidate multiple overlapping sections of the User Environment into a cohesive, structured format.
 - **Content generated by AI:** A standardized Markdown template and finalized English content for sections 4.1 (Product Perspective) and 4.2 (Assumptions and Dependencies), along with a unified, professionally written section 3.3 (User Environment).
 - **Student's work and validation:** Provided explicit project constraints (standalone system, web browser interface, no external dependencies, and manual-to-digital transition context) and manually reviewed the generated text to ensure it aligned precisely with the system design and project scope.
+---
+* **Tool name:** Gemini Flash 3.5 (Google)
+* **Access time:** July 6, 2026
+* **Prompt:** 
+  * *"Is there any way to convert draw io diagram into mermaid?"*
+  * *"Convert this Draw.io XML diagram into valid Mermaid.js flowchart syntax, reduce the content, the existing one is long"*
+  * *"Please streamline this workflow for me by keeping only the essential steps. The content in each box should not be overly technical or jargon-heavy; instead, use simple, easy-to-understand terms and write it in English."*
+* **Purpose:** To convert a raw, complex Draw.io visual layout (XML format) into a clean, concise, and professional English Mermaid.js flowchart representing the core system workflows for the AmeThyst smart library system.
+* **Content generated by AI:** A streamlined, high-level Mermaid.js diagram structured into intuitive subgraphs (Book Reservation, Book Collection, Loan Management, Book Return) using simple business terms instead of technical database instructions.
+* **Student's work and validation:** Provided the original, complex Draw.io XML structure containing the multi-branch user and librarian workflows; validated the AI-generated Mermaid code to ensure accuracy with the actual business logic, and integrated the syntax into the project's markdown documentation.
