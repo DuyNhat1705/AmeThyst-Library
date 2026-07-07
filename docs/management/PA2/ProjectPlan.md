@@ -5,7 +5,7 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.1
+    Version: 1.2
 
 Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất
 
@@ -14,6 +14,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
 | :--- | :--- | :--- | :--- |
 | 01/07/2026 | 1.0 | Drafted initial sections: Introduction, Project Overview, and Project Organization | Nguyễn Lê Hoàng Khải |
 | 03/07/2026 | 1.1 | Updated Project Plan with detailed schedules and tasks for Sprints 1 and 2 | Nguyễn Lê Hoàng Khải |
+| 07/07/2026 | 1.2 | Updated Project Plan with detailed schedules and tasks for Sprints 3 and 4 | Nguyễn Lê Hoàng Khải |
 
 ## Table of Contents
 
@@ -34,19 +35,27 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
   - [4. Project Plan](#4-project-plan)
     - [4.2 Schedule Overview](#42-schedule-overview)
     - [4.3 Detailed Build Plan](#43-detailed-build-plan)
-    - [Sprint 1 (23 May – 6 Jun 2026) — Team Assignment](#sprint-1-23-may--6-jun-2026--team-assignment)
+    - [Sprint 1 (23 May – 6 Jun 2026) — Completed](#sprint-1-23-may--6-jun-2026--completed)
       - [Vũ Duy Nhất (4 tasks)](#vũ-duy-nhất-4-tasks)
       - [Nguyễn Nhựt Huy (2 tasks)](#nguyễn-nhựt-huy-2-tasks)
       - [Trần Lê Hoàng Gia (1 task)](#trần-lê-hoàng-gia-1-task)
       - [Nguyễn Lê Hoàng Khải (2 tasks)](#nguyễn-lê-hoàng-khải-2-tasks)
       - [Phan Lê Anh Minh (1 task)](#phan-lê-anh-minh-1-task)
       - [All Members (1 task)](#all-members-1-task)
-    - [Sprint 2 (7 Jun – 12 July 2026) — Team Assignment](#sprint-2-7-jun--12-july-2026--team-assignment)
+    - [Sprint 2 (7 Jun – 12 July 2026) — Completed](#sprint-2-7-jun--12-july-2026--completed)
       - [Vũ Duy Nhất (13 tasks)](#vũ-duy-nhất-13-tasks)
       - [Nguyễn Nhựt Huy (7 tasks)](#nguyễn-nhựt-huy-7-tasks)
       - [Trần Lê Hoàng Gia (10 tasks)](#trần-lê-hoàng-gia-10-tasks)
       - [Nguyễn Lê Hoàng Khải (6 tasks)](#nguyễn-lê-hoàng-khải-6-tasks)
       - [Phan Lê Anh Minh (10 tasks)](#phan-lê-anh-minh-10-tasks)
+    - [Sprint 3 (13 Jul – 26 Jul, 2026) — Planned](#sprint-3-13-jul--26-jul-2026--planned)
+      - [Vũ Duy Nhất (6 tasks)](#vũ-duy-nhất-6-tasks)
+      - [Nguyễn Nhựt Huy (3 tasks)](#nguyễn-nhựt-huy-3-tasks)
+      - [Trần Lê Hoàng Gia (3 tasks)](#trần-lê-hoàng-gia-3-tasks)
+      - [Nguyễn Lê Hoàng Khải (3 tasks)](#nguyễn-lê-hoàng-khải-3-tasks)
+      - [Phan Lê Anh Minh (2 task)](#phan-lê-anh-minh-2-task)
+    - [Sprint 4 (27 Jul – 09 Aug, 2026) — Planned](#sprint-4-27-jul--09-aug-2026--planned)
+    - [Sprint 5 (10 Aug – 23 Aug, 2026) — Planned](#sprint-5-10-aug--23-aug-2026--planned)
   - [5. AI Usage Notes](#5-ai-usage-notes)
 
 ## 1. Introduction
@@ -84,7 +93,7 @@ The final product will be a fully operational web platform with integrated front
 
 1. **User Authentication & Authorization** — Supports single sign-on (SSO) via Google Account as well as standard self-registration.
 2. **Profile Management** — A customizable dashboard for users to view, edit, and manage personal information, and to track their in-system transaction history.
-3. **AdvanceSearching Feature** — Advanced filtering and search capabilities to efficiently locate library resources.
+3. **Advance Searching Feature** — Advanced filtering and search capabilities to efficiently locate library resources.
 4. **Borrow & Reserving Feature** — Reservation of physical study spaces, combined with secure PIN-based authentication for in-person book borrowing and returns, synchronized automatically with the central database.
 5. **Study Groups** — Enables users to create or join study groups and coordinate collaborative study sessions with peers.
 6. **AI Recommendations** — Analyzes user reading history to generate personalized book recommendations.
@@ -154,17 +163,19 @@ This project plan is not a final version and may be subject to change and finish
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Sprint 1** | PA1 | 2 weeks | 23 May – 6 Jun, 2026 | Completed | Project Proposal, Existing App Survey, Team Contract, Dev Tools & Process Setup, Framework Setup |
 | **Sprint 2** | PA2 | 2 weeks | 7 Jun – 12 July, 2026 | Completed | Project Plan, Vision Document, Spec Kit Initialization, AI Usage & Weekly Report; ERD/DB Schema, Figma UI Design, Start working on several Functional Groups |
-| **Sprint 3** | PA3 | 2-3 weeks | — | Planned | Revised Project Plan, Revised Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, Implement 1 Functional Group |
-| **Sprint 4** | PA4 | 2-3 weeks | — | Planned | Revised Use-Case Specification, Software Architecture (C4 Model), Deployment Diagram, Implement 2 Functional Groups |
-| **Sprint 5** | PA5 | 2-3 weeks | — | Planned | Test Plan & Test Cases, Final Product Demo, Reflective Report, Final Submission |
+| **Sprint 3** | PA3 | 2 weeks | 13 Jul – 26 Jul, 2026 | Planned | Revised Project Plan, Detailed Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, AI Usage & Weekly Report, Implement 1 Functional Group (Authentication) |
+| **Sprint 4** | PA4 | 2 weeks | 27 Jul – 09 Aug, 2026 | Planned | Revised Use-Case Specification, Software Architecture (C4 Model Level 1-3), Deployment Diagram, AI Usage & Weekly Report, Implement 2 Functional Groups (Study Group, AI Recommendations) |
+| **Sprint 5** | PA5 | 2 weeks | 10 Aug – 23 Aug, 2026 | Planned | Test Plan, Test Cases, Test Execution Results, Bug Report, Reflective Report, Final Product Demo, Final Submission |
 
 ### 4.3 Detailed Build Plan
 
-Note: Review tasks are not logged as separate items, but an internal review policy is strictly followed. Documents are collectively reviewed by the team once drafted. Meanwhile, development tasks undergo self-testing by the implementer and a mandatory code review by the Project Manager (Vũ Duy Nhất) prior to merging.
+**Note:** Review tasks are not logged as separate items, but an internal review policy is strictly followed. Documents are collectively reviewed by the team once drafted. Meanwhile, development tasks undergo self-testing by the implementer and a mandatory code review by the Project Manager (Vũ Duy Nhất) prior to merging.
 
-### Sprint 1 (23 May – 6 Jun 2026) — Team Assignment
-
-**Summary:** Completed the initial project setup, including the Project Proposal, Existing App Survey, and Team Contract. Dedicated time to researching and evaluating development tools, followed by aligning the team on and onboarding to the tools selected for use. Delivered the foundational documentation required to give all members a clear, shared understanding of the upcoming project.
+### Sprint 1 (23 May – 6 Jun 2026) — Completed
+**Deliverables:** 
+- Completed required documents (Project Proposal, Existing App Survey, and Team Contract).
+- Researched, evaluated, and onboarded the team onto selected development tools.
+- Delivered foundational documentation for a shared understanding of the project.
   
 #### Vũ Duy Nhất (4 tasks)
 
@@ -207,9 +218,16 @@ Note: Review tasks are not logged as separate items, but an internal review poli
 | :--- | :--- | :--- |
 | Document | Finalize at least 10 usecase groups for the web | May 31 |
 
-### Sprint 2 (7 Jun – 12 July 2026) — Team Assignment
+--- 
 
-**Summary:** Completed the required documentation, including the Project Plan, Vision Document, Spec Kit Initialization, and AI Usage & Weekly Report. Additionally designed the ERD/DB Schema and set up the database connection to build familiarity with the database. Prepared Figma UI designs in advance for the pages supporting the core features. Used Spec Kit to implement the Authentication, Book Searching, and Book Borrowing functional groups, along with the interfaces for several pages based on the Figma designs.
+### Sprint 2 (7 Jun – 12 July 2026) — Completed
+
+**Deliverables:** 
+- Completed required documents (Project Plan, Vision Document, Spec Kit Initialization, and AI Usage & Weekly Report).
+- Designed ERD/DB Schema and set up database connection.
+- Prepared Figma UI designs in advance for core feature pages.
+- Used Spec Kit to implement interfaces based on the Figma designs.
+- Completed functional groups: User Authentication & Authorization, Profile Management, Advance Searching Feature.
 
 #### Vũ Duy Nhất (13 tasks)
 
@@ -281,6 +299,107 @@ Note: Review tasks are not logged as separate items, but an internal review poli
 | Development | Redesign based on Discussion in the Meeting | Jul 1 |
 | Development | Write unit test (≥10 test cases) for register usecase (all relevant modules if possible) | Jul 4 |
 | Development | Complete Announcements feature for Librarian | Jul 11 |
+
+---
+
+### Sprint 3 (13 Jul – 26 Jul, 2026) — Planned
+**Deliverables:**
+- Complete required documents: Revised Project Plan (5 pts), Detailed Vision Document (5 pts), Use-Case Model (10 pts), Use-Case Specification with inserted use-case diagrams and Figma UI screenshots (45 pts), AI Usage Report & Weekly Report (5 pts) — all changes relative to the PA2 versions are consolidated into a single shared `change.md` file (Project Plan and Vision Document changes together, not separate files).
+- Complete 1 required functional group via Spec Kit: **Authentication** (20 pts) — deliverable includes a narrated video demo (uploaded Unlisted/Public to YouTube), the complete source code, and the generated Spec Kit artifacts (specs, plans, tasks).
+- Aim to complete implementation for: Borrowing & Reserving (Room Reservation + Book Return flows), Study Group, AI Recommendations, and Librarian Administration (Books management page, Add/Remove books).
+
+#### Vũ Duy Nhất (6 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Draw the general Use-Case Diagram for the 9 functional groups on Draw.io (Use-Case Model, 10 points); additional use cases discovered during implementation to be appended later | Jul 13 |
+| Document | Export the Use-Case Diagram image per functional group and use AI to generate the corresponding Mermaid script from members' use-case specifications | Jul 13 |
+| Document | Support Minh and Gia on the Use-Case Specification (45 points) | Jul 25 |
+| Development | Record the narrated video demo for the Authentication functional group (upload Unlisted/Public to YouTube) | Jul 25 |
+| Document | Write the AI Usage Report + Weekly Report (5 points) | Jul 25 |
+| Development | Overview and Merge Code | Jul 19 |
+
+#### Nguyễn Nhựt Huy (3 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write the Detailed Vision Document (5 points) based on TA feedback; add all changes vs. PA2 into the shared change.md file | Jul 19 |
+| Development | Complete the Room Reservation usecase in Borrowing & Reserving | Jul 15 |
+| Development | Complete the Book Return Confirmation and Loan Recognition usecases (librarian-facing) in Borrowing & Reserving | Jul 25 |
+
+#### Trần Lê Hoàng Gia (3 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Co-author the Use-Case Specification (45 points) with Minh, supported by Nhất | Jul 25 |
+| Development | Complete the AI Recommendations feature | Jul 18 |
+| Development | Complete the Add Books / Remove Books usecases in Librarian Administration | Jul 25 |
+
+#### Nguyễn Lê Hoàng Khải (3 tasks)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Write the Revised Project Plan (5 points) based on TA feedback; write change.md listing all changes vs. the PA2 Project Plan | Jul 19 |
+| Development | Complete Study Group – phase 1 (create group, remove group, edit group info, find user by email to add to group); cover 6 group states, adjusted to fit the team's design | Jul 18 |
+| Development | Complete Study Group – phase 2 (request to join, view other member profile, cancel request by sender, reject request by group creator) with real-time updates; cover 4 join-request states, adjusted to fit the team's design | Jul 25 |
+
+#### Phan Lê Anh Minh (2 task)
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Co-author the Use-Case Specification (45 points) with Gia, supported by Nhất — organized by functional group per the PA3 outline, with use-case diagram and Figma GUI screenshots inserted for each group | Jul 25 |
+| Development | Complete the Books page (Book Management, Book Pickup, Book Return, Inspection tabs) in the Librarian Dashboard based on Figma | Jul 18 |
+
+---
+
+### Sprint 4 (27 Jul – 09 Aug, 2026) — Planned
+**Deliverables:**
+- Complete required documents: Revised Use-Case Specification (5 pts, with change.md vs. PA3), Software Architecture — System Context Diagram (15 pts: technology stack description + C4 Model Level 1), Software Architecture — Container & Component Diagram (20 pts: C4 Model Level 2 & 3), Deployment Diagram (5 pts), AI Usage Report & Weekly Report (5 pts).
+- Complete **2 required functional groups** via Spec Kit: **Study Group** and **AI Recommendations** (25 pts) — includes Spec-Kit-generated test cases, a narrated video demo (Unlisted/Public on YouTube), full source code, and the generated Spec Kit artifacts.
+- Complete the remaining core implementation: full Borrowing & Reserving and Librarian Administration usecases (verification/checkout), and the Admin Dashboard (User Management, System Configuration, Statistics, Roles & Permissions) — effectively finishing the base LIMA website.
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Document | Revised Use-Case Specification (5 points) — update based on TA feedback | Aug 2 |
+| Document | Write change.md listing all changes vs. the PA3 Use-Case Specification | Aug 2 |
+| Document | Software Architecture — System Context Diagram (15 points): describe frontend/backend/database/other component tech stack + draw C4 Model Level 1 diagram | Aug 8 |
+| Document | Software Architecture — Container Diagram (C4 Level 2) and Component Diagram (C4 Level 3) (20 points) | Aug 8 |
+| Document | Deployment Diagram (5 points) | Aug 8 |
+| Development | Implement 2 Functional Groups via Spec Kit — Study Group & AI Recommendations (25 points), including Spec-Kit-generated test cases | Aug 8 |
+| Development | Record narrated video demo for both functional groups (upload Unlisted/Public to YouTube) | Aug 8 |
+| Document | AI Usage Report + Weekly Report (5 points) | Aug 8 |
+| Development | Complete Room Reserve Verification and Checkout Room Confirmation usecases (librarian-facing); finish the full Borrowing & Reserving and Librarian Administration functional groups | Aug 1 |
+| Development | Complete User Management page in Admin Dashboard (GUI + Functionality) | Aug 1 |
+| Development | Complete System Configuration page in Admin Dashboard (GUI + Functionality) | Aug 1 |
+| Development | Complete Statistics page in Admin Dashboard (GUI + Functionality) | Aug 1 |
+| Development | Overview and Merge Code | Aug 2 |
+| Development | Write unit tests (≥10 cases) for Create Study Group usecase, including all relevant dependent modules | Aug 8 |
+| Development | Write unit tests (≥10 cases) for AI Recommendation usecase, including all relevant dependent modules | Aug 8 |
+| Development | Complete Roles & Permissions in Admin Dashboard (GUI + Functionality) — effectively completes the base LIMA website | Aug 8 |
+
+---
+
+### Sprint 5 (10 Aug – 23 Aug, 2026) — Planned
+**Deliverables:**
+- Complete required documents: Test Plan, Test Cases (detailed document version, not code), Test Execution Results (document version, not console output), Bug Report, and Reflective Report (20 pts, covering team experience, Spec Kit experience, AI tools usage, SDLC feedback, and individual contributions).
+- Complete remaining unit tests (Reserve Book, Pin Verification usecases) and finish reviewing/fixing bugs across the LIMA website.
+- Deploy the website globally.
+- Deliver the Final Product Demo (110 pts) and package the Final Submission.
+- Aim to complete functional group: User Assistance.
+
+| Type | Task | Due Date |
+| :--- | :--- | :--- |
+| Development | Write unit tests (≥10 cases) for Reserve Book usecase, including all relevant dependent modules | Aug 15 |
+| Development | Write unit tests (≥10 cases) for Pin Verification usecase, including all relevant dependent modules | Aug 15 |
+| Development | Review and fix bugs across the LIMA website (all members) | Aug 16 |
+| Development | Deploy website globally (feasibility and resources planned ahead in Sprint 4 to allow code adjustments) | Aug 18 |
+| Document | Test Plan | Aug 22 |
+| Document | Test Cases (detailed document version) | Aug 22 |
+| Document | Test Execution Results (document version) | Aug 22 |
+| Document | Bug Report | Aug 22 |
+| Document | Reflective Report (20 points): team experience, Spec Kit experience, AI tools usage, SDLC feedback, individual contributions | Aug 22 |
+| All Members | Prepare and rehearse the Final Product Demo (110 points): brief introduction (1-2 min), live demo of 2-3 key user workflows (10-12 min), technical overview referencing C4 diagrams and Spec Kit usage (2-3 min); no slides, live working product only; every member presents at least one feature | Aug 23 |
+| All Members | Prepare the Final Submission: finalize PA1–PA5 documents, complete source code (excl. node_modules, venv, build artifacts), all Spec Kit artifacts (specs, plans, tasks, generated tests), test documents, and the project-wide AI Usage Report; compress into `PA5-Group03.zip` | Aug 23 |
 
 ## 5. AI Usage Notes
 This document was drafted with the assistance of an AI tool, declared as follows:
