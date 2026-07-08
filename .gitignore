@@ -45,6 +45,7 @@ GEMINI.md
 .idea/inspectionProfiles/profiles_settings.xml
 .vscode/
 
-server/
-client/
-database/
+/server
+/client
+/database
+src/

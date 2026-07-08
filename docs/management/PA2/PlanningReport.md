@@ -5,7 +5,7 @@ Reviewed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh, Nguyễn Nhựt Huy, Nguy
 
 Editied by: Vũ Duy Nhất
 
-## I. Tasks For Sprint 2
+## I. Tasks For Sprint 3
 ### 1. Implementation
 - **Week 2: 15/6 - 21/6**
   - Complete View Book Details Page based on Figma design
