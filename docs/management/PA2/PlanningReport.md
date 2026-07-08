@@ -1,144 +1,54 @@
 # Planning Report
 Performed by: Vũ Duy Nhất
 
-Reviewed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh, Nguyễn Nhựt Huy, Nguyễn Lê Hoàng Khải
+Reviewed by: All Other Members
 
 Editied by: Vũ Duy Nhất
 
 ## I. Tasks For Sprint 3
 ### 1. Implementation
-- **Week 2: 15/6 - 21/6**
-  - Complete View Book Details Page based on Figma design
-  - Complete Home Page based on Figma design
-  - Complete Register, Login usecases in Authentication
-  - Complete View Self Profile and Security Page based on Figma design
-- **Week 3: 22/6 - 28/6**
-  - Add Single-Factor Authentication (SFA) for Register
-  - Complete DashBoard/User/BookBorrowing (All Reservations + Borrow History tabs) Page based on Figma
-  - Complete DashBoard/User/Loan&Fees Page based on Figma
-  - Complete DashBoard/User/RecommendedBook Page based on Figma
-  - Complete Profile Management
-  - Complete Forget Password usecase in Authentication
-  - Complete Search (Semantic + Standard search) usecase in Book Retrieve
-  - Complete Filter usecase in Book Retrieve
-  - Complete Book Borrowing and Pin Verification usecase in Borrowing & Reserving
-  - Complete StudyTogether/StudyGroup Page based on Figma
-  - Complete DashBoard/User/YourStudyGroup (Group I created + Group I joined tabs) based on Figma
-  - Overview and Merge Code
-- **Week 4: 29/6 - 5/7**
-  - Complete DashBoard/Librarian/Announcements Page based on Figma
-  - Write unit test (at least 10 test cases) for Register usecase
-  - Complete DashBoard/Librarian/Pin-Verification Page based on Figma
-  - Complere Library Map Page based on Figma and complete whole Library Map feature
-  - Overview and Merge Code
-- **Week 5: 6/7 - 11/7**
-  - Complete partially AI recommendation (having initial setup)
-  - Complete Announcements usecase in Librarian Administration
-### 2. Data
-- **Week 1: 8/6 - 14/6**
-  - Prepare book data
-- **Week 2: 15/6 - 21/6**
-  - Setup database structure and tables based on Physical ERD
-  - Storing book data into PostgresSQL based on Physical ERD
-- **Week 4: 29/6 - 5/7**
-  - Storing data into study_room and room_avail tables for room reservation usecase
-### 3. Design
-- **Week 1: 8/6 - 14/6**
-  - Draw ERD in Physical for user role to design database
-- **Week 2: 15/6 - 21/6**
-  - Draw usecase diagram (partially)
-  - Design DashBoard/User/BookBorrowing Page on Figma
-  - Design DashBoard/User/RoomReservation Page on Figma
-- **Week 3: 22/6 - 28/6**
-  - Draw ERD in Physical for librarian role to design database
-- **Week 4: 29/6 - 5/7**
-  - Design Library Map Page + Floor plan on Figma
-### 4. Document
-- **Week 3: 22/6 - 28/6**
-  - Write Document introducing about intersection idea of Room Reservation + Library Map + Study Group feature
-  - Complete collecting evidence for SpecKit self-training
-- **Week 4: 29/6 - 5/7**
-  - Write Weekly Report
-  - Write SpecKit document to summarize all members knowledge
-- **Week 5: 6/7 - 11/7**
-  - Write AI Usage Report
-  - Write Project Plan
-  - Write Vision Document
-### 5. Self-learning
-- Self-learning SpecKit + setup
+- Week 1: 13/7 - 19/7
+  - Complete the room reservation usecase in Borrowing & Reserving
+  - Complete Books (Books Management, Book Pickup, Book Return and Inspection tabs) Page in Librarian Dashboard based on Figma
+  - Complete partially Study Group (create study group, remove study group, find user by email to invite into group, edit information in created study group,...)
+  - Complete AI recommendations
+- Week 2: 20/7 - 25/7
+  - Complete book return confirmation and loan recognition usecases in Borrowing & Reserving
+  - Complete Study Group (request join, view other profile, cancel request by sender, reject join request by study group creator,...)
+  - Complete add books, remove books usecases in Librarian Administration
+- Overview and Merge Code
+- Implementation 1 Functional Group using SpecKit (20 points) - **Done**
+  - Functional group chosen to propose is Authentication
+  - Complete a video with narration explaining the implemented feature (Authentication)
+### 2. Document
+- Revised Project Plan (5 points)
+- Detailed Vision Document (5 points)
+- AI Usage Report + Weekly Report (5 points)
+- Use-Case Model (10 points)
+- Use-Case Specification (45 points)
 ## II. Task assignment
-- **Week 1: 8/6 - 14/6**
-  - **Vũ Duy Nhất:**
-    - Draw ERD in Physical for user role to design database - due day: 13/6
-    - Self-learning SpecKit + setup - due day: 14/6
-  - **Trần Lê Hoàng Gia:**
-    - Prepare book data - due day: 13/6
-    - Self-learning SpecKit + setup - due day: 14/6
-  - **Phan Lê Anh Minh:**
-    - Self-learning SpecKit + setup - due day: 14/6
-  - **Nguyễn Nhựt Huy:**
-    - Self-learning SpecKit + setup - due day: 14/6
-  - **Nguyễn Lê Hoàng Khải:**
-    - Self-learning SpecKit + setup - due day: 14/6
-- **Week 2: 15/6 - 21/6**
-  - **Vũ Duy Nhất:**
-    - Setup database structure and tables based on Physical ERD - due day: 16/6
-    - Draw usecase diagram (partially) - due day: 16/6
-  - **Trần Lê Hoàng Gia:**
-    - Storing book data into PostgresSQL based on Physical ERD - due day: 17/6
-  - **Phan Lê Anh Minh:**
-    - Design DashBoard/User/BookBorrowing Page on Figma - due day: 17/6
-    - Design DashBoard/User/RoomReservation Page on Figma - due day: 17/6
-    - Complete Register, Login usecases in Authentication - due day: 20/6
-  - **Nguyễn Nhựt Huy:**
-    - Complete Home Page based on Figma design - due day: 18/6
-    - Complete View Self Profile and Security Page based on Figma design - due day: 20/6
-  - **Nguyễn Lê Hoàng Khải:**
-    - Complete View Book Details Page based on Figma design - due day: 18/6
-- **Week 3: 22/6 - 28/6**
-  - **Vũ Duy Nhất:**
-    - Draw ERD in Physical for librarian role to design database - due day: 23/6
-    - Write Document introducing about intersection idea of Room Reservation + Library Map + Study Group feature - due day: 27/6
-    - Complete collecting evidence for SpecKit self-training - due day: 27/6
-    - Overview and Merge Code - due day: 28/6
-  - **Trần Lê Hoàng Gia:**
-    - Complete Search (Semantic + Standard search) usecase in Book Retrieve - due day: 27/6
-    - Complete Filter usecase in Book Retrieve - due day: 27/6
-  - **Phan Lê Anh Minh:**
-    - Add Single-Factor Authentication (SFA) for Register - due day: 24/6
-    - Complete Forget Password usecase in Authentication - due day: 27/6
-    - Complete Profile Management - due day: 27/6
-  - **Nguyễn Nhựt Huy:**
-    - Complete DashBoard/User/BookBorrowing (All Reservations + Borrow History tabs) Page based on Figma - due day: 24/6
-    - Complete DashBoard/User/Loan&Fees Page based on Figma - due day: 24/6
-    - Complete Book Borrowing and Pin Verification usecase in Borrowing & Reserving - due day: 27/6
-  - **Nguyễn Lê Hoàng Khải:**
-    - Complete DashBoard/User/RecommendedBook Page based on Figma - due day: 24/6
-    - Complete StudyTogether/StudyGroup Page based on Figma - due day: 27/6
-    - Complete DashBoard/User/YourStudyGroup (Group I created + Group I joined tabs) based on Figma - due day: 27/6
-- **Week 4: 29/6 - 5/7**
-  - **Vũ Duy Nhất:**
-    - Write Weekly Report - due day: 4/7
-    - Write SpecKit document to summarize all members knowledge - due day: 4/7
-    - Overview and Merge Code - due day: 5/7
-  - **Trần Lê Hoàng Gia:**
-    - Storing data into study_room and room_avail tables for room reservation usecase - due day: 1/7
-    - Complere Library Map Page based on Figma and complete whole Library Map feature - due day: 4/7
-  - **Phan Lê Anh Minh:**
-    - Design Library Map Page + Floor plan on Figma - due day: 1/7
-    - Write unit test (at least 10 test cases) for Register usecase - due day: 4/7
-  - **Nguyễn Nhựt Huy:**
-    - Complete DashBoard/Librarian/Pin-Verification Page based on Figma - due day: 4/7
-  - **Nguyễn Lê Hoàng Khải:**
-    - Complete DashBoard/Librarian/Announcements Page based on Figma - due day: 1/7
-- **Week 5: 6/7 - 11/7**
-  - **Vũ Duy Nhất:**
-    - Write AI Usage Report - due day: 11/7
-  - **Trần Lê Hoàng Gia:**
-    - Complete partially AI recommendation (having initial setup) - due day: 11/7
-  - **Phan Lê Anh Minh:**
-    - Complete Announcements usecase in Librarian Administration - due day: 11/7
-  - **Nguyễn Nhựt Huy:**
-    - Write Vision Document (Hoàng Khải supports) - due day: 11/7
-  - **Nguyễn Lê Hoàng Khải:**
-    - Write Project Plan (Duy Nhất supports) - due day: 11/7
+- **Vũ Duy Nhất**
+  - Use-Case Model - Due day: 13/7
+  - Complete a video with narration explaining the implemented feature (Authentication) - Due day: 25/7
+  - AI Usage Report + Weekly Report (5 points) - Due day: 25/7
+  - Overview and Merge Code - Throughout Sprint 3
+- **Trần Lê Hoàng Gia**
+  - Complete AI recommendations - Due day: 18/7
+  - Complete add books, remove books usecases in Librarian Administration - Due day: 25/7
+  - Write Use-Case Specification (45 points) (Nhất supports) - Due day: 25/7
+- **Phan Lê Anh Minh**
+  - Write Use-Case Specification (45 points) (Nhất supports) - Due day: 25/7
+- **Nguyễn Nhựt Huy**
+  - Complete the room reservation usecase in Borrowing & Reserving - Due day: 15/7
+  - Complete Books (Book Management, Book Pickup, Book Return and Inspection tabs) Page in Librarian Dashboard based on Figma - Due day: 18/7
+  - Detailed Vision Document (5 points) - Due day: 19/7
+  - Complete book return confirmation and loan recognition usecases in Borrowing & Reserving - Due day: 25/7
+- **Nguyễn Lê Hoàng Khải**
+  - Complete partially Study Group (create study group, remove study group, find user by email to invite into group, edit information in created study group,...) - Due day: 18/7
+  - Revised Project Plan (5 points) - Due day: 19/7
+  - Complete Study Group (request join, view other profile, cancel request by sender, reject join request by study group creator,...) - Due day: 25/7
+## III. Expectation for Sprint 3
+- Having 2 more functional group completed, Study Group and AI Recommendation, to increase the number of completed functional group to 6
+- Having general view about Library Management System and detail view in each functional group through Use-Case Model (Diagram) and Use-Case Specification
+- Complete documentation for PA3
+- Proposing in detail one of completed functional groups, Authentication, by video updloaded on Youtube

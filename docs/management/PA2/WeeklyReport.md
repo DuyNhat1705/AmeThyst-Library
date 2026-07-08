@@ -13,7 +13,7 @@ Editied by: Vũ Duy Nhất
   - Nguyễn Nhựt Huy
   - Nguyễn Lê Hoàng Khải
 - **Status Report:**
-  - Vũ Duy Nhất:
+  - **Vũ Duy Nhất**
     - Completed task
       - Draw ERD in Physical for user role to design database
       - Self-learning SpecKit + setup
@@ -28,7 +28,7 @@ Editied by: Vũ Duy Nhất
       - The initial design of ERD is based completely on my idea and it needs to be added more fields, tables or revised data type to suit with idea of developers.
       - Need to consider order and structure of table when setting up because of their foreign key.
       - Need to consider order of assignments and arange them based on priority
-  - Trần Lê Hoàng Gia:
+  - **Trần Lê Hoàng Gia**
     - Completed task
       - Self-learning SpecKit + setup
       - Prepare book data
@@ -39,7 +39,7 @@ Editied by: Vũ Duy Nhất
     - Obstacles/Issues
       - Book data misses a lot of information in fields planned in ERD
       - The book data scraped on cloud took a lot of time
-  - Phan Lê Anh Minh:
+  - **Phan Lê Anh Minh**
     - Completed task
       - Self-learning SpecKit + setup
       - Design DashBoard/User/BookBorrowing Page on Figma
@@ -54,7 +54,7 @@ Editied by: Vũ Duy Nhất
       - Taking time to get familiar with PostgreSQL and Docker.
       - Taking time to get familiar the source code modularization rules emphasized by the team leader.
       - The design lacks of some details to suit with implement ideas in next week
-  - Nguyễn Nhựt Huy:
+  - **Nguyễn Nhựt Huy**
     - Completed task
       - Self-learning SpecKit + setup
       - Complete Home Page based on Figma design
@@ -67,7 +67,7 @@ Editied by: Vũ Duy Nhất
       - Taking time to get familiar with SpecKit and using agents for coding.
       - Taking time to get familiar with PostgreSQL and Docker.
       - Taking time to get familiar the source code modularization rules emphasized by the team leader.
-  - Nguyễn Lê Hoàng Khải:
+  - **Nguyễn Lê Hoàng Khải**
     - Completed task
       - Self-learning SpecKit + setup
       - Complete View Book Details Page based on Figma design
@@ -94,7 +94,7 @@ Editied by: Vũ Duy Nhất
   - Nguyễn Nhựt Huy
   - Nguyễn Lê Hoàng Khải
 - **Status Report:**
-  - Vũ Duy Nhất:
+  - **Vũ Duy Nhất**
     - Completed task
       - Draw ERD in Physical for librarian role to design database - due day: 23/6
       - Write Document introducing about intersection idea of Room Reservation, Library Map and Study Group feature - due day: 27/6
@@ -108,7 +108,7 @@ Editied by: Vũ Duy Nhất
     - Obstacle/issues
       - Need to consider the Code Merge order and have an overview everyone's code to resolve conflicts if any.
       - Need to consider the feasibility and find reference GUI for the integrating 3 features, Room Reservation, Library Map and Study Group
-    - Trần Lê Hoàng Gia
+    - **Trần Lê Hoàng Gia**
       - Completed task
         - Complete Search (Semantic + Standard search) usecase in Book Retrieve
         - Complete Filter usecase in Book Retrieve
@@ -119,7 +119,7 @@ Editied by: Vũ Duy Nhất
       - Obstacle/issues
         - There is a lot of edge cases needed to solve in Search implementation
         - Both semantic and keyword search have their limitations, so a hybrid approach is needed to complement each other and achieve better results.
-    - Phan Lê Anh Mỉnh
+    - **Phan Lê Anh Mỉnh**
       - Completed task
         - Add Single-Factor Authentication (SFA) for Register
         - Complete Forget Password usecase in Authentication
@@ -132,7 +132,7 @@ Editied by: Vũ Duy Nhất
         - Floor plan had many details to complete
         - The design of floor plan needed to be practical to prepare data for facility
         - Need to find out more about Vitest to write unit test
-    - Nguyễn Nhựt Huy
+    - **Nguyễn Nhựt Huy**
       - Completed task
         - Complete DashBoard/User/BookBorrowing (All Reservations + Borrow History tabs) Page based on Figma
         - Complete DashBoard/User/Loan&Fees Page based on Figma
@@ -144,7 +144,7 @@ Editied by: Vũ Duy Nhất
       - Obstacle/issues
         - The book-borrowing procedure is relatively complicated because it is associated with both user and librarian roles.
         - Having initial confusion about status of reserved book in the procedure
-    - Nguyễn Lê Hoàng Khải
+    - **Nguyễn Lê Hoàng Khải**
       - Completed task
         - Complete DashBoard/User/RecommendedBook Page based on Figma
         - Complete StudyTogether/StudyGroup Page based on Figma
