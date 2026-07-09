@@ -50,6 +50,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [5.9. User Assistance](#59-user-assistance)
   - [5.10. Key Workflows](#510-key-workflows)
     - [5.10.1. Book Reservation and Pickup Workflow (PIN Verification)](#5101-book-reservation-and-pickup-workflow-pin-verification)
+    - [5.10.2. Room Booking and Study Group Workflow](#5102-room-booking-and-study-group-workflow)
   - [6. Non-Functional Requirements](#6-non-functional-requirements)
     - [6.1 Applicable Standards](#61-applicable-standards)
     - [6.2 Hardware and Platform Requirements](#62-hardware-and-platform-requirements)
@@ -249,17 +250,17 @@ This workflow demonstrates how a user reserves a book online and claims it at th
 flowchart TB
  subgraph Reservation["1. Book Reservation"]
         B{"Is the book available?"}
-        A["User requests to borrow a book"]
+        A(["User requests to borrow a book"])
         B1@{ label: "Show 'Out of Stock' message" }
         C["System holds the book & updates calendar"]
         D{"Does User collect it on time?"}
-        D1["Reservation expires"]
+        D1(["Reservation expires"])
         E["Proceed to collection"]
   end
  subgraph Collection["2. Book Collection"]
         G{"Is the PIN valid?"}
         F["User generates a pickup PIN"]
-        G1["PIN expires / Show error"]
+        G1(["PIN expires / Show error"])
         H["Librarian verifies details & hands over the book"]
   end
  subgraph Management["3. During the Borrowing"]
@@ -272,10 +273,10 @@ flowchart TB
  subgraph Return["4. Book Return"]
         L["User returns the book"]
         M{"What is the book status?"}
-        N1["Mark as returned successfully"]
-        N2["Charge late fee"]
-        N3["Charge partial compensation fee"]
-        N4["Charge full replacement fee"]
+        N1(["Mark as returned successfully"])
+        N2(["Charge late fee"])
+        N3(["Charge partial compensation fee"])
+        N4(["Charge full replacement fee"])
   end
     A --> B
     B -- No --> B1
@@ -301,8 +302,117 @@ flowchart TB
     M -- Lost --> N4
     E -.-> F
 
-    B1@{ shape: rect}
-    J1@{ shape: rect}
+    B1@{ shape: stadium}
+    J1@{ shape: stadium}
+ ```
+
+### 5.10.2. Room Booking and Study Group Workflow
+This workflow illustrates how a user books a study room — either individually or by creating a study group — and checks in using a PIN at the physical room.
+
+```mermaid
+graph TD
+    %% Nodes definition
+    Start([User views library map, room info & clicks Book Room])
+    ChooseMode{Choose Booking Mode}
+
+    subgraph Individual_Flow [Individual Booking Flow]
+        FreeBook[Individual Booking]
+        SelectDateTime[Select Date & Available Time Slot]
+        SubmitBooking[Submit Booking Info]
+        BookSuccess[Booking Successful]
+    end
+
+    subgraph Group_Creation_Flow [Study Group Creation Flow]
+        GroupBook[Study Group Booking]
+        InputGroupInfo[Input Study Group Info]
+        CheckInfo{Is Info Valid?}
+        LogError([Print Error Message])
+        GroupSuccess[Study Group Created Successfully]
+    end
+
+    subgraph Group_Management_Flow [Study Group Interaction & Management]
+        RoleSplit{Role in Study Group}
+        Creator[Creator]
+        OtherUser[Other User]
+        EditGroup[Edit Group Info]
+        SendInvite[Send Invitation to Others]
+        SendRequest[Send Request to Join]
+        ApproveCheck{Is Approved?}
+        NotifySender([Notify Sender of Rejection])
+        AddToGroup[Add Member to Group]
+        PostJoinEvent{Any Post-Join Events?}
+        RemoveMember[Member Removed by Creator]
+        LeaveGroup[Member Leaves Voluntarily]
+        HandleGroupEvent([Appropriate Handling Steps])
+    end
+
+    subgraph Checkin_And_Exceptions [Check-in & Exceptions Handling]
+        CheckinEvent{Any Pre-Checkin Events?}
+        ArriveCheckin[Arrive for Check-in & Generate PIN]
+        PinCheck{Is PIN Valid?}
+        PinError([Print PIN Error])
+        CheckinSuccess([Confirm Room Check-in Successful])
+        
+        RoomIssue[Room Issue / Booking Cancelled]
+        TimeoutIssue[Timeout: No Check-in past End Time]
+        CancelGroup[Cancel Study Group]
+        HandleIssue([Appropriate Handling Steps])
+    end
+
+    %% Main Flow Connections
+    Start --> ChooseMode
+    ChooseMode -->|Individual| FreeBook
+    ChooseMode -->|Study Group| GroupBook
+    
+    %% Connections inside Individual Flow
+    FreeBook --> SelectDateTime
+    SelectDateTime --> SubmitBooking
+    SubmitBooking --> BookSuccess
+    
+    %% Connections inside Group Creation Flow
+    GroupBook --> SelectDateTime
+    GroupBook --> InputGroupInfo
+    InputGroupInfo --> CheckInfo
+    CheckInfo -->|No| LogError
+    CheckInfo -->|Yes| SubmitBooking
+    SubmitBooking --> GroupSuccess
+    
+    %% Inter-subgraph Connections: Group Success to Management
+    GroupSuccess --> RoleSplit
+    RoleSplit -->|Creator| Creator
+    RoleSplit -->|Other User| OtherUser
+    
+    Creator --> EditGroup
+    Creator --> SendInvite
+    OtherUser --> SendRequest
+    
+    SendInvite --> ApproveCheck
+    SendRequest --> ApproveCheck
+    ApproveCheck -->|No| NotifySender
+    ApproveCheck -->|Yes| AddToGroup
+    
+    AddToGroup --> PostJoinEvent
+    PostJoinEvent -->|Yes| RemoveMember
+    PostJoinEvent -->|Yes| LeaveGroup
+    RemoveMember --> HandleGroupEvent
+    LeaveGroup --> HandleGroupEvent
+
+    %% Inter-subgraph Connections: To Check-in & Exceptions
+    BookSuccess --> CheckinEvent
+    GroupSuccess --> CheckinEvent
+    
+    CheckinEvent -->|No| ArriveCheckin
+    ArriveCheckin --> PinCheck
+    PinCheck -->|No| PinError
+    PinCheck -->|Yes| CheckinSuccess
+    
+    CheckinEvent -->|Yes| RoomIssue
+    CheckinEvent -->|Yes| TimeoutIssue
+    CheckinEvent -->|Yes| CancelGroup
+    
+    RoomIssue --> HandleIssue
+    TimeoutIssue --> HandleIssue
+    CancelGroup --> RoomIssue
 ```
 ## 6. Non-Functional Requirements
 
