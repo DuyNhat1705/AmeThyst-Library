@@ -162,7 +162,7 @@ This project plan is not a final version and may be subject to change and finish
 | Sprint | PA | Duration | Dates | Status | Key Deliverables / Main Tasks |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Sprint 1** | PA1 | 2 weeks | 23 May – 6 Jun, 2026 | Completed | Project Proposal, Existing App Survey, Team Contract, Dev Tools & Process Setup, Framework Setup |
-| **Sprint 2** | PA2 | 2 weeks | 7 Jun – 12 July, 2026 | Completed | Project Plan, Vision Document, Spec Kit Initialization, AI Usage & Weekly Report; ERD/DB Schema, Figma UI Design, Start working on several Functional Groups |
+| **Sprint 2** | PA2 | 5 weeks | 7 Jun – 12 July, 2026 | Completed | Project Plan, Vision Document, Spec Kit Initialization, AI Usage & Weekly Report; ERD/DB Schema, Figma UI Design, Start working on several Functional Groups |
 | **Sprint 3** | PA3 | 2 weeks | 13 Jul – 26 Jul, 2026 | Planned | Revised Project Plan, Detailed Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, AI Usage & Weekly Report, Implement 1 Functional Group (Authentication) |
 | **Sprint 4** | PA4 | 2 weeks | 27 Jul – 09 Aug, 2026 | Planned | Revised Use-Case Specification, Software Architecture (C4 Model Level 1-3), Deployment Diagram, AI Usage & Weekly Report, Implement 2 Functional Groups (Study Group, AI Recommendations) |
 | **Sprint 5** | PA5 | 2 weeks | 10 Aug – 23 Aug, 2026 | Planned | Test Plan, Test Cases, Test Execution Results, Bug Report, Reflective Report, Final Product Demo, Final Submission |
@@ -177,6 +177,8 @@ This project plan is not a final version and may be subject to change and finish
 - Researched, evaluated, and onboarded the team onto selected development tools.
 - Delivered foundational documentation for a shared understanding of the project.
   
+![Sprint 1 Gantt Chart](Gantt%20Charts/Sprint1.svg)
+
 #### Vũ Duy Nhất (4 tasks)
 
 | Type | Task | Due Date |
@@ -228,6 +230,8 @@ This project plan is not a final version and may be subject to change and finish
 - Prepared Figma UI designs in advance for core feature pages.
 - Used Spec Kit to implement interfaces based on the Figma designs.
 - Completed functional groups: User Authentication & Authorization, Profile Management, Advance Searching Feature.
+
+![Sprint 2 Gantt Chart](Gantt%20Charts/Sprint2.svg)
 
 #### Vũ Duy Nhất (13 tasks)
 
@@ -308,6 +312,8 @@ This project plan is not a final version and may be subject to change and finish
 - Complete 1 required functional group via Spec Kit: **Authentication** (20 pts) — deliverable includes a narrated video demo (uploaded Unlisted/Public to YouTube), the complete source code, and the generated Spec Kit artifacts (specs, plans, tasks).
 - Aim to complete implementation for: Borrowing & Reserving (Room Reservation + Book Return flows), Study Group, AI Recommendations, and Librarian Administration (Books management page, Add/Remove books).
 
+![Sprint 3 Gantt Chart](Gantt%20Charts/Sprint3.svg)
+
 #### Vũ Duy Nhất (6 tasks)
 
 | Type | Task | Due Date |
@@ -325,6 +331,7 @@ This project plan is not a final version and may be subject to change and finish
 | :--- | :--- | :--- |
 | Document | Write the Detailed Vision Document (5 points) based on TA feedback; add all changes vs. PA2 into the shared change.md file | Jul 19 |
 | Development | Complete the Room Reservation usecase in Borrowing & Reserving | Jul 15 |
+| Development | Complete the Books page (Book Management, Book Pickup, Book Return, Inspection tabs) in the Librarian Dashboard based on Figma | Jul 18 |
 | Development | Complete the Book Return Confirmation and Loan Recognition usecases (librarian-facing) in Borrowing & Reserving | Jul 25 |
 
 #### Trần Lê Hoàng Gia (3 tasks)
@@ -348,7 +355,6 @@ This project plan is not a final version and may be subject to change and finish
 | Type | Task | Due Date |
 | :--- | :--- | :--- |
 | Document | Co-author the Use-Case Specification (45 points) with Gia, supported by Nhất — organized by functional group per the PA3 outline, with use-case diagram and Figma GUI screenshots inserted for each group | Jul 25 |
-| Development | Complete the Books page (Book Management, Book Pickup, Book Return, Inspection tabs) in the Librarian Dashboard based on Figma | Jul 18 |
 
 ---
 
@@ -357,6 +363,8 @@ This project plan is not a final version and may be subject to change and finish
 - Complete required documents: Revised Use-Case Specification (5 pts, with change.md vs. PA3), Software Architecture — System Context Diagram (15 pts: technology stack description + C4 Model Level 1), Software Architecture — Container & Component Diagram (20 pts: C4 Model Level 2 & 3), Deployment Diagram (5 pts), AI Usage Report & Weekly Report (5 pts).
 - Complete **2 required functional groups** via Spec Kit: **Study Group** and **AI Recommendations** (25 pts) — includes Spec-Kit-generated test cases, a narrated video demo (Unlisted/Public on YouTube), full source code, and the generated Spec Kit artifacts.
 - Complete the remaining core implementation: full Borrowing & Reserving and Librarian Administration usecases (verification/checkout), and the Admin Dashboard (User Management, System Configuration, Statistics, Roles & Permissions) — effectively finishing the base LIMA website.
+
+![Sprint 4 Gantt Chart](Gantt%20Charts/Sprint4.svg)
 
 | Type | Task | Due Date |
 | :--- | :--- | :--- |
@@ -386,6 +394,8 @@ This project plan is not a final version and may be subject to change and finish
 - Deploy the website globally.
 - Deliver the Final Product Demo (110 pts) and package the Final Submission.
 - Aim to complete functional group: User Assistance.
+
+![Sprint 5 Gantt Chart](Gantt%20Charts/Sprint5.svg)
 
 | Type | Task | Due Date |
 | :--- | :--- | :--- |
