@@ -4,7 +4,7 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.2
+    Version: 1.3
 
 Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy
 
@@ -14,6 +14,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 | 04/07/2026 | 1.0 | Drafted initial sections: Introduction, Positioning, Stakeholder and User Descriptions, Non-Functional Requirements | Nguyễn Lê Hoàng Khải |
 | 04/07/2026 | 1.1 | Drafted initial sections: Product Overview, Product Features | Nguyễn Nhựt Huy |
 | 06/07/2026 | 1.2 | Added detailed Product Features descriptions (Sections 5.1–5.9) — Authentication, Profile Management, Borrow & Reserving, Searching, Librarian Admin, Admin Admin, AI Recommendations, Study Groups, User Assistance; added Key Workflows section (5.10) with Book Reservation and Pickup Workflow (PIN Verification) Mermaid flowchart; expanded Table of Contents for Section 5; added AI Usage entry for Draw.io-to-Mermaid conversion | Nguyễn Nhựt Huy |
+| 09/07/2026 | 1.3 | Fixed heading level for §5.10, removed inconsistent separators and trailing periods in section headers, fixed grammar and broken text in §4.2.2 and §7, updated Memory/Storage Constraints with 7-day LocalStorage session persistence | Nguyễn Nhựt Huy |
 
 ## Table of Contents
 - [Vision Document](#vision-document)
@@ -26,12 +27,12 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [2.2 Product Position Statement](#22-product-position-statement)
   - [3. Stakeholder and User Descriptions](#3-stakeholder-and-user-descriptions)
     - [3.1 Stakeholder Summary](#31-stakeholder-summary)
-    - [3.2. User Summary](#32-user-summary)
+    - [3.2 User Summary](#32-user-summary)
       - [User Class 1: Readers (Library Patrons)](#user-class-1-readers-library-patrons)
       - [User Class 2: Librarians](#user-class-2-librarians)
       - [User Class 3: System Administrators (Admin)](#user-class-3-system-administrators-admin)
     - [3.3 User Environment](#33-user-environment)
-    - [3.4. Summary of Key Stakeholder or User Needs](#34-summary-of-key-stakeholder-or-user-needs)
+    - [3.4 Summary of Key Stakeholder or User Needs](#34-summary-of-key-stakeholder-or-user-needs)
     - [3.5 Alternatives and Competition](#35-alternatives-and-competition)
   - [4. Product Overview](#4-product-overview)
     - [4.1 Product Perspective](#41-product-perspective)
@@ -48,9 +49,9 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [5.7. AI Recommendations](#57-ai-recommendations)
     - [5.8. Study Groups](#58-study-groups)
     - [5.9. User Assistance](#59-user-assistance)
-  - [5.10. Key Workflows](#510-key-workflows)
-    - [5.10.1. Book Reservation and Pickup Workflow (PIN Verification)](#5101-book-reservation-and-pickup-workflow-pin-verification)
-    - [5.10.2. Room Booking and Study Group Workflow](#5102-room-booking-and-study-group-workflow)
+    - [5.10. Key Workflows](#510-key-workflows)
+      - [5.10.1. Book Reservation and Pickup Workflow (PIN Verification)](#5101-book-reservation-and-pickup-workflow-pin-verification)
+      - [5.10.2. Room Booking and Study Group Workflow](#5102-room-booking-and-study-group-workflow)
   - [6. Non-Functional Requirements](#6-non-functional-requirements)
     - [6.1 Applicable Standards](#61-applicable-standards)
     - [6.2 Hardware and Platform Requirements](#62-hardware-and-platform-requirements)
@@ -116,7 +117,7 @@ These documents are stored in the team's shared Google Drive and version-control
 | Project Manager (Vũ Duy Nhất) | Team lead responsible for overall coordination | Manages timelines, assigns tasks via Jira, resolves resourcing conflicts, and makes final calls in deadlocked decisions |
 | Library (hypothetical adopting organization) | The organization the system is modeled to serve, represented indirectly through the survey of real-world library systems and the team's own assumptions about library operations | Would, in a real deployment, define institutional policies (borrowing limits, fines, room-booking rules) that constrain system behavior |
 
-### 3.2. User Summary
+### 3.2 User Summary
 The system targets three primary direct user classes interacting with the web application:
 
 #### User Class 1: Readers (Library Patrons)
@@ -160,7 +161,7 @@ The operational context, platforms, and infrastructural environment in which the
     * Data persistence is managed via a **PostgreSQL** database. 
     * The entire ecosystem is containerized and orchestrated using **Docker** to ensure consistency across development, testing, and production environments.
 
-### 3.4. Summary of Key Stakeholder or User Needs
+### 3.4 Summary of Key Stakeholder or User Needs
 
 | User Class / Stakeholder | Current Pain Point | Core User Need |
 | :--- | :--- | :--- |
@@ -194,10 +195,11 @@ The system is developed as a standalone software product and does not rely on an
   * **Server-side:** The application interacts with its dedicated database management system and hosting operating system.
 * **Communications Interfaces:** 
   * The system utilizes standard web communication protocols, primarily HTTP and HTTPS, for handling client-server requests and data transmissions.
-* **Memory/Storage Constraints:** 
-  * [To be determined / Not applicable at this stage]
-
----
+* **Memory/Storage Constraints:**
+  * **Database Storage:** The PostgreSQL instance stores all persistent data—approximately 15,000 bibliographic records, user accounts, transaction logs, and study room availability schedules. At this scale, the database footprint remains modest (estimated under 500 MB) and fits comfortably within local Docker volumes or any standard cloud free-tier allocation.
+  * **Media Storage:** User avatar images are offloaded to Cloudinary, so the application server itself does not store or serve binary media files. No local disk space is required for uploaded assets.
+  * **Client-Side Storage:** The web application stores authenticated user session information (e.g., access tokens, user profile data) in the browser's LocalStorage with a 7-day expiration, allowing users to remain logged in across visits without re-entering credentials. Additionally, LocalStorage is used for non-critical user preferences such as theme mode. No local database or significant client-side caching is required on the client device.
+  * **Container Overhead:** The Dockerized deployment (PostgreSQL container plus application containers) requires approximately 1–2 GB of disk space for images, volumes, and runtime layers, which is within the capacity of any modern development workstation or low-cost cloud VM.
 
 ### 4.2 Assumptions and Dependencies
 
@@ -206,7 +208,8 @@ The system is developed as a standalone software product and does not rely on an
 * **Independent Data Management:** It is assumed that the development team is solely responsible for generating, managing, and initializing all necessary mock data, configuration setups, and system assets without relying on external stakeholders.
 
 #### 4.2.2 Dependencies
-* **Standard Web Environment:** The proper rendering and execution of the system depend entirely on the compatibility and compliance of the client's web browsers with modern web standards (HTML5, CSS3, and ECMAScript specifications).
+* **Standard Web Environment:** The proper rendering and execution of the system depend entirely on the compatibility and compliance of the client's web browsers with modern web standards.
+* **Third-Party Service Resilience:** The system integrates several external services—including Google OAuth for authentication, Cloudinary for avatar storage. Should any of these services become unavailable, the core web application remains operational; only the specific features that depend on the unavailable service are disabled.
 
 ## 5. Product Features
 
@@ -214,7 +217,7 @@ The system is developed as a standalone software product and does not rely on an
 The Authentication module handles secure user registration, login, and password recovery, supporting both traditional email/password credentials and quick integration via Google OAuth. This feature is critical to ensure that only verified accounts and authorized personnel can access the library’s digital resources and physical facilities. It protects sensitive user accounts from unauthorized access while streamlined OAuth login options minimize friction during entry. Both standard library members and system administrators benefit from this secure, reliable gatekeeping system.
 
 ### 5.2. Profile Management
-Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, upcoming room reservations, and wallet balance. It also allows individuals to update personal details, change passwords, and top up funds to pay for rental or late fees. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities and financial balances independently.
+Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, upcoming room reservations. It also allows individuals to update personal details and change passwords. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities independently.
 
 ### 5.3. Borrow & Reserving Feature
 This core module enables users to reserve physical books and book available study rooms for specific time slots in real-time. To streamline the physical pickup process and eliminate tedious paperwork, the system generates a unique 6-digit PIN code upon online reservation, which librarians can quickly verify at the counter. This feature addresses the traditional long queues and scheduling conflicts, making resource allocation much faster and more transparent. Both students looking for efficient access to materials/spaces and librarians processing daily physical checkouts benefit significantly from this automation.
@@ -237,13 +240,11 @@ The Study Groups module fosters a highly collaborative learning environment by a
 ### 5.9. User Assistance
 User Assistance enhances student satisfaction by offering a self-paced onboarding tour, dynamic library floor maps with zone details, and accessible user guides. The interactive map responds smoothly to zoom/drag gestures, allowing students to check seat availability and resource locations before their arrival. This is essential for new students or visitors navigating a large physical library campus, effectively reducing confusion and anxiety. New and existing students benefit from this seamless physical-to-digital guidance, making every visit to the library stress-free.
 
----
-
-## 5.10. Key Workflows
+### 5.10. Key Workflows
 
 Here are the two most critical workflows within the Library Management System, illustrating how digital actions trigger physical interactions.
 
-### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
+#### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
 This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN.
 
 ```mermaid
@@ -306,7 +307,7 @@ flowchart TB
     J1@{ shape: stadium}
  ```
 
-### 5.10.2. Room Booking and Study Group Workflow
+#### 5.10.2. Room Booking and Study Group Workflow
 This workflow illustrates how a user books a study room — either individually or by creating a study group — and checks in using a PIN at the physical room.
 
 ```mermaid
@@ -454,7 +455,6 @@ graph TD
 | Reliability | Study-room and book reservation data shall remain consistent under concurrent bookings — the system must prevent two users from being confirmed for the same room/time slot or the same physical copy. | High |
 | Reliability | Core services (authentication, book search, reservation) shall be available during the project's demo/grading windows, with unplanned downtime minimized. | Medium |
 | Security | User passwords and personal profile data must be stored securely (e.g., hashed passwords); only users with a registered account (via direct registration or Google OAuth) may access borrowing and reservation features. | High |
-| Security | Fine/penalty payments made through the in-app payment gateway shall be processed via the provider's certified, secure checkout flow; the system itself shall never store raw card numbers, wallet credentials, or other sensitive payment data, and each transaction shall be logged with a status (pending/success/failed) tied to the user's fine record. | High |
 | Robustness | If the database or AI recommendation/search service becomes temporarily unavailable, the system shall degrade gracefully — e.g., falling back to basic keyword search or hiding the recommendation panel — rather than crashing or blocking core borrowing/reservation flows. | Medium |
 | Fault tolerance | If a PIN verification step fails or times out during a checkout/return transaction, the system shall not mark the book or room as transferred, and shall allow the user or librarian to safely retry without creating a duplicate transaction. | Medium |
 | Usability (Theme) | The interface shall support Light/Dark mode, initially resolving to the user's OS-level preference (falling back to Light mode if undetected), with the chosen theme persisted across sessions via LocalStorage. | Medium |
@@ -474,7 +474,6 @@ graph TD
 - Authentication shall support Google OAuth as an external identity provider, in addition to standard email/password registration — the system therefore depends on the availability of this third-party service.
 - Any use of generative AI tools in producing code or documentation shall be disclosed per the course's AI Usage declaration policy.
 - Features shall be delivered incrementally across the team's 5-sprint Scrum roadmap, with each sprint's scope tracked on the Jira board — the project timeline is therefore constrained by the course schedule.
-- Fine/penalty settlement is supported through an in-app payment flow integrated with a third-party payment gateway (e.g., VNPay, Momo, or Stripe) — the system therefore depends on the availability, API, and transaction fees of the chosen gateway provider.
 - The backend base URL shall never be hardcoded in frontend source code; it must be loaded dynamically via environment variables, per the project constitution.
 
 ### 6.8 Documentation Requirements
@@ -495,7 +494,6 @@ graph TD
 | Reservation data consistency | High | High | High | Medium | High |
 | Service availability | Medium | Medium | Medium | Medium | Medium |
 | Password/account security | High | High | High | Medium | High |
-| Payment gateway security (fine settlement) | High | Medium | High | High | High |
 | Robustness (graceful degradation) | Medium | Medium | Medium | Medium | Medium |
 | Fault tolerance (safe PIN retry) | Medium | Medium | Medium | Medium | Medium |
 | Cross-browser/platform support | Medium | High | Medium | Low | Low |
@@ -529,7 +527,7 @@ AI Tool 2
 - **Access** time: June 7, 2026 to July 12, 2026
 - **Prompt:** "Refactor this Project Plan section by section."
 - **Purpose:** To restructure and rewrite the Project Plan into clear, professional report language, and to draft the Team Structure and Risk Management content.
-- **Content generated by AI:** Well-structure project plan document based on content student prepared.
+- **Content generated by AI:** Well-structured project plan document based on content student prepared.
 - **Student's work and validation:** All AI-generated content was reviewed against TeamContract.md and ProjectProposal.md for accuracy, and edited to ensure it reflects the team's actual roles, decisions, and risk assessment.
 
 AI Tool 3
