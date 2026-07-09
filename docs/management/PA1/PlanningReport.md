@@ -1,7 +1,7 @@
 # Planning Report
 Performed by: Vũ Duy Nhất
 
-Reviewed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh, Nguyễn Nhựt Huy, Nguyễn Lê Hoàng Khải
+Reviewed by: All Other Members
 
 Editied by: Vũ Duy Nhất
 
@@ -36,7 +36,7 @@ Editied by: Vũ Duy Nhất
 - Design GUI for librarian
 - Design GUI for admin
 ## 2. Task assignment
-- Vũ Duy Nhất
+- **Vũ Duy Nhất**
 	- Overview Code and Merge Code instantly - throughout Sprint 2
 	- Draw usecase diagram - Due day: 13/6
 	- Draw entity-relationship diagram - Due day: 13/6
@@ -44,22 +44,22 @@ Editied by: Vũ Duy Nhất
 	- Write Planning Report + Review Report - Due day: 20/6
 	- Write SpecKit Document including brief summary from each team member, screenshots and training log (5 points) - Due day: 20/6
 	- Write Project Plan (15 points) (Khải Leads, Nhất supports) - Due day: 20/6
-- Trần Lê Hoàng Gia
+- **Trần Lê Hoàng Gia**
 	- Identify database schema for storing data - Due day: 13/6
 	- Complete Semantic Search with Plot description, Semantic search by theme, Semantic search by character, Semantic search with no match in Searching, Retrieve Books - Due day: 20/6
 	- Choose the model used for AI recommendation feature and have initial set up - Due day: 20/6
-- Phan Lê Anh Minh
+- **Phan Lê Anh Minh**
 	- Complete Account Register, Account Login in Authentication - Due day: 13/6
 	- Complete User Account in Profile Management Management - Due day: 13/6
 	- Complete Forget Password in Authentication - Due day: 20/6
 	- Design GUI for librarian - Due day: 20/6
 	- Design GUI for admin - Due day: 20/6
-- Nguyễn Nhựt Huy
+- **Nguyễn Nhựt Huy**
 	- Complete Books in Borrow Reserving Feature - Due day: 13/6
 	- Complete Study Rooms in Borrow Reserving Feature - Due day: 20/6
 	- Complete Pin Verification in Borrow Reserving Feature - Due day: 20/6
 	- Write Vision Document (20 points) (Huy leads, Khải support) - Due day: 20/6
-- Nguyễn Lê Hoàng Khải
+- **Nguyễn Lê Hoàng Khải**
 	- Complete View Book Details - Due day: 13/6
 	- Complete Search by title, Search by author / category, Search with no results, Search with empty queries in Searching, Retrieve Books - Due day: 13/6
 	- Write Project Plan (15 points) (Khải Lead, Nhất support) - Due day: 20/6
