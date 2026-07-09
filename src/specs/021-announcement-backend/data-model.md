@@ -11,7 +11,7 @@ The `announcements` table schema includes the following structure (with the addi
 | Column Name | Data Type | Constraints | Default | Description |
 |-------------|-----------|-------------|---------|-------------|
 | `announce_id` | `UUID` | `PRIMARY KEY` | `gen_random_uuid()` | Unique identifier for each announcement |
-| `created_by` | `UUID` | `FOREIGN KEY` references `users(user_id)` `ON DELETE SET NULL`, `NULLABLE` | `NULL` | The librarian or administrator who created the announcement |
+| `created_by` | `UUID` | `FOREIGN KEY` references `users(user_id)`, `NULLABLE` | `NULL` | The librarian or administrator who created the announcement |
 | `created_at` | `TIMESTAMP` | `NOT NULL` | `CURRENT_TIMESTAMP` | Date and time when the record was created |
 | `expired_date` | `DATE` | `NULLABLE` | `NULL` | Optional date after which the announcement is expired |
 | `title` | `TEXT` | `NOT NULL` | - | The title of the announcement |
@@ -20,12 +20,11 @@ The `announcements` table schema includes the following structure (with the addi
 
 ## 2. SQL Migration (`07_announcement_alter.sql`)
 
-An additive migration will be created at `src/database/init_db/postgres/07_announcement_alter.sql`:
+A new migration will be created at `src/database/init_db/postgres/07_announcement_alter.sql`:
 
 ```sql
 -- Additive migration to link announcements to the librarian/admin who created them
-ALTER TABLE public.announcements 
-ADD COLUMN created_by UUID REFERENCES public.users(user_id) ON DELETE SET NULL;
+ALTER TABLE announcements ADD COLUMN created_by UUID REFERENCES users(user_id);
 ```
 
 This migration is purely additive, meaning it does not delete or modify existing columns, preserving all database compatibility and causing zero disruption to existing data.

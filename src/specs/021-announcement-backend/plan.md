@@ -4,17 +4,15 @@
 
 **Input**: Feature specification from `src/specs/021-announcement-backend/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command.
-
 ## Summary
 
-This plan outlines the design and implementation of the Announcement Management backend feature for the LIMA library system. We will create the models, services, controllers, routes, and scheduler following the existing layered architecture (ES Modules, Express, pg.Pool). We will also write Vitest unit tests for the service layer and provide an additive SQL migration to link announcements with user accounts for auditing.
+This plan outlines the design and implementation of the Announcement Management backend feature for the LIMA library system. We will create the models, services, controllers, routes, and scheduler following the existing layered architecture (ES Modules, Express, pg.Pool). We will also write Vitest unit tests for the service layer and provide an additive SQL migration to link announcements with user accounts.
 
 ## Technical Context
 
 **Language/Version**: Node.js (ES Modules, `.mjs`)
 
-**Primary Dependencies**: Express.js, `pg` (PostgreSQL client via `pg.Pool` from `config/postgres.mjs`)
+**Primary Dependencies**: Express.js, `pg` (PostgreSQL client via `pg.Pool` from `config/postgres.mjs`), no ORM
 
 **Storage**: PostgreSQL 15, `announcements` table
 
@@ -39,22 +37,22 @@ This plan outlines the design and implementation of the Announcement Management 
 
 *GATE: Passed. Review and verification against the project's core principles:*
 
-1. **Component-Driven / Reusability (Service Reusability)**:
-   * All database interactions are encapsulated inside `models/announcement.models.mjs`.
-   * Core business logic (creating, editing, pagination formatting, status checks) is handled entirely in the service layer (`services/announcement.services.mjs`), making it completely decoupled and reusable.
+1. **Component-Driven / Reusability (Service Reusability for this feature)**:
+   * All database queries are isolated in `models/announcement.models.mjs`.
+   * Core business logic (creating, editing, pagination formatting, status checks) is handled entirely in the service layer (`services/announcement.services.mjs`), ensuring high reusability and keeping the controllers clean.
 
 2. **State Management**:
-   * **N/A** (Backend REST API only; no frontend state).
+   * **Not applicable because this is backend-only. N/A.**
 
 3. **Error Handling & Accessibility**:
    * Explicit try-catch blocks are implemented in all controllers.
-   * Proper HTTP status codes are returned (201 Created, 200 OK, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error) with structured JSON error messages in the `{ success: false, data: null, message }` format.
+   * Consistent try/catch and proper HTTP status codes are returned (201 Created, 200 OK, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error) with structured JSON error messages in the `{ success: false, data: null, message }` format.
 
 4. **Performance**:
-   * The `announcements` table has a primary key index on `announce_id`. Query filters on `status` and `expired_date` will run on a small dataset (typically <1000 records total), so no additional index is needed at this stage.
+   * `announce_id` is already indexed; no additional indexes are required. Query filters on `status` and `expired_date` will run on a small dataset (typically <1000 records total), so no additional index is needed.
 
 5. **Security**:
-   * Role-based access control (RBAC) is enforced using existing middleware: `verifyToken` and `authorizeRole('librarian', 'admin')` for all management routes.
+   * RBAC using `authorizeRole` is enforced via existing middleware: `verifyToken` and `authorizeRole('librarian', 'admin')` for all management routes.
    * Public endpoints (displaying active/non-expired announcements) will run without role protection, ensuring visitors and patrons can view them easily.
 
 ## Project Structure
@@ -71,41 +69,22 @@ src/specs/021-announcement-backend/
     └── requirements.md  # Spec quality checklist
 ```
 
-### Source Code
+### Source Code (under server/src)
 
-```text
-src/
-├── database/
-│   └── init_db/
-│       └── postgres/
-│           └── 07_announcement_alter.sql       # SQL migration file
-│
-└── server/
-    ├── src/
-    │   ├── controllers/
-    │   │   └── announcement.controllers.mjs    # CRUD / status controllers
-    │   │
-    │   ├── models/
-    │   │   └── announcement.models.mjs         # SQL queries
-    │   │
-    │   ├── routes/
-    │   │   ├── announcement.routes.mjs         # Public routing
-    │   │   └── dashboard.librarian.routes.mjs  # Admin routing (modified)
-    │   │
-    │   ├── services/
-    │   │   └── announcement.services.mjs       # Business logic / pagination
-    │   │
-    │   ├── utils/
-    │   │   └── announcementScheduler.mjs       # Expiry background worker
-    │   │
-    │   └── server.mjs                          # Register routes and scheduler (modified)
-    │
-    └── tests/
-        └── services/
-            └── announcement.service.spec.mjs   # Vitest unit test suite
-```
+The following exact files will be created or modified based on the actual structure under `server/src` (physical path: `src/server/src`):
 
-**Structure Decision**: The files are organized directly under `src/server/src` following the standard Route-Controller-Service-Model architecture structure, with the database migration placed under `src/database/init_db/postgres` and tests placed under `src/server/tests/services`.
+* **Created Files**:
+  * `src/server/src/models/announcement.models.mjs`
+  * `src/server/src/services/announcement.services.mjs`
+  * `src/server/src/controllers/announcement.controllers.mjs`
+  * `src/server/src/routes/announcement.routes.mjs`
+  * `src/server/src/utils/announcementScheduler.mjs`
+  * `src/database/init_db/postgres/07_announcement_alter.sql`
+  * `src/server/tests/services/announcement.service.spec.mjs`
+
+* **Modified Files**:
+  * `src/server/src/routes/dashboard.librarian.routes.mjs` (Add administrative CRUD routes)
+  * `src/server/src/server.mjs` (Register public GET routes and mount scheduler)
 
 ## Complexity Tracking
 

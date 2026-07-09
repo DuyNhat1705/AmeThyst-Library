@@ -16,7 +16,7 @@
 
 **Goal**: Update the database schema to support creator auditing.
 
-- [ ] T001 [P] Create additive migration file `src/database/init_db/postgres/07_announcement_alter.sql` containing `ALTER TABLE announcements ADD COLUMN created_by UUID REFERENCES users(user_id) ON DELETE SET NULL;`
+- [ ] T001 [P] Create additive migration file `src/database/init_db/postgres/07_announcement_alter.sql` containing `ALTER TABLE announcements ADD COLUMN created_by UUID REFERENCES users(user_id);`
 - [ ] T002 Execute database migration on the local PostgreSQL database using docker container command: `docker exec -i library_postgres psql -U lib_admin -d postgres < src/database/init_db/postgres/07_announcement_alter.sql`
 
 **Checkpoint:** The local PostgreSQL database is updated and the `announcements` table contains the new nullable `created_by` column.
@@ -77,8 +77,8 @@
 **Goal**: Define public and protected route entry points.
 
 - [ ] T025 [P] [US6] Create `src/server/src/routes/announcement.routes.mjs` and define public `GET /` to return active announcements.
-- [ ] T026 Mount public announcement routes in `src/server/src/server.mjs` under `app.use('/api/announcements', announcementRoutes)`.
-- [ ] T027 Add administrative CRUD routes (POST, GET, PUT, PATCH, DELETE) to `src/server/src/routes/dashboard.librarian.routes.mjs` under `verifyToken` and `authorizeRole('librarian', 'admin')` protection.
+- [ ] T026 Add administrative CRUD routes (POST, GET, PUT, PATCH, DELETE) to `src/server/src/routes/dashboard.librarian.routes.mjs` under `verifyToken` and `authorizeRole('librarian', 'admin')` protection.
+- [ ] T027 Register the public `announcementRoutes` in `src/server/src/server.mjs` using `app.use('/api/announcements', announcementRoutes)` or similar.
 
 **Checkpoint:** Routing entry points are registered in `server.mjs` and properly secured via middlewares.
 
@@ -88,8 +88,8 @@
 
 **Goal**: Automate active announcement expiration.
 
-- [ ] T028 [P] [US7] Create background scheduler `src/server/src/utils/announcementScheduler.mjs` defining `runStartupAnnouncementCleanup` and `startPeriodicAnnouncementCleanup` using `setInterval` (running every 1 hour).
-- [ ] T029 Register and run both startup and periodic announcement cleanup tasks inside `src/server/src/server.mjs`.
+- [ ] T028 [P] [US7] Create background scheduler `src/server/src/utils/announcementScheduler.mjs` exporting `runStartupCleanup` and `startPeriodicCleanup` using `setInterval` (running every 1 hour).
+- [ ] T029 Register and run both `runStartupCleanup` and `startPeriodicCleanup` announcement tasks inside `src/server/src/server.mjs` alongside the existing PIN scheduler startup and periodic tasks.
 
 **Checkpoint:** The scheduler runs bulk auto-expiration of announcements on server startup and hourly intervals.
 
