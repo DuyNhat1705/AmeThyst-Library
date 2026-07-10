@@ -12,14 +12,13 @@
 
 ---
 
-## Phase 1: Database Migration
+## Phase 1: Database Setup
 
-**Goal**: Update the database schema to support creator auditing.
+**Goal**: Update the database schema to support announcements table.
 
-- [ ] T001 [P] Create additive migration file `src/database/init_db/postgres/07_announcement_alter.sql` containing `ALTER TABLE announcements ADD COLUMN created_by UUID REFERENCES users(user_id);`
-- [ ] T002 Execute database migration on the local PostgreSQL database using docker container command: `docker exec -i library_postgres psql -U lib_admin -d postgres < src/database/init_db/postgres/07_announcement_alter.sql`
+- [x] T001 Initialize announcements table in `src/database/init_db/postgres/05_init_rest.sql`.
 
-**Checkpoint:** The local PostgreSQL database is updated and the `announcements` table contains the new nullable `created_by` column.
+**Checkpoint:** The local PostgreSQL database is updated and the `announcements` table exists.
 
 ---
 
@@ -27,15 +26,15 @@
 
 **Goal**: Implement the database queries for announcements.
 
-- [ ] T003 [P] [US1] Implement `insertAnnouncement` function in `src/server/src/models/announcement.models.mjs` to insert a new announcement in draft status, storing title, content, expired_date, and created_by fields.
-- [ ] T004 [P] [US2] Implement `findAnnouncementsForManagement` function in `src/server/src/models/announcement.models.mjs` to fetch announcements for administrators, incorporating pagination (limit, offset) and status filtering.
-- [ ] T005 [P] [US2] Implement `countAnnouncementsForManagement` function in `src/server/src/models/announcement.models.mjs` to count the total matching announcements for pagination calculations.
-- [ ] T006 [P] [US2] Implement `findAnnouncementById` function in `src/server/src/models/announcement.models.mjs` to retrieve details of a single announcement by ID.
-- [ ] T007 [P] [US3] Implement `updateAnnouncementStatus` function in `src/server/src/models/announcement.models.mjs` to update status field (`draft`, `active`, `expired`).
-- [ ] T008 [P] [US4] Implement `updateAnnouncementDetails` function in `src/server/src/models/announcement.models.mjs` to update title, content, and expired_date of an existing announcement.
-- [ ] T009 [P] [US5] Implement `deleteAnnouncementById` function in `src/server/src/models/announcement.models.mjs` to permanently delete an announcement record.
-- [ ] T010 [P] [US6] Implement `findActiveAnnouncements` function in `src/server/src/models/announcement.models.mjs` to retrieve active, non-expired announcements (where status = 'active' and expired_date is NULL or >= current date).
-- [ ] T011 [P] [US7] Implement `updateExpiredAnnouncements` function in `src/server/src/models/announcement.models.mjs` to transition all active announcements with past expiration dates to 'expired'.
+- [x] T003 [P] [US1] Implement `insertAnnouncement` function in `src/server/src/models/announcement.models.mjs` to insert a new announcement in draft status, storing title, content, and expired_date fields.
+- [x] T004 [P] [US2] Implement `findAnnouncementsForManagement` function in `src/server/src/models/announcement.models.mjs` to fetch announcements for administrators, incorporating pagination (limit, offset) and status filtering.
+- [x] T005 [P] [US2] Implement `countAnnouncementsForManagement` function in `src/server/src/models/announcement.models.mjs` to count the total matching announcements for pagination calculations.
+- [x] T006 [P] [US2] Implement `findAnnouncementById` function in `src/server/src/models/announcement.models.mjs` to retrieve details of a single announcement by ID.
+- [x] T007 [P] [US3] Implement `updateAnnouncementStatus` function in `src/server/src/models/announcement.models.mjs` to update status field (`draft`, `active`, `expired`).
+- [x] T008 [P] [US4] Implement `updateAnnouncementDetails` function in `src/server/src/models/announcement.models.mjs` to update title, content, and expired_date of an existing announcement.
+- [x] T009 [P] [US5] Implement `deleteAnnouncementById` function in `src/server/src/models/announcement.models.mjs` to permanently delete an announcement record.
+- [x] T010 [P] [US6] Implement `findActiveAnnouncements` function in `src/server/src/models/announcement.models.mjs` to retrieve active, non-expired announcements (where status = 'active' and expired_date is NULL or >= current date).
+- [x] T011 [P] [US7] Implement `updateExpiredAnnouncements` function in `src/server/src/models/announcement.models.mjs` to transition all active announcements with past expiration dates to 'expired'.
 
 **Checkpoint:** All database query functions are successfully implemented and exported from `src/server/src/models/announcement.models.mjs`.
 
@@ -45,13 +44,13 @@
 
 **Goal**: Implement business logic, validation, and transitions.
 
-- [ ] T012 [P] [US1] Implement `createAnnouncementService` in `src/server/src/services/announcement.services.mjs` to validate payload (title, content, expired_date) and insert it as a draft.
-- [ ] T013 [P] [US2] Implement `getAnnouncementsForManagementService` in `src/server/src/services/announcement.services.mjs` to calculate offset, fetch announcements and counts, and format paginated responses.
-- [ ] T014 [P] [US3] Implement `updateAnnouncementStatusService` in `src/server/src/services/announcement.services.mjs` to check announcement existence, validate new status value, and trigger status updates.
-- [ ] T015 [P] [US4] Implement `editAnnouncementDetailsService` in `src/server/src/services/announcement.services.mjs` to update an announcement's details after verifying its existence and validating inputs.
-- [ ] T016 [P] [US5] Implement `deleteAnnouncementService` in `src/server/src/services/announcement.services.mjs` to delete an announcement after validating its existence.
-- [ ] T017 [P] [US6] Implement `getActiveAnnouncementsService` in `src/server/src/services/announcement.services.mjs` to query and return active public announcements.
-- [ ] T018 [P] [US7] Implement `expireOutdatedAnnouncementsService` in `src/server/src/services/announcement.services.mjs` to trigger bulk expiration of outdated announcements in the DB.
+- [x] T012 [P] [US1] Implement `createAnnouncementService` in `src/server/src/services/announcement.services.mjs` to validate payload (title, content, expired_date) and insert it as a draft.
+- [x] T013 [P] [US2] Implement `getAnnouncementsForManagementService` in `src/server/src/services/announcement.services.mjs` to calculate offset, fetch announcements and counts, and format paginated responses.
+- [x] T014 [P] [US3] Implement `updateAnnouncementStatusService` in `src/server/src/services/announcement.services.mjs` to check announcement existence, validate new status value, and trigger status updates.
+- [x] T015 [P] [US4] Implement `editAnnouncementDetailsService` in `src/server/src/services/announcement.services.mjs` to update an announcement's details after verifying its existence and validating inputs.
+- [x] T016 [P] [US5] Implement `deleteAnnouncementService` in `src/server/src/services/announcement.services.mjs` to delete an announcement after validating its existence.
+- [x] T017 [P] [US6] Implement `getActiveAnnouncementsService` in `src/server/src/services/announcement.services.mjs` to query and return active public announcements.
+- [x] T018 [P] [US7] Implement `expireOutdatedAnnouncementsService` in `src/server/src/services/announcement.services.mjs` to trigger bulk expiration of outdated announcements in the DB.
 
 **Checkpoint:** Business rules, pagination formatting, status transitions, and bulk expiration services are implemented in `src/server/src/services/announcement.services.mjs`.
 
@@ -61,12 +60,12 @@
 
 **Goal**: Implement HTTP request parsers and response formatters.
 
-- [ ] T019 [P] [US1] Implement `createAnnouncementController` in `src/server/src/controllers/announcement.controllers.mjs` to parse creator details, validate required fields, and format 201 Created responses.
-- [ ] T020 [P] [US2] Implement `getAnnouncementsForManagementController` in `src/server/src/controllers/announcement.controllers.mjs` to parse pagination query parameters, query services, and return paginated data.
-- [ ] T021 [P] [US3] Implement `updateAnnouncementStatusController` in `src/server/src/controllers/announcement.controllers.mjs` to process status patch requests and return standardized envelopes.
-- [ ] T022 [P] [US4] Implement `editAnnouncementDetailsController` in `src/server/src/controllers/announcement.controllers.mjs` to handle announcement update PUT requests.
-- [ ] T023 [P] [US5] Implement `deleteAnnouncementController` in `src/server/src/controllers/announcement.controllers.mjs` to process announcement deletion.
-- [ ] T024 [P] [US6] Implement `getActiveAnnouncementsController` in `src/server/src/controllers/announcement.controllers.mjs` to return public active announcements.
+- [x] T019 [P] [US1] Implement `createAnnouncementController` in `src/server/src/controllers/announcement.controllers.mjs` to parse required fields, validate inputs, and format 201 Created responses.
+- [x] T020 [P] [US2] Implement `getAnnouncementsForManagementController` in `src/server/src/controllers/announcement.controllers.mjs` to parse pagination query parameters, query services, and return paginated data.
+- [x] T021 [P] [US3] Implement `updateAnnouncementStatusController` in `src/server/src/controllers/announcement.controllers.mjs` to process status patch requests and return standardized envelopes.
+- [x] T022 [P] [US4] Implement `editAnnouncementDetailsController` in `src/server/src/controllers/announcement.controllers.mjs` to handle announcement update PUT requests.
+- [x] T023 [P] [US5] Implement `deleteAnnouncementController` in `src/server/src/controllers/announcement.controllers.mjs` to process announcement deletion.
+- [x] T024 [P] [US6] Implement `getActiveAnnouncementsController` in `src/server/src/controllers/announcement.controllers.mjs` to return public active announcements.
 
 **Checkpoint:** Controller functions are created in `src/server/src/controllers/announcement.controllers.mjs` to orchestrate services and return standard envelopes.
 
@@ -76,9 +75,9 @@
 
 **Goal**: Define public and protected route entry points.
 
-- [ ] T025 [P] [US6] Create `src/server/src/routes/announcement.routes.mjs` and define public `GET /` to return active announcements.
-- [ ] T026 Add administrative CRUD routes (POST, GET, PUT, PATCH, DELETE) to `src/server/src/routes/dashboard.librarian.routes.mjs` under `verifyToken` and `authorizeRole('librarian', 'admin')` protection.
-- [ ] T027 Register the public `announcementRoutes` in `src/server/src/server.mjs` using `app.use('/api/announcements', announcementRoutes)` or similar.
+- [x] T025 [P] [US6] Create `src/server/src/routes/announcement.routes.mjs` and define public `GET /` to return active announcements.
+- [x] T026 Add administrative CRUD routes (POST, GET, PUT, PATCH, DELETE) to `src/server/src/routes/dashboard.librarian.routes.mjs` under `verifyToken` and `authorizeRole('librarian', 'admin')` protection.
+- [x] T027 Register the public `announcementRoutes` in `src/server/src/server.mjs` using `app.use('/api/announcements', announcementRoutes)` or similar.
 
 **Checkpoint:** Routing entry points are registered in `server.mjs` and properly secured via middlewares.
 
@@ -88,8 +87,8 @@
 
 **Goal**: Automate active announcement expiration.
 
-- [ ] T028 [P] [US7] Create background scheduler `src/server/src/utils/announcementScheduler.mjs` exporting `runStartupCleanup` and `startPeriodicCleanup` using `setInterval` (running every 1 hour).
-- [ ] T029 Register and run both `runStartupCleanup` and `startPeriodicCleanup` announcement tasks inside `src/server/src/server.mjs` alongside the existing PIN scheduler startup and periodic tasks.
+- [x] T028 [P] [US7] Create background scheduler `src/server/src/utils/announcementScheduler.mjs` exporting `runStartupCleanup` and `startPeriodicCleanup` using `setInterval` (running every 1 hour).
+- [x] T029 Register and run both `runStartupCleanup` and `startPeriodicCleanup` announcement tasks inside `src/server/src/server.mjs` alongside the existing PIN scheduler startup and periodic tasks.
 
 **Checkpoint:** The scheduler runs bulk auto-expiration of announcements on server startup and hourly intervals.
 
@@ -99,8 +98,8 @@
 
 **Goal**: Validate business logic and edge cases via unit testing.
 
-- [ ] T030 [P] [US1] Create unit tests file `src/server/tests/services/announcement.service.spec.mjs` with test scenarios for creation, status transitions, pagination, details editing, deletion, and auto-expiration.
-- [ ] T031 Execute Vitest suite via `npm run test` inside `src/server` to ensure all tests pass successfully.
+- [x] T030 [P] [US1] Create unit tests file `src/server/tests/services/announcement.service.spec.mjs` with test scenarios for creation, status transitions, pagination, details editing, deletion, and auto-expiration.
+- [x] T031 Execute Vitest suite via `npm run test` inside `src/server` to ensure all tests pass successfully.
 
 **Checkpoint:** The test suite compiles and runs with 100% success rate, confirming correct business validation and execution.
 
@@ -108,7 +107,6 @@
 
 ## Technical Debt / Future Work
 
-* **Rate Limiting on Public Endpoints**: Consider adding rate limiting middleware to public endpoints (`GET /api/announcements`) to mitigate potential DoS attacks.
-* **Rich Text Sanitization**: Add HTML/markdown sanitization on the backend for the announcement `content` field if the frontend editor starts supporting rich text inputs in a later phase.
-* **Audit Logs Table**: Link announcement changes to a dedicated audit logging system instead of only saving `created_by` on the announcement record itself.
-* **Push Notifications**: Integrate web push notification payloads when active announcements are published.
+- [ ] T032 Rate Limiting on Public Endpoints: Consider adding rate limiting middleware to public endpoints (`GET /api/announcements`) to mitigate potential DoS attacks.
+- [ ] T033 Rich Text Sanitization: Add HTML/markdown sanitization on the backend for the announcement `content` field if the frontend editor starts supporting rich text inputs in a later phase.
+- [ ] T035 Push Notifications: Integrate web push notification payloads when active announcements are published.

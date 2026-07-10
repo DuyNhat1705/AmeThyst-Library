@@ -16,7 +16,7 @@ As a librarian, I can create a new announcement in draft status.
 
 **Why this priority**: This is the starting point of the announcement lifecycle. Without being able to create an announcement, no other operations make sense.
 
-**Independent Test**: Send a POST request to `/api/announcements` with valid title, content, and optional expired_date. Verify the response has success=true, status='draft', a generated announce_id, and `created_by` field populated.
+**Independent Test**: Send a POST request to `/api/announcements` with valid title, content, and optional expired_date. Verify the response has success=true, status='draft', a generated announce_id.
 
 **Acceptance Scenarios**:
 
@@ -131,13 +131,11 @@ As the system, announcements automatically become `expired` after their expirati
 - **FR-005**: The system MUST provide a paginated list of all announcements with status filtering for librarians and admins.
 - **FR-006**: The system MUST provide a public endpoint that returns only active, non-expired announcements (expired_date is NULL or >= current date).
 - **FR-007**: The system MUST automatically update announcements to `expired` status if their expiration date has passed.
-- **FR-008**: The system MUST record the creator's ID (`created_by` referencing users.user_id) for auditing purposes.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Announcement**:
   - `announce_id` (uuid, PK): Unique identifier.
-  - `created_by` (uuid, FK): Reference to users(user_id) representing the librarian/admin who created it.
   - `created_at` (timestamp): The creation time.
   - `expired_date` (date): Optional expiry date.
   - `title` (text): Title of the announcement.
@@ -158,4 +156,3 @@ As the system, announcements automatically become `expired` after their expirati
 - We will follow the existing route-controller-service-model pattern using the `announcement.*` namespace.
 - The authentication middleware `verifyToken` and `authorizeRole` will be reused directly.
 - The background task will run similarly to `pinScheduler.mjs`.
-- A database migration will be added to alter the existing `announcements` table to add the `created_by` column.

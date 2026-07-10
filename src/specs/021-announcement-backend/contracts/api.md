@@ -23,9 +23,7 @@ Retrieves a list of all currently active and non-expired announcements. Accessib
         "title": "Summer Library Hours",
         "content": "From June to August, the library will open from 8:00 AM to 9:00 PM.",
         "createdAt": "2026-07-01T08:00:00.000Z",
-        "expiredDate": "2026-08-31",
-        "createdBy": "1f321d46-3d3d-4199-b9ec-22df464431d5",
-        "creatorUsername": "librarian1_lib"
+        "expiredDate": "2026-08-31"
       }
     ],
     "message": "Active announcements retrieved successfully"
@@ -61,8 +59,7 @@ Creates a new announcement in the database. Defaults to `draft` status.
       "content": "The system will be offline for 2 hours on Friday at midnight.",
       "expiredDate": "2026-07-15",
       "status": "draft",
-      "createdAt": "2026-07-09T15:20:00.000Z",
-      "createdBy": "1f321d46-3d3d-4199-b9ec-22df464431d5"
+      "createdAt": "2026-07-09T15:20:00.000Z"
     },
     "message": "Announcement created successfully"
   }
@@ -89,9 +86,7 @@ Lists all announcements (active, draft, expired) with pagination and optional fi
           "content": "...",
           "status": "draft",
           "createdAt": "2026-07-09T15:20:00.000Z",
-          "expiredDate": "2026-07-15",
-          "createdBy": "1f321d46-3d3d-4199-b9ec-22df464431d5",
-          "creatorUsername": "librarian1_lib"
+          "expiredDate": "2026-07-15"
         }
       ],
       "pagination": {
@@ -128,8 +123,7 @@ Updates the details (title, content, expiration date) of an existing announcemen
       "content": "The system will be offline for 3 hours (extended) on Friday.",
       "expiredDate": "2026-07-16",
       "status": "draft",
-      "createdAt": "2026-07-09T15:20:00.000Z",
-      "createdBy": "1f321d46-3d3d-4199-b9ec-22df464431d5"
+      "createdAt": "2026-07-09T15:20:00.000Z"
     },
     "message": "Announcement updated successfully"
   }

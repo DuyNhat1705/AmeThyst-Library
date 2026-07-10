@@ -2,115 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
-import ToggleSwitch from '../atoms/ToggleSwitch';
+import { ToggleSwitch, Toast, Skeleton } from '../atoms';
+import { apiFetch } from '../../utils/apiClient';
 import AnnouncementListItem, { type Announcement, type AnnouncementStatus } from '../molecules/AnnouncementListItem';
 
-const initialMockAnnouncements: Announcement[] = [
-  {
-    id: '1',
-    title: 'Winter Break Library Hours',
-    status: 'ACTIVE',
-    date: 'Oct 24, 2026',
-    expiryDate: '2026-12-15',
-    content: 'Please note that starting December 15th, the north wing will be closed for maintenance and lighting upgrades. All study rooms in this area will be unavailable.\n\nThe central lobby and southern reading rooms will remain open with standard holiday hours (9:00 AM - 5:00 PM). Thank you for your patience as we improve your study space!',
-    isPinned: true
-  },
-  {
-    id: '2',
-    title: 'New Rare Book Acquisition',
-    status: 'DRAFT',
-    date: 'Oct 22, 2026',
-    expiryDate: '',
-    content: 'We are thrilled to announce the arrival of a first-edition collection of botanical prints.',
-    isPinned: false
-  },
-  {
-    id: '3',
-    title: 'Annual Book Sale 2026',
-    status: 'EXPIRED',
-    date: 'Sep 15, 2026',
-    expiryDate: '2026-09-30',
-    content: 'Our yearly fundraising event is back! Join us in the main hall for deep discounts on donated books.',
-    isPinned: false
-  },
-  {
-    id: '4',
-    title: 'Study Room Booking Policy',
-    status: 'ACTIVE',
-    date: 'Oct 10, 2026',
-    expiryDate: '2027-01-01',
-    content: 'Update: Group study rooms can now be reserved up to 2 weeks in advance via the new portal.',
-    isPinned: false
-  },
-  {
-    id: '5',
-    title: 'New Digital Archive Access',
-    status: 'ACTIVE',
-    date: 'Sep 25, 2026',
-    expiryDate: '2027-01-01',
-    content: 'Students now have access to the national digital archive. Use your library credentials to log in.',
-    isPinned: false
-  },
-  {
-    id: '6',
-    title: 'Weekend Maintenance',
-    status: 'EXPIRED',
-    date: 'Sep 01, 2026',
-    expiryDate: '2026-09-03',
-    content: 'The main server will be down for maintenance this weekend. Online catalogue will be unavailable.',
-    isPinned: false
-  },
-  {
-    id: '7',
-    title: 'Guest Speaker: Author Q&A',
-    status: 'DRAFT',
-    date: 'Aug 15, 2026',
-    expiryDate: '',
-    content: 'We are hosting a Q&A with the author of "The Silent History". Seats are limited, please RSVP.',
-    isPinned: false
-  },
-  {
-    id: '8',
-    title: 'New Poetry Collection',
-    status: 'ACTIVE',
-    date: 'Oct 05, 2026',
-    expiryDate: '2026-11-05',
-    content: 'Discover our latest additions to the modern poetry section on the 2nd floor.',
-    isPinned: false
-  },
-  {
-    id: '9',
-    title: 'Late Fee Forgiveness Week',
-    status: 'ACTIVE',
-    date: 'Oct 01, 2026',
-    expiryDate: '2026-10-08',
-    content: 'Return your overdue items this week and all late fees will be waived!',
-    isPinned: true
-  },
-  {
-    id: '10',
-    title: '3D Printer Out of Order',
-    status: 'DRAFT',
-    date: 'Sep 28, 2026',
-    expiryDate: '',
-    content: 'The MakerSpace 3D printer is currently undergoing maintenance. We apologize for the inconvenience.',
-    isPinned: false
-  },
-  {
-    id: '11',
-    title: 'Summer Reading Challenge Winners',
-    status: 'EXPIRED',
-    date: 'Aug 30, 2026',
-    expiryDate: '2026-09-10',
-    content: 'Congratulations to everyone who participated in the Summer Reading Challenge. Check the lobby for the list of winners!',
-    isPinned: false
-  }
-];
+const mapBackendToFrontend = (ann: any): Announcement => ({
+  id: ann.announceId,
+  title: ann.title || '',
+  status: (ann.status ? ann.status.toUpperCase() : 'DRAFT') as AnnouncementStatus,
+  date: ann.createdAt 
+    ? new Date(ann.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+    : '',
+  expiryDate: ann.expiredDate ? String(ann.expiredDate).split('T')[0] : '',
+  content: ann.content || '',
+  isPinned: !!ann.isPinned
+});
 
 export default function LibrarianAnnouncementsPanel() {
   const { t } = useI18n();
-  const [announcements, setAnnouncements] = useState<Announcement[]>(initialMockAnnouncements);
-  const [selectedId, setSelectedId] = useState<string | null>('1');
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   
   // Editor state
   const [editTitle, setEditTitle] = useState('');
@@ -118,8 +32,62 @@ export default function LibrarianAnnouncementsPanel() {
   const [editContent, setEditContent] = useState('');
   const [editIsPinned, setEditIsPinned] = useState(false);
 
-  useEffect(() => {
+  // The announcement currently open in the editor (undefined when creating a new one)
+  const selectedAnnouncement = selectedId && selectedId !== 'new'
+    ? announcements.find(a => a.id === selectedId)
+    : undefined;
+
+  const hasUnsavedChanges = () => {
+    if (selectedId === 'new') {
+      return !!(editTitle || editExpiryDate || editContent || editIsPinned);
+    }
     if (selectedId) {
+      const selected = announcements.find(a => a.id === selectedId);
+      if (selected) {
+        return (
+          editTitle !== selected.title ||
+          editExpiryDate !== selected.expiryDate ||
+          editContent !== selected.content ||
+          editIsPinned !== selected.isPinned
+        );
+      }
+    }
+    return false;
+  };
+
+  const handleSelectAnnouncement = (id: string | null) => {
+    if (id === selectedId) return;
+    if (hasUnsavedChanges()) {
+      if (!confirm(t('announcements.unsaved_changes_warning'))) {
+        return;
+      }
+    }
+    setSelectedId(id);
+  };
+
+  const fetchAnnouncements = async () => {
+    setLoading(true);
+    const res = await apiFetch<{ announcements: any[] }>('/dashboard/librarian/announcements?limit=100');
+    if (res.success && res.data) {
+      const mapped = res.data.announcements.map(mapBackendToFrontend);
+      setAnnouncements(mapped);
+      if (mapped.length > 0) {
+        setSelectedId(mapped[0].id);
+      } else {
+        setSelectedId(null);
+      }
+    } else {
+      setToast({ message: res.message || 'Failed to fetch announcements.', type: 'error' });
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  useEffect(() => {
+    if (selectedId && selectedId !== 'new') {
       const selected = announcements.find(a => a.id === selectedId);
       if (selected) {
         setEditTitle(selected.title);
@@ -127,6 +95,11 @@ export default function LibrarianAnnouncementsPanel() {
         setEditContent(selected.content);
         setEditIsPinned(selected.isPinned);
       }
+    } else if (selectedId === 'new') {
+      setEditTitle('');
+      setEditExpiryDate('');
+      setEditContent('');
+      setEditIsPinned(false);
     } else {
       setEditTitle('');
       setEditExpiryDate('');
@@ -135,34 +108,151 @@ export default function LibrarianAnnouncementsPanel() {
     }
   }, [selectedId, announcements]);
 
-  const handleSave = (status: AnnouncementStatus) => {
+  /**
+   * Saves the current editor content, optionally transitioning the announcement
+   * to `targetStatus`. If `targetStatus` is omitted (or equals the current status),
+   * only the details (title/content/expiry/pin) are persisted and the status is
+   * left untouched — this is the "Save Changes" path used for already-published
+   * or expired announcements.
+   */
+  const handleSave = async (targetStatus?: AnnouncementStatus) => {
     if (!selectedId) return;
 
-    if (selectedId === 'new') {
-      const newAnn: Announcement = {
-        id: Date.now().toString(),
-        title: editTitle,
-        status,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-        expiryDate: editExpiryDate,
-        content: editContent,
-        isPinned: editIsPinned
-      };
-      setAnnouncements([newAnn, ...announcements]);
-      setSelectedId(newAnn.id);
-    } else {
-      setAnnouncements(prev => prev.map(a => 
-        a.id === selectedId 
-          ? { ...a, title: editTitle, expiryDate: editExpiryDate, content: editContent, isPinned: editIsPinned, status } 
-          : a
-      ));
+    const isNew = selectedId === 'new';
+    // For a brand-new announcement we need a concrete status to send to the API.
+    const status: AnnouncementStatus = targetStatus ?? (selectedAnnouncement?.status || 'DRAFT');
+
+    // Client-side validations
+    if (!editTitle.trim()) {
+      setToast({ message: t('announcements.validation_title_required'), type: 'error' });
+      return;
+    }
+    if (!editContent.trim()) {
+      setToast({ message: t('announcements.validation_content_required'), type: 'error' });
+      return;
+    }
+
+    if (editExpiryDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const expiry = new Date(editExpiryDate);
+      if (status === 'ACTIVE' && expiry < today) {
+        setToast({ message: t('announcements.validation_expiry_past'), type: 'error' });
+        return;
+      }
+    }
+
+    // Unpublishing (ACTIVE -> DRAFT) removes the announcement from the public
+    // page, so require an explicit confirmation instead of letting it happen
+    // as a side effect of an unrelated content edit.
+    if (!isNew && selectedAnnouncement?.status === 'ACTIVE' && status === 'DRAFT') {
+      if (!confirm(t('announcements.confirm_unpublish'))) {
+        return;
+      }
+    }
+
+    setSaving(true);
+    try {
+      if (isNew) {
+        const res = await apiFetch<any>('/dashboard/librarian/announcements', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: editTitle,
+            content: editContent,
+            expired_date: editExpiryDate || null,
+            status: status.toLowerCase(),
+            is_pinned: editIsPinned
+          })
+        });
+        if (res.success && res.data) {
+          const saved = mapBackendToFrontend(res.data);
+          setAnnouncements(prev => [saved, ...prev]);
+          setSelectedId(saved.id);
+          setToast({ message: 'Announcement created successfully!', type: 'success' });
+        } else {
+          setToast({ message: res.message || 'Failed to create announcement.', type: 'error' });
+        }
+      } else {
+        const current = announcements.find(a => a.id === selectedId);
+        if (!current) return;
+
+        // Update details
+        const detailsRes = await apiFetch<any>(`/dashboard/librarian/announcements/${selectedId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: editTitle,
+            content: editContent,
+            expired_date: editExpiryDate || null,
+            is_pinned: editIsPinned
+          })
+        });
+
+        if (!detailsRes.success) {
+          setToast({ message: detailsRes.message || 'Failed to update announcement details.', type: 'error' });
+          return;
+        }
+
+        let updatedData = detailsRes.data;
+
+        // Update local state with the successfully saved details immediately
+        const detailsUpdated = mapBackendToFrontend(updatedData);
+        setAnnouncements(prev => prev.map(a => a.id === selectedId ? detailsUpdated : a));
+
+        // Only hit the status endpoint when the caller actually asked for a
+        // status transition (targetStatus provided and different from current).
+        if (targetStatus && current.status !== targetStatus) {
+          const statusRes = await apiFetch<any>(`/dashboard/librarian/announcements/${selectedId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: targetStatus.toLowerCase()
+            })
+          });
+
+          if (!statusRes.success) {
+            setToast({ message: statusRes.message || 'Failed to update announcement status.', type: 'error' });
+            return;
+          }
+          updatedData = statusRes.data;
+
+          // Update local state again with the new status
+          const finalUpdated = mapBackendToFrontend(updatedData);
+          setAnnouncements(prev => prev.map(a => a.id === selectedId ? finalUpdated : a));
+        }
+
+        setToast({ message: 'Announcement updated successfully!', type: 'success' });
+      }
+    } catch (err) {
+      setToast({ message: 'An unexpected error occurred.', type: 'error' });
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedId || selectedId === 'new') return;
-    setAnnouncements(prev => prev.filter(a => a.id !== selectedId));
-    setSelectedId(null);
+    
+    if (confirm('Are you sure you want to delete this announcement?')) {
+      setSaving(true);
+      try {
+        const res = await apiFetch<any>(`/dashboard/librarian/announcements/${selectedId}`, {
+          method: 'DELETE'
+        });
+        if (res.success) {
+          setAnnouncements(prev => prev.filter(a => a.id !== selectedId));
+          setSelectedId(null);
+          setToast({ message: 'Announcement deleted successfully!', type: 'success' });
+        } else {
+          setToast({ message: res.message || 'Failed to delete announcement.', type: 'error' });
+        }
+      } catch (err) {
+        setToast({ message: 'An unexpected error occurred.', type: 'error' });
+      } finally {
+        setSaving(false);
+      }
+    }
   };
 
   const getStatusBadgeStyles = (status: AnnouncementStatus) => {
@@ -183,6 +273,74 @@ export default function LibrarianAnnouncementsPanel() {
     }
   };
 
+  // Decide which action buttons to show based on the status of the
+  // announcement currently open in the editor. Editing content never
+  // silently changes status anymore — status transitions are explicit,
+  // separate buttons.
+  const renderActionButtons = () => {
+    const btnBase = "px-6 py-2 rounded-full text-xs font-bold tracking-wider transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    const secondaryBtn = `${btnBase} border border-neutral-400 dark:border-slate-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-slate-800`;
+    const primaryBtn = `${btnBase} bg-slate-900 dark:bg-amber-600 text-white hover:bg-slate-800 dark:hover:bg-amber-700`;
+    const warningBtn = `${btnBase} border border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30`;
+
+    // Creating a brand-new announcement: draft or publish immediately.
+    if (selectedId === 'new') {
+      return (
+        <>
+          <button onClick={() => handleSave('DRAFT')} disabled={saving} className={secondaryBtn}>
+            {t('announcements.save_draft')}
+          </button>
+          <button onClick={() => handleSave('ACTIVE')} disabled={saving} className={primaryBtn}>
+            {saving ? t('announcements.loading_announcements') : t('announcements.publish_now')}
+          </button>
+        </>
+      );
+    }
+
+    const status = selectedAnnouncement?.status;
+
+    if (status === 'DRAFT') {
+      return (
+        <>
+          <button onClick={() => handleSave()} disabled={saving} className={secondaryBtn}>
+            {t('announcements.save_changes')}
+          </button>
+          <button onClick={() => handleSave('ACTIVE')} disabled={saving} className={primaryBtn}>
+            {saving ? t('announcements.loading_announcements') : t('announcements.publish_now')}
+          </button>
+        </>
+      );
+    }
+
+    if (status === 'ACTIVE') {
+      return (
+        <>
+          <button onClick={() => handleSave('DRAFT')} disabled={saving} className={warningBtn}>
+            {t('announcements.unpublish')}
+          </button>
+          <button onClick={() => handleSave()} disabled={saving} className={primaryBtn}>
+            {saving ? t('announcements.loading_announcements') : t('announcements.save_changes')}
+          </button>
+        </>
+      );
+    }
+
+    if (status === 'EXPIRED') {
+      return (
+        <>
+          <button onClick={() => handleSave()} disabled={saving} className={secondaryBtn}>
+            {t('announcements.save_changes')}
+          </button>
+          <button onClick={() => handleSave('ACTIVE')} disabled={saving} className={primaryBtn}>
+            {saving ? t('announcements.loading_announcements') : t('announcements.republish')}
+          </button>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full mt-4">
       {/* LEFT PANE: List */}
@@ -192,30 +350,44 @@ export default function LibrarianAnnouncementsPanel() {
             {t('announcements.all_announcements')}
           </h2>
           <button 
-            onClick={() => {
-              setSelectedId('new');
-              setEditTitle('');
-              setEditExpiryDate('');
-              setEditContent('');
-              setEditIsPinned(false);
-            }}
-            className="flex items-center gap-2 px-6 py-2 bg-slate-900 dark:bg-amber-600 text-white rounded-full text-xs font-bold font-hankenGrotesk hover:bg-slate-800 dark:hover:bg-amber-700 transition-colors"
+            onClick={() => handleSelectAnnouncement('new')}
+            disabled={saving}
+            className="flex items-center gap-2 px-6 py-2 bg-slate-900 dark:bg-amber-600 text-white rounded-full text-xs font-bold font-hankenGrotesk hover:bg-slate-800 dark:hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>+</span>
             <span>{t('announcements.status_new')}</span>
           </button>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
-          {announcements.map((ann) => (
-            <AnnouncementListItem
-              key={ann.id}
-              announcement={ann}
-              isSelected={selectedId === ann.id}
-              onClick={() => setSelectedId(ann.id)}
-              getStatusBadgeStyles={getStatusBadgeStyles}
-              getStatusTranslation={getStatusTranslation}
-            />
-          ))}
+          {loading ? (
+            <div className="space-y-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="p-4 border border-neutral-200 dark:border-slate-800 rounded-lg space-y-3">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ))}
+            </div>
+          ) : announcements.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-neutral-400 py-20">
+              {t('announcements.no_announcements')}
+            </div>
+          ) : (
+            announcements.map((ann) => (
+              <AnnouncementListItem
+                key={ann.id}
+                announcement={ann}
+                isSelected={selectedId === ann.id}
+                onClick={() => handleSelectAnnouncement(ann.id)}
+                getStatusBadgeStyles={getStatusBadgeStyles}
+                getStatusTranslation={getStatusTranslation}
+              />
+            ))
+          )}
         </div>
       </div>
 
@@ -229,23 +401,13 @@ export default function LibrarianAnnouncementsPanel() {
             {selectedId && selectedId !== 'new' && (
               <button 
                 onClick={handleDelete}
-                className="px-6 py-2 border border-red-500 text-red-500 rounded-full text-xs font-bold tracking-wider hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                disabled={saving}
+                className="px-6 py-2 border border-red-500 text-red-500 rounded-full text-xs font-bold tracking-wider hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('announcements.delete')}
               </button>
             )}
-            <button 
-              onClick={() => handleSave('DRAFT')}
-              className="px-6 py-2 border border-neutral-400 dark:border-slate-600 text-neutral-700 dark:text-neutral-300 rounded-full text-xs font-bold tracking-wider hover:bg-neutral-50 dark:hover:bg-slate-800 transition-colors"
-            >
-              {t('announcements.save_draft')}
-            </button>
-            <button 
-              onClick={() => handleSave('ACTIVE')}
-              className="px-6 py-2 bg-slate-900 dark:bg-amber-600 text-white rounded-full text-xs font-bold tracking-wider hover:bg-slate-800 dark:hover:bg-amber-700 transition-colors"
-            >
-              {t('announcements.publish_now')}
-            </button>
+            {renderActionButtons()}
           </div>
         </div>
 
@@ -259,7 +421,8 @@ export default function LibrarianAnnouncementsPanel() {
                 type="text" 
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow"
+                disabled={saving}
+                className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow disabled:opacity-70"
               />
             </div>
             
@@ -272,7 +435,8 @@ export default function LibrarianAnnouncementsPanel() {
                   type="date" 
                   value={editExpiryDate}
                   onChange={(e) => setEditExpiryDate(e.target.value)}
-                  className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow"
+                  disabled={saving}
+                  className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow disabled:opacity-70"
                 />
               </div>
               
@@ -280,7 +444,7 @@ export default function LibrarianAnnouncementsPanel() {
                 <label className="flex items-center gap-3 cursor-pointer">
                   <ToggleSwitch
                     checked={editIsPinned}
-                    onChange={setEditIsPinned}
+                    onChange={saving ? () => {} : setEditIsPinned}
                     activeColor="bg-amber-600"
                     inactiveColor="bg-slate-300 dark:bg-slate-700"
                   />
@@ -298,8 +462,9 @@ export default function LibrarianAnnouncementsPanel() {
               <textarea 
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
+                disabled={saving}
                 rows={10}
-                className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow resize-y"
+                className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow resize-y disabled:opacity-70"
               />
             </div>
           </div>
@@ -309,6 +474,13 @@ export default function LibrarianAnnouncementsPanel() {
           </div>
         )}
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onDismiss={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

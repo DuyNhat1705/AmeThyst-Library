@@ -486,6 +486,16 @@
                           "expiry_date":  "Ngày hết hạn",
                           "pin_to_homepage":  "Ghim lên trang chủ",
                           "content_body":  "Nội dung",
-                          "delete":  "Xóa"
+                          "delete":  "Xóa",
+                          "unsaved_changes_warning": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn hủy bỏ chúng không?",
+                          "validation_title_required": "Tiêu đề không được để trống.",
+                          "validation_content_required": "Nội dung không được để trống.",
+                          "validation_expiry_past": "Ngày hết hạn không được ở quá khứ đối với thông báo đang hoạt động.",
+                          "loading_announcements": "Đang tải thông báo...",
+                          "no_announcements": "Không tìm thấy thông báo nào.",
+                          "unpublish": "Hủy đăng",
+                          "save_changes": "Lưu thay đổi",
+                          "republish": "Đăng lại",
+                          "confirm_unpublish": "Bạn có chắc chắn muốn hủy đăng thông báo này không? Nó sẽ bị gỡ khỏi trang chủ."
                       }
 }
