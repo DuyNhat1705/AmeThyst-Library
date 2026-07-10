@@ -4,7 +4,7 @@
     Group ID: 03
     Group Name: AmeThyst 
     Assignment: PA2-2026
-    Version: 1.3
+    Version: 1.4
 
 Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy
 
@@ -15,6 +15,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 | 04/07/2026 | 1.1 | Drafted initial sections: Product Overview, Product Features | Nguyễn Nhựt Huy |
 | 06/07/2026 | 1.2 | Added detailed Product Features descriptions (Sections 5.1–5.9) — Authentication, Profile Management, Borrow & Reserving, Searching, Librarian Admin, Admin Admin, AI Recommendations, Study Groups, User Assistance; added Key Workflows section (5.10) with Book Reservation and Pickup Workflow (PIN Verification) Mermaid flowchart; expanded Table of Contents for Section 5; added AI Usage entry for Draw.io-to-Mermaid conversion | Nguyễn Nhựt Huy |
 | 09/07/2026 | 1.3 | Fixed heading level for §5.10, removed inconsistent separators and trailing periods in section headers, fixed grammar and broken text in §4.2.2 and §7, updated Memory/Storage Constraints with 7-day LocalStorage session persistence | Nguyễn Nhựt Huy |
+| 10/07/2026 | 1.4 | Added Start/End boundary markers to both workflow diagrams; wrapped Mermaid diagrams in overflow-x auto container to prevent page-stretching | Nguyễn Nhựt Huy |
 
 ## Table of Contents
 - [Vision Document](#vision-document)
@@ -247,8 +248,11 @@ Here are the two most critical workflows within the Library Management System, i
 #### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
 This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN.
 
+<div style="max-width: 100%; overflow-x: auto;">
+
 ```mermaid
 flowchart TB
+    S(["Start"])
  subgraph Reservation["1. Book Reservation"]
         B{"Is the book available?"}
         A(["User requests to borrow a book"])
@@ -256,7 +260,7 @@ flowchart TB
         C["System holds the book & updates calendar"]
         D{"Does User collect it on time?"}
         D1(["Reservation expires"])
-        E["Proceed to collection"]
+        Collect["Proceed to collection"]
   end
  subgraph Collection["2. Book Collection"]
         G{"Is the PIN valid?"}
@@ -279,12 +283,14 @@ flowchart TB
         N3(["Charge partial compensation fee"])
         N4(["Charge full replacement fee"])
   end
+    End(["End"])
+    S --> A
     A --> B
     B -- No --> B1
     B -- Yes --> C
     C --> D
     D -- No --> D1
-    D -- Yes --> E
+    D -- Yes --> Collect
     F --> G
     G -- No --> G1
     G -- Yes --> H
@@ -301,19 +307,30 @@ flowchart TB
     M -- Overdue --> N2
     M -- Damaged --> N3
     M -- Lost --> N4
-    E -.-> F
+    Collect -.-> F
+    B1 --> End
+    D1 --> End
+    G1 --> End
+    N1 --> End
+    N2 --> End
+    N3 --> End
+    N4 --> End
 
     B1@{ shape: stadium}
     J1@{ shape: stadium}
  ```
 
+</div>
+
 #### 5.10.2. Room Booking and Study Group Workflow
 This workflow illustrates how a user books a study room — either individually or by creating a study group — and checks in using a PIN at the physical room.
+
+<div style="max-width: 100%; overflow-x: auto;">
 
 ```mermaid
 graph TD
     %% Nodes definition
-    Start([User views library map, room info & clicks Book Room])
+    S(["Start"])
     ChooseMode{Choose Booking Mode}
 
     subgraph Individual_Flow [Individual Booking Flow]
@@ -360,8 +377,10 @@ graph TD
         HandleIssue([Appropriate Handling Steps])
     end
 
+    End(["End"])
+
     %% Main Flow Connections
-    Start --> ChooseMode
+    S --> ChooseMode
     ChooseMode -->|Individual| FreeBook
     ChooseMode -->|Study Group| GroupBook
     
@@ -414,7 +433,18 @@ graph TD
     RoomIssue --> HandleIssue
     TimeoutIssue --> HandleIssue
     CancelGroup --> RoomIssue
-```
+
+    %% Terminal connections
+    LogError --> End
+    NotifySender --> End
+    HandleGroupEvent --> End
+    PinError --> End
+    CheckinSuccess --> End
+    HandleIssue --> End
+ ```
+
+</div>
+
 ## 6. Non-Functional Requirements
 
 ### 6.1 Applicable Standards
