@@ -271,7 +271,7 @@ flowchart TB
  subgraph Management["3. During the Borrowing"]
         I{"User wants to renew?"}
         J{"Renewal limit reached?"}
-        J1@{ label: "Show 'Limit Reached' message" }
+        J1["Show 'Limit Reached' message"]
         J2["Extend due date"]
         K["Proceed to return book"]
   end
@@ -317,7 +317,6 @@ flowchart TB
     N4 --> End
 
     B1@{ shape: stadium}
-    J1@{ shape: stadium}
  ```
 
 </div>
