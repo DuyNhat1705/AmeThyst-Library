@@ -46,7 +46,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [5.3. Borrow \& Reserving Feature](#53-borrow--reserving-feature)
     - [5.4. Searching Feature](#54-searching-feature)
     - [5.5. Librarian Administration](#55-librarian-administration)
-    - [5.6. Admin Administration](#56-admin-administration)
+    - [5.6. System Administration](#56-system-administration)
     - [5.7. AI Recommendations](#57-ai-recommendations)
     - [5.8. Study Groups](#58-study-groups)
     - [5.9. User Assistance](#59-user-assistance)
@@ -64,6 +64,11 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
     - [6.8 Documentation Requirements](#68-documentation-requirements)
     - [6.9 Priority of Non-Functional Requirements](#69-priority-of-non-functional-requirements)
   - [7. AI Usage Notes](#7-ai-usage-notes)
+    - [AI Tool 1](#ai-tool-1)
+    - [AI Tool 2](#ai-tool-2)
+    - [AI Tool 3](#ai-tool-3)
+    - [AI Tool 4](#ai-tool-4)
+    - [AI Tool 5](#ai-tool-5)
 
 ## 1. Introduction
 
@@ -210,7 +215,7 @@ The system is developed as a standalone software product and does not rely on an
 
 #### 4.2.2 Dependencies
 * **Standard Web Environment:** The proper rendering and execution of the system depend entirely on the compatibility and compliance of the client's web browsers with modern web standards.
-* **Third-Party Service Resilience:** The system integrates several external services—including Google OAuth for authentication, Cloudinary for avatar storage. Should any of these services become unavailable, the core web application remains operational; only the specific features that depend on the unavailable service are disabled.
+* **Third-Party Service Resilience:** The system integrates several external services—including Google OAuth for authentication, and Cloudinary for avatar storage. Should any of these services become unavailable, the core web application remains operational; only the specific features that depend on the unavailable service are disabled.
 
 ## 5. Product Features
 
@@ -218,7 +223,7 @@ The system is developed as a standalone software product and does not rely on an
 The Authentication module handles secure user registration, login, and password recovery, supporting both traditional email/password credentials and quick integration via Google OAuth. This feature is critical to ensure that only verified accounts and authorized personnel can access the library’s digital resources and physical facilities. It protects sensitive user accounts from unauthorized access while streamlined OAuth login options minimize friction during entry. Both standard library members and system administrators benefit from this secure, reliable gatekeeping system.
 
 ### 5.2. Profile Management
-Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, upcoming room reservations. It also allows individuals to update personal details and change passwords. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities independently.
+Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, and upcoming room reservations. It also allows individuals to update personal details and change passwords. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities independently.
 
 ### 5.3. Borrow & Reserving Feature
 This core module enables users to reserve physical books and book available study rooms for specific time slots in real-time. To streamline the physical pickup process and eliminate tedious paperwork, the system generates a unique 6-digit PIN code upon online reservation, which librarians can quickly verify at the counter. This feature addresses the traditional long queues and scheduling conflicts, making resource allocation much faster and more transparent. Both students looking for efficient access to materials/spaces and librarians processing daily physical checkouts benefit significantly from this automation.
@@ -229,8 +234,8 @@ The Searching Feature is a powerful search engine that goes beyond traditional k
 ### 5.5. Librarian Administration
 Librarian Administration empowers library staff to efficiently oversee daily physical operations, including managing book inventories, posting announcements, and tracking active borrows. It bridges the gap between online requests and physical book assets by providing librarians with tools to block users with unpaid overdue fines or manage depleted book copies. This administrative suite ensures high data integrity and reliability, as human staff can safely supervise a massive backend database. Librarians benefit from reduced manual workflows, while the entire student body enjoys a well-maintained, up-to-date library catalog.
 
-### 5.6. Admin Administration
-Admin Administration provides high-level system administrators with a comprehensive dashboard containing visual charts on system usage, popular book trends, and peak study room hours. It also grants full control over user roles, enabling administrators to assign or revoke librarian privileges and suspend non-compliant accounts. This data-driven module is required for continuous system maintenance, security oversight, and strategic resource allocation. System administrators and university executives benefit most, as it provides the actionable insights needed to optimize overall library operations.
+### 5.6. System Administration
+System Administration provides high-level system administrators with a comprehensive dashboard containing visual charts on system usage, popular book trends, and peak study room hours. It also grants full control over user roles, enabling administrators to assign or revoke librarian privileges and suspend non-compliant accounts. This data-driven module is required for continuous system maintenance, security oversight, and strategic resource allocation. System administrators and university executives benefit most, as it provides the actionable insights needed to optimize overall library operations.
 
 ### 5.7. AI Recommendations
 Leveraging machine learning models, the AI Recommendations feature automatically suggests at least three similar books on any book detail page based on genres, tags, and user preferences. It adapts gracefully by displaying trending materials for new users with no history and smartly excludes books that the user has already borrowed. This feature enhances academic discovery, helping students stumble upon unexpected but highly relevant educational resources they might not have actively searched for. Students benefit from a highly personalized, Netflix-like browsing experience tailored specifically to their academic tastes.
@@ -532,7 +537,6 @@ graph TD
 | Sprint-based incremental delivery | High | High | High | Medium | Medium |
 | AI usage disclosure | High | High | Low | Low | Low |
 | Google OAuth support | Medium | Medium | Medium | Low | Low |
-| Open Library Covers API dependency | Medium | Medium | Medium | Low | Medium |
 | Theme system (Light/Dark mode) | Medium | High | Medium | Medium | Low |
 | Localization (English/Vietnamese) | High | High | High | Medium | Medium |
 | Layered backend architecture (.mjs) | High | High | Medium | Medium | Medium |
@@ -542,45 +546,45 @@ graph TD
 ## 7. AI Usage Notes
 This document was drafted with the assistance of an AI tool, declared as follows:
 
-AI Tool 1
+### AI Tool 1
 - **Tool name:** Gemini Pro 3.1, Google
-- **Access time:** June 7, 2026 to 12 July 2026
+- **Access time:** June 07, 2026 to July 12, 2026
 - **Prompt:** "Translate the sentence into English suitable for a formal report, without altering the original meaning."
 - **Purpose:** To accurately translate ideas from Vietnamese into fluent, professional English.
 - **Content generated by AI:** Initial translation of all sections in this document.
 - **Student's work and validation:** All AI-translated content was manually reviewed to confirm the original ideas were preserved, and semantic errors or mistranslations were corrected.
 
-AI Tool 2
-
+### AI Tool 2
 - **Tool name:** Claude Sonnet 5, Anthropic
-- **Access** time: June 7, 2026 to July 12, 2026
+- **Access time:** June 07, 2026 to July 12, 2026
 - **Prompt:** "Refactor this Project Plan section by section."
 - **Purpose:** To restructure and rewrite the Project Plan into clear, professional report language, and to draft the Team Structure and Risk Management content.
 - **Content generated by AI:** Well-structured project plan document based on content student prepared.
 - **Student's work and validation:** All AI-generated content was reviewed against TeamContract.md and ProjectProposal.md for accuracy, and edited to ensure it reflects the team's actual roles, decisions, and risk assessment.
 
-AI Tool 3
-
+### AI Tool 3
 - **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** June 7, 2026 to July 12, 2026
+- **Access time:** June 07, 2026 to July 12, 2026
 - **Prompt:** "What should I write in this section?", "Please write this into a markdown skeleton so I can easily fill it in", "Ask me questions so I can fill in these fields accurately"
 - **Purpose:** To break down the required structure for the "Stakeholder and User Descriptions" section, and to draft the content in professional English using tailored questionnaires.
 - **Content generated by AI:** A comprehensive Markdown boilerplate for the Stakeholder/User sections, and finalized, professional English content for Section 3.1 (Stakeholder Summary), 3.2 (User Summary), 3.3 (User Environment), and Section 3.4 (Summary of Key Stakeholder or User Needs) with placeholders left for future competition analysis.
 - **Student's work and validation:** Provided precise architectural, role-based, and feature specifications for the smart library system (Group 03 - AmeThyst, Instructor, Node.js/Express.js/React stack, PostgreSQL with Docker, reader online reservations/study groups, and librarian/admin workflows) and validated the structured translation to match the actual project implementation.
----
+
+### AI Tool 4
 - **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** June 7, 2026 to July 12, 2026
+- **Access time:** June 07, 2026 to July 12, 2026
 - **Prompt:** "What should I write in this section? Please suggest a markdown template in English", "Ask me questions so I can fill in the information myself"
 - **Purpose:** To draft the Product Overview (Product Perspective, Assumptions and Dependencies) and to consolidate multiple overlapping sections of the User Environment into a cohesive, structured format.
 - **Content generated by AI:** A standardized Markdown template and finalized English content for sections 4.1 (Product Perspective) and 4.2 (Assumptions and Dependencies), along with a unified, professionally written section 3.3 (User Environment).
 - **Student's work and validation:** Provided explicit project constraints (standalone system, web browser interface, no external dependencies, and manual-to-digital transition context) and manually reviewed the generated text to ensure it aligned precisely with the system design and project scope.
----
-* **Tool name:** Gemini Flash 3.5 (Google)
-* **Access time:** July 6, 2026
-* **Prompt:** 
-  * *"Is there any way to convert draw io diagram into mermaid?"*
-  * *"Convert this Draw.io XML diagram into valid Mermaid.js flowchart syntax, reduce the content, the existing one is long"*
-  * *"Please streamline this workflow for me by keeping only the essential steps. The content in each box should not be overly technical or jargon-heavy; instead, use simple, easy-to-understand terms and write it in English."*
-* **Purpose:** To convert a raw, complex Draw.io visual layout (XML format) into a clean, concise, and professional English Mermaid.js flowchart representing the core system workflows for the AmeThyst smart library system.
-* **Content generated by AI:** A streamlined, high-level Mermaid.js diagram structured into intuitive subgraphs (Book Reservation, Book Collection, Loan Management, Book Return) using simple business terms instead of technical database instructions.
-* **Student's work and validation:** Provided the original, complex Draw.io XML structure containing the multi-branch user and librarian workflows; validated the AI-generated Mermaid code to ensure accuracy with the actual business logic, and integrated the syntax into the project's markdown documentation.
+
+### AI Tool 5
+- **Tool name:** Gemini Flash 3.5 (Google)
+- **Access time:** July 06, 2026
+- **Prompt:** 
+  - *"Is there any way to convert draw io diagram into mermaid?"*
+  - *"Convert this Draw.io XML diagram into valid Mermaid.js flowchart syntax, reduce the content, the existing one is long"*
+  - *"Please streamline this workflow for me by keeping only the essential steps. The content in each box should not be overly technical or jargon-heavy; instead, use simple, easy-to-understand terms and write it in English."*
+- **Purpose:** To convert a raw, complex Draw.io visual layout (XML format) into a clean, concise, and professional English Mermaid.js flowchart representing the core system workflows for the AmeThyst smart library system.
+- **Content generated by AI:** A streamlined, high-level Mermaid.js diagram structured into intuitive subgraphs (Book Reservation, Book Collection, Loan Management, Book Return) using simple business terms instead of technical database instructions.
+- **Student's work and validation:** Provided the original, complex Draw.io XML structure containing the multi-branch user and librarian workflows; validated the AI-generated Mermaid code to ensure accuracy with the actual business logic, and integrated the syntax into the project's markdown documentation.
