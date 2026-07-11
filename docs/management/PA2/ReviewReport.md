@@ -37,5 +37,5 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
 - The team learned how to drive AI-assisted coding effectively using SpecKit via Specification-Driven Development (SDD).
 - Draw.io proved valuable for mapping out feature workflows before writing any code.
 - Strict adherence to coding regulations is also significant, as it prevents project bloating and eliminates redundant API calls that would otherwise waste system resources.
-- The importance of early-stage preparation—ERD for database design, framework selection, Figma GUI for use case workflow orientation, and collaboration protocols—became evident. Such preparation enables the team to scale up easily and quickly during implementation.
+- The importance of early-stage preparation: ERD for database design, framework selection, Figma GUI for use case workflow orientation, and collaboration protocols—became evident. Such preparation enables the team to scale up easily and quickly during implementation.
 - The SCRUM development process provided the team leader with a comprehensive view of all assigned tasks, enabling timely adjustments to keep the team aligned with the initial objectives.

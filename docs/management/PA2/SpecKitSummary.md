@@ -183,4 +183,4 @@ Beyond the basic documents required to set up a feature, several commands are cr
   * `/speckit.clarify`
   * `/speckit.tasks`
   * `/speckit.analyze`
-* Finally, after reviewing and ensuring that the contents of those spec files are detailed enough for AI Coding Agent. Running `/speckit.implement` to order the AI Agent to generate code, based on spec files in current use-case spec folder and `constitution.md` ait s coding regulations.
+* Finally, after reviewing and ensuring that the contents of those spec files are detailed enough for AI Coding Agent. Running `/speckit.implement` to order the AI Agent to generate code, based on spec files in current use-case spec folder and `constitution.md` as coding regulations.
