@@ -9,20 +9,19 @@ import pool from '../config/postgres.mjs';
  * @param {string} [announcementDetails.status]
  * @returns {Promise<Object>}
  */
-export const insertAnnouncement = async ({ title, content, expiredDate, status = 'draft', isPinned = false }) => {
+export const insertAnnouncement = async ({ title, content, expiredDate, status = 'draft' }) => {
   const query = `
-    INSERT INTO announcements (title, content, expired_date, status, is_pinned)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO announcements (title, content, expired_date, status)
+    VALUES ($1, $2, $3, $4)
     RETURNING 
       announce_id AS "announceId",
       created_at AS "createdAt",
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
   `;
-  const result = await pool.query(query, [title, content, expiredDate, status, isPinned]);
+  const result = await pool.query(query, [title, content, expiredDate, status]);
   return result.rows[0];
 };
 
@@ -42,8 +41,7 @@ export const findAnnouncementsForManagement = async ({ limit, offset, status }) 
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
     FROM announcements
   `;
   const params = [];
@@ -88,8 +86,7 @@ export const findAnnouncementById = async (announceId) => {
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
     FROM announcements
     WHERE announce_id = $1
   `;
@@ -114,8 +111,7 @@ export const updateAnnouncementStatus = async (announceId, status) => {
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
   `;
   const result = await pool.query(query, [announceId, status]);
   return result.rows[0] || null;
@@ -130,10 +126,10 @@ export const updateAnnouncementStatus = async (announceId, status) => {
  * @param {string|null} details.expiredDate
  * @returns {Promise<Object|null>}
  */
-export const updateAnnouncementDetails = async (announceId, { title, content, expiredDate, isPinned }) => {
+export const updateAnnouncementDetails = async (announceId, { title, content, expiredDate }) => {
   const query = `
     UPDATE announcements
-    SET title = $2, content = $3, expired_date = $4, is_pinned = $5
+    SET title = $2, content = $3, expired_date = $4
     WHERE announce_id = $1
     RETURNING 
       announce_id AS "announceId",
@@ -141,10 +137,9 @@ export const updateAnnouncementDetails = async (announceId, { title, content, ex
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
   `;
-  const result = await pool.query(query, [announceId, title, content, expiredDate, isPinned]);
+  const result = await pool.query(query, [announceId, title, content, expiredDate]);
   return result.rows[0] || null;
 };
 
@@ -175,8 +170,7 @@ export const findActiveAnnouncements = async () => {
       expired_date AS "expiredDate",
       title,
       content,
-      status,
-      is_pinned AS "isPinned"
+      status
     FROM announcements
     WHERE status = 'active' AND (expired_date IS NULL OR expired_date >= CURRENT_DATE)
     ORDER BY created_at DESC

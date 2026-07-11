@@ -12,7 +12,11 @@
     "language_tooltip_en": "Switch to Vietnamese",
     "language_tooltip_vi": "Switch to English",
     "theme_aria_label": "Toggle Theme",
-    "language_aria_label": "Toggle Language"
+    "language_aria_label": "Toggle Language",
+    "announcements_title": "Announcements",
+    "no_new_announcements": "No new announcements",
+    "announcement_published": "Published",
+    "announcement_expires": "Expires"
   },
   "landing": {
     "title": "AmeThyst Library",
@@ -484,7 +488,6 @@
                           "publish_now":  "Publish Now",
                           "announcement_title":  "Announcement Title",
                           "expiry_date":  "Expiry Date",
-                          "pin_to_homepage":  "Pin to Homepage",
                           "content_body":  "Content Body",
                           "delete":  "Delete",
                           "unsaved_changes_warning": "You have unsaved changes. Are you sure you want to discard them?",

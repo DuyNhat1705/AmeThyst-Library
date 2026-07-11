@@ -12,7 +12,11 @@
     "language_tooltip_en": "Chuyển sang Tiếng Việt",
     "language_tooltip_vi": "Chuyển sang Tiếng Anh",
     "theme_aria_label": "Thay đổi giao diện",
-    "language_aria_label": "Thay đổi ngôn ngữ"
+    "language_aria_label": "Thay đổi ngôn ngữ",
+    "announcements_title": "Thông báo",
+    "no_new_announcements": "Không có thông báo mới",
+    "announcement_published": "Đã đăng",
+    "announcement_expires": "Hết hạn"
   },
   "landing": {
     "title": "Thư viện AmeThyst",
@@ -484,7 +488,6 @@
                           "publish_now":  "Đăng ngay",
                           "announcement_title":  "Tiêu đề thông báo",
                           "expiry_date":  "Ngày hết hạn",
-                          "pin_to_homepage":  "Ghim lên trang chủ",
                           "content_body":  "Nội dung",
                           "delete":  "Xóa",
                           "unsaved_changes_warning": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn hủy bỏ chúng không?",

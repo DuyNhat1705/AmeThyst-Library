@@ -5,14 +5,13 @@ import * as announcementService from '../services/announcement.services.mjs';
  */
 export const createAnnouncementController = async (req, res) => {
   try {
-    const { title, content, expired_date, status, is_pinned } = req.body;
+    const { title, content, expired_date, status } = req.body;
 
     const announcement = await announcementService.createAnnouncementService({
       title,
       content,
       expiredDate: expired_date,
-      status,
-      isPinned: is_pinned
+      status
     });
 
     return res.status(201).json({
@@ -88,13 +87,12 @@ export const updateAnnouncementStatusController = async (req, res) => {
 export const editAnnouncementDetailsController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, expired_date, is_pinned } = req.body;
+    const { title, content, expired_date } = req.body;
 
     const updated = await announcementService.editAnnouncementDetailsService(id, {
       title,
       content,
-      expiredDate: expired_date,
-      isPinned: is_pinned
+      expiredDate: expired_date
     });
 
     return res.status(200).json({

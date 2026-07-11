@@ -74,7 +74,7 @@ const validateExpiredDate = (expiredDate, isActive, errorMessage) => {
  * @param {string} [details.status]
  * @returns {Promise<Object>}
  */
-export const createAnnouncementService = async ({ title, content, expiredDate, status = 'draft', isPinned = false }) => {
+export const createAnnouncementService = async ({ title, content, expiredDate, status = 'draft' }) => {
   validateAnnouncementData(title, content);
 
   const formattedExpiredDate = formatExpiredDate(expiredDate);
@@ -89,8 +89,7 @@ export const createAnnouncementService = async ({ title, content, expiredDate, s
     title: title.trim(),
     content: content.trim(),
     expiredDate: formattedExpiredDate,
-    status,
-    isPinned
+    status
   });
 };
 
@@ -172,7 +171,7 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
  * @param {string|null} details.expiredDate
  * @returns {Promise<Object>}
  */
-export const editAnnouncementDetailsService = async (announceId, { title, content, expiredDate, isPinned }) => {
+export const editAnnouncementDetailsService = async (announceId, { title, content, expiredDate }) => {
   validateAnnouncementData(title, content);
 
   const announcement = await getAnnouncementOrThrow(announceId);
@@ -188,8 +187,7 @@ export const editAnnouncementDetailsService = async (announceId, { title, conten
   const updated = await announcementModel.updateAnnouncementDetails(announceId, {
     title: title.trim(),
     content: content.trim(),
-    expiredDate: formattedExpiredDate,
-    isPinned
+    expiredDate: formattedExpiredDate
   });
 
   return updated;

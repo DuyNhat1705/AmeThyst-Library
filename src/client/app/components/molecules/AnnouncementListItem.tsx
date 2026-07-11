@@ -7,7 +7,6 @@ export interface Announcement {
   date: string;
   expiryDate: string;
   content: string;
-  isPinned: boolean;
 }
 
 interface AnnouncementListItemProps {
