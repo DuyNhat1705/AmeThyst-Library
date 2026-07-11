@@ -90,3 +90,5 @@ yarn-error.log*
 
 /database/init_db
 /database/.env
+/database/tmp_csv
+/database/*.sql
