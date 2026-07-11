@@ -8,7 +8,7 @@
 
 Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
-## I. Spec Kit Self-Traning course
+## I. Spec Kit Self-Training course
 
 * **Course Material:** Get started with spec-driven development and GitHub Spec Kit from Microsoft
 * **Completion Status:** Completed
@@ -21,8 +21,8 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 * Learned how to set up and initialize Spec Kit configurations directly within the `/src` folder of a project repository.
 * Understood the structure and function of the generated `constitution.md` file, which sets the foundational rules, operational protocols, and architectural boundary constraints for the project's development lifecycle.
 
-### B. Executing Feature Specifications (`/speckit-specify`)
-* Learned the utilization of Spec Kit's prompt engineering syntax, the `/speckit-specify` command pattern, to bridge the gap between high-level user interface requests and explicit backend system logic.
+### B. Executing Feature Specifications (`/speckit.specify`)
+* Learned the utilization of Spec Kit's prompt engineering syntax, the `/speckit.specify` command pattern, to bridge the gap between high-level user interface requests and explicit backend system logic.
 
 * Understood how to map diverse inputs into clean operational criteria, such as translating complex UI interactions into distinct processing rules.
 
@@ -63,7 +63,7 @@ For each feature, Spec Kit generates and relies on a set of structured documents
 * **Spec before code:** The temptation to skip straight to implementation is high, but writing a clear `spec.md` first consistently produces better-structured output from the AI.
 * **Validate everything:** AI-generated plans and code must be reviewed against the actual project structure. The AI works from the constitution and spec, so any gap between those documents and reality will surface as incorrect output.
 
-## VI. Summary from 24127398 - Nguyễn Nhựt Huy
+## IV. Summary from 24127398 - Nguyễn Nhựt Huy
 ![SpecKit Evidence](SpecKitEvidence/24127398-NguyenNhutHuy.png)
 
 ### A. Overview of Training Objectives
@@ -154,17 +154,17 @@ Beyond the basic documents required to set up a feature, several commands are cr
 * When using SDD with AI Coding Agent like Github Copilot, Gemini CLI, Antigravity,..., the specification guides code generation directly, ensuring the implementation matches your intended behavior from the start.
 
 * **Core Principles of SDD:**
-  * The specification (spec) is king. All developments pivots around the spec.
+  * The specification (spec) is king. All developments pivot around the spec.
   * Precision is critical. Specs are detailed enough to generate executable code.
   * The spec is alive. If code needs to be updated, the spec is updated first.
-  * AI collaboration. The AI automates, but humans maintain control
+  * AI collaboration. The AI automates, but humans maintain control.
 
 ### B. About Spec Kit
 * Github **Spec Kit** is not an AI model or agent itself - it is a framework and CLI that supports **SDD with the chosen AI agent.** It helps transform a high-level idea into working code by generating the spec, plan, and tasks with AI rather than writing everything manually.
 
 * **Spec Kit components:**
   * **Specify CLI:** Initialize and manage project
-  * **Artifacts:** `spec.md`, `plan.md`, `task.md`, `clarify.md`,...
+  * **Artifacts:** `spec.md`, `plan.md`, `tasks.md`, `clarify.md`,...
   * **Slash Commands (Skills):** Integrated into the IDE and use in TUI (Terminal User Interface) when activating AI agent
   * **Multi-Agent Support:** Github Copilot, Claude, Cursor,...
 
