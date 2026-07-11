@@ -32,4 +32,5 @@ export { default as ModalCloseButton } from './ModalCloseButton';
 export { default as FooterLinkSection } from './FooterLinkSection';
 export { default as Divider } from './Divider';
 export { default as OtpExpiredBanner } from './OtpExpiredBanner';
+export { default as WishlistHeart } from './WishlistHeart';
 

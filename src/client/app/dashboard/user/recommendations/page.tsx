@@ -14,7 +14,7 @@ interface RecommendedBook {
 export default function RecommendationsPage() {
   const { t } = useI18n();
   const [historyBooks, setHistoryBooks] = useState<RecommendedBook[]>([]);
-  const [trendingBooks, setTrendingBooks] = useState<RecommendedBook[]>([]);
+  const [wishlistBooks, setWishlistBooks] = useState<RecommendedBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,24 +23,31 @@ export default function RecommendationsPage() {
       setLoading(true);
       setError(null);
       try {
-        const [historyRes, trendingRes] = await Promise.all([
+        const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const [historyRes, wishlistRes] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/1/recommendations`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/2/recommendations`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, { headers })
         ]);
         
-        if (!historyRes.ok || !trendingRes.ok) {
+        if (!historyRes.ok) {
            throw new Error('Failed to fetch recommendations');
         }
 
         let historyData = await historyRes.json();
-        let trendingData = await trendingRes.json();
+        let wishlistData = wishlistRes.ok ? await wishlistRes.json() : [];
         
-        // Duplicate data to show more books for the UI layout
-        historyData = [...historyData, ...historyData, ...historyData, ...historyData].map((b, i) => ({...b, id: b.id + '-' + i}));
-        trendingData = [...trendingData, ...trendingData, ...trendingData, ...trendingData].map((b, i) => ({...b, id: b.id + '-' + i}));
+        // Duplicate recommendation data to show more books for the UI layout
+        if (historyData.length > 0) {
+          historyData = [...historyData, ...historyData, ...historyData, ...historyData].map((b, i) => ({...b, id: b.id + '-' + i}));
+        }
         
         setHistoryBooks(historyData);
-        setTrendingBooks(trendingData);
+        setWishlistBooks(wishlistData);
       } catch (err) {
         console.error('Error fetching recommendations:', err);
         setError(t('dashboard.error_fetching') || 'Could not load recommendations. Please try again later.');
@@ -57,7 +64,7 @@ export default function RecommendationsPage() {
       {loading ? (
         <div className="flex justify-center items-center h-64">
            <span className="text-gray-500 dark:text-neutral-400">
-             {t('dashboard.loading') || 'Loading recommendations...'}
+             {t('dashboard.loading') || 'Loading...'}
            </span>
         </div>
       ) : error ? (
@@ -65,7 +72,7 @@ export default function RecommendationsPage() {
            <span className="text-red-500">{error}</span>
            <button 
              onClick={() => window.location.reload()} 
-             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+             className="px-4 py-2 bg-[#006F66] text-white rounded-lg hover:bg-teal transition"
            >
              {t('dashboard.retry') || 'Retry'}
            </button>
@@ -74,11 +81,16 @@ export default function RecommendationsPage() {
         <>
           <RecommendationCarousel 
             books={historyBooks} 
-            title={t('dashboard.based_on_history')} 
+            title={t('dashboard.recommended_for_you') || 'Recommended for You'} 
           />
           <RecommendationCarousel 
-            books={trendingBooks} 
-            title={t('dashboard.trending_this_week')} 
+            books={wishlistBooks} 
+            title={t('dashboard.my_wishlist') || 'My Wishlist'} 
+            emptyFallback={
+              <div className="text-center py-6 text-[#6B7280] dark:text-neutral-400 font-inter text-base">
+                {t('dashboard.wishlist_empty') || 'Your wishlist is empty. Explore books and click the heart icon to save them here!'}
+              </div>
+            }
           />
         </>
       )}
