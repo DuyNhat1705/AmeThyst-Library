@@ -1,9 +1,12 @@
 # AI Usage Report
-Performed by: All Members
 
-Reviewed by: All Members
+    Project: Modern Library Management System 
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: AmeThyst 
+    Assignment: PA2-2026
 
-Editied by: Vũ Duy Nhất
+Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
 ## Table of Contents
 

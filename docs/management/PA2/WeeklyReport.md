@@ -1,9 +1,12 @@
 # Weekly Report
-Performed by: Vũ Duy Nhất
 
-Reviewed by: All Other Members
+    Project: Modern Library Management System 
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: AmeThyst 
+    Assignment: PA2-2026
 
-Editied by: Vũ Duy Nhất
+Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ Duy Nhất
 
 ## I. Meeting Minutes:  21/6/2026
 - **Team member present:**
