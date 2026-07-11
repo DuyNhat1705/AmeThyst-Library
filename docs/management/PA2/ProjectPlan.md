@@ -33,7 +33,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Vũ Duy Nhất | Reviewed by: All Memb
     - [3.1 Team Structure and Roles](#31-team-structure-and-roles)
     - [3.2 Risk Management](#32-risk-management)
   - [4. Project Plan](#4-project-plan)
-    - [4.2 Schedule Overview](#42-schedule-overview)
+    - [4.1 Schedule Overview](#41-schedule-overview)
     - [4.3 Detailed Build Plan](#43-detailed-build-plan)
     - [Sprint 1 (23 May – 6 Jun 2026) — Completed](#sprint-1-23-may--6-jun-2026--completed)
       - [Vũ Duy Nhất (4 tasks)](#vũ-duy-nhất-4-tasks)
@@ -186,7 +186,7 @@ This project plan is not a final version and may be subject to change and finish
 | Document | Write Weekly Report | Jun 6 |
 | Document | Write Planning Report | Jun 6 |
 | Document | Write Review Report | Jun 6 |
-| Development | Complete the Framework (React, Next.js + ExpressJS) | May 30 |
+| Development | Complete the Framework (React Next.js + ExpressJS) | May 30 |
 
 #### Nguyễn Nhựt Huy (2 tasks)
 

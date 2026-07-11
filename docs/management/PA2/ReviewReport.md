@@ -33,7 +33,7 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
 - The *.env* file must be uploaded to the group's communication tool or Google Drive whenever new configuration information is introduced.
 - The Figma UI/UX design should be followed closely, and these assets should be provided to the AI agent to ensure proper orientation and context when implementing functionality.
 ## IV. What lessons we could learn
-- Familiarity was gained with several new technologies, including Docker, PostgreSQL, React, Next.js, ExpressJS, and Vitest.
+- Familiarity was gained with several new technologies, including Docker, PostgreSQL, React Next.js, ExpressJS, and Vitest.
 - The team learned how to drive AI-assisted coding effectively using SpecKit via Specification-Driven Development (SDD).
 - Draw.io proved valuable for mapping out feature workflows before writing any code.
 - Strict adherence to coding regulations is also significant, as it prevents project bloating and eliminates redundant API calls that would otherwise waste system resources.
