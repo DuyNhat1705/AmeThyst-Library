@@ -248,7 +248,7 @@ Here are the two most critical workflows within the Library Management System, i
 #### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
 This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN.
 
-<div style="max-width: 100%; overflow-x: auto;">
+<div style="max-width: 80%; overflow-x: auto; margin: 0 auto;">
 
 ```mermaid
 flowchart TB
