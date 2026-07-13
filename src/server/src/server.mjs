@@ -13,6 +13,8 @@ import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
 import roomRoutes from './routes/room.routes.mjs';
 import wishlistRoutes from './routes/wishlist.routes.mjs';
+import recommendationRoutes from './routes/recommendation.routes.mjs';
+import { initScheduler } from './services/scheduler.services.mjs';
 
 
 const app = express();
@@ -28,11 +30,13 @@ app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);
+app.use(recommendationRoutes);
 
 const PORT = process.env.PORT || 5000;
 
 runStartupPinCleanup();
 startPeriodicPinCleanup();
+initScheduler();
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

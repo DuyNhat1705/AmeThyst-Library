@@ -169,18 +169,18 @@ export const getRecommendations = async (id) => {
  * Lấy sách cùng chủ đề (genres)
  */
 export const getRelatedBooks = async (id) => {
-  // 1. Lấy genres của sách hiện tại
+  // 1. Fetch current book's genres
   const bookQuery = 'SELECT genres FROM public.books WHERE book_id = $1';
   const bookRes = await pool.query(bookQuery, [id]);
   
   if (bookRes.rows.length === 0 || !bookRes.rows[0].genres || bookRes.rows[0].genres.length === 0) {
-    // Fallback: Nếu không có genres thì trả về random
+    // Fallback: If no genres found, return random books
     return getRecommendations(id);
   }
   
   const genres = bookRes.rows[0].genres;
   
-  // 2. Tìm sách khác có ít nhất một genre chung (&&)
+  // 2. Query books in the same genres (ordered by RANDOM)
   const recQuery = `
     SELECT book_id, title, author, isbn, image_url
     FROM public.books 
@@ -190,7 +190,7 @@ export const getRelatedBooks = async (id) => {
   `;
   const recRes = await pool.query(recQuery, [id, genres]);
   
-  // Fallback: Nếu không tìm thấy sách cùng chủ đề, trả về random
+  // Fallback: If no related books found in same genres, return random books
   if (recRes.rows.length === 0) {
     return getRecommendations(id);
   }

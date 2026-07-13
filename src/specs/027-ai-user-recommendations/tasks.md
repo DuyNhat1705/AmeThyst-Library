@@ -2,7 +2,7 @@
 
 **Input**: Design documents from `/specs/027-ai-user-recommendations/`
 
-**Prerequisites**: [plan.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/plan.md) (required), [spec.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/spec.md) (required for user stories), [research.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/research.md), [data-model.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/data-model.md), [contracts/recommendations-contract.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/contracts/recommendations-contract.md).
+**Prerequisites**: [plan.md](file:///C:/Local_D/HCMUS\SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/plan.md) (required), [spec.md](file:///C:/Local_D/HCMUS\SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/spec.md) (required for user stories), [research.md](file:///C:/Local_D/HCMUS\SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/research.md), [data-model.md](file:///C:/Local_D/HCMUS\SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/data-model.md), [contracts/recommendations-contract.md](file:///C:/Local_D/HCMUS\SE2/AmeThyst-Library/src/specs/027-ai-user-recommendations/contracts/recommendations-contract.md).
 
 **Tests**: Temporarily skipped as requested. Focus is strictly on building the running system and automating retraining.
 
@@ -20,8 +20,8 @@
 
 **Purpose**: Project initialization and basic dependencies configuration.
 
-- [ ] T001 [P] Install `node-cron` package in `server/package.json`
-- [ ] T002 [P] Configure Python environment packages (`lightgbm`, `neo4j`, `psycopg2-binary`, `scikit-learn`, `pandas`, `numpy`) in system environment or virtual environment
+- [x] T001 [P] Install `node-cron` package in `server/package.json`
+- [x] T002 [P] Configure Python environment packages (`lightgbm`, `neo4j`, `psycopg2-binary`, `scikit-learn`, `pandas`, `numpy`) in system environment or virtual environment
 
 ---
 
@@ -31,10 +31,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Setup PostgreSQL recommends table and indexes in a new migration script `database/init_db/05_recommends.sql`
-- [ ] T004 [P] Implement Memgraph recommended click and renewal sync methods in `server/src/services/memgraphSync.services.mjs`
-- [ ] T005 Implement background cron scheduler task to retrain GraphSAGE and LightGBM models in `server/src/services/scheduler.services.mjs`
-- [ ] T006 Initialize the cron scheduler on application server start in `server/src/server.mjs`
+- [x] T003 Setup PostgreSQL recommends table and indexes in a new migration script `database/init_db/05_recommends.sql`
+- [x] T004 [P] Implement Memgraph recommended click and renewal sync methods in `server/src/services/memgraphSync.services.mjs`
+- [x] T005 Implement background cron scheduler task to retrain GraphSAGE and LightGBM models in `server/src/services/scheduler.services.mjs`
+- [x] T006 Initialize the cron scheduler on application server start in `server/src/server.mjs`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin.
 
@@ -48,12 +48,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Implement Python inference script `server/src/recommendation/predict.py` to retrieve PostgreSQL features and score candidates using the trained LightGBM model
-- [ ] T008 [US1] Create recommendation service in `server/src/services/recommendation.services.mjs` to fetch GCN predictions from Memgraph, filter exclusions, execute `predict.py`, and save active recommendations
-- [ ] T009 [P] [US1] Create recommendation controller in `server/src/controllers/recommendation.controllers.mjs` to handle fetching active recommendations
-- [ ] T010 [US1] Create recommendation routes in `server/src/routes/recommendation.routes.mjs` registering active recommendation fetch endpoint
-- [ ] T011 [US1] Register recommendation routes within the main application server in `server/src/server.mjs`
-- [ ] T012 [US1] Create frontend dashboard recommendations page in `client/app/dashboard/user/recommendations/page.tsx` rendering personalized carousel cards with loading/error handling
+- [x] T007 [P] [US1] Implement Python inference script `server/src/recommendation/predict.py` to retrieve PostgreSQL features and score candidates using the trained LightGBM model
+- [x] T008 [US1] Create recommendation service in `server/src/services/recommendation.services.mjs` to fetch GCN predictions from Memgraph, filter exclusions, execute `predict.py`, and save active recommendations
+- [x] T009 [P] [US1] Create recommendation controller in `server/src/controllers/recommendation.controllers.mjs` to handle fetching active recommendations
+- [x] T010 [US1] Create recommendation routes in `server/src/routes/recommendation.routes.mjs` registering active recommendation fetch endpoint
+- [x] T011 [US1] Register recommendation routes within the main application server in `server/src/server.mjs`
+- [x] T012 [US1] Create frontend dashboard recommendations page in `client/app/dashboard/user/recommendations/page.tsx` rendering personalized carousel cards with loading/error handling
 
 **Checkpoint**: User Story 1 is fully functional and testable independently.
 
@@ -67,9 +67,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Add recommendation renewal logic in `server/src/services/recommendation.services.mjs` to update PostgreSQL and Memgraph logs with the current timestamp under `renewed_at`
-- [ ] T014 [US2] Expose the renewal POST endpoint in `server/src/controllers/recommendation.controllers.mjs` and `server/src/routes/recommendation.routes.mjs`
-- [ ] T015 [US2] Integrate the renewal button and hook its onClick handler to trigger the renew API in `client/app/dashboard/user/recommendations/page.tsx`
+- [x] T013 [US2] Add recommendation renewal logic in `server/src/services/recommendation.services.mjs` to update PostgreSQL and Memgraph logs with the current timestamp under `renewed_at`
+- [x] T014 [US2] Expose the renewal POST endpoint in `server/src/controllers/recommendation.controllers.mjs` and `server/src/routes/recommendation.routes.mjs`
+- [x] T015 [US2] Integrate the renewal button and hook its onClick handler to trigger the renew API in `client/app/dashboard/user/recommendations/page.tsx`
 
 **Checkpoint**: Recommendation renewal works independently.
 
@@ -83,9 +83,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] Implement click tracking method in `server/src/services/recommendation.services.mjs` updating `is_clicked = true` and `renewed_at = CURRENT_TIMESTAMP`
-- [ ] T017 [US3] Expose recommendation click tracking POST route in `server/src/controllers/recommendation.controllers.mjs` and `server/src/routes/recommendation.routes.mjs`
-- [ ] T018 [US3] Add a click-through click logger event handler on book cards in `client/app/dashboard/user/recommendations/page.tsx`
+- [x] T016 [US3] Implement click tracking method in `server/src/services/recommendation.services.mjs` updating `is_clicked = true` and `renewed_at = CURRENT_TIMESTAMP`
+- [x] T017 [US3] Expose recommendation click tracking POST route in `server/src/controllers/recommendation.controllers.mjs` and `server/src/routes/recommendation.routes.mjs`
+- [x] T018 [US3] Add a click-through click logger event handler on book cards in `client/app/dashboard/user/recommendations/page.tsx`
 
 **Checkpoint**: Recommendation clicks are successfully recorded.
 
@@ -99,8 +99,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T019 [US4] Implement trending book query service method in `server/src/services/recommendation.services.mjs` compiling overall interactions and applying user filters
-- [ ] T020 [US4] Render the trending carousel section in `client/app/dashboard/user/recommendations/page.tsx`
+- [x] T019 [US4] Implement trending book query service method in `server/src/services/recommendation.services.mjs` compiling overall interactions and applying user filters
+- [x] T020 [US4] Render the trending carousel section in `client/app/dashboard/user/recommendations/page.tsx`
 
 **Checkpoint**: Personalized and trending recommendation feeds are fully complete.
 
@@ -114,8 +114,8 @@
 
 ### Implementation for Phase 7
 
-- [ ] T021 [US2] Modify GraphSAGE edge generation query in `database/Init_data/GraphSAGE.py` to only load clicked recommended edges (`is_clicked = true`) and run retraining locally
-- [ ] T022 [US2] Add subprocess execution triggers for `GraphSAGE.py` and `LightGBM.py` in `server/src/services/scheduler.services.mjs`
+- [x] T021 [US2] Modify GraphSAGE edge generation query in `database/Init_data/GraphSAGE.py` to only load clicked recommended edges (`is_clicked = true`) and run retraining locally
+- [x] T022 [US2] Add subprocess execution triggers for `GraphSAGE.py` and `LightGBM.py` in `server/src/services/scheduler.services.mjs`
 
 ---
 
@@ -123,8 +123,8 @@
 
 **Purpose**: Spacing, responsiveness, performance tuning, and localization.
 
-- [ ] T023 [P] Add recommendation-related English and Vietnamese translations in `client/app/locales/en.json` and `client/app/locales/vi.json`
-- [ ] T024 Validate complete system E2E flow using validation scenarios in `specs/027-ai-user-recommendations/quickstart.md`
+- [x] T023 [P] Add recommendation-related English and Vietnamese translations in `client/app/locales/en.json` and `client/app/locales/vi.json`
+- [x] T024 Validate complete system E2E flow using validation scenarios in `specs/027-ai-user-recommendations/quickstart.md`
 
 ---
 

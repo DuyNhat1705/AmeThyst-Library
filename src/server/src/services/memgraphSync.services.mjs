@@ -57,3 +57,31 @@ export const syncWishlistRemove = async (userId, bookId) => {
     }
   }
 };
+
+/**
+ * Syncs recommendation click interaction to Memgraph as a direct INTERACTED relationship.
+ * @param {string} userId - UUID of the user
+ * @param {string} bookId - ID of the book
+ * @param {string} clickedAt - ISO string timestamp
+ */
+export const syncRecommendationClick = async (userId, bookId, clickedAt) => {
+  let session;
+  try {
+    session = getSession();
+    // Create a direct INTERACTED relationship in Memgraph to represent the click interaction
+    const query = `
+      MATCH (u:User {id: $userId})
+      MATCH (b:Book {id: $bookId})
+      CREATE (u)-[:INTERACTED {clicked_at: $clickedAt}]->(b)
+    `;
+    await session.run(query, { userId, bookId, clickedAt });
+    console.log(`Synced recommendation click as INTERACTED to Memgraph: User(${userId}) -> Book(${bookId})`);
+  } catch (error) {
+    console.error('Failed to sync recommendation click as INTERACTED to Memgraph:', error.message);
+  } finally {
+    if (session) {
+      await session.close();
+    }
+  }
+};
+
