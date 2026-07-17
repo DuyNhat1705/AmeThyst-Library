@@ -8,7 +8,7 @@ ENV_PATH = os.path.join(ROOT_DIR, ".env")
 load_dotenv(ENV_PATH)
 
 # Database Connection Configurations
-MEMGRAPH_URI = "bolt://127.0.0.1:7687"  # Secured: Prevent IPv6 loopback connection drops
+MEMGRAPH_URI = "bolt://localhost:7687"  # Use loopback that matches active network bind
 MEMGRAPH_USER = os.getenv("MEMGRAPH_USER")
 MEMGRAPH_PASSWORD = os.getenv("MEMGRAPH_PASSWORD")
 CSV_DIR = "/csv_data"

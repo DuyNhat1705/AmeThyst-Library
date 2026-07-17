@@ -1,63 +1,73 @@
 import pool from '../config/postgres.mjs';
 import { getSession } from '../config/memgraph.config.mjs';
 import { syncRecommendationClick } from './memgraphSync.services.mjs';
-import { spawn } from 'child_process';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { cleanText } from './search.services.mjs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.resolve(__dirname, '../../../');
-const PREDICT_SCRIPT = path.join(ROOT_DIR, 'server/src/recommendation/predict.py');
+import net from 'net';
 
 export const RECOMMENDATION_LIMIT = 15;
 
+// In-memory cache for user recommendations
+const recommendationCache = new Map(); // userId -> { data, expiresAt }
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 /**
- * Executes the Python LightGBM ranker script using stdin/stdout.
+ * Invalidates the recommendations cache for a user.
+ * @param {string} userId 
+ */
+export const invalidateUserRecommendationCache = (userId) => {
+  if (userId) {
+    recommendationCache.delete(userId);
+    // console.log(`[Cache] Invalidated recommendations cache for user ${userId}`);
+  }
+};
+
+/**
+ * Executes model inference by communicating with the persistent Python TCP socket server.
  */
 const runRankerInference = (userId, candidates) => {
   return new Promise((resolve, reject) => {
-    const pythonCmd = process.env.PYTHON_COMMAND || 'python';
+    const port = parseInt(process.env.RECOMMENDATION_PORT || '5001', 10);
+    const host = '127.0.0.1';
     
-    const pyProcess = spawn(pythonCmd, [PREDICT_SCRIPT], {
-      cwd: ROOT_DIR,
-      env: { ...process.env, PYTHONPATH: ROOT_DIR }
+    const client = new net.Socket();
+    let dataBuffer = '';
+    
+    client.setTimeout(3000); // 3 seconds timeout
+    
+    client.connect(port, host, () => {
+      const payload = JSON.stringify({ user_id: userId, candidates }) + '\n';
+      client.write(payload);
     });
     
-    let stdoutData = '';
-    let stderrData = '';
-    
-    pyProcess.stdout.on('data', (data) => {
-      stdoutData += data.toString();
-    });
-    
-    pyProcess.stderr.on('data', (data) => {
-      stderrData += data.toString();
-    });
-    
-    pyProcess.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Predict script exited with code ${code}. Error: ${stderrData}`));
-        return;
-      }
-      
-      try {
-        const parsed = JSON.parse(stdoutData);
-        if (parsed.success) {
-          resolve(parsed.ranked);
-        } else {
-          reject(new Error(parsed.error || 'Unknown python script error'));
+    client.on('data', (data) => {
+      dataBuffer += data.toString();
+      if (dataBuffer.includes('\n')) {
+        const lines = dataBuffer.split('\n');
+        const responseStr = lines[0].trim();
+        client.destroy();
+        
+        try {
+          const parsed = JSON.parse(responseStr);
+          if (parsed.success) {
+            resolve(parsed.ranked);
+          } else {
+            reject(new Error(parsed.error || 'Python socket server returned success=false'));
+          }
+        } catch (err) {
+          reject(new Error(`Failed to parse prediction output: ${responseStr}. Error: ${err.message}`));
         }
-      } catch (err) {
-        reject(new Error(`Failed to parse prediction output: ${stdoutData}. Error: ${err.message}`));
       }
     });
     
-    // Write input JSON to prediction stdin
-    pyProcess.stdin.write(JSON.stringify({ user_id: userId, candidates }));
-    pyProcess.stdin.end();
+    client.on('error', (err) => {
+      client.destroy();
+      reject(err);
+    });
+    
+    client.on('timeout', () => {
+      client.destroy();
+      reject(new Error('Recommendation socket connection timed out'));
+    });
   });
 };
 
@@ -69,7 +79,7 @@ const fetchPersonalizedCandidates = async (userId) => {
   try {
     session = getSession();
     
-    // First, try matching based on user's recent interactions (User -> Book -> Genre/Author -> Book)
+    // Match based on user's recent interactions
     const interactionQuery = `
       MATCH (u:User {id: $userId})-[r:INTERACTED]->(b_interacted:Book)
       MATCH (b_interacted)-[:HAS_GENRE|WRITTEN_BY]-(meta)-[]-(b_candidate:Book)
@@ -85,7 +95,7 @@ const fetchPersonalizedCandidates = async (userId) => {
       CALL link_prediction.predict(u, b_candidate) YIELD score
       RETURN b_candidate.id AS id, score
       ORDER BY score DESC
-      LIMIT 80
+      LIMIT 150
     `;
     
     const result = await session.run(interactionQuery, { userId });
@@ -94,9 +104,8 @@ const fetchPersonalizedCandidates = async (userId) => {
       gcn_score: r.get('score')
     }));
     
-    // If not enough candidates (e.g. cold start), fall back to general high-rated books
-    if (candidates.length < 40) {
-      console.log(`Cold start or low interaction count for user ${userId}. Fetching general candidates...`);
+    // Cold start or low interaction count fallback
+    if (candidates.length < 60) {
       const fallbackQuery = `
         MATCH (u:User {id: $userId})
         MATCH (b:Book)
@@ -108,11 +117,11 @@ const fetchPersonalizedCandidates = async (userId) => {
         WHERE borrowed IS NULL AND wished IS NULL AND wishlisted IS NULL AND recommended IS NULL
         WITH DISTINCT u, b
         ORDER BY b.rating DESC, b.title ASC
-        LIMIT 100
+        LIMIT 150
         CALL link_prediction.predict(u, b) YIELD score
         RETURN b.id AS id, score
         ORDER BY score DESC
-        LIMIT 80
+        LIMIT 150
       `;
       const fallbackResult = await session.run(fallbackQuery, { userId });
       const fallbackCandidates = fallbackResult.records.map(r => ({
@@ -120,13 +129,12 @@ const fetchPersonalizedCandidates = async (userId) => {
         gcn_score: r.get('score')
       }));
       
-      // Merge unique candidates
       const seenIds = new Set(candidates.map(c => c.id));
       for (const fc of fallbackCandidates) {
         if (!seenIds.has(fc.id)) {
           candidates.push(fc);
         }
-        if (candidates.length >= 80) break;
+        if (candidates.length >= 150) break;
       }
     }
     
@@ -159,12 +167,12 @@ const fetchTrendingCandidates = async (userId) => {
       )
       GROUP BY b.book_id
       ORDER BY interactions DESC
-      LIMIT 20
+      LIMIT 100
     `;
     const result = await pool.query(query, [userId]);
     return result.rows.map(row => ({
       id: row.book_id,
-      gcn_score: 0.1 // Default baseline GCN score for trending candidates
+      gcn_score: 0.1 // Baseline GCN score
     }));
   } catch (error) {
     console.error('Failed to fetch trending candidates from Postgres:', error);
@@ -177,6 +185,12 @@ const fetchTrendingCandidates = async (userId) => {
  */
 export const getUserRecommendations = async (userId) => {
   try {
+    // Check local memory cache first
+    const cached = recommendationCache.get(userId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
     // 1. Check if there are active (unrenewed) recommendations in Postgres
     const activeQuery = `
       SELECT r.book_id, r.score, b.title, b.author, b.image_url
@@ -188,21 +202,30 @@ export const getUserRecommendations = async (userId) => {
     `;
     const activeRes = await pool.query(activeQuery, [userId]);
     
+    let resultData;
     if (activeRes.rows.length >= RECOMMENDATION_LIMIT - 1) {
-      return activeRes.rows.map(row => ({
+      resultData = activeRes.rows.map(row => ({
         id: row.book_id,
         title: cleanText(row.title),
         author: row.author ? row.author.map(cleanText).join(', ') : 'Unknown Author',
         coverImage: row.image_url || null,
         score: row.score
       }));
+    } else {
+      // 2. No active recommendations found, generate fresh ones
+      resultData = await generateRecommendations(userId);
     }
-    
-    // 2. No active recommendations found, generate fresh ones
-    return await generateRecommendations(userId);
+
+    // Populate local memory cache
+    recommendationCache.set(userId, {
+      data: resultData,
+      expiresAt: Date.now() + CACHE_TTL_MS
+    });
+
+    return resultData;
   } catch (error) {
     console.error('Error in getUserRecommendations:', error);
-    // Fallback: RECOMMENDATION_LIMIT random books from catalog if everything fails
+    // Fallback: random books from catalog
     const fallback = await pool.query(
       `SELECT book_id, title, author, image_url FROM public.books LIMIT ${RECOMMENDATION_LIMIT}`
     );
@@ -240,50 +263,137 @@ export const generateRecommendations = async (userId) => {
     if (candidatePool.length === 0) {
       throw new Error('No recommendation candidates compiled.');
     }
+
+    // Refined Renewal Exclusion: query previously recommended books to exclude them
+    const historyRes = await pool.query(
+      `SELECT book_id, is_clicked FROM public.recommends WHERE user_id = $1`,
+      [userId]
+    );
+    const recommendedSet = new Set(historyRes.rows.map(row => row.book_id));
     
-    // PostgreSQL Hard Guardrail: Inventory Verification
-    const candidateIds = candidatePool.map(c => c.id);
-    const stockQuery = `
-      SELECT book_id, COALESCE(SUM(available_quantity), 0) as total_copies
-      FROM public.library
-      WHERE book_id = ANY($1)
-      GROUP BY book_id
-      HAVING SUM(available_quantity) > 0
+    let filteredCandidates = candidatePool.filter(c => !recommendedSet.has(c.id));
+    
+    // Strict catalog supplementation: if we have fewer than 15 candidates, supplement with new books from catalog
+    if (filteredCandidates.length < RECOMMENDATION_LIMIT) {
+      const supplementRes = await pool.query(
+        `SELECT book_id FROM public.books 
+         WHERE book_id NOT IN (
+           SELECT book_id FROM public.recommends WHERE user_id = $1
+         )
+         LIMIT $2`,
+        [userId, RECOMMENDATION_LIMIT - filteredCandidates.length]
+      );
+      
+      const supplementCandidates = supplementRes.rows.map(row => ({
+        id: row.book_id,
+        gcn_score: 0.05
+      }));
+      
+      filteredCandidates.push(...supplementCandidates);
+    }
+
+    // Final fallback (last resort if catalog is exhausted): allow unclicked recommended books
+    if (filteredCandidates.length < RECOMMENDATION_LIMIT) {
+      const clickedSet = new Set(historyRes.rows.filter(row => row.is_clicked).map(row => row.book_id));
+      const fallbackPool = candidatePool.filter(c => !clickedSet.has(c.id) && !filteredCandidates.some(f => f.id === c.id));
+      filteredCandidates.push(...fallbackPool);
+    }
+    
+    if (filteredCandidates.length === 0) {
+      filteredCandidates = candidatePool;
+    }
+
+    // Bulk compile features in a single SQL query
+    const candidateIds = filteredCandidates.map(c => c.id);
+    const featuresQuery = `
+      SELECT 
+        b.book_id,
+        COALESCE(SUM(l.available_quantity), 0)::integer AS global_available_copies,
+        EXISTS(SELECT 1 FROM public.user_wishlist uw WHERE uw.user_id = $1 AND uw.book_id = b.book_id) AS is_in_wishlist,
+        (SELECT COUNT(*)::integer FROM public.recommends r WHERE r.user_id = $1 AND r.book_id = b.book_id AND r.is_clicked = FALSE) AS past_impressions_count
+      FROM 
+        public.books b
+      LEFT JOIN 
+        public.library l ON b.book_id = l.book_id
+      WHERE 
+        b.book_id = ANY($2)
+      GROUP BY 
+        b.book_id
     `;
-    const stockRes = await pool.query(stockQuery, [candidateIds]);
-    const validBookIds = new Set(stockRes.rows.map(row => row.book_id));
-    
-    // Filter candidates having stock > 0
-    let filteredPool = candidatePool.filter(c => validBookIds.has(c.id));
-    
+    const featuresRes = await pool.query(featuresQuery, [userId, candidateIds]);
+    const featuresMap = new Map(featuresRes.rows.map(row => [row.book_id, row]));
+
+    // Hard Guardrail: filter out out-of-stock items (available copies = 0)
+    let filteredPool = filteredCandidates.filter(c => {
+      const feat = featuresMap.get(c.id);
+      return feat && feat.global_available_copies > 0;
+    });
+
     if (filteredPool.length === 0) {
-      // If all candidates are out of stock, relax guardrail to show catalog items
-      filteredPool = candidatePool;
+      filteredPool = filteredCandidates;
     }
+
+    // Format features payload for the Python socket server
+    const currentMonth = new Date().getMonth() + 1;
+    const socketPayloadCandidates = filteredPool.map(c => {
+      const feat = featuresMap.get(c.id) || {
+        global_available_copies: 0,
+        is_in_wishlist: false,
+        past_impressions_count: 0
+      };
+      return {
+        id: c.id,
+        session_month: currentMonth,
+        past_impressions_count: feat.past_impressions_count,
+        is_in_wishlist: feat.is_in_wishlist ? 1 : 0,
+        global_available_copies: feat.global_available_copies,
+        gcn_score: c.gcn_score
+      };
+    });
+
+    // Stage 2: Micro Ranking via persistent Python TCP socket server
+    const rankedCandidates = await runRankerInference(userId, socketPayloadCandidates);
     
-    // Stage 2: Micro Ranking via LightGBM
-    const rankedCandidates = await runRankerInference(userId, filteredPool);
-    
-    // Epsilon-Greedy Exploration Blending
-    // Slots 1 to LIMIT-1: Algorithmic Top
-    // Slot LIMIT: 10% chance to pick a random choice from ranks LIMIT to 30, 90% chance to pick rank LIMIT-1
+    // Apply Skip Penalty: discount score for books that were shown but ignored (skipped)
+    const penalizedRanked = rankedCandidates.map(item => {
+      const feat = featuresMap.get(item.id) || { past_impressions_count: 0 };
+      // Reduce score by 35% for each past impression (skip)
+      const penaltyFactor = Math.pow(0.65, feat.past_impressions_count);
+      return {
+        ...item,
+        score: item.score * penaltyFactor
+      };
+    }).sort((a, b) => b.score - a.score);
+
+    // Broadened Epsilon-Greedy Exploration (20% exploration probability)
     const finalSelection = [];
+    const exploreProb = 0.20;
+    const confidenceCount = RECOMMENDATION_LIMIT - 3; // 12 high confidence items
     
-    // Pull top LIMIT - 1 candidates
-    const limitForDirect = RECOMMENDATION_LIMIT - 1;
-    for (let i = 0; i < Math.min(limitForDirect, rankedCandidates.length); i++) {
-      finalSelection.push(rankedCandidates[i]);
+    for (let i = 0; i < Math.min(confidenceCount, penalizedRanked.length); i++) {
+      finalSelection.push(penalizedRanked[i]);
     }
     
-    // Apply Epsilon-Greedy for the last slot
-    if (rankedCandidates.length > limitForDirect) {
-      const explore = Math.random() < 0.10;
-      if (explore && rankedCandidates.length > RECOMMENDATION_LIMIT) {
-        const maxIndex = Math.min(30, rankedCandidates.length - 1);
-        const randIdx = Math.floor(RECOMMENDATION_LIMIT + Math.random() * (maxIndex - RECOMMENDATION_LIMIT + 1));
-        finalSelection.push(rankedCandidates[randIdx]);
+    const remainingCount = RECOMMENDATION_LIMIT - finalSelection.length;
+    let nextConfidenceIdx = confidenceCount;
+    
+    for (let k = 0; k < remainingCount; k++) {
+      if (nextConfidenceIdx >= penalizedRanked.length) break;
+      
+      const explore = Math.random() < exploreProb;
+      if (explore && penalizedRanked.length > 25) {
+        const maxIndex = Math.min(50, penalizedRanked.length - 1);
+        const minIndex = 15;
+        const randIdx = Math.floor(minIndex + Math.random() * (maxIndex - minIndex + 1));
+        
+        const selectedId = penalizedRanked[randIdx].id;
+        if (!finalSelection.some(x => x.id === selectedId)) {
+          finalSelection.push(penalizedRanked[randIdx]);
+        } else {
+          finalSelection.push(penalizedRanked[nextConfidenceIdx++]);
+        }
       } else {
-        finalSelection.push(rankedCandidates[limitForDirect]);
+        finalSelection.push(penalizedRanked[nextConfidenceIdx++]);
       }
     }
     
@@ -338,14 +448,25 @@ export const generateRecommendations = async (userId) => {
 export const renewUserRecommendations = async (userId) => {
   const renewedAt = new Date().toISOString();
   
-  // 1. Invalidate in Postgres
+  // 1. Invalidate local memory cache
+  invalidateUserRecommendationCache(userId);
+  
+  // 2. Invalidate in Postgres
   await pool.query(
     `UPDATE public.recommends SET renewed_at = $1 WHERE user_id = $2 AND renewed_at IS NULL`,
     [renewedAt, userId]
   );
   
-  // 2. Generate new recommendations
-  return await generateRecommendations(userId);
+  // 3. Generate new recommendations
+  const newRecs = await generateRecommendations(userId);
+
+  // Cache the new recommendations
+  recommendationCache.set(userId, {
+    data: newRecs,
+    expiresAt: Date.now() + CACHE_TTL_MS
+  });
+
+  return newRecs;
 };
 
 /**
@@ -354,7 +475,10 @@ export const renewUserRecommendations = async (userId) => {
 export const logRecommendationClick = async (userId, bookId) => {
   const clickedAt = new Date().toISOString();
   
-  // 1. Update in Postgres
+  // 1. Invalidate cache since state changes
+  invalidateUserRecommendationCache(userId);
+
+  // 2. Update in Postgres
   const result = await pool.query(
     `UPDATE public.recommends 
      SET is_clicked = TRUE, renewed_at = $1 
@@ -363,7 +487,14 @@ export const logRecommendationClick = async (userId, bookId) => {
   );
   
   if (result.rowCount > 0) {
-    // 2. Async Non-Blocking sync to Memgraph
+    // Precompute a fresh set of recommendations in the background (skip in tests)
+    if (process.env.NODE_ENV !== 'test') {
+      generateRecommendations(userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute after click for user ${userId}:`, err)
+      );
+    }
+
+    // 3. Async Non-Blocking sync to Memgraph
     syncRecommendationClick(userId, bookId, clickedAt).catch(err =>
       console.error('Failed to async sync click to Memgraph:', err)
     );
@@ -378,7 +509,6 @@ export const logRecommendationClick = async (userId, bookId) => {
 export const getTrendingRecommendations = async (userId) => {
   const trending = await fetchTrendingCandidates(userId);
   if (trending.length === 0) {
-    // Fallback: 6 random books
     const fallback = await pool.query(
       `SELECT book_id, title, author, image_url FROM public.books LIMIT 6`
     );

@@ -1,5 +1,6 @@
 import pool from '../config/postgres.mjs';
 import { cleanText, buildFilterSQL } from './search.services.mjs';
+import { invalidateUserRecommendationCache, getUserRecommendations } from './recommendation.services.mjs';
 
 export const MAX_BORROW_LIMIT = 5;
 
@@ -294,6 +295,14 @@ export const createReservation = async (userId, bookId, branchId) => {
     const shelf = inventoryResult.rows[0].shelf || 'N/A';
 
     await client.query('COMMIT');
+
+    // Invalidate recommendation cache and precompute new recommendations
+    invalidateUserRecommendationCache(userId);
+    if (process.env.NODE_ENV !== 'test') {
+      getUserRecommendations(userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute after reservation for user ${userId}:`, err)
+      );
+    }
 
     return {
       reservation: {

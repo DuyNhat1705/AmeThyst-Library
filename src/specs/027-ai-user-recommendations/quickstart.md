@@ -1,6 +1,6 @@
 # Quickstart Guide: AI Recommendations
 
-This guide provides steps for setting up, configuring, and verifying the AI recommendation feature.
+This guide provides steps for setting up, configuring, and verifying the AI recommendation feature, including the new persistent Python TCP inference server.
 
 ## 1. Prerequisites & Dependencies
 
@@ -45,11 +45,14 @@ CREATE INDEX idx_recommends_click_features ON public.recommends(user_id, book_id
 
 ---
 
-## 3. Environment Variables configuration
+## 3. Environment Variables Configuration
 
 Add the following variables to `server/.env`:
 
 ```env
+# Recommendation TCP Socket Inference Port
+RECOMMENDATION_PORT=5001
+
 # Recommendation Retraining Configuration
 RECOMMENDATION_RETRAIN_CRON="0 2 * * 0"  # Every Sunday at 2:00 AM
 PYTHON_COMMAND="python"                   # Use "python3" on Linux/macOS
@@ -57,7 +60,17 @@ PYTHON_COMMAND="python"                   # Use "python3" on Linux/macOS
 
 ---
 
-## 4. Manual Model Retraining & Bootstrap
+## 4. Persistent Python Socket Server
+
+Start the persistent socket server to handle LightGBM model inference requests over TCP:
+```bash
+python server/src/recommendation/predict_server.py
+```
+*Note: In development, this process should run concurrently with `npm run dev` in the backend.*
+
+---
+
+## 5. Manual Model Retraining & Bootstrap
 
 To bootstrap recommendation logs and pre-train the models before running the NodeJS server:
 
@@ -81,10 +94,10 @@ To bootstrap recommendation logs and pre-train the models before running the Nod
 
 ---
 
-## 5. Verification & Testing
+## 6. Verification & Testing
 
 1. **Run Integration Tests**:
-   Verify backend endpoint routes and services (after implementing backend routes):
+   Verify backend endpoint routes and services:
    ```bash
    cd server
    npm run test tests/recommendation.test.mjs

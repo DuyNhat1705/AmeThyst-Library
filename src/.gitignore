@@ -92,3 +92,10 @@ yarn-error.log*
 /database/.env
 /database/tmp_csv
 /database/*.sql
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+lightgbm_ranker.txt

@@ -1,5 +1,6 @@
 import * as wishlistModel from '../models/wishlist.models.mjs';
 import { syncWishlistAdd, syncWishlistRemove } from './memgraphSync.services.mjs';
+import { invalidateUserRecommendationCache, getUserRecommendations } from './recommendation.services.mjs';
 
 /**
  * Adds a book to user's wishlist and syncs to Memgraph in the background.
@@ -9,6 +10,14 @@ import { syncWishlistAdd, syncWishlistRemove } from './memgraphSync.services.mjs
  */
 export const addToWishlist = async (userId, bookId) => {
   const result = await wishlistModel.addWishlist(userId, bookId);
+  
+  // Invalidate recommendation cache and precompute new recommendations
+  invalidateUserRecommendationCache(userId);
+  if (process.env.NODE_ENV !== 'test') {
+    getUserRecommendations(userId).catch(err =>
+      console.error(`[Precompute] Failed to precompute after wishlist add for user ${userId}:`, err)
+    );
+  }
   
   // Non-blocking background sync
   syncWishlistAdd(userId, bookId).catch(err => 
@@ -32,6 +41,14 @@ export const removeFromWishlist = async (userId, bookId) => {
 
   const success = await wishlistModel.removeWishlist(userId, bookId);
   if (success) {
+    // Invalidate recommendation cache and precompute new recommendations
+    invalidateUserRecommendationCache(userId);
+    if (process.env.NODE_ENV !== 'test') {
+      getUserRecommendations(userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute after wishlist remove for user ${userId}:`, err)
+      );
+    }
+
     // Non-blocking background sync
     syncWishlistRemove(userId, bookId).catch(err => 
       console.error('Error dispatching Memgraph sync remove:', err)

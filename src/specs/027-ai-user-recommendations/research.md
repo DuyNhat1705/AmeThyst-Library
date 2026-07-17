@@ -1,6 +1,6 @@
 # Research & Architectural Decisions: AI User Recommendations
 
-This document outlines the research findings, design decisions, and training logic modifications for the AI personalized recommendation feature.
+This document outlines the research findings, design decisions, and training/inference flow modifications for the AI personalized recommendation feature.
 
 ## 1. Machine Learning Retraining Workflow
 
@@ -9,68 +9,83 @@ The recommendation system consists of two primary models:
 2. **LightGBM** (GBDT Ranker): Takes candidate book lists and ranks them based on user-specific session features (impressions, months, click-through history).
 
 ### Retraining Schedule and Automation
-
 - **Schedule**: Retraining will occur on a weekly basis during off-peak hours (e.g., Sunday at 2:00 AM) to minimize database locks and CPU overhead.
 - **Automation Service**: A Node.js background scheduler (`scheduler.services.mjs` using `node-cron`) will run inside the backend server container.
 - **Retraining Process**:
-  1. Trigger GraphSAGE retraining by running `python database/Init_data/GraphSAGE.py`. This regenerates the weighted `INTERACTED` edges in Memgraph and refits the GCN model.
-  2. Trigger LightGBM retraining by running `python database/Init_data/LightGBM.py`. This reads historical recommends logs from Postgres, trains a binary classifier, and saves model weights to `database/Init_data/lightgbm_ranker.txt`.
-  3. Log retraining status (start, success/failure, metrics, and duration) to a file `logs/recommendation_retraining.log` for administrator visibility.
+  1. Trigger GraphSAGE retraining by running `python database/Init_data/GraphSAGE.py`.
+  2. Trigger LightGBM retraining by running `python database/Init_data/LightGBM.py`.
+  3. Log retraining status to `logs/recommendation_retraining.log`.
+
+---
 
 ## 2. Prioritizing User Input Behavior in Training Logic
 
-### Current Issue in `GraphSAGE.py`
-In the initial `GraphSAGE.py` script, all recommendation edges are treated equally:
-```cypher
-MATCH (u:User)-[r:RECOMMENDED]->(bk:Book)
-```
-This query fetches all recommendations (whether the user clicked them or not) and injects them into the training graph. This creates a feedback loop that reinforces recommended items regardless of actual user interest.
+In the initial `GraphSAGE.py` script, all recommendation edges are treated equally. This creates a feedback loop that reinforces recommended items regardless of actual user interest.
 
-### Modified Training Logic Decision
-To prioritize user behavior, we must distinguish between:
-- **Active User Input Behaviors**: Borrows (`BORROWED`), returns (`RETURNED`), wishlists (`WISHED`), search clicks (`SEARCHED`), and clicked recommendations.
-- **Passive System Impressions**: Recommended books that the user saw but did NOT click.
+To prioritize user behavior:
+- We distinguish between **Active User Input Behaviors** (borrows, returns, wishlists, search clicks, and clicked recommendations) and **Passive System Impressions** (recommended books that the user saw but did NOT click).
+- We modify the training edge generation query in `GraphSAGE.py` for recommendations to **only include clicked recommendations** (`is_clicked = true`) in the `INTERACTED` edge construction.
 
-We will modify the training edge generation query in `GraphSAGE.py` for recommendations as follows:
-- **Only include clicked recommendations** (`is_clicked = true`) in the `INTERACTED` edge construction.
-- Recommended books that were not clicked will be excluded from the training dataset.
-- This ensures that the model learns from actual user behavior, avoiding training bias from system recommendations.
+---
 
-## 3. Data Synchronization & Inference Architecture
+## 3. Persistent Socket-Based Inference & Caching Architecture
 
-```mermaid
-graph TD
-    A[User Performs Action] -->|PostgreSQL Write| B(PG Database)
-    A -->|Async Non-Blocking Sync| C(Memgraph bolt)
-    
-    D[Cron Scheduler / 2:00 AM] -->|1. Run GraphSAGE.py| C
-    D -->|2. Run LightGBM.py| B
-    B -->|Fetch Click logs| D
-    
-    E[User visits Dashboard] -->|Get recommendations| F(NodeJS Server)
-    F -->|Fetch top GCN link predictions| C
-    F -->|Rank candidates via predict.py| G(LightGBM Ranker)
-    G -->|Return top 6 books| F
-    F -->|Return and Render| H[User View]
-```
+### The Latency Problem
+Spawning a Python process wrapper `predict.py` on every user dashboard load is extremely slow (taking ~2 seconds due to importing libraries like pandas, lightgbm, and loading the model `lightgbm_ranker.txt` from disk).
 
-### Recommendation API & Inference Flow
-When a logged-in user requests recommendations or triggers a "Renew":
-1. **Candidate Retrieval**: NodeJS queries Memgraph for the top 50 books with the highest link prediction scores or cosine similarity embeddings compared to the user's recently interacted books (borrowed, wishlisted, or searched).
-2. **Filter Exclusions**: The NodeJS service queries PostgreSQL to fetch the user's current wishlist and borrowed books, and removes them from the 50 candidate IDs.
-3. **Ranking via LightGBM**:
-   - The NodeJS backend calls a lightweight Python script `server/src/recommendation/predict.py` passing the `user_id` and filtered candidate IDs.
-   - `predict.py` connects to PostgreSQL to fetch each candidate's feature: `past_impressions_count` (how many times this user was recommended this book without clicking).
-   - It loads the model `lightgbm_ranker.txt` and predicts the click probability.
-   - It returns the sorted candidates to the NodeJS server.
-4. **Display and Save**:
-   - NodeJS takes the top 6 books, writes them to the PostgreSQL `recommends` table (with `is_clicked = false` and `renewed_at = NULL`).
-   - It triggers an async background write to Memgraph to create `RECOMMENDED` edges.
-   - It returns the books to the Next.js frontend.
+### The Solution: TCP Socket Server + Bulk Postgres Features + Memory Cache
+To achieve low latency (< 100ms), we implement the following:
 
-## 4. Alternatives Considered
+1. **Persistent Python Socket Server (`predict_server.py`)**:
+   - The Python script is started as a persistent daemon listening on TCP port `5001`.
+   - It loads the LightGBM Booster model `lightgbm_ranker.txt` **once** at startup.
+   - Before executing predictions, it checks `os.path.getmtime(MODEL_PATH)` to automatically hot-reload the model if retraining has compiled a new model, ensuring zero downtime.
+   - It communicates with the Node.js server via JSON messages over a TCP socket.
 
-- **Alternative 1: Direct SQL-based Collaborative Filtering**
-  - *Rejected*: PostgreSQL is not optimized for complex graph traversals or link prediction. It lacks the ability to capture multi-hop relations (e.g., User -> Branch -> Book -> Author).
-- **Alternative 2: Node.js LightGBM Inference Port**
-  - *Rejected*: Running C-bindings for LightGBM directly in Node.js introduces compiling issues on Windows/Linux environments. Spawning a python script wrapper `predict.py` is safer and maintains consistency with the python training flow.
+2. **Bulk Postgres Feature Compilation**:
+   - Instead of Python querying PostgreSQL for each candidate inside a loop (which causes N database roundtrips), the Node.js Express server queries PostgreSQL in a **single bulk query** using the `pg` pool:
+     ```sql
+     SELECT 
+       b.book_id,
+       COALESCE(SUM(l.available_quantity), 0)::integer AS global_available_copies,
+       EXISTS(SELECT 1 FROM public.user_wishlist uw WHERE uw.user_id = $1 AND uw.book_id = b.book_id) AS is_in_wishlist,
+       (SELECT COUNT(*)::integer FROM public.recommends r WHERE r.user_id = $1 AND r.book_id = b.book_id AND r.is_clicked = FALSE AND r.renewed_at IS NULL) AS past_impressions_count
+     FROM 
+       public.books b
+     LEFT JOIN 
+       public.library l ON b.book_id = l.book_id
+     WHERE 
+       b.book_id = ANY($2)
+     GROUP BY 
+       b.book_id
+     ```
+   - This compiled features data is passed as a JSON payload over the TCP socket to Python, completely removing database queries from the Python service.
+
+3. **Node.js Memory Cache**:
+   - Recommendations are cached in Node.js memory (`recommendationCache`) mapping `userId -> { recommendations, timestamp }` with a TTL of 5 minutes.
+   - The cache is automatically invalidated when user state changes: click logging, manual renewal, adding a book to wishlist (`addToWishlist`), or borrowing a book (`createReservation`).
+
+---
+
+## 4. Refined Renewal Logic (Preventing Repeats)
+
+To ensure users get new recommended books when renewing rather than seeing the same books repeatedly:
+- Node.js fetches the list of all books previously recommended to the user:
+  ```sql
+  SELECT book_id FROM public.recommends WHERE user_id = $1
+  ```
+- These historical recommendation book IDs are strictly excluded from:
+  1. The GraphSAGE candidate query in Memgraph.
+  2. The Postgres trending candidate query.
+- **Robust Fallback**: If the filtered candidate pool becomes too small (less than 10 books) due to the user's history or a small catalog size, we relax the exclusion rule and allow previously recommended books that were NOT clicked, preventing empty recommendations.
+
+---
+
+## 5. Alternatives Considered
+
+- **Alternative 1: Node.js LightGBM Native Addon**:
+  - *Rejected*: Compiling C++ bindings for LightGBM inside Node.js is error-prone, fragile across operating systems, and difficult to maintain.
+- **Alternative 2: Spawning python process on every request**:
+  - *Rejected*: High overhead (~2.0 seconds latency) violates performance targets.
+- **Alternative 3: Complete history exclusion without fallback**:
+  - *Rejected*: For users with high active engagement, the candidate pool would eventually be completely exhausted, resulting in an empty dashboard carousel.

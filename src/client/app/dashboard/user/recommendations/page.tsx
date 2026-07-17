@@ -14,6 +14,7 @@ interface RecommendedBook {
 export default function RecommendationsPage() {
   const { t } = useI18n();
   const [historyBooks, setHistoryBooks] = useState<RecommendedBook[]>([]);
+  const [trendingBooks, setTrendingBooks] = useState<RecommendedBook[]>([]);
   const [wishlistBooks, setWishlistBooks] = useState<RecommendedBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [renewing, setRenewing] = useState(false);
@@ -43,6 +44,7 @@ export default function RecommendationsPage() {
 
       if (responseData.success && responseData.data) {
         setHistoryBooks(responseData.data.historyBased || []);
+        setTrendingBooks(responseData.data.trending || []);
       } else {
         throw new Error(responseData.error?.message || 'Failed to parse response');
       }
@@ -166,6 +168,16 @@ export default function RecommendationsPage() {
             emptyFallback={
               <div className="text-center py-12 border-2 border-dashed border-[#C5C6CD] dark:border-neutral-700 rounded-xl bg-gray-50/50 dark:bg-neutral-900/10 text-gray-500 dark:text-neutral-400 font-inter text-sm">
                 {t('dashboard.recommendations_empty') || 'Start reading or add books to your wishlist to unlock personalized recommendations!'}
+              </div>
+            }
+          />
+
+          <RecommendationCarousel
+            books={trendingBooks}
+            title={t('dashboard.trending_this_week') || 'Trending this week'}
+            emptyFallback={
+              <div className="text-center py-12 border-2 border-dashed border-[#C5C6CD] dark:border-neutral-700 rounded-xl bg-gray-50/50 dark:bg-neutral-900/10 text-gray-500 dark:text-neutral-400 font-inter text-sm">
+                {t('dashboard.trending_empty') || 'No trending books available right now.'}
               </div>
             }
           />
