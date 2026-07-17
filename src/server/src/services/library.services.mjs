@@ -149,14 +149,15 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
 /**
  * Lấy gợi ý sách ngẫu nhiên từ database để tạo tính năng khám phá sách
  */
-export const getRecommendations = async (id) => {
+export const getRecommendations = async (id, limit = 20) => {
   const recQuery = `
     SELECT book_id, title, author, isbn, image_url
     FROM public.books 
     WHERE book_id != $1
-    LIMIT 6
+    ORDER BY RANDOM()
+    LIMIT $2
   `;
-  const recRes = await pool.query(recQuery, [id]);
+  const recRes = await pool.query(recQuery, [id, limit]);
   
   return recRes.rows.map(book => ({
     id: book.book_id,
@@ -176,7 +177,7 @@ export const getRelatedBooks = async (id) => {
   
   if (bookRes.rows.length === 0 || !bookRes.rows[0].genres || bookRes.rows[0].genres.length === 0) {
     // Fallback: If no genres found, return random books
-    return getRecommendations(id);
+    return getRecommendations(id, 20);
   }
   
   const genres = bookRes.rows[0].genres;
@@ -193,7 +194,7 @@ export const getRelatedBooks = async (id) => {
   
   // Fallback: If no related books found in same genres, return random books
   if (recRes.rows.length === 0) {
-    return getRecommendations(id);
+    return getRecommendations(id, 20);
   }
   
   return recRes.rows.map(book => ({
