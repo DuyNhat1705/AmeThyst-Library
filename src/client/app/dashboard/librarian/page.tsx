@@ -1,5 +1,5 @@
-import LibrarianBookManagement from '../../components/organisms/LibrarianBookManagement';
+import LibrarianBookDashboard from '../../components/templates/LibrarianBookDashboard';
 
 export default function LibrarianDashboardPage() {
-  return <LibrarianBookManagement />;
+  return <LibrarianBookDashboard />;
 }

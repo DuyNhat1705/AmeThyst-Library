@@ -9,10 +9,10 @@ import BookTablePagination from '../molecules/BookTablePagination';
 import type { BookEntry } from '../molecules/BookTableRow';
 
 const MOCK_BOOKS: BookEntry[] = [
-  { coverSrc: '/BookCover.png', title: 'Architecture of Thought', author: 'Julian Thorne', isbn: '978-3-16-148410-0', category: 'Philosophy', available: 3, total: 5, active: true },
-  { coverSrc: '/BookCover(1).png', title: 'The Modern Grid', author: 'Elena Rossi', isbn: '978-0-262-51763-8', category: 'Design', available: 0, total: 2, active: true },
-  { coverSrc: '/BookCover(2).png', title: 'Quantum Linguistics', author: 'Dr. Sarah Chen', isbn: '978-1-4028-9462-6', category: 'Science', available: 12, total: 15, active: false },
-  { coverSrc: '/BookCover(3).png', title: 'Urban Ecosystems', author: 'Marcus Vane', isbn: '978-3-540-49605-2', category: 'Environment', available: 8, total: 10, active: true },
+  { id: 'old_1', coverSrc: '/BookCover.png', title: 'Architecture of Thought', author: 'Julian Thorne', isbn: '978-3-16-148410-0', category: 'Philosophy', available: 3, total: 5, active: true },
+  { id: 'old_2', coverSrc: '/BookCover(1).png', title: 'The Modern Grid', author: 'Elena Rossi', isbn: '978-0-262-51763-8', category: 'Design', available: 0, total: 2, active: true },
+  { id: 'old_3', coverSrc: '/BookCover(2).png', title: 'Quantum Linguistics', author: 'Dr. Sarah Chen', isbn: '978-1-4028-9462-6', category: 'Science', available: 12, total: 15, active: false },
+  { id: 'old_4', coverSrc: '/BookCover(3).png', title: 'Urban Ecosystems', author: 'Marcus Vane', isbn: '978-3-540-49605-2', category: 'Environment', available: 8, total: 10, active: true },
 ];
 
 export default function LibrarianBookManagement() {

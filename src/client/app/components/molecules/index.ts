@@ -24,3 +24,5 @@ export { default as BookTablePagination } from './BookTablePagination';
 export { default as AnnouncementListItem } from './AnnouncementListItem';
 export { default as BorrowingLimitCard } from './BorrowingLimitCard';
 export * from './ProfileSectionCard';
+export { default as KPIStatCard } from './KPIStatCard';
+export { default as FilterDropdown } from './FilterDropdown';
