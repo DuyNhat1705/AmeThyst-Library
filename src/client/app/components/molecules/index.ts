@@ -23,4 +23,7 @@ export { default as BookTableRow } from './BookTableRow';
 export { default as BookTablePagination } from './BookTablePagination';
 export { default as AnnouncementListItem } from './AnnouncementListItem';
 export { default as BorrowingLimitCard } from './BorrowingLimitCard';
+export { default as ReservationCard } from './ReservationCard';
+export type { Reservation } from './ReservationCard';
+export { default as PastBookingsTable } from './PastBookingsTable';
 export * from './ProfileSectionCard';

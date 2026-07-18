@@ -77,3 +77,85 @@ export const getRoomAvailability = async (roomId, date) => {
     };
   });
 };
+
+/**
+ * Creates a room reservation after checking for conflicts.
+ * @param {number} userId
+ * @param {number} availId
+ * @param {string} startDate (YYYY-MM-DD)
+ * @returns {Promise<Object>}
+ */
+export const createReservation = async (userId, availId, startDate) => {
+  if (!userId || !availId || !startDate) {
+    const error = new Error('Missing required fields: userId, availId, startDate');
+    error.status = 400;
+    throw error;
+  }
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(startDate)) {
+    const error = new Error('Invalid date format. Expected YYYY-MM-DD.');
+    error.status = 400;
+    throw error;
+  }
+
+  const existing = await roomModel.findReservationBySlotAndDate(availId, startDate);
+  if (existing) {
+    const error = new Error('This time slot is no longer available.');
+    error.status = 409;
+    throw error;
+  }
+
+  const reservation = await roomModel.createReservation(userId, availId, startDate);
+  return reservation;
+};
+
+/**
+ * Retrieves and categorizes reservations for a user.
+ * @param {number} userId
+ * @returns {Promise<{upcoming: Array, past: Array}>}
+ */
+export const getUserReservations = async (userId) => {
+  if (!userId) {
+    const error = new Error('User ID is required');
+    error.status = 400;
+    throw error;
+  }
+
+  const rows = await roomModel.findUserReservations(userId);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const upcoming = rows.filter(r => {
+    const d = typeof r.startDate === 'string' ? r.startDate : r.startDate.toISOString().slice(0, 10);
+    return d >= today;
+  });
+  const past = rows.filter(r => {
+    const d = typeof r.startDate === 'string' ? r.startDate : r.startDate.toISOString().slice(0, 10);
+    return d < today;
+  });
+
+  return { upcoming, past };
+};
+
+/**
+ * Cancels a reservation by deleting the row.
+ * @param {string} reserveId
+ * @param {string} userId
+ * @returns {Promise<boolean>}
+ */
+export const cancelReservation = async (reserveId, userId) => {
+  if (!reserveId || !userId) {
+    const error = new Error('Missing required fields');
+    error.status = 400;
+    throw error;
+  }
+
+  const deleted = await roomModel.deleteReservation(reserveId, userId);
+  if (!deleted) {
+    const error = new Error('Reservation not found or already cancelled');
+    error.status = 404;
+    throw error;
+  }
+
+  return true;
+};
