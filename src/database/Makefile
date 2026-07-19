@@ -48,3 +48,9 @@ mock-export:
 
 export-memgraph:
 	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 --output-format=cypherl > 010_datagraph.cypher
+
+export-snapshot:
+	python Init_data/Model_snapshot.py export
+
+import-snapshot:
+	python Init_data/Model_snapshot.py import
