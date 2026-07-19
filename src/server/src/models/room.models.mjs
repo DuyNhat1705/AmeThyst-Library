@@ -130,10 +130,13 @@ export const findUserReservations = async (userId) => {
       sr.img_url AS "imgUrl",
       sr.description,
       sr.capacity,
-      sr.room_id AS "roomId"
+      sr.room_id AS "roomId",
+      sr.branch_id AS "branchId",
+      br.name AS "branchName"
     FROM reserve_room rr
     JOIN room_avail ra ON rr.avail_id = ra.avail_id
     JOIN study_room sr ON ra.room_id = sr.room_id
+    JOIN public.branches br ON sr.branch_id = br.branch_id
     WHERE rr.user_id = $1
     ORDER BY rr.start_date DESC, ra.start_time ASC
   `;

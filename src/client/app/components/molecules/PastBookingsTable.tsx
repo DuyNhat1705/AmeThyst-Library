@@ -2,6 +2,7 @@
 
 import { useI18n } from '../../providers/I18nProvider';
 import type { Reservation } from './ReservationCard';
+import { localizedBranchName } from '../../utils/room';
 
 interface Props {
   bookings: Reservation[];
@@ -40,6 +41,9 @@ export default function PastBookingsTable({ bookings }: Props) {
               {t('room.room_name')}
             </th>
             <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#74777D] dark:text-neutral-400">
+              {t('book.branch')}
+            </th>
+            <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#74777D] dark:text-neutral-400">
               {t('room.date')}
             </th>
             <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#74777D] dark:text-neutral-400">
@@ -58,6 +62,9 @@ export default function PastBookingsTable({ bookings }: Props) {
             <tr key={b.reserveId} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
               <td className="px-4 py-3 text-sm font-medium text-[#1D1C16] dark:text-neutral-200">
                 {b.roomName}
+              </td>
+              <td className="px-4 py-3 text-sm text-[#75777D] dark:text-neutral-400">
+                {localizedBranchName(t, b.branchId, b.branchName)}
               </td>
               <td className="px-4 py-3 text-sm text-[#75777D] dark:text-neutral-400">
                 {formatDate(b.startDate)}

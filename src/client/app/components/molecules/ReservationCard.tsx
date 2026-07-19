@@ -3,7 +3,7 @@
 import { useI18n } from '../../providers/I18nProvider';
 import { useState } from 'react';
 import { apiFetch } from '../../utils/apiClient';
-import { localizedDesc } from '../../utils/room';
+import { localizedDesc, localizedBranchName } from '../../utils/room';
 
 export interface Reservation {
   reserveId: string;
@@ -16,6 +16,8 @@ export interface Reservation {
   description: string;
   capacity: number;
   roomId: number;
+  branchId: number;
+  branchName: string;
 }
 
 interface Props {
@@ -77,7 +79,7 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
             {localizedDesc(t, reservation.roomId, reservation.description) || ''}
           </p>
 
-          <div className="flex items-center gap-6 text-xs text-[#75777D] dark:text-neutral-400">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-[#75777D] dark:text-neutral-400">
             <div className="flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -94,13 +96,20 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
               </svg>
               <span>{formatTime(reservation.startTime)} - {formatTime(reservation.endTime)}</span>
             </div>
+            <div className="flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span>{localizedBranchName(t, reservation.branchId, reservation.branchName)}</span>
+            </div>
           </div>
         </div>
 
       <div className="mx-5 border-t border-[#E8E2D5] dark:border-neutral-700" />
 
       <div className="p-5 pt-4 flex gap-2">
-        <button className="flex-1 py-2 text-xs font-bold rounded-full bg-[#03192E] text-white hover:opacity-85 transition-opacity">
+        <button className="flex-1 py-2 text-xs font-bold rounded-full bg-[#FFB95F] text-[#091426] hover:bg-[#e6a54d] transition-colors">
           {t('room.create_pin')}
         </button>
         <button

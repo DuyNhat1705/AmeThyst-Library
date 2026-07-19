@@ -405,6 +405,7 @@
   },
   "floor_map": {
     "title": "Interactive Floor Map",
+    "description": "Explore available group study rooms, individual desks, PC areas, and library lockers. Hover to highlight and click to view live details and scheduling.",
     "select_branch": "Select Library Branch",
     "branch_nvc": "Nguyen Van Cu (Branch 1)",
     "branch_lt": "Linh Trung (Branch 2)",
@@ -432,7 +433,7 @@
     "selected": "Selected",
     "slot_unavailable": "This slot is no longer available",
     "no_slots": "No available slots for this date",
-    "create_pin": "Tạo mã PIN",
+    "create_pin": "Create PIN",
     "cancel": "Cancel",
     "cancel_confirm_title": "Cancel reservation for {roomName}?",
     "cancel_confirm_keep": "Keep",

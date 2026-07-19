@@ -123,16 +123,16 @@ export const getUserReservations = async (userId) => {
   }
 
   const rows = await roomModel.findUserReservations(userId);
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-  const upcoming = rows.filter(r => {
-    const d = typeof r.startDate === 'string' ? r.startDate : r.startDate.toISOString().slice(0, 10);
-    return d >= today;
-  });
-  const past = rows.filter(r => {
-    const d = typeof r.startDate === 'string' ? r.startDate : r.startDate.toISOString().slice(0, 10);
-    return d < today;
-  });
+  const toDateStr = (d) => {
+    if (typeof d === 'string') return d;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  const upcoming = rows.filter(r => toDateStr(r.startDate) >= today);
+  const past = rows.filter(r => toDateStr(r.startDate) < today);
 
   return { upcoming, past };
 };

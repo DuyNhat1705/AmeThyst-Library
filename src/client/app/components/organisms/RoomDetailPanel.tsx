@@ -42,8 +42,10 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [roomDetails, setRoomDetails] = useState<RoomDetails | null>(null);
+  const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format in localtime zone
+  const nowTimeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); // HH:mm:ss format
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    return new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format in local timezone
+    return todayStr;
   });
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [imgSrc, setImgSrc] = useState<string>('');
@@ -314,9 +316,9 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                             <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
                               {t('room.select_mode') || 'Select Mode'}
                             </h3>
-                            <button
+                              <button
                               onClick={() => setMode('freely')}
-                              className="w-full py-2.5 px-4 rounded-lg bg-[#03192E] text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border border-[#03192E] shadow-sm flex items-center justify-center gap-2"
+                              className="w-full py-2.5 px-4 rounded-lg bg-[#FFB95F] text-[#091426] font-semibold text-sm hover:bg-[#e6a54d] active:scale-[0.98] transition-all border border-[#FFB95F] shadow-sm flex items-center justify-center gap-2"
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -349,7 +351,16 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                               <input
                                 type="date"
                                 value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
+                                min={todayStr}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setSelectedSlot(null);
+                                  if (val < todayStr) {
+                                    setSelectedDate(todayStr);
+                                  } else {
+                                    setSelectedDate(val);
+                                  }
+                                }}
                                 className="text-xs px-2 py-1 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-cyan-500"
                               />
                             </div>
@@ -373,10 +384,12 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                 )}
 
                                 {/* Availability list */}
-                                {availability.length > 0 ? (
+                                  {availability.length > 0 ? (
                                   <div className="divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden bg-neutral-50/50 dark:bg-neutral-800/30">
                                     {availability.map((slot) => {
-                                      const isFree = slot.status === 'free';
+                                      const isToday = selectedDate === todayStr;
+                                      const isPast = isToday && slot.startTime < nowTimeStr;
+                                      const isFree = slot.status === 'free' && !isPast;
                                       const isSelected = selectedSlot === slot.availId;
                                       return (
                                         <div
@@ -384,12 +397,18 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                           onClick={() => isFree && setSelectedSlot(selectedSlot === slot.availId ? null : slot.availId)}
                                           className={`flex items-center justify-between p-3 ${
                                             isFree ? 'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800' : ''
-                                          } ${isSelected ? 'bg-cyan-50 dark:bg-cyan-950/20 ring-1 ring-cyan-400' : ''}`}
+                                          } ${isSelected ? 'bg-cyan-50 dark:bg-cyan-950/20 ring-1 ring-cyan-400' : ''} ${
+                                            isPast ? 'opacity-40' : ''
+                                          }`}
                                         >
-                                          <div className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                          <div className={`text-sm font-medium ${isPast ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-700 dark:text-neutral-300'}`}>
                                             {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                                           </div>
-                                          {isSelected ? (
+                                          {isPast ? (
+                                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-neutral-200 text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400">
+                                              Passed
+                                            </span>
+                                          ) : isSelected ? (
                                             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300">
                                               {t('room.selected') || 'Selected'}
                                             </span>
@@ -409,7 +428,9 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                 {/* Confirm button */}
                                 <button
                                   onClick={async () => {
-                                    if (!selectedSlot || isConfirming) return;
+                                    const isPast = selectedDate === todayStr &&
+                                      availability.some(s => s.availId === selectedSlot && s.startTime < nowTimeStr);
+                                    if (!selectedSlot || isConfirming || isPast) return;
                                     setIsConfirming(true);
                                     setConfirmError(null);
                                     try {
@@ -429,11 +450,11 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                       setIsConfirming(false);
                                     }
                                   }}
-                                  disabled={!selectedSlot || isConfirming}
+                                  disabled={!selectedSlot || isConfirming || (selectedDate === todayStr && availability.some(s => s.availId === selectedSlot && s.startTime < nowTimeStr))}
                                   className={`w-full py-2.5 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
-                                    !selectedSlot || isConfirming
+                                    !selectedSlot || isConfirming || (selectedDate === todayStr && availability.some(s => s.availId === selectedSlot && s.startTime < nowTimeStr))
                                       ? 'bg-neutral-300 dark:bg-neutral-700 text-neutral-500 cursor-not-allowed'
-                                      : 'bg-[#03192E] text-white hover:opacity-90 active:scale-[0.98]'
+                                      : 'bg-[#FFB95F] text-[#091426] hover:bg-[#e6a54d] active:scale-[0.98]'
                                   }`}
                                 >
                                   {isConfirming ? (

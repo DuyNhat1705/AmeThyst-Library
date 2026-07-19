@@ -45,12 +45,12 @@ export default function RoomReservationsPage() {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[#1D1C16] font-hankenGrotesk text-5xl font-extrabold leading-[56px] tracking-[0.02em]">
+        <h1 className="text-[#1D1C16] dark:text-white font-hankenGrotesk text-5xl font-extrabold leading-[56px] tracking-[0.02em]">
           {t('dashboard.sidebar_room_reservations')}
         </h1>
         <div className="flex items-center gap-3">
           <Link href="/map">
-            <button className="py-2 px-5 rounded-full bg-[#03192E] text-white font-bold text-sm hover:opacity-85 transition-opacity flex items-center gap-2">
+            <button className="py-2 px-5 rounded-full bg-[#FFB95F] text-[#091426] font-bold text-sm hover:bg-[#e6a54d] transition-colors flex items-center gap-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -89,7 +89,7 @@ export default function RoomReservationsPage() {
 
       {/* Upcoming Section */}
       <div className="mb-10">
-        <h2 className="text-[#03192E] font-manrope text-xl font-bold leading-7 mb-6">
+        <h2 className="text-[#03192E] dark:text-white font-manrope text-xl font-bold leading-7 mb-6">
           {t('room.upcoming')}
         </h2>
         {loading ? (
@@ -100,7 +100,7 @@ export default function RoomReservationsPage() {
           <div className="text-center py-10">
             <p className="text-neutral-500 mb-4">{t('room.no_reservations')}</p>
             <Link href="/map">
-              <button className="py-2 px-5 rounded-full bg-[#03192E] text-white font-bold text-sm hover:opacity-85 transition-opacity">
+              <button className="py-2 px-5 rounded-full bg-[#FFB95F] text-[#091426] font-bold text-sm hover:bg-[#e6a54d] transition-colors">
                 {t('room.new_reservation')}
               </button>
             </Link>
@@ -116,7 +116,7 @@ export default function RoomReservationsPage() {
 
       {/* Past Bookings Section */}
       <div>
-        <h2 className="text-[#03192E] font-manrope text-xl font-bold leading-7 mb-6">
+        <h2 className="text-[#03192E] dark:text-white font-manrope text-xl font-bold leading-7 mb-6">
           {t('room.past_bookings')}
         </h2>
         {past.length === 0 ? (

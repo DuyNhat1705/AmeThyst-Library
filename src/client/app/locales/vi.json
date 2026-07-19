@@ -405,6 +405,7 @@
   },
   "floor_map": {
     "title": "Sơ Đồ Phòng Thư Viện",
+    "description": "Khám phá các phòng học nhóm, bàn làm việc cá nhân, khu vực máy tính và tủ đồ thư viện còn trống. Di chuột để làm nổi bật và nhấp để xem thông tin chi tiết cùng lịch trống.",
     "select_branch": "Chọn Chi Nhánh Thư Viện",
     "branch_nvc": "Nguyễn Văn Cừ (Cơ sở 1)",
     "branch_lt": "Linh Trung (Cơ sở 2)",
