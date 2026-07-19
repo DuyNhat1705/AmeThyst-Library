@@ -17,6 +17,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init_db/postgres:/docker-entrypoint-initdb.d
+      
 
   # ============================================================================
   # GRAPH KNOWLEDGE ENGINE
@@ -32,6 +33,8 @@ services:
       MEMGRAPH_PASSWORD: ${MEMGRAPH_PASSWORD}
     volumes:
       - memgraph_data:/var/lib/memgraph
+      # 🟩 Mount local seed directory cleanly to the container's standard import path
+      - ./init_db/memgraph:/usr/lib/memgraph/import
 
   # ============================================================================
   # VISUAL LAB 
@@ -44,6 +47,10 @@ services:
       - "8080:3000"  
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
+      # 🟩 Supply authentication credentials to enable visual lab instant auto-login
+      - QUICK_CONNECT_MG_PORT=7687
+      - QUICK_CONNECT_MG_USER=${MEMGRAPH_USER}
+      - QUICK_CONNECT_MG_PASSWORD=${MEMGRAPH_PASSWORD}
     depends_on:
       - memgraph
 

@@ -23,16 +23,28 @@ export-cpcsv:
 	docker cp library_postgres:/tmp/searches.csv ./tmp_csv/searches.csv
 	docker cp library_postgres:/tmp/borrow.csv ./tmp_csv/borrow.csv
 
+clean-csv:
+	-rm -rf ./tmp_csv/*.csv
+	-docker exec library_postgres rm -f /tmp/books.csv /tmp/branches.csv /tmp/library.csv /tmp/users.csv /tmp/searches.csv /tmp/borrow.csv
+
+init-graph:
+	python Init_data/Init_graph.py
+
 export-graph:
 	docker exec -i amethyst_memgraph mgconsole -c "DUMP DATABASE;" > ./amethyst_graph_dump.cypherl
 
-
 import-data:
-
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/03_datauser.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/04_init_rest.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/05_indexes.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/01_databook.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/02_datalibrary.sql
-nothing:
-	
+
+import-memgraph:
+	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 < ./init_db/init_graph.cypherl
+
+mock-export:
+	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t users -t user_wishlist -t search_history -t borrow_book -t return_book -t recommends --clean --if-exists >> 09_mock_data.sql	
+
+export-memgraph:
+	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 --output-format=cypherl > 010_datagraph.cypher
