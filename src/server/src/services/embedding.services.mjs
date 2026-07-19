@@ -1,5 +1,5 @@
 import pool from '../config/postgres.mjs';
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 
 let embedder = null;
 const getEmbedder = async () => {
@@ -12,7 +12,7 @@ const getEmbedder = async () => {
 
 /**
  * Generates an embedding for a text query.
- * First uses @xenova/transformers local model. If that fails, it falls back
+ * First uses @huggingface/transformers local model. If that fails, it falls back
  * to looking up an existing book's pre-seeded embedding, and then to a
  * hash-based deterministic mock embedding.
  * 
