@@ -3,12 +3,51 @@ import { getSession } from '../config/memgraph.config.mjs';
 import { syncRecommendationClick } from './memgraphSync.services.mjs';
 import { cleanText } from './search.services.mjs';
 import net from 'net';
+import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT_DIR = path.resolve(__dirname, '../../../');
+const PREDICT_SERVER_SCRIPT = path.join(ROOT_DIR, 'server/src/recommendation/predict_server.py');
 
 export const RECOMMENDATION_LIMIT = 15;
 
 // In-memory cache for user recommendations
 const recommendationCache = new Map(); // userId -> { data, expiresAt }
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+let pythonServerProcess = null;
+
+/**
+ * Spawns the persistent Python socket server in the background.
+ */
+const startPythonServer = () => {
+  if (pythonServerProcess) return;
+
+  const pythonCmd = process.env.PYTHON_COMMAND || 'python';
+  // console.log(`[Python Manager] Spawning Python persistent socket server: ${pythonCmd} ${PREDICT_SERVER_SCRIPT}`);
+
+  pythonServerProcess = spawn(pythonCmd, [PREDICT_SERVER_SCRIPT], {
+    cwd: ROOT_DIR,
+    env: { ...process.env, PYTHONPATH: ROOT_DIR },
+    detached: true,
+    stdio: 'ignore'
+  });
+
+  pythonServerProcess.unref();
+
+  pythonServerProcess.on('exit', (code) => {
+    // console.log(`[Python Manager] Python socket server exited with code ${code}`);
+    pythonServerProcess = null;
+  });
+};
+
+// Proactively spin up the Python persistent inference server on module load
+if (process.env.NODE_ENV !== 'test') {
+  startPythonServer();
+}
 
 /**
  * Invalidates the recommendations cache for a user.
@@ -24,7 +63,7 @@ export const invalidateUserRecommendationCache = (userId) => {
 /**
  * Executes model inference by communicating with the persistent Python TCP socket server.
  */
-const runRankerInference = (userId, candidates) => {
+const runRankerInference = (userId, candidates, retries = 1) => {
   return new Promise((resolve, reject) => {
     const port = parseInt(process.env.RECOMMENDATION_PORT || '5001', 10);
     const host = '127.0.0.1';
@@ -59,9 +98,25 @@ const runRankerInference = (userId, candidates) => {
       }
     });
     
-    client.on('error', (err) => {
+    client.on('error', async (err) => {
       client.destroy();
-      reject(err);
+      
+      if (err.code === 'ECONNREFUSED' && retries > 0) {
+        // console.log(`[Socket Client] Connection refused. Spawning Python persistent server and retrying...`);
+        startPythonServer();
+        
+        // Wait 1.5 seconds for the socket server to bind
+        await new Promise(res => setTimeout(res, 1500));
+        
+        try {
+          const retryResult = await runRankerInference(userId, candidates, retries - 1);
+          resolve(retryResult);
+        } catch (retryErr) {
+          reject(retryErr);
+        }
+      } else {
+        reject(err);
+      }
     });
     
     client.on('timeout', () => {
