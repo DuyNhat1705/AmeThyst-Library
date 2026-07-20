@@ -199,6 +199,76 @@ The application should now be fully operational through:
 http://localhost:3000
 ```
 
+---
+
+## IV. Running Tests & Scenario Filtering
+
+The backend contains a full test suite built with Vitest. Tests are organized into **projects** (one project per feature) and annotated with **scenario tags** (`@A_R1` to `@A_R10`, etc.) mapping to unified business requirements.
+
+All commands below are run from the `src/server` directory:
+
+```bash
+cd src/server
+```
+
+### Run the Entire Test Suite (all projects)
+```bash
+npm test
+```
+
+### Watch Mode
+```bash
+npm run test:watch
+```
+
+### Vitest UI (all projects)
+```bash
+npm run test:ui
+```
+
+### Run Tests for a Feature Group (project)
+Each feature (e.g. Registration, Login) lives in its own Vitest **project**, named with a shared prefix so it can be run individually or as a group.
+
+```bash
+# Run every project under the "auth" feature group
+# (currently: test_auth_register — more will be added, e.g. test_auth_login)
+npm run test:auth
+
+# Run only the Registration project
+npm run test:auth:register
+
+# Watch mode / UI, scoped to the auth group or a single project
+npm run test:auth:watch
+npm run test:auth:ui
+npm run test:auth:register:watch
+npm run test:auth:register:ui
+```
+
+> `test:auth` uses the wildcard `--project "test_auth*"`, so it automatically picks up every current and future project whose name starts with `test_auth` (e.g. `test_auth_register`, `test_auth_login`) without needing script changes.
+
+### Run Scenario-Filtered Tests (by tag)
+Use the `--tags-filter` CLI option to run tests by business scenario tag, scoped to the auth group:
+
+```bash
+# Run only tests validating Successful End-to-End Registration (Scenario 1)
+npm run test:auth:tag -- "@A_R1"
+
+# Run tests covering both Scenario 1 and Scenario 10
+npm run test:auth:tag -- "@A_R1 and @A_R10"
+
+# Equivalent, calling Vitest directly
+npx vitest run --project "test_auth*" --tags-filter=@A_R1
+```
+
+### List Registered Tags
+```bash
+npx vitest run --list-tags
+```
+
+For the full scenario mapping matrix, tagging guidelines, and conventions, refer to the [Test Documentation](docs/test/index.md).
+
+---
+
 # II. Introduct to Server Structure
 ## 1. Server.mjs
 This is the entry point of all system. It combines all components and starts the server instance by calling `app.listen()`
