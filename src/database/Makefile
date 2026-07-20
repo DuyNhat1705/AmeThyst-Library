@@ -1,11 +1,18 @@
 export-databook:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t books -t immutable_array_to_string --clean --if-exists >> 01_databook.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t books > 01_databook.sql
 
 export-datalibrary:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t branches -t library > 02_datalibrary.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t branches -t library > 02_datalibrary.sql
+
+export-datafacility:
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t study_room -t room_avail > 03_datafacility.sql
+
+export-datauser:
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t users > 04_datauser.sql
 
 export-initrest:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -T books -T branches -T branches_branch_id_seq -T library > 03_init_rest.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -T books -T branches -T branches_branch_id_seq -T library -T study_room -T room_avail -T users > 05_init_rest.sql
+
 
 export-datacsv:
 	docker exec -i -e PGCLIENTENCODING=UTF8 library_postgres psql -U lib_admin -d postgres -c "\copy (SELECT book_id, title, author, description, genres, publication_date, num_pages, rating, language_code, embedding FROM public.books) TO '/tmp/books.csv' WITH CSV HEADER;"	
