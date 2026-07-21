@@ -2,7 +2,9 @@ import 'sharp';
 import './config/env.mjs';
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
 import passport from './config/passport.mjs';
+import { initSocket } from './config/socket.mjs';
 import libraryRoutes from './routes/library.routes.mjs';
 import authRoutes from './routes/auth.routes.mjs';
 import userRoutes from './routes/user.routes.mjs';
@@ -32,11 +34,15 @@ app.use(historyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
+const server = http.createServer(app);
+initSocket(server);
+
 runStartupPinCleanup();
 startPeriodicPinCleanup();
 runStartupAnnouncementCleanup();
 startPeriodicAnnouncementCleanup();
 
-app.listen(PORT, () => {
+
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
