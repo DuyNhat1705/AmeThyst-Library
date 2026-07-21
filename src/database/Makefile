@@ -28,11 +28,13 @@ export-graph:
 
 
 import-data:
-
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/03_datauser.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/04_init_rest.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/05_indexes.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/01_databook.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/02_datalibrary.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/03_datafacility.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/04_datauser.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/05_init_rest.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/06_indexes.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/07_mock_data.sql
+
 nothing:
 	
