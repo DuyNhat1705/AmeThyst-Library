@@ -1,4 +1,4 @@
-# Use-Case Specification: Authentication Package
+# Use-Case Specification: Authentication
 
 **Group Name:** Amethyst
 
@@ -180,6 +180,69 @@ A new user profile record is instantiated in the database with a status set to "
 
 None.
 
+### 7. Prototype Screen
+![](Img/Authentication/uc-signin.jfif)
+
+---
+
+## UC-AUTH-02: Verify By Email
+
+*Included UC supporting parent operational blocks under UC-AUTH-01 (Register).* 
+
+### 1. Use-Case Name
+
+Verify By Email 
+
+#### 1.1 Brief Description
+
+Internal system routine handling verification token string generation, external email transactional routing, and account activation logic. 
+
+### 2. Flow of Events
+
+#### 2.1 Basic Flow
+
+1. **[Data Processing]**: The system generates a cryptographically secure, time-limited verification token string link. 
+2. **[Data Processing]**: The system packages a transactional email notification payload enclosing the activation token URI link parameters. 
+3. **[Data Processing]**: The system dispatches the compilation payload out to the external Transactional Email Service Provider engine API. 
+4. **[Actor Action]**: The user opens their personal email client workspace, opens the message, and clicks the enclosed activation link parameter object. 
+5. **[System Response]**: The system interceptor parses the incoming request URI, confirms token validity, updates the matching user account status parameter flag from "Pending" to "Active", and returns a verification success confirmation callback to the parent context. 
+
+#### 2.2 Alternative Flows
+
+##### 2.2.1 Boundary Horizon Exceeded (Step 5)
+
+If the user clicks the validation link after the expiration boundary has passed:
+
+1. The system flags the token lifecycle entry as invalid. 
+2. The system renders a "Link Expired" error block layout panel and provides an interface node to request a new verification message block. 
+
+* **Postcondition (Alternative Flow):** Account attributes retain their unverified resting states; target token entries purge from the operational caching memory layer. 
+
+### 3. Special Requirements
+
+#### 3.1 Nonce Cryptographic Signature
+
+Verification tokens must be unique nonces signed with an HMAC signature protocol layer. 
+
+### 4. Preconditions
+
+#### 4.1 Registration Pipeline Activation
+
+An orchestration call framework request is actively triggered via a parent user registration event. 
+
+### 5. Postconditions
+
+#### 5.1 Account Modification Activation
+
+User profile database rows convert permanently to fully verified "Active" operation states. 
+
+### 6. Extension Points
+
+None.
+
+### 7. Prototype Screen
+![](Img/Authentication/uc-auth-02-verify-by-email)
+
 ---
 
 ## UC-AUTH-03: Google OAuth
@@ -244,6 +307,9 @@ A secure application session token binds to the client browser, establishing a f
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen 
+
 
 ---
 
@@ -310,6 +376,9 @@ An active authenticated session token mounts securely inside the user workspace 
 
 None.
 
+### 7. Prototype Screen 
+![](Img/Authentication/uc-log-in.jfif)
+
 ---
 
 ## UC-AUTH-05: Forget Password
@@ -367,62 +436,8 @@ The targeted user account credentials update to the new password configuration b
 
 None.
 
----
-
-## UC-AUTH-02: Verify By Email
-
-*Included UC supporting parent operational blocks under UC-AUTH-01 (Register).* 
-
-### 1. Use-Case Name
-
-Verify By Email 
-
-#### 1.1 Brief Description
-
-Internal system routine handling verification token string generation, external email transactional routing, and account activation logic. 
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Data Processing]**: The system generates a cryptographically secure, time-limited verification token string link. 
-2. **[Data Processing]**: The system packages a transactional email notification payload enclosing the activation token URI link parameters. 
-3. **[Data Processing]**: The system dispatches the compilation payload out to the external Transactional Email Service Provider engine API. 
-4. **[Actor Action]**: The user opens their personal email client workspace, opens the message, and clicks the enclosed activation link parameter object. 
-5. **[System Response]**: The system interceptor parses the incoming request URI, confirms token validity, updates the matching user account status parameter flag from "Pending" to "Active", and returns a verification success confirmation callback to the parent context. 
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Boundary Horizon Exceeded (Step 5)
-
-If the user clicks the validation link after the expiration boundary has passed:
-
-1. The system flags the token lifecycle entry as invalid. 
-2. The system renders a "Link Expired" error block layout panel and provides an interface node to request a new verification message block. 
-
-* **Postcondition (Alternative Flow):** Account attributes retain their unverified resting states; target token entries purge from the operational caching memory layer. 
-
-### 3. Special Requirements
-
-#### 3.1 Nonce Cryptographic Signature
-
-Verification tokens must be unique nonces signed with an HMAC signature protocol layer. 
-
-### 4. Preconditions
-
-#### 4.1 Registration Pipeline Activation
-
-An orchestration call framework request is actively triggered via a parent user registration event. 
-
-### 5. Postconditions
-
-#### 5.1 Account Modification Activation
-
-User profile database rows convert permanently to fully verified "Active" operation states. 
-
-### 6. Extension Points
-
-None.
+### 7. Prototype Screen
+![](Img/Authentication/uc-forget-pass.jfif)
 
 ---
 
@@ -490,6 +505,8 @@ The current browser session context earns a temporary "Identity Confirmed" verif
 
 None.
 
+### 7. Prototype Screen
+![](Img/Authentication/uc-verifyOTP.jfif)
 ---
 
 ## UC-AUTH-07: Change Password
@@ -545,3 +562,7 @@ The underlying application database records permanent structural mutations over 
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Authentication/uc-change-pass.jfif)
+![](Img/Authentication/uc-reset-pass.jfif)

@@ -192,6 +192,10 @@ The digital structural blueprint map is fully loaded and remains interactive wit
 
 None.
 
+### 7. Prototype Screen
+
+![](Img/Facility/uc-LibMap.jfif)
+
 ---
 
 ## UC-LIB-02: View Facility Information
@@ -262,6 +266,9 @@ Detailed individual facility asset performance metrics, resource lists, and stru
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Facility/uc-room-info.jfif)
 
 ---
 
@@ -374,6 +381,9 @@ Core database calendar indices update permanently, blocking alternative reservat
 
 None.
 
+### 7. Prototype Screen
+![](Img/Facility/uc-room-reserve.jfif)
+
 ---
 
 ## UC-LIB-04: Canceling Room Reservation
@@ -444,6 +454,9 @@ Outstanding space tracking parameters invalidate completely; room availability t
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Facility/uc-room-reserve.jfif)
 
 ---
 
@@ -520,6 +533,10 @@ A structural collaborative group object profile instantiates within application 
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Facility/uc-group-create.jfif)
+![](Img/Facility/uc-create-form.jfif)
 
 ---
 
@@ -600,6 +617,9 @@ Coordinated team database index entities change to a fully inactive state model 
 
 None.
 
+### 7. Prototype Screen
+![](Img/Facility/uc-group-manage.jfif)
+
 ---
 
 ## UC-LIB-07: Updating Study Group Information
@@ -674,3 +694,6 @@ Modified structural team layout profile properties match user updates instantly 
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Facility/uc-group-manage.jfif)

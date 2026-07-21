@@ -133,7 +133,6 @@ flowchart TD
 
 ```
 
-
 ---
 
 ## UC-BK-01: Book Searching
@@ -226,6 +225,9 @@ The user's query parameters are safely recorded inside the historical database l
 
 None.
 
+### 7. Prototype Screen
+![](Img/Books/uc-search-display.jfif)
+
 ---
 
 ## UC-BK-02: Filtering Book
@@ -279,6 +281,9 @@ Active browse window lists map exactly to all applied parameter limit criteria s
 ### 6. Extension Points
 
 None.
+
+### 7.Prototype screen
+![](Img/Books/uc-filter.jfif)
 
 ---
 
@@ -363,6 +368,9 @@ All relevant context-driven interactive entry paths (Wishlist/Reservation links)
 
 * Location inside event flow: Exposing action controls for authenticated users (Step 8).
 
+### 7. Prototype Screen
+![](Img/Books/uc-view-detail.jfif)
+
 ---
 
 ## UC-BK-04: Add Book Favorite
@@ -427,6 +435,9 @@ Target catalog objects sit successfully inside user dashboard wishlist modules.
 ### 6. Extension Points
 
 None.
+
+![](Img/Books/uc-add-fav.jfif)
+![](Img/Books/uc-wishlist-dashboard.jfif)
 
 ---
 
@@ -501,6 +512,9 @@ Physical library copy availability allocations drop dynamically, and a transacti
 
 None.
 
+### 7. Prototype Screen
+![](Img/Books/uc-reserve.jfif)
+
 ---
 
 ## UC-BK-06: Canceling Book Reservation
@@ -562,6 +576,9 @@ Active reservation entry parameters drop out of active queues; physical library 
 
 None.
 
+### 7. Prototype Screen
+![](Img/Books/uc-cancel-reserve.jfif)
+
 ---
 
 ## UC-BK-07: Generating Pin
@@ -618,3 +635,7 @@ A secure token instance exists inside application memory, and authentication int
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+
+![](Img/Books/uc-gen-pin.jfif)

@@ -151,6 +151,9 @@ The calculated recommendation ranking matrix commits to high-speed cache memory 
 
 * Location inside event flow: Viewing the recommended list grid (Step 4). 
 
+### 7. Prototype Screen
+![](Img/Recommendation/reccommend.jfif)
+
 ---
 
 ## UC-AIR-02: Reset AI Recommend
@@ -214,6 +217,10 @@ The user's recommendation data structures are successfully overwritten, cached, 
 ### 6. Extension Points
 
 None.
+
+### 7. Prototype Screen
+![](Img/Recommendation/reccommend.jfif)
+
 
 ---
 
@@ -281,4 +288,3 @@ A fresh set of recommendation index keys compiles completely and maps back into 
 ### 6. Extension Points
 
 None.
-
