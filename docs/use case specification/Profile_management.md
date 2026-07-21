@@ -1,4 +1,4 @@
-# Use-Case Specification: Profile Management Package
+# Use-Case Specification: Profile Management
 
 **Group Name:** Amethyst
 
@@ -23,7 +23,7 @@
 ## Table of Contents
 1. [Regulation](#regulation)
 2. [Use case diagram](#use-case-diagram)
-3. [UC-PROF-01: View Self Profile](#uc-air-01-view-recommended-book)
+3. [UC-PROF-01: View Self Profile](#uc-prof-01-view-self-profile)
 4. [UC-PROF-02: Edit Profile](#uc-prof-02-edit-profile)
 5. [UC-PROF-03: Change Avatar](#uc-prof-03-change-avatar)
 6. [UC-PROF-04: Change Password](#uc-prof-04-change-password)
@@ -216,6 +216,9 @@ Revised personal metadata values write securely to production databases and upda
 
 None.
 
+### 7. Prototype screen
+![alt text](Img/Profile/uc-your-profile.jfif)
+
 ---
 
 ## UC-PROF-03: Change Avatar
@@ -294,6 +297,10 @@ Old media file references drop, target accounts link securely to new cloud image
 
 None.
 
+### 7. Prototype screen
+![alt text](Img/Profile/uc-upload-avatar.jfif)
+![](Img/Profile/uc-crop-avatar.jfif)
+
 ---
 
 ## UC-PROF-04: Change Password
@@ -369,3 +376,6 @@ Core account verification criteria fields update fully within production data la
 ### 6. Extension Points
 
 None.
+
+### 7.Prototype screen
+![alt text](Img/Profile/uc-change-pass.jfif)
