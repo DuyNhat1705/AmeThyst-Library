@@ -113,7 +113,7 @@ export default function RecommendationsPage() {
             {t('dashboard.recommendations_title') || 'AI Recommendations'}
           </h1>
           <p className="text-gray-500 dark:text-neutral-400 font-inter text-sm mt-1">
-            {t('dashboard.recommendations_subtitle') || 'Personalized suggestions compiled by our intelligent book discovery engine.'}
+            {t('dashboard.recommendations_subtitle') || 'Personalized suggestions based on your reading history and preferences.'}
           </p>
         </div>
         <button
@@ -122,7 +122,7 @@ export default function RecommendationsPage() {
           className="flex items-center gap-2 px-5 py-2.5 bg-[#006F66] text-white font-semibold font-inter text-sm rounded-lg hover:bg-[#005c54] active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:pointer-events-none"
         >
           <svg
-            className={`w-4 h-4 text-white ${renewing ? 'animate-spin' : ''}`}
+            className={`w-6 h-6 flex-none shrink-0 text-white ${renewing ? 'animate-spin' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -132,12 +132,12 @@ export default function RecommendationsPage() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2.5"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H16V3"
+              d="M20 11A8 8 0 1 1 17.33 5.33L20 8M20 3v5h-5"
             />
           </svg>
           {renewing 
             ? (t('dashboard.renewing') || 'Renewing...') 
-            : (t('dashboard.renew_recommendations') || 'Renew Recommendations')}
+            : (t('dashboard.renew_recommendations') || 'Renew')}
         </button>
       </div>
 
