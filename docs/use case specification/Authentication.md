@@ -241,7 +241,7 @@ User profile database rows convert permanently to fully verified "Active" operat
 None.
 
 ### 7. Prototype Screen
-![](Img/Authentication/uc-auth-02-verify-by-email)
+![](Img/Authentication/verify-mail.jfif)
 
 ---
 
@@ -309,7 +309,7 @@ A secure application session token binds to the client browser, establishing a f
 None.
 
 ### 7. Prototype Screen 
-
+![](Img/Authentication/google-auth.jfif)
 
 ---
 
