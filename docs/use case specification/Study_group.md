@@ -26,32 +26,42 @@
 3. [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
 4. [UC-SG-02: Filtering Study Group](#uc-sg-02-filtering-study-group)
 5. [UC-SG-03: View Study Group Detail](#uc-sg-03-view-study-group-detail)
-6. [UC-SG-04: Interacting with Others](#uc-sg-04-interacting-with-others)
-7. [UC-SG-05: Inviting Others into Study Group](#uc-sg-05-inviting-others-into-study-group)
-8. [UC-SG-06: Remove Others from Study Group](#uc-sg-06-remove-others-from-study-group)
-9. [UC-SG-07: Finding User By Email](#uc-sg-07-finding-user-by-email)
-10. [UC-SG-08: View Other Profile](#uc-sg-08-view-other-profile)
-11. [UC-SG-09: Interacting with Study Group](#uc-sg-09-interacting-with-study-group)
-12. [UC-SG-10: Managing Join Request](#uc-sg-10-managing-join-request)
-13. [UC-SG-11: Creating Join Request](#uc-sg-11-creating-join-request)
-14. [UC-SG-12: Canceling Join Request](#uc-sg-12-canceling-join-request)
-15. [UC-SG-13: Out Study Group](#uc-sg-13-out-study-group)
+6. [UC-SG-04: Inviting Others into Study Group](#uc-sg-05-inviting-others-into-study-group)
+7. [UC-SG-05: Remove Others from Study Group](#uc-sg-06-remove-others-from-study-group)
+8. [UC-SG-06: Finding User By Email](#uc-sg-07-finding-user-by-email)
+9. [UC-SG-07: View Other Profile](#uc-sg-08-view-other-profile)
+10. [UC-SG-08: Creating Join Request](#uc-sg-11-creating-join-request)
+11. [UC-SG-09: Canceling Join Request](#uc-sg-12-canceling-join-request)
+12. [UC-SG-10: Out Study Group](#uc-sg-13-out-study-group)
 
 ---
 
 ## Regulation
-
 ```mermaid
 flowchart RL
-    L1(["<center>{abstract} <br> User</center>"])
+    L1(["<center>{abstract} <br> Logged user</center>"])
 
-    L2_1([Study Group Creator])
-    L2_2([Other User])
+    L2_1([Admin])
+    L2_2([User])
+    L2_3([Librarian])
 
-    L3(["<center>{abstract} <br> General User</center>"])
+    L3(["<center>{abstract} <br> General user</center>"])
+
+    L4_1([Guest])
+    L4_2([Admin])
+    L4_3([User])
+    L4_4([Librarian])
 
     L2_1 --> L1
     L2_2 --> L1
+    L2_3 --> L1
+ 
+    L4_1 --> L3
+    L4_2 --> L3
+    L4_3 --> L3
+    L4_4 --> L3
+
+    
 ```
 
 *Note: General User is an independent actor for public browsing use cases and is not a specialization of User.*
@@ -67,19 +77,19 @@ flowchart LR
         UC2(("Filtering Study Group"))
         UC3(("View Study Group Detail"))
         UC5(("Inviting Others into<br>Study Group"))
-        UC4(("<center>{abstract}<br>Interacting with Others</center>"))
+        UC4(("{abstract}<br>Interacting with Others"))
         UC6(("Remove Others from<br>Study Group"))
         UC7(("Finding User By Email"))
         UC8(("View Other Profile"))
-        UC9(("<center>{abstract}<br>Interacting with Study Group</center>"))
-        UC10(("<center>{abstract}<br>Managing Join<br>Request</center>"))
-        UC11(("<center>Creating Join<br>Request</center>"))
-        UC12(("<center>Canceling Join<br>Request</center>"))
+        UC9(("{abstract}<br>Interacting with Study Group"))
+        UC10(("{abstract}<br>Managing Join<br>Request"))
+        UC11(("Creating Join<br>Request"))
+        UC12(("Canceling Join<br>Request"))
         UC13(("Out Study Group"))
   end
-    StudyGroupCreator(["study group creator"]) --> User(["<center>{abstract}<br>user</center>"])
+    StudyGroupCreator(["study group creator"]) --> User(["{abstract}<br>user"])
     OtherUser(["other user"]) --> User
-    GeneralUser(["<center>{abstract}<br>general user</center>"]) ~~~ StudyGroupCreator
+    GeneralUser(["{abstract}<br>general user"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
     User ~~~ OtherUser
     UC1 ~~~ UC2
@@ -177,11 +187,6 @@ A list of study groups matching the search criteria is displayed to the General 
 None.
 
 ### 7. Prototype Screen
-
-![Study Group Summary](Img/StudyGroup/Screenshot%202026-07-21%20213806.png)
-
-### 7. Prototype Screen
-
 ![Study Group Listing](Img/StudyGroup/Screenshot%202026-07-21%20213843.png)
 
 ---
@@ -310,53 +315,7 @@ None.
 
 ---
 
-## UC-SG-04: Interacting with Others
-
-*Abstract use case.*
-
-### 1. Use-Case Name
-
-Interacting with Others
-
-#### 1.1 Brief Description
-
-Abstract use case representing the common purpose of the actions a Study Group Creator performs regarding other users associated with a study group.
-
-### 2. Flow of Events
-
-Not applicable; this is an abstract use case realized through its specializations.
-
-### 3. Special Requirements
-
-#### 3.1 Specializations
-
-This use case is realized through:
-- UC-SG-05 (Inviting Others into Study Group)
-- UC-SG-06 (Remove Others from Study Group)
-- UC-SG-07 (Finding User By Email)
-- UC-SG-08 (View Other Profile)
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Management](Img/StudyGroup/Screenshot%202026-07-21%20213817.png)
-
----
-
-## UC-SG-05: Inviting Others into Study Group
-
-*Specializes UC-SG-04 (Interacting with Others).*
+## UC-SG-04: Inviting Others into Study Group
 
 ### 1. Use-Case Name
 
@@ -419,9 +378,7 @@ None.
 
 ---
 
-## UC-SG-06: Remove Others from Study Group
-
-*Specializes UC-SG-04 (Interacting with Others).*
+## UC-SG-05: Remove Others from Study Group
 
 ### 1. Use-Case Name
 
@@ -491,9 +448,7 @@ None.
 
 ---
 
-## UC-SG-07: Finding User By Email
-
-*Specializes UC-SG-04 (Interacting with Others).*
+## UC-SG-06: Finding User By Email
 
 ### 1. Use-Case Name
 
@@ -558,9 +513,7 @@ None.
 
 ---
 
-## UC-SG-08: View Other Profile
-
-*Specializes UC-SG-04 (Interacting with Others).*
+## UC-SG-07: View Other Profile
 
 ### 1. Use-Case Name
 
@@ -616,93 +569,7 @@ None.
 
 ---
 
-## UC-SG-09: Interacting with Study Group
-
-*Abstract use case.*
-
-### 1. Use-Case Name
-
-Interacting with Study Group
-
-#### 1.1 Brief Description
-
-Abstract use case representing the common purpose of the actions a study group member (Study Group Creator or Other User) performs regarding their own participation in a study group.
-
-### 2. Flow of Events
-
-Not applicable; this is an abstract use case realized through its specializations.
-
-### 3. Special Requirements
-
-#### 3.1 Specializations
-
-This use case is realized through:
-- UC-SG-10 (Managing Join Request)
-- UC-SG-13 (Out Study Group)
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Summary](Img/StudyGroup/Screenshot%202026-07-21%20213759.png)
-
----
-
-## UC-SG-10: Managing Join Request
-
-*Abstract use case.* *Specializes UC-SG-09 (Interacting with Study Group).*
-
-### 1. Use-Case Name
-
-Managing Join Request
-
-#### 1.1 Brief Description
-
-Abstract use case representing the common purpose of the actions related to a user's request to join a study group.
-
-### 2. Flow of Events
-
-Not applicable; this is an abstract use case realized through its specializations.
-
-### 3. Special Requirements
-
-#### 3.1 Specializations
-
-This use case is realized through:
-- UC-SG-11 (Creating Join Request)
-- UC-SG-12 (Canceling Join Request)
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Join Request](Img/StudyGroup/Screenshot%202026-07-21%20213906.png)
-
----
-
-## UC-SG-11: Creating Join Request
-
-*Specializes UC-SG-10 (Managing Join Request).*
+## UC-SG-08: Creating Join Request
 
 ### 1. Use-Case Name
 
@@ -771,9 +638,7 @@ None.
 
 ---
 
-## UC-SG-12: Canceling Join Request
-
-*Specializes UC-SG-10 (Managing Join Request).*
+## UC-SG-09: Canceling Join Request
 
 ### 1. Use-Case Name
 
@@ -828,9 +693,7 @@ None.
 
 ---
 
-## UC-SG-13: Out Study Group
-
-*Specializes UC-SG-09 (Interacting with Study Group).*
+## UC-SG-10: Out Study Group
 
 ### 1. Use-Case Name
 

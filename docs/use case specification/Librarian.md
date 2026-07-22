@@ -23,44 +23,40 @@
 ## Table of Contents
 1. [Regulation](#regulation)
 2. [Use case diagram](#use-case-diagram)
-3. [UC-LIB-01: Managing Book (abstract)](#uc-lib-01-managing-book-abstract)
-4. [UC-LIB-02: Adding Books](#uc-lib-02-adding-books)
-5. [UC-LIB-03: Removing Books](#uc-lib-03-removing-books)
-6. [UC-LIB-04: Confirming Book Return](#uc-lib-04-confirming-book-return)
-7. [UC-LIB-05: Recording Loan](#uc-lib-05-recording-loan)
-8. [UC-LIB-06: Managing Room (abstract)](#uc-lib-06-managing-room-abstract)
-9. [UC-LIB-07: Verifying Pin (abstract)](#uc-lib-07-verifying-pin-abstract)
-10. [UC-LIB-08: Confirming Book Borrowed](#uc-lib-08-confirming-book-borrowed)
-11. [UC-LIB-09: Confirming Room Checkin](#uc-lib-09-confirming-room-checkin)
-12. [UC-LIB-10: Announcement](#uc-lib-10-announcement)
+3. [UC-LIB-01: Adding Books](#uc-lib-02-adding-books)
+4. [UC-LIB-02: Removing Books](#uc-lib-03-removing-books)
+5. [UC-LIB-03: Confirming Book Return](#uc-lib-04-confirming-book-return)
+6. [UC-LIB-04: Recording Loan](#uc-lib-05-recording-loan)
+7. [UC-LIB-05: Confirming Book Borrowed](#uc-lib-08-confirming-book-borrowed)
+8. [UC-LIB-06: Confirming Room Checkin](#uc-lib-09-confirming-room-checkin)
+9. [UC-LIB-07: Announcement](#uc-lib-10-announcement)
 
 ---
 
 ## Regulation
-
 ```mermaid
 flowchart RL
-  L1(["<center>{abstract} <br> Logged user</center>"])
+    L1(["<center>{abstract} <br> Logged user</center>"])
 
-  L2_1([Admin])
-  L2_2([User])
-  L2_3([Librarian])
+    L2_1([Admin])
+    L2_2([User])
+    L2_3([Librarian])
 
-  L3(["<center>{abstract} <br> General user</center>"])
+    L3(["<center>{abstract} <br> General user</center>"])
 
-  L4_1([Guest])
-  L4_2([Admin])
-  L4_3([User])
-  L4_4([Librarian])
+    L4_1([Guest])
+    L4_2([Admin])
+    L4_3([User])
+    L4_4([Librarian])
 
-  L2_1 --> L1
-  L2_2 --> L1
-  L2_3 --> L1
+    L2_1 --> L1
+    L2_2 --> L1
+    L2_3 --> L1
  
-  L4_1 --> L3
-  L4_2 --> L3
-  L4_3 --> L3
-  L4_4 --> L3
+    L4_1 --> L3
+    L4_2 --> L3
+    L4_3 --> L3
+    L4_4 --> L3
 
     
 ```
@@ -72,18 +68,18 @@ flowchart RL
 ```mermaid
 flowchart LR
  subgraph LibrarianAdministration["Librarian Administration"]
-        UC1(("<center>{abstract} <br> Managing Book</center>"))
+        UC1(("&lt;abstract&gt;<br>Managing Book"))
         UC2(("Adding Books"))
         UC3(("Removing Books"))
         UC4(("Confirming Book Return"))
         UC5(("Recording Loan"))
-        UC6(("Managing Room"))
-        UC7(("<center>{abstract} <br> Verifying Pin</center>"))
+        UC6(("&lt;abstract&gt;<br>Managing Room"))
+        UC7(("&lt;abstract&gt;<br>Verifying Pin"))
         UC8(("Confirming Book Borrowed"))
         UC9(("Confirming Room Checkin"))
         UC10(("Announcement"))
   end
-    Librarian(["Librarian"]) ======= LibrarianAdministration
+    Librarian(["Librarian"]) ============ LibrarianAdministration
     Librarian --- UC1 & UC6 & UC7 & UC10
     UC2 --> UC1
     UC3 --> UC1
@@ -98,49 +94,7 @@ flowchart LR
 
 ---
 
-## UC-LIB-01: Managing Book (abstract)
-
-*Specialized by Adding Books, Removing Books, and Confirming Book Return.*
-
-### 1. Use-Case Name
-
-Managing Book
-
-#### 1.1 Brief Description
-
-Abstract use case representing the Librarian's general capability to manage book records in the catalog. It is not instantiated directly; its behavior is defined entirely by its specializations.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-Not applicable. As an abstract use case, Managing Book has no independent flow of events.
-
-#### 2.2 Alternative Flows
-
-Not applicable.
-
-### 3. Special Requirements
-
-This use case cannot be instantiated on its own; it is realized exclusively through UC-LIB-02 (Adding Books), UC-LIB-03 (Removing Books), and UC-LIB-04 (Confirming Book Return).
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
----
-
-## UC-LIB-02: Adding Books
-
-*Specializes UC-LIB-01 (Managing Book).*
+## UC-LIB-01: Adding Books
 
 ### 1. Use-Case Name
 
@@ -200,13 +154,12 @@ A new book record is stored in the catalog and becomes available for borrowing.
 None.
 
 ### 7. Prototype Screen
+
 ![Managing Book](Img/Librarian/uc-book-management.png)
 
 ---
 
-## UC-LIB-03: Removing Books
-
-*Specializes UC-LIB-01 (Managing Book).*
+## UC-LIB-02: Removing Books
 
 ### 1. Use-Case Name
 
@@ -266,13 +219,14 @@ The selected book record is removed from the catalog.
 None.
 
 ### 7. Prototype Screen
+
 ![Managing Book](Img/Librarian/uc-book-management.png)
 
 ---
 
-## UC-LIB-04: Confirming Book Return
+## UC-LIB-03: Confirming Book Return
 
-*Extended by Recording Loan (at Step 5). Specializes UC-LIB-01 (Managing Book).*
+*Extended by Recording Loan (at Step 5).*
 
 ### 1. Use-Case Name
 
@@ -332,13 +286,14 @@ The loan record is marked as returned and the book is marked as available.
 * Location inside event flow: After the return is confirmed (Step 5).
 
 ### 7. Prototype Screen
+
 ![Confirming Book Return](Img/Librarian/uc-book-return.png)
 
 ---
 
-## UC-LIB-05: Recording Loan
+## UC-LIB-04: Recording Loan
 
-*Extends UC-LIB-04 (Confirming Book Return) — extension point: The Librarian chooses to loan the returned book to another member (at Step 5).*
+*Extends UC-LIB-04 (Confirming Book Return) at Step 5 when the Librarian chooses to loan the returned book to another member.*
 
 ### 1. Use-Case Name
 
@@ -397,93 +352,12 @@ A new loan record is created and the selected book is marked as on loan.
 None.
 
 ### 7. Prototype Screen
+
 ![Recording Loan](Img/Librarian/uc-book-pickup.png)
 
 ---
 
-## UC-LIB-06: Managing Room (abstract)
-
-*Abstract use case; the use case diagram does not depict any specialization for this functional group.*
-
-### 1. Use-Case Name
-
-Managing Room
-
-#### 1.1 Brief Description
-
-Abstract use case representing the Librarian's general capability to manage library rooms.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-Not applicable. As an abstract use case, Managing Room has no independent flow of events.
-
-#### 2.2 Alternative Flows
-
-Not applicable.
-
-### 3. Special Requirements
-
-This use case cannot be instantiated on its own. No concrete specialization is currently documented for this functional group.
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
----
-
-## UC-LIB-07: Verifying Pin (abstract)
-
-*Specialized by Confirming Book Borrowed and Confirming Room Checkin.*
-
-### 1. Use-Case Name
-
-Verifying Pin
-
-#### 1.1 Brief Description
-
-Abstract use case representing the shared purpose of the Librarian's PIN-verification use cases: confirming a book borrowing and confirming a room check-in.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-Not applicable. As an abstract use case, Verifying Pin has no independent flow of events.
-
-#### 2.2 Alternative Flows
-
-Not applicable.
-
-### 3. Special Requirements
-
-This use case cannot be instantiated on its own; it is realized exclusively through UC-LIB-08 (Confirming Book Borrowed) and UC-LIB-09 (Confirming Room Checkin).
-
-### 4. Preconditions
-
-Not applicable.
-
-### 5. Postconditions
-
-Not applicable.
-
-### 6. Extension Points
-
-None.
-
----
-
-## UC-LIB-08: Confirming Book Borrowed
-
-*Specializes UC-LIB-07 (Verifying Pin).*
+## UC-LIB-05: Confirming Book Borrowed
 
 ### 1. Use-Case Name
 
@@ -541,13 +415,12 @@ The member's identity is verified and the borrowing transaction is confirmed.
 None.
 
 ### 7. Prototype Screen
+
 ![Verifying Pin](Img/Librarian/uc-verify-pin.png)
 
 ---
 
-## UC-LIB-09: Confirming Room Checkin
-
-*Specializes UC-LIB-07 (Verifying Pin).*
+## UC-LIB-06: Confirming Room Checkin
 
 ### 1. Use-Case Name
 
@@ -605,11 +478,12 @@ The member's identity is verified and the member is confirmed as checked into th
 None.
 
 ### 7. Prototype Screen
+
 ![Confirming Room Checkin](Img/Librarian/uc-room-reservation.png)
 
 ---
 
-## UC-LIB-10: Announcement
+## UC-LIB-07: Announcement
 
 ### 1. Use-Case Name
 
@@ -664,4 +538,5 @@ The announcement is published and stored in the system.
 None.
 
 ### 7. Prototype Screen
+
 ![Announcement](Img/Librarian/uc-announcement.png)

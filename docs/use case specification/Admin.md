@@ -25,39 +25,38 @@
 2. [Use case diagram](#use-case-diagram)
 3. [UC-ADM-01: View User Account](#uc-adm-01-view-user-account)
 4. [UC-ADM-02: Generating CSV Report](#uc-adm-02-generating-csv-report)
-5. [UC-ADM-07: Authorization](#uc-adm-07-authorization)
-6. [UC-ADM-05: Role Control](#uc-adm-05-role-control)
-7. [UC-ADM-06: Use-case Permission](#uc-adm-06-use-case-permission)
-8. [UC-ADM-03: System Configuration](#uc-adm-03-system-configuration)
-9. [UC-ADM-04: View Statistics](#uc-adm-04-view-statistics)
+5. [UC-ADM-03: Authorization](#uc-adm-07-authorization)
+6. [UC-ADM-04: Role Control](#uc-adm-05-role-control)
+7. [UC-ADM-05: Use-case Permission](#uc-adm-06-use-case-permission)
+8. [UC-ADM-06: System Configuration](#uc-adm-03-system-configuration)
+9. [UC-ADM-07: View Statistics](#uc-adm-04-view-statistics)
 
 ---
 
 ## Regulation
-
 ```mermaid
 flowchart RL
-  L1(["<center>{abstract} <br> Logged user</center>"])
+    L1(["<center>{abstract} <br> Logged user</center>"])
 
-  L2_1([Admin])
-  L2_2([User])
-  L2_3([Librarian])
+    L2_1([Admin])
+    L2_2([User])
+    L2_3([Librarian])
 
-  L3(["<center>{abstract} <br> General user</center>"])
+    L3(["<center>{abstract} <br> General user</center>"])
 
-  L4_1([Guest])
-  L4_2([Admin])
-  L4_3([User])
-  L4_4([Librarian])
+    L4_1([Guest])
+    L4_2([Admin])
+    L4_3([User])
+    L4_4([Librarian])
 
-  L2_1 --> L1
-  L2_2 --> L1
-  L2_3 --> L1
+    L2_1 --> L1
+    L2_2 --> L1
+    L2_3 --> L1
  
-  L4_1 --> L3
-  L4_2 --> L3
-  L4_3 --> L3
-  L4_4 --> L3
+    L4_1 --> L3
+    L4_2 --> L3
+    L4_3 --> L3
+    L4_4 --> L3
 
     
 ```
@@ -66,10 +65,8 @@ flowchart RL
 
 ## Use case diagram
 
-> **Note:** Diagram preserved as originally provided; no abstract actors are used, so no actor generalization ("Regulation") diagram is required.
-
 ```mermaid
-flowchart TD
+flowchart LR
  subgraph AdminAdministration["Admin Administration"]
         UC1(("View User Account"))
         UC2(("Generating CSV Report"))
@@ -79,9 +76,9 @@ flowchart TD
         UC6(("System Configuration"))
         UC7(("View Statistics"))
   end
-    Admin(["Admin"]) ~~~~ AdminAdministration
+    Admin(["Admin"]) ~~~~~ AdminAdministration
     Admin --- UC1 & UC3 & UC6 & UC7
-    UC2 -. "<< extend >>" .-> UC1
+    UC2 -. &lt;&lt; extend &gt;&gt; .-> UC1
     UC4 --> UC3
     UC5 --> UC3
 
@@ -238,7 +235,7 @@ None.
 
 ---
 
-## UC-ADM-07: Authorization
+## UC-ADM-03: Authorization
 
 *Included by Role Control (UC-ADM-05) and Use-case Permission (UC-ADM-06).*
 
@@ -316,7 +313,7 @@ None.
 
 ---
 
-## UC-ADM-05: Role Control
+## UC-ADM-04: Role Control
 
 *Includes Authorization (UC-ADM-07).*
 
@@ -390,7 +387,7 @@ None.
 
 ---
 
-## UC-ADM-06: Use-case Permission
+## UC-ADM-05: Use-case Permission
 
 *Includes Authorization (UC-ADM-07).*
 
@@ -464,7 +461,7 @@ None.
 
 ---
 
-## UC-ADM-03: System Configuration
+## UC-ADM-06: System Configuration
 
 ### 1. Use-Case Name
 
@@ -528,7 +525,7 @@ None.
 
 ---
 
-## UC-ADM-04: View Statistics
+## UC-ADM-07: View Statistics
 
 ### 1. Use-Case Name
 
