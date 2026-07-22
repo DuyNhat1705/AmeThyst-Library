@@ -216,6 +216,18 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
+    const debtCheck = await client.query(
+      'SELECT COUNT(*) as unpaid FROM public.book_penalty WHERE user_id = $1 AND is_paid = false',
+      [userId]
+    );
+    if (parseInt(debtCheck.rows[0].unpaid) > 0) {
+      await client.query('ROLLBACK');
+      return {
+        error: { code: 'UNPAID_DEBT', message: 'You have unpaid debts. Please clear all outstanding penalties before reserving a new book.' },
+        statusCode: 400
+      };
+    }
+
     // 0.5 Check user's borrow_num against limit
     const userBorrowQuery = 'SELECT borrow_num FROM public.users WHERE user_id = $1';
     const userBorrowResult = await client.query(userBorrowQuery, [userId]);
@@ -319,8 +331,13 @@ export const cleanupExpiredPins = async () => {
   try {
     const query = `
       UPDATE public.borrow_book
-      SET pin = NULL, expired_at = NULL, status = 'reserved'
-      WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at <= NOW()
+      SET pin = NULL, expired_at = NULL,
+          status = CASE
+            WHEN status = 'pending' THEN 'reserved'
+            WHEN status = 'pending_return' THEN 'borrowed'
+            ELSE status
+          END
+      WHERE status IN ('pending', 'pending_return') AND expired_at IS NOT NULL AND expired_at <= NOW()
     `;
     const result = await pool.query(query);
     return result.rowCount;
@@ -337,8 +354,13 @@ export const clearAllPins = async () => {
   try {
     const query = `
       UPDATE public.borrow_book
-      SET pin = NULL, expired_at = NULL, status = 'reserved'
-      WHERE status = 'pending'
+      SET pin = NULL, expired_at = NULL,
+          status = CASE
+            WHEN status = 'pending' THEN 'reserved'
+            WHEN status = 'pending_return' THEN 'borrowed'
+            ELSE status
+          END
+      WHERE status IN ('pending', 'pending_return')
     `;
     const result = await pool.query(query);
     return result.rowCount;

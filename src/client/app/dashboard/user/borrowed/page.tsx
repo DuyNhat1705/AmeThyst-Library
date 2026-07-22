@@ -20,20 +20,26 @@ export default function BorrowedBooksPage() {
   const [loading, setLoading] = useState(true);
   const [pinModal, setPinModal] = useState<{ open: boolean; pin: string; expiresAt: string }>({ open: false, pin: '', expiresAt: '' });
   const [generatingPinId, setGeneratingPinId] = useState<string | null>(null);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [confirmExtendId, setConfirmExtendId] = useState<string | null>(null);
+  const [extendError, setExtendError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBorrowRecords = async () => {
       setLoading(true);
       try {
-        const result = await apiFetch<{ current: BorrowedBook[] }>('/dashboard/user/my-borrowed');
+        const result = await apiFetch<{ current: BorrowedBook[]; past: BorrowedBook[] }>('/dashboard/user/my-borrowed');
         if (result.success) {
           setCurrentBooks(result.data?.current || []);
+          setHistoryBooks(result.data?.past || []);
         } else {
           setCurrentBooks([]);
+          setHistoryBooks([]);
         }
       } catch (err) {
         console.error('Error fetching borrow records:', err);
         setCurrentBooks([]);
+        setHistoryBooks([]);
       } finally {
         setLoading(false);
       }
@@ -84,11 +90,70 @@ export default function BorrowedBooksPage() {
     }
   };
 
+  const handleGenerateReturnPin = async (id: string) => {
+    try {
+      setGeneratingPinId(id);
+      setPinError(null);
+      const result = await apiFetch<{ pin: string; expiresAt: string }>(`/dashboard/user/borrowed/generate-return-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ borrow_id: id })
+      });
+      if (result.success && result.data) {
+        setCurrentBooks(prev => prev.map(book =>
+          book.id === id ? { ...book, pin: result.data!.pin, status: 'pending_return', expiresAt: result.data!.expiresAt } : book
+        ));
+        setPinModal({ open: true, pin: result.data.pin, expiresAt: result.data.expiresAt });
+      } else {
+        setPinError(result.message || 'Failed to generate return PIN');
+      }
+    } catch (err) {
+      console.error('Error generating return PIN:', err);
+      setPinError('Network error. Please try again.');
+    } finally {
+      setGeneratingPinId(null);
+    }
+  };
+
   const handleViewPin = (id: string) => {
     const book = currentBooks.find(b => b.id === id);
     if (book?.pin) {
       setPinModal({ open: true, pin: book.pin, expiresAt: book.expiresAt || '' });
     }
+  };
+
+  const handleRequestExtend = (id: string) => {
+    setExtendError(null);
+    setConfirmExtendId(id);
+  };
+
+  const handleConfirmExtend = async () => {
+    const id = confirmExtendId;
+    if (!id) return;
+    setConfirmExtendId(null);
+    setExtendError(null);
+    try {
+      const result = await apiFetch<{ dueDate: string; extendNum: number }>('/dashboard/user/borrowed/extend-due-date', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ borrow_id: id })
+      });
+      if (result.success && result.data) {
+        setCurrentBooks(prev => prev.map(book =>
+          book.id === id ? { ...book, dueDate: result.data!.dueDate, extendNum: result.data!.extendNum } : book
+        ));
+      } else {
+        setExtendError(result.message || 'Failed to extend due date');
+      }
+    } catch (err) {
+      console.error('Error extending due date:', err);
+      setExtendError('Network error. Please try again.');
+    }
+  };
+
+  const handleCancelExtend = () => {
+    setConfirmExtendId(null);
+    setExtendError(null);
   };
 
   return (
@@ -141,6 +206,8 @@ export default function BorrowedBooksPage() {
               onCancel={handleCancelReservation}
               onViewPin={handleViewPin}
               onGeneratePin={handleGeneratePin}
+              onGenerateReturnPin={handleGenerateReturnPin}
+              onExtend={handleRequestExtend}
             />
           ))}
           {filtered.length === 0 && (
@@ -151,11 +218,40 @@ export default function BorrowedBooksPage() {
         <BorrowedHistoryTable books={filtered} />
       )}
 
+      {extendError && (
+        <div className="flex justify-center">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-6 py-3 max-w-md">
+            <p className="text-red-600 dark:text-red-400 text-sm font-medium text-center">{extendError}</p>
+          </div>
+        </div>
+      )}
+
+      {confirmExtendId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={handleCancelExtend}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 max-w-sm w-full mx-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-manrope text-lg font-bold text-black dark:text-neutral-100 mb-2">{t('dashboard.borrowed_extend_confirm_title')}</h3>
+            <p className="text-[#615E58] dark:text-neutral-400 text-sm mb-6">{t('dashboard.borrowed_extend_confirm_message')}</p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={handleCancelExtend} className="py-2 px-5 rounded-full border border-[#E8E2D5] dark:border-neutral-600 text-[#43474D] dark:text-neutral-300 text-xs font-bold hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">{t('dashboard.borrowed_extend_cancel')}</button>
+              <button onClick={handleConfirmExtend} className="py-2 px-5 rounded-full bg-[#1A73E8] text-white dark:bg-blue-600 text-xs font-bold hover:opacity-90 transition-opacity">{t('dashboard.borrowed_extend_confirm')}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pinError && (
+        <div className="flex justify-center">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-6 py-3 max-w-md">
+            <p className="text-red-600 dark:text-red-400 text-sm font-medium text-center">{pinError}</p>
+          </div>
+        </div>
+      )}
+
       <PinModal
         pin={pinModal.pin}
         expiresAt={pinModal.expiresAt}
         isOpen={pinModal.open}
-        onClose={() => setPinModal({ open: false, pin: '', expiresAt: '' })}
+        onClose={() => { setPinModal({ open: false, pin: '', expiresAt: '' }); setPinError(null); }}
       />
     </>
   );

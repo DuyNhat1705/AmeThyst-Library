@@ -5,7 +5,8 @@ interface AmountProps {
 }
 
 export default function Amount({ value, currency = '$', className = '' }: AmountProps) {
-  const formatted = `${currency}${value.toFixed(2)}`;
+  const num = typeof value === 'number' ? value : Number(value);
+  const formatted = `${currency}${num.toFixed(2)}`;
   return (
     <span className={`font-manrope font-bold tabular-nums ${className}`}>
       {formatted}

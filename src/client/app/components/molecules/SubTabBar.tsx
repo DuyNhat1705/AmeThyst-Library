@@ -7,7 +7,7 @@ interface SubTabBarProps {
   onTabChange: (tab: string) => void;
 }
 
-const TABS = ['book_management', 'book_pickup', 'book_return', 'inspection'];
+const TABS = ['book_management', 'book_pickup', 'book_return', 'inspection', 'loan_fees'];
 
 export default function SubTabBar({ activeTab, onTabChange }: SubTabBarProps) {
   const { t } = useI18n();
