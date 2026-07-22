@@ -23,13 +23,13 @@
 ## Table of Contents
 1. [Regulation](#regulation)
 2. [Use case diagram](#use-case-diagram)
-3. [UC-LIB-01: Adding Books](#uc-lib-02-adding-books)
-4. [UC-LIB-02: Removing Books](#uc-lib-03-removing-books)
-5. [UC-LIB-03: Confirming Book Return](#uc-lib-04-confirming-book-return)
-6. [UC-LIB-04: Recording Loan](#uc-lib-05-recording-loan)
-7. [UC-LIB-05: Confirming Book Borrowed](#uc-lib-08-confirming-book-borrowed)
-8. [UC-LIB-06: Confirming Room Checkin](#uc-lib-09-confirming-room-checkin)
-9. [UC-LIB-07: Announcement](#uc-lib-10-announcement)
+3. [UC-LIB-01: Adding Books](#uc-lib-01-adding-books)
+4. [UC-LIB-02: Removing Books](#uc-lib-02-removing-books)
+5. [UC-LIB-03: Confirming Book Return](#uc-lib-03-confirming-book-return)
+6. [UC-LIB-04: Recording Loan](#uc-lib-04-recording-loan)
+7. [UC-LIB-05: Confirming Book Borrowed](#uc-lib-05-confirming-book-borrowed)
+8. [UC-LIB-06: Confirming Room Checkin](#uc-lib-06-confirming-room-checkin)
+9. [UC-LIB-07: Announcement](#uc-lib-07-announcement)
 
 ---
 
@@ -353,7 +353,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Recording Loan](Img/Librarian/uc-book-pickup.png)
+![Recording Loan](Img/Librarian/uc-recording-loan.png)
 
 ---
 

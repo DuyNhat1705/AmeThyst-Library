@@ -26,13 +26,13 @@
 3. [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
 4. [UC-SG-02: Filtering Study Group](#uc-sg-02-filtering-study-group)
 5. [UC-SG-03: View Study Group Detail](#uc-sg-03-view-study-group-detail)
-6. [UC-SG-04: Inviting Others into Study Group](#uc-sg-05-inviting-others-into-study-group)
-7. [UC-SG-05: Remove Others from Study Group](#uc-sg-06-remove-others-from-study-group)
-8. [UC-SG-06: Finding User By Email](#uc-sg-07-finding-user-by-email)
-9. [UC-SG-07: View Other Profile](#uc-sg-08-view-other-profile)
-10. [UC-SG-08: Creating Join Request](#uc-sg-11-creating-join-request)
-11. [UC-SG-09: Canceling Join Request](#uc-sg-12-canceling-join-request)
-12. [UC-SG-10: Out Study Group](#uc-sg-13-out-study-group)
+6. [UC-SG-04: Inviting Others into Study Group](#uc-sg-04-inviting-others-into-study-group)
+7. [UC-SG-05: Remove Others from Study Group](#uc-sg-05-remove-others-from-study-group)
+8. [UC-SG-06: Finding User By Email](#uc-sg-06-finding-user-by-email)
+9. [UC-SG-07: View Other Profile](#uc-sg-07-view-other-profile)
+10. [UC-SG-08: Creating Join Request](#uc-sg-08-creating-join-request)
+11. [UC-SG-09: Canceling Join Request](#uc-sg-09-canceling-join-request)
+12. [UC-SG-10: Out Study Group](#uc-sg-10-out-study-group)
 
 ---
 
@@ -187,7 +187,7 @@ A list of study groups matching the search criteria is displayed to the General 
 None.
 
 ### 7. Prototype Screen
-![Study Group Listing](Img/StudyGroup/Screenshot%202026-07-21%20213843.png)
+![Study Group Listing](Img/StudyGroup/uc-searching-study-group.png)
 
 ---
 
@@ -255,7 +255,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Study Group Listing](Img/StudyGroup/Screenshot%202026-07-21%20213843.png)
+![Study Group Listing](Img/StudyGroup/uc-filtering-study-group.png)
 
 ---
 
@@ -311,7 +311,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Study Group Listing](Img/StudyGroup/Screenshot%202026-07-21%20213843.png)
+![Study Group Listing](Img/StudyGroup/uc-view-study-group-detail.png)
 
 ---
 
@@ -374,7 +374,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Study Group Management](Img/StudyGroup/Screenshot%202026-07-21%20213817.png)
+![Study Group Management](Img/StudyGroup/uc-other-member.png)
 
 ---
 
@@ -444,7 +444,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Study Group Management](Img/StudyGroup/Screenshot%202026-07-21%20213817.png)
+![Study Group Management](Img/StudyGroup/uc-other-member.png)
 
 ---
 
@@ -509,7 +509,7 @@ None.
 
 ### 7. Prototype Screen
 
-![User Profile](Img/StudyGroup/Screenshot%202026-07-21%20213854.png)
+![User Profile](Img/StudyGroup/uc-view-member-detail.png)
 
 ---
 
@@ -565,7 +565,7 @@ None.
 
 ### 7. Prototype Screen
 
-![User Profile](Img/StudyGroup/Screenshot%202026-07-21%20213854.png)
+![User Profile](Img/StudyGroup/uc-view-member-detail.png)
 
 ---
 
@@ -634,7 +634,7 @@ None.
 
 ### 7. Prototype Screen
 
-![Join Request](Img/StudyGroup/Screenshot%202026-07-21%20213906.png)
+![Join Request](Img/StudyGroup/uc-request-join.png)
 
 ---
 
@@ -746,4 +746,4 @@ None.
 
 ### 7. Prototype Screen
 
-![Study Group Summary](Img/StudyGroup/Screenshot%202026-07-21%20213806.png)
+![Study Group Summary](Img/StudyGroup/uc-out-group.png)
