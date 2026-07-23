@@ -20,6 +20,79 @@
 | 23-Jul-2026 | 1.3 | Merge file content | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 
 ## Table of Contents
+- [Use-Case Specification](#use-case-specification)
+  - [Revision History](#revision-history)
+  - [Table of Contents](#table-of-contents)
+  - [Regulation](#regulation)
+  - [Authentications](#authentications)
+    - [Use case diagram](#use-case-diagram)
+    - [UC-AUTH-01: Register](#uc-auth-01-register)
+    - [UC-AUTH-02: Verify By Email](#uc-auth-02-verify-by-email)
+    - [UC-AUTH-03: Google OAuth](#uc-auth-03-google-oauth)
+    - [UC-AUTH-04: Login](#uc-auth-04-login)
+    - [UC-AUTH-05: Forget Password](#uc-auth-05-forget-password)
+    - [UC-AUTH-06: Verify By OTP](#uc-auth-06-verify-by-otp)
+    - [UC-AUTH-07: Change Password](#uc-auth-07-change-password)
+  - [Profile Management](#profile-management)
+    - [Use case diagram](#use-case-diagram-1)
+    - [UC-PROF-01: View Self Profile](#uc-prof-01-view-self-profile)
+    - [UC-PROF-02: Edit Profile](#uc-prof-02-edit-profile)
+    - [UC-PROF-03: Change Avatar](#uc-prof-03-change-avatar)
+    - [UC-PROF-04: Change Password](#uc-prof-04-change-password)
+  - [Books](#books)
+    - [Usecase Diagram](#usecase-diagram)
+    - [UC-BK-01: Book Searching](#uc-bk-01-book-searching)
+    - [UC-BK-02: Filtering Book](#uc-bk-02-filtering-book)
+    - [UC-BK-03: View Book Detail](#uc-bk-03-view-book-detail)
+    - [UC-BK-04: Add Book Favorite](#uc-bk-04-add-book-favorite)
+    - [UC-BK-05: Book Reservation](#uc-bk-05-book-reservation)
+    - [UC-BK-06: Canceling Book Reservation](#uc-bk-06-canceling-book-reservation)
+    - [UC-BK-07: Generating Pin](#uc-bk-07-generating-pin)
+  - [Facility](#facility)
+    - [Use case diagram](#use-case-diagram-2)
+      - [UC-LIB-01: View Library Map](#uc-lib-01-view-library-map)
+      - [UC-LIB-02: View Facility Information](#uc-lib-02-view-facility-information)
+      - [UC-LIB-03: Room Reservation](#uc-lib-03-room-reservation)
+      - [UC-LIB-04: Canceling Room Reservation](#uc-lib-04-canceling-room-reservation)
+      - [UC-LIB-05: Creating Study Group](#uc-lib-05-creating-study-group)
+      - [UC-LIB-06: Canceling Study Group](#uc-lib-06-canceling-study-group)
+      - [UC-LIB-07: Updating Study Group Information](#uc-lib-07-updating-study-group-information)
+  - [Study Group](#study-group)
+    - [Use case diagram](#use-case-diagram-3)
+    - [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
+    - [UC-SG-02: Filtering Study Group](#uc-sg-02-filtering-study-group)
+    - [UC-SG-03: View Study Group Detail](#uc-sg-03-view-study-group-detail)
+    - [UC-SG-04: Inviting Others into Study Group](#uc-sg-04-inviting-others-into-study-group)
+    - [UC-SG-05: Remove Others from Study Group](#uc-sg-05-remove-others-from-study-group)
+    - [UC-SG-06: Finding User By Email](#uc-sg-06-finding-user-by-email)
+    - [UC-SG-07: View Other Profile](#uc-sg-07-view-other-profile)
+    - [UC-SG-08: Creating Join Request](#uc-sg-08-creating-join-request)
+    - [UC-SG-09: Canceling Join Request](#uc-sg-09-canceling-join-request)
+    - [UC-SG-10: Out Study Group](#uc-sg-10-out-study-group)
+  - [AI Recommendation](#ai-recommendation)
+    - [Use case diagram](#use-case-diagram-4)
+    - [UC-AIR-01: View Recommended Book](#uc-air-01-view-recommended-book)
+    - [UC-AIR-02: Reset AI Recommend](#uc-air-02-reset-ai-recommend)
+    - [UC-AIR-03: AI Recommend Module](#uc-air-03-ai-recommend-module)
+  - [Librarian](#librarian)
+    - [Use case diagram](#use-case-diagram-5)
+    - [UC-LIB-01: Adding Books](#uc-lib-01-adding-books)
+    - [UC-LIB-02: Removing Books](#uc-lib-02-removing-books)
+    - [UC-LIB-03: Confirming Book Return](#uc-lib-03-confirming-book-return)
+    - [UC-LIB-04: Recording Loan](#uc-lib-04-recording-loan)
+    - [UC-LIB-05: Confirming Book Borrowed](#uc-lib-05-confirming-book-borrowed)
+    - [UC-LIB-06: Confirming Room Checkin](#uc-lib-06-confirming-room-checkin)
+    - [UC-LIB-07: Announcement](#uc-lib-07-announcement)
+  - [Admin](#admin)
+    - [Use case diagram](#use-case-diagram-6)
+    - [UC-ADM-01: View User Account](#uc-adm-01-view-user-account)
+    - [UC-ADM-02: Generating CSV Report](#uc-adm-02-generating-csv-report)
+    - [UC-ADM-03: Authorization](#uc-adm-03-authorization)
+    - [UC-ADM-04: Role Control](#uc-adm-04-role-control)
+    - [UC-ADM-05: Use-case Permission](#uc-adm-05-use-case-permission)
+    - [UC-ADM-06: System Configuration](#uc-adm-06-system-configuration)
+    - [UC-ADM-07: View Statistics](#uc-adm-07-view-statistics)
+
 
 ## Regulation
 
@@ -97,10 +170,9 @@ flowchart LR
 
 ```
 
-
 ---
 
-#### UC-AUTH-01: Register
+### UC-AUTH-01: Register
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -204,7 +276,7 @@ flowchart LR
 
 ---
 
-#### UC-AUTH-02: Verify By Email
+### UC-AUTH-02: Verify By Email
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -4820,6 +4892,7 @@ flowchart LR
 ```
 
 ---
+
 ### UC-ADM-01: View User Account
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
