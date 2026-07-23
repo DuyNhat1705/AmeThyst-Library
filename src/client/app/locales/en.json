@@ -175,6 +175,9 @@
     "borrow_books_link": "Borrowed Books",
     "logout": "Logout",
     "notifications_aria": "Notifications",
+    "notifications_title": "Notifications",
+    "notifications_subtitle": "Updates and activity from AmeThyst Library",
+    "no_notifications": "You have no new notifications.",
     "settings_aria": "Settings",
     "role_user": "User",
     "personal_info": "Personal Information",
@@ -394,6 +397,8 @@
     "status_available": "Available",
     "status_full": "Full",
     "join_group": "Join Group",
+    "creator": "Creator",
+    "your_group": "Your Group",
     "request_to_join": "Request to Join",
     "send": "Send",
     "cancel": "Cancel",
@@ -401,7 +406,17 @@
     "time": "Time",
     "address": "Location",
     "room": "Room",
-    "status_pending": "Pending Request"
+    "status_pending": "Pending Request",
+    "cooldown_active": "Try again in",
+    "cooldown_minutes": "Try again in {minutes} minutes",
+    "filter_date": "Date",
+    "filter_from": "From",
+    "filter_to": "To",
+    "filter_branches": "Library branches",
+    "filter_rooms": "Rooms",
+    "filter_all_rooms": "All rooms",
+    "more_filters": "Branches & rooms",
+    "less_filters": "Hide branches & rooms"
   },
   "floor_map": {
     "title": "Interactive Floor Map",
@@ -427,6 +442,15 @@
   "room": {
     "freely_mode": "Freely Mode",
     "study_group_mode": "Study Group Mode",
+    "group_details": "Study Group details",
+    "group_title": "Title",
+    "group_subject": "Subject",
+    "group_description": "Description",
+    "group_requirements": "Requirements",
+    "group_requirement": "Requirement",
+    "add_requirement": "Add requirement",
+    "remove_requirement": "Remove requirement",
+    "group_validation_error": "Enter a title, description, and subject. Title and subject must contain at least one letter.",
     "reserve_confirm": "Confirm Booking",
     "reserve_success": "Room reserved successfully!",
     "select_mode": "Select Mode",
@@ -564,5 +588,153 @@
                           "pin_to_homepage":  "Pin to Homepage",
                           "content_body":  "Content Body",
                           "delete":  "Delete"
-                      }
+                      },
+  "study_group": {
+    "dashboard_title": "Your Study Groups",
+    "created_tab": "Groups I created",
+    "joined_tab": "Groups I joined",
+    "loading": "Loading Study Groups…",
+    "load_error": "Could not load Study Groups.",
+    "action_error": "The action could not be completed.",
+    "retry": "Retry",
+    "empty": "No Study Groups to show.",
+    "pagination": "Study Group pages",
+    "previous": "Previous",
+    "next": "Next",
+    "details": "Study Group details",
+    "close": "Close",
+    "status": "Status",
+    "room": "Room",
+    "date": "Date",
+    "capacity": "Members",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit details",
+    "pending_requests": "Pending requests",
+    "no_requests": "No pending requests.",
+    "members": "Members",
+    "profile_preview": "User profile preview",
+    "profile_unknown": "Unknown",
+    "profile_email": "Email",
+    "profile_birth_date": "Date of birth",
+    "profile_phone_number": "Phone number",
+    "profile_gender": "Gender",
+    "profile_gender_male": "Male",
+    "profile_gender_female": "Female",
+    "profile_gender_other": "Other",
+    "profile_occupation": "Occupation",
+    "profile_hometown": "Hometown",
+    "time": "Time",
+    "branch": "Branch",
+    "approve": "Approve",
+    "deny": "Deny",
+    "remove": "Remove",
+    "remove_member_title": "Remove this member?",
+    "remove_member_description": "{name} will be removed from the group and their place will become available to another student.",
+    "keep_member": "Keep Member",
+    "confirm_remove_member": "Remove Member",
+    "removing_member": "Removing...",
+    "cancel_request": "Cancel Request",
+    "cancel_request_title": "Cancel this request?",
+    "cancel_request_description": "Your pending request will be removed from the organizer's approval queue. You can submit a new request later while the group remains available.",
+    "keep_request": "Keep Request",
+    "cancelling_request": "Cancelling...",
+    "leave": "Leave group",
+    "leave_confirm": "Leave this Study Group?",
+    "leave_description": "You will be removed from the member list and your place will become available to another student.",
+    "stay_in_group": "Stay in Group",
+    "leave_group": "Leave Group",
+    "leaving": "Leaving...",
+    "leave_error": "You could not leave this Study Group.",
+    "leave_cutoff_error": "You can only leave at least three hours before the scheduled start time.",
+    "dissolve": "Dissolve group",
+    "dissolve_title": "Dissolve this group?",
+    "dissolve_confirm": "Permanently delete this Study Group, its reservation, and all participation records? This cannot be undone.",
+    "keep_group": "Keep Group",
+    "dissolve_permanently": "Dissolve",
+    "dissolving": "Dissolving...",
+    "status_upcoming": "Upcoming",
+    "status_full": "Full",
+    "status_inprogress": "In Progress",
+    "status_completed": "Completed",
+    "status_cancelled": "Cancelled",
+    "status_expired": "Expired",
+    "status_all": "All Status",
+    "dashboard_title": "Your Study Groups",
+    "groups_created": "Groups I created",
+    "groups_joined": "Groups I joined",
+    "filter_status": "Filter by status",
+    "participation_approved": "Approved",
+    "participation_pending": "Pending",
+    "participation_denied": "Denied",
+    "participation_expired": "Expired / History",
+    "invite": "Invite",
+    "invite_by_email": "Invite a member by email",
+    "invitation": "Study Group invitation",
+    "invitee_email_placeholder": "student@example.com",
+    "send_invite": "Send invitation",
+    "invite_sent": "Invitation sent successfully.",
+    "sending_invite": "Sending invitation…",
+    "invite_user_not_found": "Please check the email and try again. There is no registered account with this email address.",
+    "invite_error": "Could not send this invitation.",
+    "notifications": "Notifications",
+    "invitation_notifications": "Your pending Study Group invitations",
+    "no_invitations": "No new invitations.",
+    "invited_by": "Invited by {name}",
+    "accept_invitation": "Accept invitation",
+    "deny_invitation": "Decline",
+    "processing": "Processing…",
+    "invitation_action_error": "This invitation could not be processed.",
+    "joined_from_invitation": "You have joined the Study Group.",
+    "subject": "Subject",
+    "no_additional_members": "No additional members yet.",
+    "close_invite_input": "Close email invitation field"
+    ,"performed_by": "Performed by"
+    ,"email_unavailable": "Email unavailable"
+    ,"route_loading": "Loading Study Group details..."
+    ,"route_not_found_title": "Study Group unavailable"
+    ,"route_not_found": "This Study Group could not be found or is no longer available."
+    ,"invitation_unavailable_title": "Invitation is no longer available"
+    ,"invitation_unavailable": "This invitation may have already been accepted, declined, or withdrawn, or its Study Group may no longer exist."
+    ,"route_load_error": "Study Group details could not be loaded. Please try again."
+    ,"back_to_groups": "Back to Study Groups"
+    ,"notification_member_removed": "Removed from Study Group"
+    ,"notification_member_removed_summary": "You were removed from this Study Group."
+    ,"notification_member_removed_description": "The organizer removed you from this Study Group. You are no longer counted as a member."
+    ,"notification_member_left": "Member left your group"
+    ,"notification_member_left_summary": "{name} left your Study Group."
+    ,"notification_member_left_description": "{name} voluntarily left this Study Group. Their place is now available to another student."
+    ,"notification_group_dissolved": "Study Group cancelled"
+    ,"notification_group_dissolved_summary": "This Study Group is no longer available."
+    ,"notification_group_dissolved_description": "The organizer dissolved this Study Group and its linked room reservation was permanently cancelled."
+    ,"notification_join_request_submitted": "New join request"
+    ,"notification_join_request_submitted_summary": "{name} wants to join your group."
+    ,"notification_join_request_submitted_description": "{name} submitted a request for you to review."
+    ,"notification_join_request_cancelled": "Request withdrawn"
+    ,"notification_join_request_cancelled_summary": "{name} cancelled their join request."
+    ,"notification_join_request_cancelled_description": "{name} withdrew their Pending request. It is no longer in your approval queue."
+    ,"notification_join_request_approved": "Request approved"
+    ,"notification_join_request_approved_summary": "You are now a member of this group."
+    ,"notification_join_request_approved_description": "The creator approved your request. You can now view this group under Group I Joined."
+    ,"notification_join_request_denied": "Request declined"
+    ,"notification_join_request_denied_summary": "Your request was declined."
+    ,"notification_join_request_denied_description": "The creator declined your request. You may request again after the 30-minute cooldown."
+    ,"notification_member_joined": "New group member"
+    ,"notification_member_joined_summary": "{name} joined your Study Group."
+    ,"notification_member_joined_description": "{name} is now an Approved member of your Study Group."
+    ,"notification_invitation_declined": "Invitation declined"
+    ,"notification_invitation_declined_summary": "{name} declined your invitation."
+    ,"notification_invitation_declined_description": "{name} chose not to join this Study Group."
+    ,"notification_group_updated": "Study Group updated"
+    ,"notification_group_updated_summary": "The creator updated this Study Group."
+    ,"notification_group_updated_description": "The creator changed information for a Study Group you joined."
+    ,"changed_fields": "Updated fields"
+    ,"field_title": "Title"
+    ,"field_description": "Description"
+    ,"field_subject": "Subject"
+    ,"field_requirements": "Requirements"
+    ,"view_created_group": "Review group"
+    ,"view_joined_group": "View joined group"
+    ,"view_your_groups": "View your Study Groups"
+  }
 }

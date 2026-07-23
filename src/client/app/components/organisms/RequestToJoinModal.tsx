@@ -10,7 +10,6 @@ interface RequestToJoinModalProps {
   onSend: (message: string) => void;
   group: StudyGroup | null;
 }
-
 export default function RequestToJoinModal({ isOpen, onClose, onSend, group }: RequestToJoinModalProps) {
   const { t } = useI18n();
   const [message, setMessage] = useState('');

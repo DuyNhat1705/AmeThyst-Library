@@ -1,5 +1,15 @@
 import * as roomModel from '../models/room.models.mjs';
 
+export const getStudyGroupFilterOptions = async () => {
+  const rows = await roomModel.findStudyGroupFilterOptions();
+  const branches = new Map();
+  for (const row of rows) {
+    if (!branches.has(row.branchId)) branches.set(row.branchId, { branchId: row.branchId, branchName: row.branchName, rooms: [] });
+    branches.get(row.branchId).rooms.push({ roomId: row.roomId, roomName: row.roomName, capacity: row.capacity });
+  }
+  return [...branches.values()];
+};
+
 /**
  * Service to fetch details of a study room by name and branch.
  * @param {string} name 
@@ -80,7 +90,7 @@ export const getRoomAvailability = async (roomId, date) => {
 
 /**
  * Creates a room reservation after checking for conflicts.
- * @param {number} userId
+ * @param {string} userId UUID
  * @param {number} availId
  * @param {string} startDate (YYYY-MM-DD)
  * @returns {Promise<Object>}
@@ -106,13 +116,32 @@ export const createReservation = async (userId, availId, startDate) => {
     throw error;
   }
 
-  const reservation = await roomModel.createReservation(userId, availId, startDate);
-  return reservation;
+  try {
+    return await roomModel.createReservation(userId, availId, startDate);
+  } catch (error) {
+    if (error.code === '23505' && error.constraint === 'uq_reserve_room_active_slot') {
+      const conflict = new Error('This time slot is no longer available.');
+      conflict.status = 409;
+      throw conflict;
+    }
+    if (error.code === '23503' && error.constraint === 'fk_reserve_user') {
+      const staleAccount = new Error('Your account is no longer available. Please sign in again.');
+      staleAccount.status = 401;
+      staleAccount.code = 'AUTH_USER_NOT_FOUND';
+      throw staleAccount;
+    }
+    if (error.code === '23503' && error.constraint === 'fk_reserve_availroom') {
+      const missingSlot = new Error('Room availability slot not found.');
+      missingSlot.status = 404;
+      throw missingSlot;
+    }
+    throw error;
+  }
 };
 
 /**
  * Retrieves and categorizes reservations for a user.
- * @param {number} userId
+ * @param {string} userId UUID
  * @returns {Promise<{upcoming: Array, past: Array}>}
  */
 export const getUserReservations = async (userId) => {
@@ -138,7 +167,7 @@ export const getUserReservations = async (userId) => {
 };
 
 /**
- * Cancels a reservation by deleting the row.
+ * Cancels a reservation by permanently deleting it and releasing the active slot.
  * @param {string} reserveId
  * @param {string} userId
  * @returns {Promise<boolean>}
@@ -150,9 +179,9 @@ export const cancelReservation = async (reserveId, userId) => {
     throw error;
   }
 
-  const deleted = await roomModel.deleteReservation(reserveId, userId);
-  if (!deleted) {
-    const error = new Error('Reservation not found or already cancelled');
+  const cancelled = await roomModel.cancelReservation(reserveId, userId);
+  if (!cancelled) {
+    const error = new Error('Reservation not found or no longer cancellable');
     error.status = 404;
     throw error;
   }

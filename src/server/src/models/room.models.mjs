@@ -1,5 +1,17 @@
 import pool from '../config/postgres.mjs';
 
+export const findStudyGroupFilterOptions = async () => {
+  const result = await pool.query(`
+    SELECT b.branch_id AS "branchId", b.name AS "branchName",
+      sr.room_id AS "roomId", sr.room_name AS "roomName", sr.capacity
+    FROM public.branches b
+    JOIN public.study_room sr ON sr.branch_id = b.branch_id
+    WHERE sr.capacity >= 1
+    ORDER BY b.branch_id ASC, sr.room_name ASC, sr.room_id ASC
+  `);
+  return result.rows;
+};
+
 /**
  * Retrieves a study room record by its name and branch ID.
  * @param {string} name 
@@ -150,11 +162,15 @@ export const findUserReservations = async (userId) => {
  * @param {string} userId
  * @returns {Promise<boolean>} true if a row was deleted
  */
-export const deleteReservation = async (reserveId, userId) => {
+export const cancelReservation = async (reserveId, userId, client = pool) => {
   const query = `
     DELETE FROM reserve_room
     WHERE reserve_id = $1 AND user_id = $2
+      AND status IN ('pending', 'reserved')
+    RETURNING reserve_id AS "reserveId"
   `;
-  const result = await pool.query(query, [reserveId, userId]);
+  const result = await client.query(query, [reserveId, userId]);
   return result.rowCount > 0;
 };
+
+export const deleteReservation = cancelReservation;

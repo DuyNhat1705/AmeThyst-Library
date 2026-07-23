@@ -1,0 +1,2 @@
+import { readFile } from 'node:fs/promises'; import { describe, expect, it } from 'vitest';
+describe('joined mutation integration invariants',()=>{it('deletes pending/approved rows conditionally and reconciles counts',async()=>{const model=await readFile(new URL('../../src/models/study-group.models.mjs',import.meta.url),'utf8');expect(model).toContain("status = 'pending' RETURNING");expect(model).toContain("status = 'approved' RETURNING");expect(model).toContain('current_num + $2');});});

@@ -175,6 +175,9 @@
     "borrow_books_link": "Sách đang mượn",
     "logout": "Đăng xuất",
     "notifications_aria": "Thông báo",
+    "notifications_title": "Thông báo",
+    "notifications_subtitle": "Cập nhật và hoạt động từ Thư viện AmeThyst",
+    "no_notifications": "Bạn không có thông báo mới.",
     "settings_aria": "Cài đặt",
     "role_user": "Người dùng",
     "personal_info": "Thông tin cá nhân",
@@ -394,6 +397,8 @@
     "status_available": "Đang tuyển",
     "status_full": "Đã đủ người",
     "join_group": "Tham gia nhóm",
+    "creator": "Người tạo",
+    "your_group": "Nhóm của bạn",
     "request_to_join": "Yêu cầu tham gia",
     "send": "Gửi",
     "cancel": "Hủy",
@@ -401,7 +406,17 @@
     "time": "Thời gian",
     "address": "Địa điểm",
     "room": "Phòng",
-    "status_pending": "Chờ phê duyệt"
+    "status_pending": "Chờ phê duyệt",
+    "cooldown_active": "Thử lại sau",
+    "cooldown_minutes": "Thử lại sau {minutes} phút",
+    "filter_date": "Ngày",
+    "filter_from": "Từ",
+    "filter_to": "Đến",
+    "filter_branches": "Cơ sở thư viện",
+    "filter_rooms": "Phòng",
+    "filter_all_rooms": "Tất cả phòng",
+    "more_filters": "Cơ sở & phòng",
+    "less_filters": "Ẩn cơ sở & phòng"
   },
   "floor_map": {
     "title": "Sơ Đồ Phòng Thư Viện",
@@ -427,6 +442,15 @@
   "room": {
     "freely_mode": "Đặt phòng tự do",
     "study_group_mode": "Đặt phòng study group",
+    "group_details": "Thông tin nhóm học",
+    "group_title": "Tiêu đề",
+    "group_subject": "Môn học",
+    "group_description": "Mô tả",
+    "group_requirements": "Yêu cầu",
+    "group_requirement": "Yêu cầu",
+    "add_requirement": "Thêm yêu cầu",
+    "remove_requirement": "Xóa yêu cầu",
+    "group_validation_error": "Hãy nhập tiêu đề, mô tả và môn học. Tiêu đề và môn học phải chứa ít nhất một chữ cái.",
     "reserve_confirm": "Xác nhận đặt phòng",
     "reserve_success": "Đặt phòng thành công!",
     "select_mode": "Chọn hình thức",
@@ -564,5 +588,153 @@
                           "pin_to_homepage":  "Ghim lên trang chủ",
                           "content_body":  "Nội dung",
                           "delete":  "Xóa"
-                      }
+                      },
+  "study_group": {
+    "dashboard_title": "Nhóm học tập của bạn",
+    "created_tab": "Nhóm tôi đã tạo",
+    "joined_tab": "Nhóm tôi đã tham gia",
+    "loading": "Đang tải nhóm học…",
+    "load_error": "Không thể tải nhóm học.",
+    "action_error": "Không thể hoàn thành thao tác.",
+    "retry": "Thử lại",
+    "empty": "Không có nhóm học để hiển thị.",
+    "pagination": "Trang nhóm học",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "details": "Chi tiết nhóm học",
+    "close": "Đóng",
+    "status": "Trạng thái",
+    "room": "Phòng",
+    "date": "Ngày",
+    "capacity": "Thành viên",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "edit": "Chỉnh sửa",
+    "pending_requests": "Yêu cầu đang chờ",
+    "no_requests": "Không có yêu cầu đang chờ.",
+    "members": "Thành viên",
+    "profile_preview": "Xem nhanh hồ sơ người dùng",
+    "profile_unknown": "Chưa cập nhật",
+    "profile_email": "Email",
+    "profile_birth_date": "Ngày sinh",
+    "profile_phone_number": "Số điện thoại",
+    "profile_gender": "Giới tính",
+    "profile_gender_male": "Nam",
+    "profile_gender_female": "Nữ",
+    "profile_gender_other": "Khác",
+    "profile_occupation": "Nghề nghiệp",
+    "profile_hometown": "Quê quán",
+    "time": "Thời gian",
+    "branch": "Chi nhánh",
+    "approve": "Chấp nhận",
+    "deny": "Từ chối",
+    "remove": "Xóa",
+    "remove_member_title": "Xóa thành viên này?",
+    "remove_member_description": "{name} sẽ bị xóa khỏi nhóm và vị trí của họ sẽ dành cho một sinh viên khác.",
+    "keep_member": "Giữ thành viên",
+    "confirm_remove_member": "Xóa thành viên",
+    "removing_member": "Đang xóa...",
+    "cancel_request": "Hủy yêu cầu",
+    "cancel_request_title": "Hủy yêu cầu này?",
+    "cancel_request_description": "Yêu cầu đang chờ sẽ bị xóa khỏi danh sách phê duyệt của người tổ chức. Bạn có thể gửi lại yêu cầu sau nếu nhóm vẫn còn chỗ.",
+    "keep_request": "Giữ yêu cầu",
+    "cancelling_request": "Đang hủy...",
+    "leave": "Rời nhóm",
+    "leave_confirm": "Rời nhóm học này?",
+    "leave_description": "Bạn sẽ bị xóa khỏi danh sách thành viên và vị trí của bạn sẽ dành cho một sinh viên khác.",
+    "stay_in_group": "Ở lại nhóm",
+    "leave_group": "Rời nhóm",
+    "leaving": "Đang rời nhóm...",
+    "leave_error": "Bạn không thể rời nhóm học này.",
+    "leave_cutoff_error": "Bạn chỉ có thể rời nhóm ít nhất ba giờ trước thời gian bắt đầu.",
+    "dissolve": "Giải tán nhóm",
+    "dissolve_title": "Giải tán nhóm này?",
+    "dissolve_confirm": "Xóa vĩnh viễn nhóm học, lượt đặt phòng và toàn bộ yêu cầu tham gia? Thao tác này không thể hoàn tác.",
+    "keep_group": "Giữ nhóm",
+    "dissolve_permanently": "Giải tán",
+    "dissolving": "Đang giải tán...",
+    "status_upcoming": "Sắp diễn ra",
+    "status_full": "Đã đầy",
+    "status_inprogress": "Đang diễn ra",
+    "status_completed": "Đã hoàn thành",
+    "status_cancelled": "Đã hủy",
+    "status_expired": "Hết hạn",
+    "status_all": "Tất cả trạng thái",
+    "dashboard_title": "Nhóm học của bạn",
+    "groups_created": "Nhóm tôi đã tạo",
+    "groups_joined": "Nhóm tôi đã tham gia",
+    "filter_status": "Lọc theo trạng thái",
+    "participation_approved": "Đã duyệt",
+    "participation_pending": "Đang chờ",
+    "participation_denied": "Đã từ chối",
+    "participation_expired": "Hết hạn / Lịch sử",
+    "invite": "Mời",
+    "invite_by_email": "Mời thành viên qua email",
+    "invitation": "Lời mời vào nhóm học",
+    "invitee_email_placeholder": "sinhvien@example.com",
+    "send_invite": "Gửi lời mời",
+    "invite_sent": "Đã gửi lời mời thành công.",
+    "sending_invite": "Đang gửi lời mời…",
+    "invite_user_not_found": "Vui lòng kiểm tra lại email. Không có tài khoản nào được đăng ký bằng địa chỉ email này.",
+    "invite_error": "Không thể gửi lời mời này.",
+    "notifications": "Thông báo",
+    "invitation_notifications": "Các lời mời vào nhóm học đang chờ",
+    "no_invitations": "Không có lời mời mới.",
+    "invited_by": "Được mời bởi {name}",
+    "accept_invitation": "Chấp nhận lời mời",
+    "deny_invitation": "Từ chối",
+    "processing": "Đang xử lý…",
+    "invitation_action_error": "Không thể xử lý lời mời này.",
+    "joined_from_invitation": "Bạn đã tham gia nhóm học.",
+    "subject": "Môn học",
+    "no_additional_members": "Chưa có thành viên nào khác.",
+    "close_invite_input": "Đóng ô mời qua email"
+    ,"performed_by": "Người thực hiện"
+    ,"email_unavailable": "Không có email"
+    ,"route_loading": "Đang tải thông tin nhóm học..."
+    ,"route_not_found_title": "Nhóm học không khả dụng"
+    ,"route_not_found": "Không tìm thấy nhóm học này hoặc nhóm không còn khả dụng."
+    ,"invitation_unavailable_title": "Lời mời không còn hiệu lực"
+    ,"invitation_unavailable": "Lời mời này có thể đã được chấp nhận, từ chối hoặc thu hồi, hoặc nhóm học không còn tồn tại."
+    ,"route_load_error": "Không thể tải thông tin nhóm học. Vui lòng thử lại."
+    ,"back_to_groups": "Quay lại danh sách nhóm"
+    ,"notification_member_removed": "Đã bị xóa khỏi nhóm học"
+    ,"notification_member_removed_summary": "Bạn đã bị xóa khỏi nhóm học này."
+    ,"notification_member_removed_description": "Người tổ chức đã xóa bạn khỏi nhóm học này. Bạn không còn được tính là thành viên của nhóm."
+    ,"notification_member_left": "Thành viên đã rời nhóm"
+    ,"notification_member_left_summary": "{name} đã rời nhóm học của bạn."
+    ,"notification_member_left_description": "{name} đã tự nguyện rời nhóm học này. Vị trí của họ hiện đã sẵn sàng cho một sinh viên khác."
+    ,"notification_group_dissolved": "Nhóm học đã bị hủy"
+    ,"notification_group_dissolved_summary": "Nhóm học này không còn hoạt động."
+    ,"notification_group_dissolved_description": "Người tổ chức đã giải tán nhóm học này và lượt đặt phòng liên quan đã bị hủy vĩnh viễn."
+    ,"notification_join_request_submitted": "Yêu cầu tham gia mới"
+    ,"notification_join_request_submitted_summary": "{name} muốn tham gia nhóm của bạn."
+    ,"notification_join_request_submitted_description": "{name} đã gửi một yêu cầu đang chờ bạn xem xét."
+    ,"notification_join_request_cancelled": "Đã rút yêu cầu"
+    ,"notification_join_request_cancelled_summary": "{name} đã hủy yêu cầu tham gia."
+    ,"notification_join_request_cancelled_description": "{name} đã rút yêu cầu đang chờ. Yêu cầu không còn trong hàng đợi phê duyệt."
+    ,"notification_join_request_approved": "Yêu cầu đã được chấp nhận"
+    ,"notification_join_request_approved_summary": "Bạn hiện là thành viên của nhóm."
+    ,"notification_join_request_approved_description": "Creator đã chấp nhận yêu cầu của bạn. Nhóm hiện có trong mục Nhóm tôi đã tham gia."
+    ,"notification_join_request_denied": "Yêu cầu bị từ chối"
+    ,"notification_join_request_denied_summary": "Yêu cầu của bạn đã bị từ chối."
+    ,"notification_join_request_denied_description": "Creator đã từ chối yêu cầu. Bạn có thể gửi lại sau thời gian chờ 30 phút."
+    ,"notification_member_joined": "Thành viên mới"
+    ,"notification_member_joined_summary": "{name} đã tham gia nhóm học của bạn."
+    ,"notification_member_joined_description": "{name} hiện là thành viên đã được chấp nhận của nhóm học."
+    ,"notification_invitation_declined": "Lời mời bị từ chối"
+    ,"notification_invitation_declined_summary": "{name} đã từ chối lời mời của bạn."
+    ,"notification_invitation_declined_description": "{name} đã chọn không tham gia nhóm học này."
+    ,"notification_group_updated": "Nhóm học đã cập nhật"
+    ,"notification_group_updated_summary": "Creator đã cập nhật nhóm học này."
+    ,"notification_group_updated_description": "Creator đã thay đổi thông tin của một nhóm học bạn tham gia."
+    ,"changed_fields": "Các trường đã cập nhật"
+    ,"field_title": "Tiêu đề"
+    ,"field_description": "Mô tả"
+    ,"field_subject": "Môn học"
+    ,"field_requirements": "Yêu cầu"
+    ,"view_created_group": "Xem và quản lý nhóm"
+    ,"view_joined_group": "Xem nhóm đã tham gia"
+    ,"view_your_groups": "Xem các nhóm học của bạn"
+  }
 }

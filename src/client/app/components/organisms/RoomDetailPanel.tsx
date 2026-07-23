@@ -6,6 +6,7 @@ import { useStoredUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
 import { apiFetch } from '../../utils/apiClient';
 import { localizedDesc, localizedRoomName } from '../../utils/room';
+import { createStudyGroup } from '../../utils/studyGroup';
 
 interface RoomDetails {
   roomId: number;
@@ -49,11 +50,15 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   });
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [imgSrc, setImgSrc] = useState<string>('');
-  const [mode, setMode] = useState<'freely' | null>(null);
+  const [mode, setMode] = useState<'freely' | 'studyGroup' | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
+  const [groupTitle, setGroupTitle] = useState('');
+  const [groupDescription, setGroupDescription] = useState('');
+  const [groupSubject, setGroupSubject] = useState('');
+  const [groupRequirements, setGroupRequirements] = useState(['']);
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -72,13 +77,19 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   // Fetch Room Details
   useEffect(() => {
     if (!isOpen || !roomId) {
-      setRoomDetails(null);
-      setAvailability([]);
-      setError(null);
-      setMode(null);
-      setSelectedSlot(null);
-      setConfirmed(false);
-      setConfirmError(null);
+      queueMicrotask(() => {
+        setRoomDetails(null);
+        setAvailability([]);
+        setError(null);
+        setMode(null);
+        setSelectedSlot(null);
+        setConfirmed(false);
+        setConfirmError(null);
+        setGroupTitle('');
+        setGroupDescription('');
+        setGroupSubject('');
+        setGroupRequirements(['']);
+      });
       return;
     }
 
@@ -111,7 +122,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   // Fetch Availability if capacity > 0 and logged in
   useEffect(() => {
     if (!isOpen || !roomDetails || roomDetails.capacity <= 0 || !user) {
-      setAvailability([]);
+      queueMicrotask(() => setAvailability([]));
       return;
     }
 
@@ -329,8 +340,8 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                               {t('room.freely_mode')}
                             </button>
                             <button
-                              disabled
-                              className="w-full py-2.5 px-4 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 font-semibold text-sm cursor-not-allowed flex items-center justify-center gap-2"
+                              onClick={() => setMode('studyGroup')}
+                              className="w-full py-2.5 px-4 rounded-lg bg-cyan-600 text-white dark:bg-cyan-500 dark:text-neutral-950 font-semibold text-sm hover:bg-cyan-700 dark:hover:bg-cyan-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -342,7 +353,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                             </button>
                           </div>
                         ) : (
-                          /* Freely Mode — Inline Booking */
+                          /* Shared slot selection with mode-specific confirmation */
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
                               <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
@@ -425,6 +436,34 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                   <p className="text-xs text-neutral-500 text-center py-4">{t('room.no_slots')}</p>
                                 )}
 
+                                {mode === 'studyGroup' && (
+                                  <fieldset className="space-y-3 rounded-lg border border-neutral-200 p-3 dark:border-neutral-700">
+                                    <legend className="px-1 text-sm font-semibold text-neutral-800 dark:text-neutral-200">{t('room.group_details')}</legend>
+                                    <label className="block text-xs text-neutral-600 dark:text-neutral-300">
+                                      {t('room.group_title')}
+                                      <input required value={groupTitle} onChange={(event) => setGroupTitle(event.target.value)} maxLength={200} className="mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:ring-cyan-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100" />
+                                    </label>
+                                    <label className="block text-xs text-neutral-600 dark:text-neutral-300">
+                                      {t('room.group_subject')}
+                                      <input required value={groupSubject} onChange={(event) => setGroupSubject(event.target.value)} maxLength={30} className="mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:ring-cyan-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100" />
+                                    </label>
+                                    <label className="block text-xs text-neutral-600 dark:text-neutral-300">
+                                      {t('room.group_description')}
+                                      <textarea required value={groupDescription} onChange={(event) => setGroupDescription(event.target.value)} rows={3} className="mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:ring-cyan-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100" />
+                                    </label>
+                                    <div className="space-y-2">
+                                      <span className="text-xs text-neutral-600 dark:text-neutral-300">{t('room.group_requirements')}</span>
+                                      {groupRequirements.map((requirement, index) => (
+                                        <div key={index} className="flex gap-2">
+                                          <input aria-label={`${t('room.group_requirement')} ${index + 1}`} value={requirement} onChange={(event) => setGroupRequirements((items) => items.map((item, itemIndex) => itemIndex === index ? event.target.value : item))} className="min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:ring-2 focus:ring-cyan-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100" />
+                                          {groupRequirements.length > 1 && <button type="button" onClick={() => setGroupRequirements((items) => items.filter((_, itemIndex) => itemIndex !== index))} className="rounded-md px-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" aria-label={t('room.remove_requirement')}>×</button>}
+                                        </div>
+                                      ))}
+                                      {groupRequirements.length < 5 && <button type="button" onClick={() => setGroupRequirements((items) => [...items, ''])} className="text-xs font-semibold text-cyan-700 dark:text-cyan-300">{t('room.add_requirement')}</button>}
+                                    </div>
+                                  </fieldset>
+                                )}
+
                                 {/* Confirm button */}
                                 <button
                                   onClick={async () => {
@@ -434,11 +473,17 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                     setIsConfirming(true);
                                     setConfirmError(null);
                                     try {
-                                      const result = await apiFetch('/api/rooms/reserve', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ availId: selectedSlot, startDate: selectedDate }),
-                                      });
+                                      const cleanedRequirements = groupRequirements.map((item) => item.trim()).filter(Boolean);
+                                      if (mode === 'studyGroup' && (!groupTitle.trim() || !groupDescription.trim() || !groupSubject.trim() || !/\p{L}/u.test(groupTitle) || !/\p{L}/u.test(groupSubject))) {
+                                        setConfirmError(t('room.group_validation_error'));
+                                        return;
+                                      }
+                                      const result = mode === 'studyGroup'
+                                        ? await createStudyGroup({ availId: selectedSlot, startDate: selectedDate, title: groupTitle, description: groupDescription, subject: groupSubject, requirements: cleanedRequirements })
+                                        : await apiFetch('/api/rooms/reserve', {
+                                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ availId: selectedSlot, startDate: selectedDate }),
+                                          });
                                       if (result.success) {
                                         setConfirmed(true);
                                       } else {

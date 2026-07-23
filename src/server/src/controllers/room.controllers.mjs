@@ -1,4 +1,13 @@
 import * as roomService from '../services/room.services.mjs';
+import { emitStudyGroupChanged } from '../config/socket.mjs';
+
+export const getStudyGroupFilterOptionsController = async (_req, res) => {
+  try {
+    return res.status(200).json({ success: true, data: await roomService.getStudyGroupFilterOptions() });
+  } catch (error) {
+    return res.status(error.status || 500).json({ success: false, error: error.message || 'Unable to load Study Group filter options.' });
+  }
+};
 
 /**
  * Controller to get room details.
@@ -60,7 +69,7 @@ export const getRoomAvailabilityController = async (req, res) => {
  */
 export const createReservationController = async (req, res) => {
   try {
-    const userId = req.user?.id || req.user?.userId;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Authentication required.' });
     }
@@ -82,7 +91,9 @@ export const createReservationController = async (req, res) => {
     const statusCode = error.status || 500;
     return res.status(statusCode).json({
       success: false,
-      error: error.message || 'An error occurred while creating reservation.'
+      error: error.code
+        ? { code: error.code, message: error.message || 'An error occurred while creating reservation.' }
+        : error.message || 'An error occurred while creating reservation.'
     });
   }
 };
@@ -92,7 +103,7 @@ export const createReservationController = async (req, res) => {
  */
 export const getUserReservationsController = async (req, res) => {
   try {
-    const userId = req.user?.id || req.user?.userId;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Authentication required.' });
     }
@@ -127,6 +138,7 @@ export const cancelReservationController = async (req, res) => {
     }
 
     await roomService.cancelReservation(reserveId, userId);
+    emitStudyGroupChanged(null, 'reservation-cancelled');
     return res.status(200).json({ success: true, message: 'Reservation cancelled.' });
   } catch (error) {
     const statusCode = error.status || 500;

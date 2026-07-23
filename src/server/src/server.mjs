@@ -14,6 +14,7 @@ import { runStartupPinCleanup, startPeriodicPinCleanup } from './utils/pinSchedu
 import searchRoutes from './routes/search.routes.mjs';
 import historyRoutes from './routes/history.routes.mjs';
 import roomRoutes from './routes/room.routes.mjs';
+import studyGroupRoutes from './routes/study-group.routes.mjs';
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard/user', dashboardRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/study-groups', studyGroupRoutes);
 app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);

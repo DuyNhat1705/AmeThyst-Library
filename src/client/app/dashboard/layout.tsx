@@ -14,9 +14,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!isLoggedIn()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotification({ message: t('dashboard.auth_required'), type: 'info' });
       setAuthState('unauthorized');
-      setTimeout(() => router.push('/login'), 2000);
+      const returnTo = `${window.location.pathname}${window.location.search}`;
+      setTimeout(() => router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`), 2000);
       return;
     }
     const user = getLoggedInUser();

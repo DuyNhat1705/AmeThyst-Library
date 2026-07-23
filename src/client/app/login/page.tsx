@@ -47,7 +47,9 @@ export default function LoginPage() {
 
       // Redirect to dashboard
       setTimeout(() => {
-        window.location.href =  getRedirectPathForUser(data.user);
+        const requestedPath = new URLSearchParams(window.location.search).get('returnTo');
+        const safeReturnPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : null;
+        window.location.href = safeReturnPath || getRedirectPathForUser(data.user);
       }, 500);
     } catch (err: unknown) {
       console.error('Login error:', err);

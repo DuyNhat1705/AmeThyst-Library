@@ -1,6 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
+shell commands, and other important information, read the current plan:
+`specs/026-study-group-feature/plan.md`
 <!-- SPECKIT END -->
 
 ## Project-local frontend design guidance
