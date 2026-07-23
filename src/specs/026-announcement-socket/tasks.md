@@ -140,3 +140,26 @@ description: "Task list for Announcement Notification Bell & is_pinned Removal"
 - T004 and T005 can be executed in parallel (translation changes).
 - Phase 3 (User Story A) and Phase 4 (User Story B) can be developed concurrently.
 
+---
+
+## Phase 8: Workstream E - Real-time Delivery via Socket.IO
+
+**Goal**: Implement real-time announcement updates via Socket.IO so users see unread status changes instantly.
+
+- [x] T041 Fix decoded.id -> decoded.userId in socket.mjs first; this is a prerequisite bug fix everything else in this phase depends on.
+- [x] T042 Wire Socket.IO emit in `createAnnouncementService` (action: `'created'`).
+- [x] T043 Wire Socket.IO emit in `editAnnouncementDetailsService` (action: `'updated'`).
+- [x] T044 Wire Socket.IO emit in `updateAnnouncementStatusService` (action: `'status_changed'`).
+- [x] T045 Wire Socket.IO emit in `deleteAnnouncementService` (action: `'deleted'`).
+- [x] T046 Wire Socket.IO emit in `expireOutdatedAnnouncementsService` (action: `'status_changed'`).
+- [x] T047 Integrate/verify periodic/startup cleanup emits in `announcementScheduler.mjs`.
+- [x] T048 Write unit tests for announcement service emits, mocking getIO(), following the exact mocking pattern in register.service.spec.mjs.
+- [x] T049 In `useAnnouncementBell.ts`, obtain the auth token via `getAuthToken()` from `utils/user`.
+- [x] T050 In `useAnnouncementBell.ts`, connect to socket and subscribe to `announcement:changed` inside useEffect.
+- [x] T051 In `useAnnouncementBell.ts`, implement proper `socket.off('announcement:changed')` cleanup in the useEffect return.
+- [x] T052 Verify Socket.IO server authentication on client connection.
+- [x] T053 Verify real-time unread dot updates on announcement creation/edit.
+- [x] T054 Verify real-time updates on announcement status change or deletion.
+- [x] T055 Verify real-time updates on automated scheduler expiry.
+- [x] T056 Re-run the full backend test suite (`npx vitest run`) and verify all tests pass.
+

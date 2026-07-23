@@ -23,7 +23,7 @@ export const initSocket = (server) => {
       if (!token) return next(new Error('Authentication error: No token provided'));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.userId = decoded.id; // chỉnh lại field nếu payload token khác
+      socket.userId = decoded.userId; // chỉnh lại field nếu payload token khác
       next();
     } catch (err) {
       next(new Error('Authentication error: Invalid token'));

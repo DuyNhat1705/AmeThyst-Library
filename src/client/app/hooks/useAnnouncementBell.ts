@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { apiFetch } from '../utils/apiClient';
-import { useStoredUser } from '../utils/user';
+import { useStoredUser, getAuthToken } from '../utils/user';
+import { useSocket } from '../utils/useSocket';
 
 export interface BellAnnouncement {
   announceId: string;
@@ -48,41 +49,68 @@ export function useAnnouncementBell(enabled: boolean, userId?: number) {
   const [announcements, setAnnouncements] = useState<BellAnnouncement[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   const storedUser = useStoredUser();
   const activeUserId = userId ?? storedUser?.userId;
 
   useEffect(() => {
-    if (!enabled || activeUserId === undefined) return;
+    if (enabled) {
+      setToken(getAuthToken());
+    } else {
+      setToken(null);
+    }
+  }, [enabled]);
 
-    let cancelled = false;
+  const socket = useSocket(token);
 
-    const fetchAnnouncements = async () => {
-      setLoading(true);
-      try {
-        const res = await apiFetch<BellAnnouncement[]>('/api/announcements');
-        if (cancelled) return;
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-        if (res.success && res.data) {
-          setAnnouncements(res.data);
+  const fetchAnnouncements = useCallback(async () => {
+    if (activeUserId === undefined) return;
+    setLoading(true);
+    try {
+      const res = await apiFetch<BellAnnouncement[]>('/api/announcements');
+      if (!isMountedRef.current) return;
 
-          const newestId = res.data[0]?.announceId ?? null;
-          const lastSeenId = readLastSeenId(activeUserId);
-          setHasUnread(Boolean(newestId) && newestId !== lastSeenId);
-        }
-      } catch (err) {
-        console.error('Failed to fetch announcements:', err);
-      } finally {
-        if (!cancelled) setLoading(false);
+      if (res.success && res.data) {
+        setAnnouncements(res.data);
+
+        const newestId = res.data[0]?.announceId ?? null;
+        const lastSeenId = readLastSeenId(activeUserId);
+        setHasUnread(Boolean(newestId) && newestId !== lastSeenId);
       }
+    } catch (err) {
+      console.error('Failed to fetch announcements:', err);
+    } finally {
+      if (isMountedRef.current) setLoading(false);
+    }
+  }, [activeUserId]);
+
+  useEffect(() => {
+    if (!enabled || activeUserId === undefined) return;
+    fetchAnnouncements();
+  }, [enabled, activeUserId, fetchAnnouncements]);
+
+  useEffect(() => {
+    if (!enabled || !socket || activeUserId === undefined) return;
+
+    const handleAnnouncementChanged = () => {
+      fetchAnnouncements();
     };
 
-    fetchAnnouncements();
+    socket.on('announcement:changed', handleAnnouncementChanged);
 
     return () => {
-      cancelled = true;
+      socket.off('announcement:changed', handleAnnouncementChanged);
     };
-  }, [enabled, activeUserId]);
+  }, [enabled, socket, activeUserId, fetchAnnouncements]);
 
   /** Marks the current newest announcement as seen (call when the dropdown opens). */
   const markAsSeen = useCallback(() => {

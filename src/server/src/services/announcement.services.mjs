@@ -1,4 +1,14 @@
 import * as announcementModel from '../models/announcement.models.mjs';
+import { getIO } from '../config/socket.mjs';
+
+const emitAnnouncementChanged = (action, payload) => {
+  try {
+    const io = getIO();
+    io.emit('announcement:changed', { action, announcement: payload });
+  } catch (err) {
+    console.error('[Socket.IO Emit Error] Failed to emit announcement change:', err.message);
+  }
+};
 
 const isValidDate = (dateStr) => {
   if (dateStr === null || dateStr === undefined || dateStr === '') return false;
@@ -85,12 +95,15 @@ export const createAnnouncementService = async ({ title, content, expiredDate, s
     'Cannot set status to active with an expiration date in the past.'
   );
 
-  return await announcementModel.insertAnnouncement({
+  const result = await announcementModel.insertAnnouncement({
     title: title.trim(),
     content: content.trim(),
     expiredDate: formattedExpiredDate,
     status
   });
+
+  emitAnnouncementChanged('created', result);
+  return result;
 };
 
 /**
@@ -159,6 +172,9 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
   }
 
   const updated = await announcementModel.updateAnnouncementStatus(announceId, status);
+  if (updated) {
+    emitAnnouncementChanged('status_changed', updated);
+  }
   return updated;
 };
 
@@ -190,6 +206,10 @@ export const editAnnouncementDetailsService = async (announceId, { title, conten
     expiredDate: formattedExpiredDate
   });
 
+  if (updated) {
+    emitAnnouncementChanged('updated', updated);
+  }
+
   return updated;
 };
 
@@ -200,7 +220,11 @@ export const editAnnouncementDetailsService = async (announceId, { title, conten
  */
 export const deleteAnnouncementService = async (announceId) => {
   await getAnnouncementOrThrow(announceId);
-  return await announcementModel.deleteAnnouncementById(announceId);
+  const result = await announcementModel.deleteAnnouncementById(announceId);
+  if (result) {
+    emitAnnouncementChanged('deleted', { announceId });
+  }
+  return result;
 };
 
 /**
@@ -216,7 +240,13 @@ export const getActiveAnnouncementsService = async () => {
  * @returns {Promise<Array>}
  */
 export const expireOutdatedAnnouncementsService = async () => {
-  return await announcementModel.updateExpiredAnnouncements();
+  const expiredList = await announcementModel.updateExpiredAnnouncements();
+  if (expiredList && expiredList.length > 0) {
+    for (const item of expiredList) {
+      emitAnnouncementChanged('status_changed', { announceId: item.announceId });
+    }
+  }
+  return expiredList;
 };
 
 /**
