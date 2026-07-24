@@ -4065,13 +4065,13 @@ flowchart LR
 ```mermaid
 flowchart LR
  subgraph LibrarianAdministration["Librarian Administration"]
-        UC1(("&lt;abstract&gt;<br>Managing Book"))
+        UC1(("<center>{abstract} <br> Managing Book</center>"))
         UC2(("Adding Books"))
         UC3(("Removing Books"))
         UC4(("Confirming Book Return"))
         UC5(("Recording Loan"))
-        UC6(("&lt;abstract&gt;<br>Managing Room"))
-        UC7(("&lt;abstract&gt;<br>Verifying Pin"))
+        UC6(("Managing Room"))
+        UC7(("<center>{abstract} <br> Verifying Pin</center>"))
         UC8(("Confirming Book Borrowed"))
         UC9(("Confirming Room Checkin"))
         UC10(("Announcement"))
