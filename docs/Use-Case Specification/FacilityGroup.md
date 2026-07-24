@@ -1,14 +1,14 @@
 # Use-Case Specification: Library Map & Study Group & Room Reservation Package
 
-**Group Name:** Amethyst
+    Project Name: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: Amethyst
+    Assignment: PA3-2026
+    Document Identifier: NGLP-SRS-LIB-001
+    Version: 1.1
 
-**Project Name:** Modern Library Management System
-
-**Version:** 1.1
-
-**Date:** 20-Jul-2026
-
-**Document Identifier:** NGLP-SRS-LIB-001
+Performed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh | Reviewed by: All Members | Edited by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Date | Version | Description | Author |
 | --- | --- | --- | --- |
-| 20-Jul-2026 | 1.1 | Facility and Reserving room Use case (RUP format layout). | Anh Minh, Hoang Gia |
+| 20-Jul-2026 | 1.1 | Facility and Reserving room Use case (RUP format layout). | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
 
 ---
 
@@ -351,11 +351,17 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user opens the structural room booking schedule board tool component layout screen.</li>
           <li><strong>[Actor Action]:</strong> The user isolates an open target timeslot parameter block row on a free room workspace slot and hits the "Book Instantly" action control.</li>
-          <li><strong>[System Response]:</strong> The system intercepts the transaction context, reads the target facility room item identifier, and captures the requested operational time window timeline boundaries.</li>
+          <li><strong>[Actor Action]:</strong> The user selects the reservation purpose mode (Personal Use or Study Group Reservation):
+            <ul style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li><strong>Personal Use:</strong> The user proceeds with reserving the room for personal study, and the workflow continues directly.</li>
+              <li><strong>Study Group Reservation:</strong> The user selects study group reservation and fills out additional required information (e.g., study group selection/name, study topic/purpose, and member list).</li>
+            </ul>
+          </li>
+          <li><strong>[System Response]:</strong> The system intercepts the transaction context, reads the target facility room item identifier, reservation purpose parameters, and captures the requested operational time window timeline boundaries.</li>
           <li><strong>[Data Processing]:</strong> The system queries the database tables to verify that the target room space record does not contain active, overlapping booking blocks within that specific timeframe.</li>
           <li><strong>[Data Processing]:</strong> The system evaluates the parsed duration parameters against standard account booking thresholds to ensure the timeline conforms to allowed continuous hourly limits.</li>
           <li><strong>[Data Processing]:</strong> The system locks the target calendar matrix block, shifting availability state configurations from "Available" to "Booked / Reserved".</li>
-          <li><strong>[Data Processing]:</strong> The system logs a unique transactional allocation receipt index tracking row record detailing room numbers, account keys, timestamps, and entry variables.</li>
+          <li><strong>[Data Processing]:</strong> The system logs a unique transactional allocation receipt index tracking row record detailing room numbers, account keys, reservation purpose mode (Personal or Study Group metadata), timestamps, and entry variables.</li>
           <li><strong>[Display Result]:</strong> The system updates the live scheduling UI matrix dynamically to strip the targeted space block parameters out of the public discovery views, and displays a confirmation card layout showing specific room entrance verification PINs.</li>
         </ol>
       </td>
@@ -365,7 +371,15 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Duration Threshold Exception (Step 5):</strong> If the targeted time duration parameters violate application booking limit thresholds:
+            <strong>Incomplete Study Group Details (Step 3):</strong> If the user selects reservation for a Study Group but fails to fill out the mandatory study group information fields:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system interrupts the reservation submission logic.</li>
+              <li>The system highlights the unfulfilled study group form fields on screen with an inline validation alert notice: "Please fill out all required study group information."</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No reservation is submitted or written to the database; the active booking form remains open pending complete data entry.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Duration Threshold Exception (Step 6):</strong> If the targeted time duration parameters violate application booking limit thresholds:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system interrupts the processing logic routine immediately.</li>
               <li>The system throws an allocation constraint exception flag and blocks database write pipelines from committing changes.</li>
@@ -374,7 +388,7 @@ flowchart LR
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Internal database state architectures maintain original conditions; the active booking form remains open on the user interface pane pending user boundary revisions.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Grid Collision Race Condition (Step 6):</strong> If another concurrent transaction session locks the exact same spatial grid slot milliseconds before submission:
+            <strong>Grid Collision Race Condition (Step 7):</strong> If another concurrent transaction session locks the exact same spatial grid slot milliseconds before submission:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system database layer traps the conflict error and rejects the execution command thread.</li>
               <li>The system cancels the workflow block execution and rolls back any pending staging changes.</li>

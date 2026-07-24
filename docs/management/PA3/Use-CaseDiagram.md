@@ -1,14 +1,11 @@
 # Usecase Diagram
+    Project: Modern Library Management System 
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: AmeThyst 
+    Assignment: PA3-2026
 
-**Project Name:** Modern Library Management System
-
-**Course:** CS300 – CSC13002 – Introduction to Software Engineering 
-
-**Group ID:** 03
-
-**Group Name:** Amethyst
-
-**Assignment:** PA3-2026
+Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Trần Lê Hoàng Gia
 
 ## Table of content
 - [Usecase Diagram](#usecase-diagram)
@@ -355,13 +352,13 @@ flowchart TD
 ``` mermaid
 flowchart LR
  subgraph LibrarianAdministration["Librarian Administration"]
-        UC1(("<center>{abstract} <br> Managing Book</center>"))
+        UC1(("<center>{abstract}<br>Managing Book</center>"))
         UC2(("Adding Books"))
         UC3(("Removing Books"))
         UC4(("Confirming Book Return"))
         UC5(("Recording Loan"))
         UC6(("Managing Room"))
-        UC7(("<center>{abstract} <br> Verifying Pin</center>"))
+        UC7(("<center>{abstract}<br>Verifying Pin</center>"))
         UC8(("Confirming Book Borrowed"))
         UC9(("Confirming Room Checkin"))
         UC10(("Announcement"))

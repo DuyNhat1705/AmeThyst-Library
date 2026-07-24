@@ -1,14 +1,14 @@
 # Use-Case Specification: Librarian Administration
 
-**Group Name:** Amethyst
+    Project Name: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: Amethyst
+    Assignment: PA3-2026
+    Document Identifier: NGLP-SRS-LIB-001
+    Version: 1.1
 
-**Project Name:** Modern Library Management System
-
-**Version:** 1.1
-
-**Date:** 21-Jul-2026
-
-**Document Identifier:** NGLP-SRS-LIB-001
+Performed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh | Reviewed by: All Members | Edited by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
 ---
 
