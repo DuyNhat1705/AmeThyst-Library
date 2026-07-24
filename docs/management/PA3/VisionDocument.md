@@ -3,7 +3,7 @@
     Course: CS300 – CSC13002 – Introduction to Software Engineering 
     Group ID: 03
     Group Name: AmeThyst 
-    Assignment: PA2-2026
+    Assignment: PA3-2026
     Version: 1.4
 
 Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All Members | Edited by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy
@@ -16,7 +16,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
 | 06/07/2026 | 1.2 | Added detailed Product Features descriptions (Sections 5.1–5.9) — Authentication, Profile Management, Borrow & Reserving, Searching, Librarian Admin, Admin Admin, AI Recommendations, Study Groups, User Assistance; added Key Workflows section (5.10) with Book Reservation and Pickup Workflow (PIN Verification) Mermaid flowchart; expanded Table of Contents for Section 5; added AI Usage entry for Draw.io-to-Mermaid conversion | Nguyễn Nhựt Huy |
 | 09/07/2026 | 1.3 | Fixed heading level for §5.10, removed inconsistent separators and trailing periods in section headers, fixed grammar and broken text in §4.2.2 and §7, updated Memory/Storage Constraints with 7-day LocalStorage session persistence | Nguyễn Nhựt Huy |
 | 10/07/2026 | 1.4 | Added Start/End boundary markers to both workflow diagrams; wrapped Mermaid diagrams in overflow-x auto container to prevent page-stretching | Nguyễn Nhựt Huy |
-| 16/07/2026 | 1.5 | Addressed TA feedback for 2nd submission: secure in-memory access token & httpOnly cookie architecture, added Privacy, Accessibility (WCAG 2.1 AA), and Backup/Recovery (RPO/RTO) NFRs | Nguyễn Nhựt Huy |
+| 23/07/2026 | 1.5 | Addressed TA feedback for 2nd submission: secure in-memory access token & httpOnly cookie architecture, added Privacy, Accessibility (WCAG 2.1 AA), and Backup/Recovery (RPO/RTO) NFRs | Nguyễn Nhựt Huy |
 
 ## Table of Contents
 - [Vision Document](#vision-document)
@@ -44,7 +44,7 @@ Performed by: Nguyễn Lê Hoàng Khải, Nguyễn Nhựt Huy | Reviewed by: All
   - [5. Product Features](#5-product-features)
     - [5.1. Authentication](#51-authentication)
     - [5.2. Profile Management](#52-profile-management)
-    - [5.3. Borrow \& Reserving Feature](#53-borrow--reserving-feature)
+    - [5.3. Borrowing \& Reserving Feature](#53-borrowing--reserving-feature)
     - [5.4. Searching Feature](#54-searching-feature)
     - [5.5. Librarian Administration](#55-librarian-administration)
     - [5.6. System Administration](#56-system-administration)
@@ -81,11 +81,11 @@ This Vision Document is intended for all project stakeholders, including the tea
 
 | Document | Version | Date | Author(s) |
 | :--- | :--- | :--- | :--- |
-| Project Proposal.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Nguyễn Lê Hoàng Khải |
-| AppSurvey.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
-| Team Contract.md | 1.0 | PA1 (23 May – 6 Jun 2026) | Nguyễn Nhựt Huy |
-| Planning Report.md | — | PA1 (23 May – 6 Jun 2026) | Vũ Duy Nhất |
-| Project Plan.md | 1.1 | PA2 (7 Jun – 12 Jul 2026) | Nguyễn Lê Hoàng Khải, Vũ Duy Nhất |
+| Project Proposal.md | 1.0 | PA1 (23/05/2026 – 06/06/2026) | Nguyễn Lê Hoàng Khải |
+| AppSurvey.md | 1.0 | PA1 (23/05/2026 – 06/06/2026) | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
+| Team Contract.md | 1.0 | PA1 (23/05/2026 – 06/06/2026) | Nguyễn Nhựt Huy |
+| Planning Report.md | — | PA1 (23/05/2026 – 06/06/2026) | Vũ Duy Nhất |
+| Project Plan.md | 1.1 | PA2 (07/06/2026 – 12/07/2026) | Nguyễn Lê Hoàng Khải, Vũ Duy Nhất |
 
 These documents are stored in the team's shared Google Drive and version-controlled alongside the source code in the project's GitHub repository.
 
@@ -162,7 +162,7 @@ The operational context, platforms, and infrastructural environment in which the
     * **Authentication Integration:** There is no restriction to specific institutional accounts; any patron can register directly on the platform or authenticate via Google OAuth for streamlined access.
 
 * **Cooperating Systems & Technical Infrastructure:**
-    * The application is built using a modern decoupled architecture consisting of a **React** frontend and a **Node.js (Express.js)** backend. 
+    * The application is built using a modern decoupled architecture consisting of a **React (Next.js)** frontend and a **Node.js (Express.js)** backend. 
     * Data persistence is managed via a **PostgreSQL** database. 
     * The entire ecosystem is containerized and orchestrated using **Docker** to ensure consistency across development, testing, and production environments.
 
@@ -224,7 +224,7 @@ The Authentication module handles secure user registration, login, session renew
 ### 5.2. Profile Management
 Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, and upcoming room reservations. It also allows individuals to update personal details and change passwords. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities independently.
 
-### 5.3. Borrow & Reserving Feature
+### 5.3. Borrowing & Reserving Feature
 This core module enables users to reserve physical books and book available study rooms for specific time slots in real-time. To streamline the physical pickup process and eliminate tedious paperwork, the system generates a unique 6-digit PIN code upon online reservation, which librarians can quickly verify at the counter. This feature addresses the traditional long queues and scheduling conflicts, making resource allocation much faster and more transparent. Both students looking for efficient access to materials/spaces and librarians processing daily physical checkouts benefit significantly from this automation.
 
 ### 5.4. Searching Feature
@@ -452,7 +452,7 @@ graph TD
 
 ### 6.1 Applicable Standards
 
-- REST API design will follow conventional HTTP method/status-code semantics for consistency between the Next.js front end and Express.js back end.
+- REST API design will follow conventional HTTP method/status-code semantics for consistency between the React (Next.js) front end and Express.js back end.
 - Accessibility compliance follows the **WCAG 2.1 Level AA** guidelines to ensure inclusivity for users with motor, visual, or cognitive impairments.
 - No formal industry data-exchange standard (e.g., MARC/MARC21 for library records) is adopted; the team will use its own PostgreSQL schema, as no interoperability with external library systems is required for this project.
 - Internationalization (i18n) is a mandated internal standard: the interface must fully support both English and Vietnamese, with all user-facing text sourced from centralized dictionaries (`en.json`/`vi.json`) rather than hardcoded strings.
@@ -552,7 +552,7 @@ This document was drafted with the assistance of an AI tool, declared as follows
 
 ### AI Tool 1
 - **Tool name:** Gemini Pro 3.1, Google
-- **Access time:** June 07, 2026 to July 12, 2026
+- **Access time:** 07/06/2026 to 12/07/2026
 - **Prompt:** "Translate the sentence into English suitable for a formal report, without altering the original meaning."
 - **Purpose:** To accurately translate ideas from Vietnamese into fluent, professional English.
 - **Content generated by AI:** Initial translation of all sections in this document.
@@ -560,7 +560,7 @@ This document was drafted with the assistance of an AI tool, declared as follows
 
 ### AI Tool 2
 - **Tool name:** Claude Sonnet 5, Anthropic
-- **Access time:** June 07, 2026 to July 12, 2026
+- **Access time:** 07/06/2026 to 12/07/2026
 - **Prompt:** "Refactor this Project Plan section by section."
 - **Purpose:** To restructure and rewrite the Project Plan into clear, professional report language, and to draft the Team Structure and Risk Management content.
 - **Content generated by AI:** Well-structured project plan document based on content student prepared.
@@ -568,21 +568,23 @@ This document was drafted with the assistance of an AI tool, declared as follows
 
 ### AI Tool 3
 - **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** June 07, 2026 to July 12, 2026
+
+**Use 1 — Stakeholder and User Descriptions**
+- **Access time:** 07/06/2026 to 12/07/2026
 - **Prompt:** "What should I write in this section?", "Please write this into a markdown skeleton so I can easily fill it in", "Ask me questions so I can fill in these fields accurately"
 - **Purpose:** To break down the required structure for the "Stakeholder and User Descriptions" section, and to draft the content in professional English using tailored questionnaires.
 - **Content generated by AI:** A comprehensive Markdown boilerplate for the Stakeholder/User sections, and finalized, professional English content for Section 3.1 (Stakeholder Summary), 3.2 (User Summary), 3.3 (User Environment), and Section 3.4 (Summary of Key Stakeholder or User Needs) with placeholders left for future competition analysis.
 - **Student's work and validation:** Provided precise architectural, role-based, and feature specifications for the smart library system (Group 03 - AmeThyst, Instructor, Node.js/Express.js/React stack, PostgreSQL with Docker, reader online reservations/study groups, and librarian/admin workflows) and validated the structured translation to match the actual project implementation.
----
-- **Tool name:** Gemini Flash 3.5, Google
-- **Access time:** June 07, 2026 to July 12, 2026
+
+**Use 2 — Product Overview and User Environment**
+- **Access time:** 07/06/2026 to 12/07/2026
 - **Prompt:** "What should I write in this section? Please suggest a markdown template in English", "Ask me questions so I can fill in the information myself"
 - **Purpose:** To draft the Product Overview (Product Perspective, Assumptions and Dependencies) and to consolidate multiple overlapping sections of the User Environment into a cohesive, structured format.
 - **Content generated by AI:** A standardized Markdown template and finalized English content for sections 4.1 (Product Perspective) and 4.2 (Assumptions and Dependencies), along with a unified, professionally written section 3.3 (User Environment).
 - **Student's work and validation:** Provided explicit project constraints (standalone system, web browser interface, no external dependencies, and manual-to-digital transition context) and manually reviewed the generated text to ensure it aligned precisely with the system design and project scope.
----
-- **Tool name:** Gemini Flash 3.5 (Google)
-- **Access time:** July 06, 2026
+
+**Use 3 — Mermaid.js Diagram Conversion**
+- **Access time:** 06/07/2026
 - **Prompt:** 
   - *"Is there any way to convert draw io diagram into mermaid?"*
   - *"Convert this Draw.io XML diagram into valid Mermaid.js flowchart syntax, reduce the content, the existing one is long"*
