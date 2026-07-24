@@ -1,14 +1,14 @@
 # Use-Case Specification: Books Package
 
-**Group Name:** Amethyst
+    Project Name: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: Amethyst
+    Assignment: PA3-2026
+    Document Identifier: NGLP-SRS-BK-001
+    Version: 1.1
 
-**Project Name:** Amethyst Library Management System
-
-**Version:** 1.1
-
-**Date:** 20-Jul-2026
-
-**Document Identifier:** NGLP-SRS-BK-001
+Performed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh | Reviewed by: All Members | Edited by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Date | Version | Description | Author |
 | --- | --- | --- | --- |
-| 20-Jul-2026 | 1.1 | Books Use case (RUP format layout). | Anh Minh, Hoang Gia |
+| 20-Jul-2026 | 1.1 | Books Use case (RUP format layout). | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
 
 ---
 

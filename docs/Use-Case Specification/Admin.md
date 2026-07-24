@@ -1,14 +1,13 @@
 # Use-Case Specification: Admin Administration
 
-**Group Name:** Amethyst
+    Project Name: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: Amethyst
+    Assignment: PA3-2026
+    Version: 1.1
 
-**Project Name:** Modern Library Management System
-
-**Version:** 1.1
-
-**Date:** 21-Jul-2026
-
-**Document Identifier:** NGLP-SRS-ADM-001
+Performed by: Trần Lê Hoàng Gia, Phan Lê Anh Minh | Reviewed by: All Members | Edited by: Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
 ---
 
@@ -16,7 +15,7 @@
 
 | Date | Version | Description | Author |
 | --- | --- | --- | --- |
-| 21-Jul-2026 | 1.1 | Admin Administration use-case specifications (RUP specification layout) | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
+| 21-Jul-2026 | 1.1 | Admin Administration use-case specifications (RUP specification layout) | Trần Lê Hoàng Gia, Phan Lê Anh Minh |
 
 ---
 
