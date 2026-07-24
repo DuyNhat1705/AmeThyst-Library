@@ -55,13 +55,13 @@
     - [UC-BK-07: Generating Pin](#uc-bk-07-generating-pin)
   - [V. Study Group Creation \& Facility Reservation](#v-study-group-creation--facility-reservation)
     - [Use case diagram](#use-case-diagram-2)
-    - [UC-LIB-01: View Library Map](#uc-lib-01-view-library-map)
-    - [UC-LIB-02: View Facility Information](#uc-lib-02-view-facility-information)
-    - [UC-LIB-03: Room Reservation](#uc-lib-03-room-reservation)
-    - [UC-LIB-04: Canceling Room Reservation](#uc-lib-04-canceling-room-reservation)
-    - [UC-LIB-05: Creating Study Group](#uc-lib-05-creating-study-group)
-    - [UC-LIB-06: Canceling Study Group](#uc-lib-06-canceling-study-group)
-    - [UC-LIB-07: Updating Study Group Information](#uc-lib-07-updating-study-group-information)
+    - [UC-FAC-01: View Library Map](#uc-fac-01-view-library-map)
+    - [UC-FAC-02: View Facility Information](#uc-fac-02-view-facility-information)
+    - [UC-FAC-03: Room Reservation](#uc-fac-03-room-reservation)
+    - [UC-FAC-04: Canceling Room Reservation](#uc-fac-04-canceling-room-reservation)
+    - [UC-FAC-05: Creating Study Group](#uc-fac-05-creating-study-group)
+    - [UC-FAC-06: Canceling Study Group](#uc-fac-06-canceling-study-group)
+    - [UC-FAC-07: Updating Study Group Information](#uc-fac-07-updating-study-group-information)
   - [VI. Study Group](#vi-study-group)
     - [Use case diagram](#use-case-diagram-3)
     - [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
@@ -218,7 +218,7 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> The user enters their name, email address, password, and password confirmation into the designated registration fields.</li>
           <li><strong>[Actor Action]:</strong> The user submits the registration form.</li>
           <li><strong>[Data Processing]:</strong> The system validates that the email format is correct and checks the database to verify the email is not already associated with an existing account.</li>
-          <li><strong>[System Response]:</strong> The system executes the mandatory include sub-routine **Verify By Email (UC-AUTH-02)** to issue a verification link.</li>
+          <li><strong>[System Response]:</strong> The system executes the mandatory include sub-routine <code>Verify By Email (UC-AUTH-02)</code> to issue a verification link.</li>
           <li><strong>[Data Processing]:</strong> The system hashes the password using a secure cryptographic algorithm and saves a new user record with a "Pending Verification" status flag.</li>
           <li><strong>[Display Result]:</strong> The system displays a registration success message instructing the user to check their email inbox to complete the verification sequence.</li>
         </ol>
@@ -272,7 +272,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/uc-signin.jfif" alt="Register Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/uc-signin.jfif" alt="Register Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -366,7 +366,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/verify-mail.jfif" alt="Verify By Email Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/verify-mail.jfif" alt="Verify By Email Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -468,8 +468,8 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/google-auth.jfif" alt="Google OAuth Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
-        <img src="Img/Authentication/verify-mail.jfif" alt="Login Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/google-auth.jfif" alt="Google OAuth Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/verify-mail.jfif" alt="Login Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -571,7 +571,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/uc-log-in.jfif" alt="Login Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/uc-log-in.jfif" alt="Login Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -619,8 +619,8 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user clicks the "Forgot Password?" text link navigation node on the login view panel layout.</li>
           <li><strong>[Actor Action]:</strong> The user inputs their registered account email identifier into the recovery prompt and submits.</li>
-          <li><strong>[System Response]:</strong> The system verifies the user record exists and triggers the mandatory include sub-routine **Verify By OTP (UC-AUTH-06)** to validate identity.</li>
-          <li><strong>[System Response]:</strong> Upon catching a successful callback validation status from the OTP routine, the system invokes the mandatory include sub-routine **Change Password (UC-AUTH-07)**.</li>
+          <li><strong>[System Response]:</strong> The system verifies the user record exists and triggers the mandatory include sub-routine <code> Verify By OTP (UC-AUTH-06)</code> to validate identity.</li>
+          <li><strong>[System Response]:</strong> Upon catching a successful callback validation status from the OTP routine, the system invokes the mandatory include sub-routine <code>Change Password (UC-AUTH-07)</code>.</li>
           <li><strong>[Display Result]:</strong> The system presents a password reset complete confirmation view layout with a redirection button linking back to the login page.</li>
         </ol>
       </td>
@@ -665,7 +665,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/uc-forget-pass.jfif" alt="Forget Password Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/uc-forget-pass.jfif" alt="Forget Password Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -767,7 +767,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/uc-verifyOTP.jfif" alt="Verify By OTP Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/uc-verifyOTP.jfif" alt="Verify By OTP Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -860,7 +860,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Authentication/uc-reset-pass.jfif" alt="Change Password Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Authentication/uc-reset-pass.jfif" alt="Change Password Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1085,7 +1085,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Profile/uc-your-profile.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Profile/uc-your-profile.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1135,9 +1135,9 @@ flowchart LR
           <li><strong>[System Response]:</strong> The system triggers a local device filesystem upload dialogue wrapper window prompt.</li>
           <li><strong>[Actor Action]:</strong> The user selects a target image file object and approves submission steps.</li>
           <li><strong>[Data Processing]:</strong> The system validates the asset metadata properties client-side to verify file configuration boundaries match structural rules.</li>
-          <li><strong>[Data Processing]:</strong> The system establishes an API communication uplink tunnel to stream the binary image payload object directly out to the external secondary **Storage Service**.</li>
-          <li><strong>[Data Processing]:</strong> The **Storage Service** buffers the upload stream, saves the graphic file inside optimized media asset buckets, and passes a unique public reference image URL string parameter back down to the application server.</li>
-          <li><strong>[Data Processing]:</strong> The system updates the user's base record rows inside the database, mapping the `avatar_url` coordinate pointer value to the fresh link string.</li>
+          <li><strong>[Data Processing]:</strong> The system establishes an API communication uplink tunnel to stream the binary image payload object directly out to the external secondary <strong>Storage Service</strong>.</li>
+          <li><strong>[Data Processing]:</strong> The <strong>Storage Service</strong> buffers the upload stream, saves the graphic file inside optimized media asset buckets, and passes a unique public reference image URL string parameter back down to the application server.</li>
+          <li><strong>[Data Processing]:</strong> The system updates the user's base record rows inside the database, mapping the <code> avatar_url</code> coordinate pointer value to the fresh link string.</li>
           <li><strong>[Display Result]:</strong> The system refreshes image element sources on screen to display the updated profile avatar graphic asset instantly.</li>
         </ol>
       </td>
@@ -1198,9 +1198,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Profile/uc-upload-avatar.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Profile/uc-upload-avatar.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <br>
-        <img src="Img/Profile/uc-crop-avatar.jfif" alt="Change Avatar Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Profile/uc-crop-avatar.jfif" alt="Change Avatar Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1312,7 +1312,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Profile/uc-change-pass.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Profile/uc-change-pass.jfif" alt="alt text" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1434,7 +1434,7 @@ flowchart TD
           <li><strong>[Actor Action]:</strong> The user adjusts the toggle switch to their preferred search type (Standard Keyword or Semantic Context).</li>
           <li><strong>[Actor Action]:</strong> *Optional:* The user sets or updates overlapping constraint toggles within the metadata filter panels (e.g., availability status, structural categories, languages, or publication eras).</li>
           <li><strong>[Actor Action]:</strong> The user types their query string into the search input box. (The background typo-tolerance layer dynamically monitors input parameters for character permutations).</li>
-          <li><strong>[Actor Action]:</strong> The user executes the query by pressing the **Enter** key on their keyboard or clicking the search icon button widget.</li>
+          <li><strong>[Actor Action]:</strong> The user executes the query by pressing the <code> Enter</code> key on their keyboard or clicking the search icon button widget.</li>
           <li><strong>[Data Processing]:</strong> The system intercepts the submission runtime event and immediately creates an asynchronous database logging transaction to write the raw search text string, timestamp, applied filter, and User ID parameters into the historical search database log tables.</li>
           <li><strong>[Data Processing]:</strong> The system processes the query payload text by both keywords and context-aware matching.</li>
           <li><strong>[Data Processing]:</strong> The system applies any active metadata filter constraint parameters to strip disqualified records out of the resulting query dataset match array.</li>
@@ -1495,7 +1495,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-search-display.jfif" alt="Book Searching Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-search-display.jfif" alt="Book Searching Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1587,7 +1587,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-filter.jfif" alt="Filtering Book Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-filter.jfif" alt="Filtering Book Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1640,7 +1640,7 @@ flowchart TD
           <li><strong>[Data Processing]:</strong> The system queries the book catalog database to isolate up to 10 highly rated or trending books sharing matching genre classifications with the current target book.</li>
           <li><strong>[Display Result]:</strong> The system renders the comprehensive profile view template workspace, mapping metadata, inventory states, and reviews cleanly into upper layout blocks.</li>
           <li><strong>[Display Result]:</strong> The system populates a horizontal, swipeable "Related Books by Genre" carousel grid component at the terminal end of the page viewport layout.</li>
-          <li><strong>[System Response]:</strong> The system checks the active user session status token to dynamically expose action controls: * **For all users:** Exposes basic detail visibility and the related carousel nodes. * **For authenticated users:** Activates operational interaction buttons for "Add to Wishlist" (heart icon) and "Reserve Book".</li>
+          <li><strong>[System Response]:</strong> The system checks the active user session status token to dynamically expose action controls: <br> <strong>- For all users:</strong> Exposes basic detail visibility and the related carousel nodes. <br> <strong>- For authenticated users:</strong> Activates operational interaction buttons for "Add to Wishlist" (heart icon) and "Reserve Book".</li>
           <li><strong>[Actor Action]:</strong> The user reviews the details and can scroll through the carousel, click a related book to transition views, or click an interaction button to trigger a secondary workflow.</li>
         </ol>
       </td>
@@ -1697,7 +1697,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-view-detail.jfif" alt="View Book Detail Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-view-detail.jfif" alt="View Book Detail Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1795,9 +1795,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-add-fav.jfif" alt="Add Book Favorite Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-add-fav.jfif" alt="Add Book Favorite Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <br>
-        <img src="Img/Books/uc-wishlist-dashboard.jfif" alt="Add Book Favorite Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-wishlist-dashboard.jfif" alt="Add Book Favorite Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1900,7 +1900,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-reserve.jfif" alt="Book Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-reserve.jfif" alt="Book Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -1995,7 +1995,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-cancel-reserve.jfif" alt="Canceling Book Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-cancel-reserve.jfif" alt="Canceling Book Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2089,7 +2089,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Books/uc-gen-pin.jfif" alt="Generating Pin Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Books/uc-gen-pin.jfif" alt="Generating Pin Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2161,7 +2161,7 @@ flowchart LR
 ```
 ---
 
-### UC-LIB-01: View Library Map
+### UC-FAC-01: View Library Map
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2174,7 +2174,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-01</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-01</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2245,7 +2245,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-LibMap.jfif" alt="View Library Map Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-LibMap.jfif" alt="View Library Map Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2253,7 +2253,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-02: View Facility Information
+### UC-FAC-02: View Facility Information
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2266,13 +2266,13 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-02</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-02</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Extends the active map visualization layout dashboard panel to display specific metadata parameters, operational schedules, capacity thresholds, and equipment summaries for a chosen target room asset.
-        <br><em>(Includes / Extends: <strong>Extends UC-LIB-01 (View Library Map) — extension point: User selects a specific room or point-of-interest zone node anchor element within the visual map array space.</strong>)</em>
+        <br><em>(Includes / Extends: <strong>Extends UC-FAC-01 (View Library Map) — extension point: User selects a specific room or point-of-interest zone node anchor element within the visual map array space.</strong>)</em>
       </td>
     </tr>
     <tr>
@@ -2283,7 +2283,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Underlying Map Session Active:</strong> The core baseline `View Library Map (UC-LIB-01)` flow is fully executed and active on screen.</li>
+          <li><strong>Underlying Map Session Active:</strong> The core baseline `View Library Map (UC-FAC-01)` flow is fully executed and active on screen.</li>
         </ul>
       </td>
     </tr>
@@ -2338,7 +2338,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-room-info.jfif" alt="View Facility Information Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-room-info.jfif" alt="View Facility Information Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2346,7 +2346,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-03: Room Reservation
+### UC-FAC-03: Room Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2359,7 +2359,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-03</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-03</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2447,7 +2447,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-room-reserve.jfif" alt="Room Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-room-reserve.jfif" alt="Room Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2455,7 +2455,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-04: Canceling Room Reservation
+### UC-FAC-04: Canceling Room Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2468,7 +2468,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-04</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-04</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2540,7 +2540,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-room-reserve.jfif" alt="Canceling Room Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-room-reserve.jfif" alt="Canceling Room Reservation Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2548,7 +2548,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-05: Creating Study Group
+### UC-FAC-05: Creating Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2561,7 +2561,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-05</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-05</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2633,9 +2633,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-group-create.jfif" alt="Creating Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-group-create.jfif" alt="Creating Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <br>
-        <img src="Img/Facility/uc-create-form.jfif" alt="Creating Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-create-form.jfif" alt="Creating Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2643,7 +2643,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-06: Canceling Study Group
+### UC-FAC-06: Canceling Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2656,7 +2656,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-06</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-06</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2731,7 +2731,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-group-manage.jfif" alt="Canceling Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-group-manage.jfif" alt="Canceling Study Group Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2739,7 +2739,7 @@ flowchart LR
 
 ---
 
-### UC-LIB-07: Updating Study Group Information
+### UC-FAC-07: Updating Study Group Information
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2752,7 +2752,7 @@ flowchart LR
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-LIB-07</strong></td>
+      <td style="vertical-align: top;"><strong>UC-FAC-07</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
@@ -2825,7 +2825,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Facility/uc-group-manage.jfif" alt="Updating Study Group Information Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Facility/uc-group-manage.jfif" alt="Updating Study Group Information Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -2969,7 +2969,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-searching-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-searching-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3070,7 +3070,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-filtering-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-filtering-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3160,7 +3160,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-view-study-group-detail.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-view-study-group-detail.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3254,7 +3254,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3354,7 +3354,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3452,7 +3452,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3542,7 +3542,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3644,7 +3644,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-request-join.png" alt="Join Request" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-request-join.png" alt="Join Request" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3830,7 +3830,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/StudyGroup/uc-out-group.png" alt="Study Group Summary" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/StudyGroup/uc-out-group.png" alt="Study Group Summary" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3939,7 +3939,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
           <li><strong>Recent Interest Real-Time Extraction:</strong> The displayed list compilation must dynamically track and accurately reflect the user's most recent reading and query interest parameters.</li>
-          <li><strong>Analytical Behavioral Tracking:</strong> The system must actively log all granular user interaction vectors (e.g., viewing profiles, adding entries to wishlists, processing reservations) to continually update and train downstream machine learning recommendations.</li>
+          <li><strong>Cold start for new users:</strong> Recommendation generation based on global trend (books with high borrow turns or hot keywords).</li>
+          <li><strong>Analytical Behavioral Tracking:</strong> The system must actively log all granular user interaction vectors (e.g. searching books, adding entries to wishlists, processing reservations) to continually update and train downstream machine learning recommendations.</li>
         </ul>
       </td>
     </tr>
@@ -3954,7 +3955,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Recommendation/reccommend.jfif" alt="View Recommended Book Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Recommendation/reccommend.jfif" alt="View Recommended Book Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -3981,7 +3982,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the user to clear their current recommendation cache and trigger the system's background engine to immediately recalculate and regenerate a fresh book recommendation list.
-        <br><em>(Includes / Extends: <strong>Extends UC-AIR-01 (View Recommended Book) — extension point: Regenerating the displayed recommendation list.<br>Includes UC-AIR-03 (AI Recommend Module).</strong>)</em>
+        <br><em>(Includes / Extends: <strong>Extends UC-AIR-01 (View Recommended Book) — extension point: Regenerating the displayed recommendation list.</strong>)</em>
       </td>
     </tr>
     <tr>
@@ -3992,7 +3993,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Workspace Context Active:</strong> The user is actively executing workspace visualization tasks within `UC-AIR-01`.</li>
+          <li><strong>Workspace Context Active:</strong> The user is actively executing workspace visualization tasks within <code> UC-AIR-01</code>.</li>
         </ul>
       </td>
     </tr>
@@ -4000,9 +4001,9 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> While actively viewing the recommended book collection grid, the user selects the "Reset AI Recommend" interface control node option.</li>
-          <li><strong>[System Response]:</strong> The system intercepts the request command payload and systematically invokes the mandatory include sub-routine **AI Recommend Module (UC-AIR-04)**.</li>
-          <li><strong>[Data Processing]:</strong> The included AI Recommend Module processes the user's behavioral metrics dataset rows and evaluates a clean set of recommendations.</li>
+          <li><strong>[Actor Action]:</strong> While actively viewing the recommended book collection lists, the user selects the <code>Renew</code> buttons.</li>
+          <li><strong>[System Response]:</strong> The system intercepts the request command payload and systematically invokes the AI Recommend Module .</li>
+          <li><strong>[Data Processing]:</strong> The included AI Recommend Module processes the user's behaviors and evaluates a clean set of recommendations.</li>
           <li><strong>[Data Processing]:</strong> The system purges historical cache frames and overrides the active recommendation data array rows with the newly received listings.</li>
           <li><strong>[Display Result]:</strong> The system refreshes the client screen dashboard panel to render the fresh, updated recommended book list.</li>
         </ol>
@@ -4050,7 +4051,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Recommendation/reccommend.jfif" alt="Reset AI Recommend Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Recommendation/reccommend.jfif" alt="Reset AI Recommend Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4178,7 +4179,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-book-management.png" alt="Managing Book" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-book-management.png" alt="Managing Book" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4274,7 +4275,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-book-management.png" alt="Managing Book" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-book-management.png" alt="Managing Book" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4371,7 +4372,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-book-return.png" alt="Confirming Book Return" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-book-return.png" alt="Confirming Book Return" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4467,7 +4468,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-recording-loan.png" alt="Recording Loan" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-recording-loan.png" alt="Recording Loan" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4561,7 +4562,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-verify-pin.png" alt="Verifying Pin" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-verify-pin.png" alt="Verifying Pin" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4655,7 +4656,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-room-reservation.png" alt="Confirming Room Checkin" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-room-reservation.png" alt="Confirming Room Checkin" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4749,7 +4750,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Librarian/uc-announcement.png" alt="Announcement" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Librarian/uc-announcement.png" alt="Announcement" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4879,7 +4880,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-user-mangament.png" alt="Admin User Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-user-mangament.png" alt="Admin User Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -4917,7 +4918,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Active Base Context Display:</strong> The base use case `View User Account (UC-ADM-01)` must be currently active and displaying account data.</li>
+          <li><strong>Active Base Context Display:</strong> The base use case <code>View User Account (UC-ADM-01)</code> must be currently active and displaying account data.</li>
         </ul>
       </td>
     </tr>
@@ -4981,7 +4982,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-user-mangament.png" alt="Admin User Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-user-mangament.png" alt="Admin User Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -5085,7 +5086,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-role-permission.png" alt="Authorization / Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-role-permission.png" alt="Authorization / Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -5132,7 +5133,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The Admin navigates to the Role Control section.</li>
-          <li><strong>[Data Processing]:</strong> The system invokes `Authorization (UC-ADM-07)` to verify the Admin's permission to manage roles.</li>
+          <li><strong>[Data Processing]:</strong> The system invokes <code>>Authorization (UC-ADM-07)</code> to verify the Admin's permission to manage roles.</li>
           <li><strong>[Display Result]:</strong> Upon successful authorization, the system displays the list of existing roles.</li>
           <li><strong>[Actor Action]:</strong> The Admin creates, edits, or deletes a role.</li>
           <li><strong>[Data Processing]:</strong> The system validates the submitted role data.</li>
@@ -5145,7 +5146,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Authorization Fails (Step 2):</strong> If `Authorization (UC-ADM-07)` denies access:
+            <strong>Authorization Fails (Step 2):</strong> If <code>Authorization (UC-ADM-07)</code> denies access:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The use case terminates.</li>
             </ol>
@@ -5188,7 +5189,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-role-permission.png" alt="Role Control / Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-role-permission.png" alt="Role Control / Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -5235,7 +5236,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The Admin navigates to the Use-case Permission section.</li>
-          <li><strong>[Data Processing]:</strong> The system invokes `Authorization (UC-ADM-07)` to verify the Admin's permission to manage use-case permissions.</li>
+          <li><strong>[Data Processing]:</strong> The system invokes <code>Authorization (UC-ADM-07)</code> to verify the Admin's permission to manage use-case permissions.</li>
           <li><strong>[Display Result]:</strong> Upon successful authorization, the system displays the list of use cases along with their current permission settings.</li>
           <li><strong>[Actor Action]:</strong> The Admin modifies the permission configuration for a selected use case.</li>
           <li><strong>[Data Processing]:</strong> The system validates the submitted configuration.</li>
@@ -5291,7 +5292,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-role-permission.png" alt="Use-case Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-role-permission.png" alt="Use-case Permission" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -5386,7 +5387,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-system-configuration.png" alt="System Configuration" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-system-configuration.png" alt="System Configuration" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -5479,7 +5480,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="Img/Admin/uc-statistic.png" alt="Statistics" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="ImageGUI/Admin/uc-statistic.png" alt="Statistics" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
