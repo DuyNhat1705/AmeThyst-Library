@@ -120,630 +120,962 @@ flowchart LR
 ```
 
 ---
-
 ## UC-SG-01: Searching Study Group
 
-### 1. Use-Case Name
-
-Searching Study Group
-
-#### 1.1 Brief Description
-
-Allows a General User to search for study groups by keyword.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The General User navigates to the study group search interface.
-2. **[Actor Action]**: The General User enters a search keyword.
-3. **[Data Processing]**: The system validates the input.
-4. **[Data Processing]**: The system retrieves study groups matching the keyword.
-5. **[Display Result]**: The system displays the list of matching study groups.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Empty or Invalid Input (Step 3)
-
-If the entered keyword is empty or invalid:
-
-1. The system rejects the search request.
-2. The system prompts the General User to enter a valid keyword.
-
-* **Postcondition (Alternative Flow):** No search is executed; the General User remains on the search interface.
-
-##### 2.2.2 No Matching Results (Step 4)
-
-If no study groups match the keyword:
-
-1. The system displays a "no results found" message.
-
-* **Postcondition (Alternative Flow):** No study group list is displayed.
-
-### 3. Special Requirements
-
-#### 3.1 Response Time
-
-Search results must be returned within an acceptable response time.
-
-#### 3.2 Input Validation
-
-Search input must be validated to prevent malformed or malicious queries.
-
-### 4. Preconditions
-
-#### 4.1 Feature Availability
-
-The General User has access to the study group search feature.
-
-### 5. Postconditions
-
-#### 5.1 Result Display
-
-A list of study groups matching the search criteria is displayed to the General User.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-![Study Group Listing](Img/StudyGroup/uc-searching-study-group.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Searching Study Group
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-01</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a General User to search for study groups by keyword.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">General User</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Feature Availability:</strong> The General User has access to the study group search feature.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The General User navigates to the study group search interface.</li>
+          <li><strong>[Actor Action]:</strong> The General User enters a search keyword.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the input.</li>
+          <li><strong>[Data Processing]:</strong> The system retrieves study groups matching the keyword.</li>
+          <li><strong>[Display Result]:</strong> The system displays the list of matching study groups.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Empty or Invalid Input (Step 3):</strong> If the entered keyword is empty or invalid:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system rejects the search request.</li>
+              <li>The system prompts the General User to enter a valid keyword.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No search is executed; the General User remains on the search interface.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>No Matching Results (Step 4):</strong> If no study groups match the keyword:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays a "no results found" message.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No study group list is displayed.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Result Display:</strong> A list of study groups matching the search criteria is displayed to the General User.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Response Time:</strong> Search results must be returned within an acceptable response time.</li>
+          <li><strong>Input Validation:</strong> Search input must be validated to prevent malformed or malicious queries.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-searching-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-02: Filtering Study Group
 
-### 1. Use-Case Name
-
-Filtering Study Group
-
-#### 1.1 Brief Description
-
-Allows a General User to narrow a study group list using filter criteria such as subject, schedule, or size.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The General User accesses a study group listing.
-2. **[Actor Action]**: The General User selects one or more filter criteria.
-3. **[Data Processing]**: The system validates the selected criteria.
-4. **[Data Processing]**: The system applies the filters to the current list.
-5. **[Display Result]**: The system displays the filtered list.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Invalid Filter Combination (Step 3)
-
-If the selected filters are invalid or conflicting:
-
-1. The system rejects the filter request.
-2. The system notifies the General User and retains the previous list.
-
-* **Postcondition (Alternative Flow):** The previous study group list remains displayed.
-
-##### 2.2.2 No Results After Filtering (Step 4)
-
-If no study groups match the filters:
-
-1. The system displays a "no results found" message.
-2. The system allows the General User to adjust the filters.
-
-* **Postcondition (Alternative Flow):** The filtered list is empty.
-
-### 3. Special Requirements
-
-#### 3.1 Filter Usability
-
-Filter options must be clearly presented and combinable where applicable.
-
-### 4. Preconditions
-
-#### 4.1 List Availability
-
-A list of study groups is available for filtering (e.g., resulting from a search or a default listing).
-
-### 5. Postconditions
-
-#### 5.1 Result Display
-
-The displayed list of study groups reflects the applied filter criteria.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Listing](Img/StudyGroup/uc-filtering-study-group.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Filtering Study Group
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-02</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a General User to narrow a study group list using filter criteria such as subject, schedule, or size.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">General User</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>List Availability:</strong> A list of study groups is available for filtering (e.g., resulting from a search or a default listing).</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The General User accesses a study group listing.</li>
+          <li><strong>[Actor Action]:</strong> The General User selects one or more filter criteria.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the selected criteria.</li>
+          <li><strong>[Data Processing]:</strong> The system applies the filters to the current list.</li>
+          <li><strong>[Display Result]:</strong> The system displays the filtered list.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Invalid Filter Combination (Step 3):</strong> If the selected filters are invalid or conflicting:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system rejects the filter request.</li>
+              <li>The system notifies the General User and retains the previous list.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The previous study group list remains displayed.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>No Results After Filtering (Step 4):</strong> If no study groups match the filters:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays a "no results found" message.</li>
+              <li>The system allows the General User to adjust the filters.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The filtered list is empty.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Result Display:</strong> The displayed list of study groups reflects the applied filter criteria.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Filter Usability:</strong> Filter options must be clearly presented and combinable where applicable.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-filtering-study-group.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-03: View Study Group Detail
 
-### 1. Use-Case Name
-
-View Study Group Detail
-
-#### 1.1 Brief Description
-
-Allows a General User to view detailed information about a specific study group.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The General User selects a study group from a list.
-2. **[Data Processing]**: The system retrieves the study group's detailed information.
-3. **[Display Result]**: The system displays the study group details, including description, members, and schedule.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Study Group Unavailable (Step 2)
-
-If the selected study group no longer exists or is inaccessible:
-
-1. The system displays an error message.
-
-* **Postcondition (Alternative Flow):** No detail view is displayed.
-
-### 3. Special Requirements
-
-#### 3.1 Access Level
-
-Only information appropriate to the requesting General User's access level is displayed.
-
-### 4. Preconditions
-
-#### 4.1 Group Accessibility
-
-A study group exists and is accessible from a list (search or filtered results).
-
-### 5. Postconditions
-
-#### 5.1 Detail Display
-
-The detailed information of the selected study group is displayed to the General User.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Listing](Img/StudyGroup/uc-view-study-group-detail.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: View Study Group Detail
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-03</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a General User to view detailed information about a specific study group.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">General User</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Group Accessibility:</strong> A study group exists and is accessible from a list (search or filtered results).</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The General User selects a study group from a list.</li>
+          <li><strong>[Data Processing]:</strong> The system retrieves the study group's detailed information.</li>
+          <li><strong>[Display Result]:</strong> The system displays the study group details, including description, members, and schedule.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Study Group Unavailable (Step 2):</strong> If the selected study group no longer exists or is inaccessible:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No detail view is displayed.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Detail Display:</strong> The detailed information of the selected study group is displayed to the General User.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Access Level:</strong> Only information appropriate to the requesting General User's access level is displayed.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-view-study-group-detail.png" alt="Study Group Listing" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-04: Inviting Others into Study Group
 
-### 1. Use-Case Name
-
-Inviting Others into Study Group
-
-#### 1.1 Brief Description
-
-Allows the Study Group Creator to invite a user to join a study group they manage.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Study Group Creator selects the study group to invite a member to.
-2. **[Actor Action]**: The Study Group Creator selects a user to invite, optionally using UC-SG-07 (Finding User By Email).
-3. **[Data Processing]**: The system validates that the target user is not already a member of the study group.
-4. **[Data Processing]**: The system sends an invitation to the target user.
-5. **[Display Result]**: The system confirms to the Study Group Creator that the invitation was sent.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Target User Already a Member (Step 3)
-
-If the target user is already a member of the study group:
-
-1. The system displays an error message.
-2. The system does not send an invitation.
-
-* **Postcondition (Alternative Flow):** No invitation is sent; the study group membership remains unchanged.
-
-### 3. Special Requirements
-
-#### 3.1 Authorization
-
-Only the study group creator may issue invitations for a given study group.
-
-#### 3.2 Duplicate Prevention
-
-Duplicate invitations to the same user for the same study group must be prevented.
-
-### 4. Preconditions
-
-#### 4.1 Authorization State
-
-The Study Group Creator is authenticated and manages the selected study group.
-
-### 5. Postconditions
-
-#### 5.1 Invitation Issued
-
-An invitation has been issued to the specified user for the selected study group.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Management](Img/StudyGroup/uc-other-member.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Inviting Others into Study Group
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-04</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows the Study Group Creator to invite a user to join a study group they manage.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Study Group Creator</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authorization State:</strong> The Study Group Creator is authenticated and manages the selected study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the study group to invite a member to.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Creator selects a user to invite, optionally using UC-SG-07 (Finding User By Email).</li>
+          <li><strong>[Data Processing]:</strong> The system validates that the target user is not already a member of the study group.</li>
+          <li><strong>[Data Processing]:</strong> The system sends an invitation to the target user.</li>
+          <li><strong>[Display Result]:</strong> The system confirms to the Study Group Creator that the invitation was sent.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Target User Already a Member (Step 3):</strong> If the target user is already a member of the study group:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+              <li>The system does not send an invitation.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No invitation is sent; the study group membership remains unchanged.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Invitation Issued:</strong> An invitation has been issued to the specified user for the selected study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Authorization:</strong> Only the study group creator may issue invitations for a given study group.</li>
+          <li><strong>Duplicate Prevention:</strong> Duplicate invitations to the same user for the same study group must be prevented.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-05: Remove Others from Study Group
 
-### 1. Use-Case Name
-
-Remove Others from Study Group
-
-#### 1.1 Brief Description
-
-Allows the Study Group Creator to remove an existing member from a study group they manage.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Study Group Creator selects the study group and views its member list.
-2. **[Actor Action]**: The Study Group Creator selects the member to remove.
-3. **[System Response]**: The system requests confirmation of the removal.
-4. **[Data Processing]**: The system removes the selected member from the study group.
-5. **[Display Result]**: The system confirms the removal to the Study Group Creator.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Removal Canceled (Step 3)
-
-If the Study Group Creator cancels the confirmation:
-
-1. The system cancels the removal process.
-
-* **Postcondition (Alternative Flow):** The study group membership remains unchanged.
-
-##### 2.2.2 Target User Not a Member (Step 2)
-
-If the selected user is not currently a member:
-
-1. The system displays an error message.
-
-* **Postcondition (Alternative Flow):** The study group membership remains unchanged.
-
-### 3. Special Requirements
-
-#### 3.1 Authorization
-
-Only the study group creator may remove members from a study group they manage.
-
-#### 3.2 Notification
-
-The affected user should be notified of their removal.
-
-### 4. Preconditions
-
-#### 4.1 Authorization and Membership State
-
-The Study Group Creator manages the study group; the target user is a current member of the study group.
-
-### 5. Postconditions
-
-#### 5.1 Membership Update
-
-The selected member is no longer part of the study group.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Management](Img/StudyGroup/uc-other-member.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Remove Others from Study Group
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-05</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows the Study Group Creator to remove an existing member from a study group they manage.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Study Group Creator</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authorization and Membership State:</strong> The Study Group Creator manages the study group; the target user is a current member of the study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the study group and views its member list.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the member to remove.</li>
+          <li><strong>[System Response]:</strong> The system requests confirmation of the removal.</li>
+          <li><strong>[Data Processing]:</strong> The system removes the selected member from the study group.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the removal to the Study Group Creator.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Removal Canceled (Step 3):</strong> If the Study Group Creator cancels the confirmation:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system cancels the removal process.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The study group membership remains unchanged.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Target User Not a Member (Step 2):</strong> If the selected user is not currently a member:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The study group membership remains unchanged.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Membership Update:</strong> The selected member is no longer part of the study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Authorization:</strong> Only the study group creator may remove members from a study group they manage.</li>
+          <li><strong>Notification:</strong> The affected user should be notified of their removal.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-other-member.png" alt="Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-06: Finding User By Email
 
-### 1. Use-Case Name
-
-Finding User By Email
-
-#### 1.1 Brief Description
-
-Allows the Study Group Creator to locate a registered user by email address, typically in support of inviting them to a study group.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Study Group Creator enters an email address to search for.
-2. **[Data Processing]**: The system validates the format of the email address.
-3. **[Data Processing]**: The system searches for a registered user matching the entered email address.
-4. **[Display Result]**: The system displays the matching user's basic profile information.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Invalid Email Format (Step 2)
-
-If the email format is invalid:
-
-1. The system prompts the Study Group Creator to correct the input.
-
-* **Postcondition (Alternative Flow):** No user information is displayed.
-
-##### 2.2.2 No Matching User (Step 3)
-
-If no registered user matches the provided email:
-
-1. The system displays a "user not found" message.
-
-* **Postcondition (Alternative Flow):** No user information is displayed.
-
-### 3. Special Requirements
-
-#### 3.1 Privacy
-
-Only minimal, non-sensitive user information should be exposed through this lookup.
-
-### 4. Preconditions
-
-#### 4.1 Feature Availability
-
-The Study Group Creator has access to the user lookup feature.
-
-### 5. Postconditions
-
-#### 5.1 Result Display
-
-A user matching the provided email address, if found, is presented to the Study Group Creator.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![User Profile](Img/StudyGroup/uc-view-member-detail.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Finding User By Email
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-06</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows the Study Group Creator to locate a registered user by email address, typically in support of inviting them to a study group.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Study Group Creator</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Feature Availability:</strong> The Study Group Creator has access to the user lookup feature.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Study Group Creator enters an email address to search for.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the format of the email address.</li>
+          <li><strong>[Data Processing]:</strong> The system searches for a registered user matching the entered email address.</li>
+          <li><strong>[Display Result]:</strong> The system displays the matching user's basic profile information.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Invalid Email Format (Step 2):</strong> If the email format is invalid:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system prompts the Study Group Creator to correct the input.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No user information is displayed.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>No Matching User (Step 3):</strong> If no registered user matches the provided email:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays a "user not found" message.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No user information is displayed.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Result Display:</strong> A user matching the provided email address, if found, is presented to the Study Group Creator.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Privacy:</strong> Only minimal, non-sensitive user information should be exposed through this lookup.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-07: View Other Profile
 
-### 1. Use-Case Name
-
-View Other Profile
-
-#### 1.1 Brief Description
-
-Allows the Study Group Creator to view the profile information of another user, such as a study group member or a prospective invitee.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Study Group Creator selects a user, e.g., from a member list or search result.
-2. **[Data Processing]**: The system retrieves the selected user's profile information according to the target user's visibility settings.
-3. **[Display Result]**: The system displays the profile to the Study Group Creator.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Profile Unavailable (Step 2)
-
-If the target user's profile cannot be retrieved:
-
-1. The system displays an error message.
-
-* **Postcondition (Alternative Flow):** No profile information is displayed.
-
-### 3. Special Requirements
-
-#### 3.1 Visibility
-
-Only profile information the target user has made visible/appropriate for this context should be shown.
-
-### 4. Preconditions
-
-#### 4.1 Profile Accessibility
-
-The target user's profile exists and is accessible to the Study Group Creator.
-
-### 5. Postconditions
-
-#### 5.1 Profile Display
-
-The requested user's profile information is displayed to the Study Group Creator.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![User Profile](Img/StudyGroup/uc-view-member-detail.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: View Other Profile
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-07</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows the Study Group Creator to view the profile information of another user, such as a study group member or a prospective invitee.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Study Group Creator</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Profile Accessibility:</strong> The target user's profile exists and is accessible to the Study Group Creator.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Study Group Creator selects a user, e.g., from a member list or search result.</li>
+          <li><strong>[Data Processing]:</strong> The system retrieves the selected user's profile information according to the target user's visibility settings.</li>
+          <li><strong>[Display Result]:</strong> The system displays the profile to the Study Group Creator.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Profile Unavailable (Step 2):</strong> If the target user's profile cannot be retrieved:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No profile information is displayed.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Profile Display:</strong> The requested user's profile information is displayed to the Study Group Creator.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Visibility:</strong> Only profile information the target user has made visible/appropriate for this context should be shown.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-view-member-detail.png" alt="User Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-08: Creating Join Request
 
-### 1. Use-Case Name
-
-Creating Join Request
-
-#### 1.1 Brief Description
-
-Allows a user to submit a request to join a study group.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Other User selects the study group they wish to join.
-2. **[Actor Action]**: The Other User submits a request to join.
-3. **[Data Processing]**: The system validates that the Other User is not already a member and has no existing pending request for the study group.
-4. **[Data Processing]**: The system creates the join request and associates it with the study group.
-5. **[Data Processing]**: The system notifies the Study Group Creator of the new join request.
-6. **[Display Result]**: The system confirms to the Other User that the request has been submitted.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 User Already a Member (Step 3)
-
-If the Other User is already a member of the study group:
-
-1. The system displays an error message.
-2. The system does not create a request.
-
-* **Postcondition (Alternative Flow):** No new join request is created.
-
-##### 2.2.2 Duplicate Pending Request (Step 3)
-
-If a pending join request already exists for the Other User and study group:
-
-1. The system displays a message.
-2. The system does not create a duplicate request.
-
-* **Postcondition (Alternative Flow):** No new join request is created.
-
-### 3. Special Requirements
-
-#### 3.1 Request Limit
-
-Each user may have at most one pending join request per study group at any given time.
-
-### 4. Preconditions
-
-#### 4.1 Authentication State
-
-The Other User is authenticated, and the selected study group exists.
-
-### 5. Postconditions
-
-#### 5.1 Request Created
-
-A pending join request for the Other User exists against the selected study group.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Join Request](Img/StudyGroup/uc-request-join.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Creating Join Request
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-08</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a user to submit a request to join a study group.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Other User</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authentication State:</strong> The Other User is authenticated, and the selected study group exists.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Other User selects the study group they wish to join.</li>
+          <li><strong>[Actor Action]:</strong> The Other User submits a request to join.</li>
+          <li><strong>[Data Processing]:</strong> The system validates that the Other User is not already a member and has no existing pending request for the study group.</li>
+          <li><strong>[Data Processing]:</strong> The system creates the join request and associates it with the study group.</li>
+          <li><strong>[Data Processing]:</strong> The system notifies the Study Group Creator of the new join request.</li>
+          <li><strong>[Display Result]:</strong> The system confirms to the Other User that the request has been submitted.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>User Already a Member (Step 3):</strong> If the Other User is already a member of the study group:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+              <li>The system does not create a request.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No new join request is created.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Duplicate Pending Request (Step 3):</strong> If a pending join request already exists for the Other User and study group:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays a message.</li>
+              <li>The system does not create a duplicate request.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No new join request is created.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Request Created:</strong> A pending join request for the Other User exists against the selected study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Request Limit:</strong> Each user may have at most one pending join request per study group at any given time.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-request-join.png" alt="Join Request" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-09: Canceling Join Request
 
-### 1. Use-Case Name
-
-Canceling Join Request
-
-#### 1.1 Brief Description
-
-Allows a user to cancel a previously submitted, still-pending join request for a study group.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The Other User views their pending join request(s).
-2. **[Actor Action]**: The Other User selects a pending join request to cancel.
-3. **[Data Processing]**: The system validates that the selected request is still pending.
-4. **[Data Processing]**: The system cancels the join request.
-5. **[Display Result]**: The system confirms the cancellation to the Other User.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Request No Longer Pending (Step 3)
-
-If the join request has already been resolved (e.g., approved or previously canceled):
-
-1. The system displays an error message.
-2. The system takes no action.
-
-* **Postcondition (Alternative Flow):** The join request status remains unchanged.
-
-### 3. Special Requirements
-
-#### 3.1 Authorization
-
-Only the user who created the join request may cancel it.
-
-### 4. Preconditions
-
-#### 4.1 Authentication State
-
-The Other User is authenticated.
-
-### 5. Postconditions
-
-#### 5.1 Request Removed
-
-The selected join request no longer exists / is no longer pending.
-
-### 6. Extension Points
-
-None.
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Canceling Join Request
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-09</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a user to cancel a previously submitted, still-pending join request for a study group.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Other User</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authentication State:</strong> The Other User is authenticated.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Other User views their pending join request(s).</li>
+          <li><strong>[Actor Action]:</strong> The Other User selects a pending join request to cancel.</li>
+          <li><strong>[Data Processing]:</strong> The system validates that the selected request is still pending.</li>
+          <li><strong>[Data Processing]:</strong> The system cancels the join request.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the cancellation to the Other User.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Request No Longer Pending (Step 3):</strong> If the join request has already been resolved (e.g., approved or previously canceled):
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>The system displays an error message.</li>
+              <li>The system takes no action.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The join request status remains unchanged.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Request Removed:</strong> The selected join request no longer exists / is no longer pending.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Authorization:</strong> Only the user who created the join request may cancel it.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li>--</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
 ## UC-SG-10: Out Study Group
 
-### 1. Use-Case Name
-
-Out Study Group
-
-#### 1.1 Brief Description
-
-Allows a study group member (Study Group Creator or Other User) to voluntarily leave a study group they currently belong to.
-
-### 2. Flow of Events
-
-#### 2.1 Basic Flow
-
-1. **[Actor Action]**: The actor selects the study group they wish to leave.
-2. **[Actor Action]**: The actor confirms the intent to leave the study group.
-3. **[Data Processing]**: The system removes the actor from the study group's membership.
-4. **[Display Result]**: The system confirms to the actor that they have left the study group.
-
-#### 2.2 Alternative Flows
-
-##### 2.2.1 Leave Not Confirmed (Step 2)
-
-If the actor cancels the confirmation:
-
-1. No membership change occurs.
-
-* **Postcondition (Alternative Flow):** The actor's membership status remains unchanged.
-
-### 3. Special Requirements
-
-#### 3.1 Creator Succession
-
-If the actor is the Study Group Creator, the system must ensure another member is assigned as the creator before the creator can leave.
-
-### 4. Preconditions
-
-#### 4.1 Membership State
-
-The actor is authenticated and is a current member of the selected study group.
-
-### 5. Postconditions
-
-#### 5.1 Membership Update
-
-The actor is no longer a member of the study group.
-
-### 6. Extension Points
-
-None.
-
-### 7. Prototype Screen
-
-![Study Group Summary](Img/StudyGroup/uc-out-group.png)
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Use Case: Out Study Group
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-10</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">
+        Allows a study group member (Study Group Creator or Other User) to voluntarily leave a study group they currently belong to.
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">User (Group Member)</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Membership State:</strong> The actor is authenticated and is a current member of the selected study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The actor selects the study group they wish to leave.</li>
+          <li><strong>[Actor Action]:</strong> The actor confirms the intent to leave the study group.</li>
+          <li><strong>[Data Processing]:</strong> The system removes the actor from the study group's membership.</li>
+          <li><strong>[Display Result]:</strong> The system confirms to the actor that they have left the study group.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Leave Not Confirmed (Step 2):</strong> If the actor cancels the confirmation:
+            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
+              <li>No membership change occurs.</li>
+            </ol>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The actor's membership status remains unchanged.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Membership Update:</strong> The actor is no longer a member of the study group.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px;">
+          <li><strong>Creator Succession:</strong> If the actor is the Study Group Creator, the system must ensure another member is assigned as the creator before the creator can leave.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">
+        None
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <img src="Img/StudyGroup/uc-out-group.png" alt="Study Group Summary" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+      </td>
+    </tr>
+  </tbody>
+</table>

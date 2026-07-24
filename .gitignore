@@ -49,3 +49,6 @@ GEMINI.md
 /client
 /database
 src/
+
+scratch/
+*.pdf
