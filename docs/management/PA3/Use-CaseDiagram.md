@@ -1,12 +1,25 @@
 # Usecase Diagram
-
-    Project Name: Modern Library Management System
+    Project: Modern Library Management System 
     Course: CS300 – CSC13002 – Introduction to Software Engineering 
     Group ID: 03
-    Group Name: Amethyst
+    Group Name: AmeThyst 
     Assignment: PA3-2026
- 
-Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Members | Edited by: Trần Lê Hoàng Gia, Vũ Duy Nhất
+
+Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Trần Lê Hoàng Gia
+
+## Table of content
+- [Usecase Diagram](#usecase-diagram)
+  - [Table of content](#table-of-content)
+  - [Regulation](#regulation)
+  - [Authentication](#authentication)
+  - [Profile Management](#profile-management)
+  - [Library Map \& Study Group \& Room Reservation](#library-map--study-group--room-reservation)
+  - [Library Exploration](#library-exploration)
+  - [Study Group](#study-group)
+  - [AI Recomendations](#ai-recomendations)
+  - [Admin Administration](#admin-administration)
+  - [Librarian Administration](#librarian-administration)
+
 
 ## Regulation
 ```mermaid
@@ -43,7 +56,7 @@ flowchart RL
 ```mermaid
 flowchart LR
     %% Left Actor
-    ActorGuest([Guest])
+    ActorGuest((Guest))
         %% Central System Boundary Subgraph
     subgraph Authentication [Authentication]
         UC_Reg((Register))
@@ -255,7 +268,7 @@ flowchart TD
 
 ## Study Group
 ```mermaid
-flowchart LR
+flowchart TD
  subgraph StudyGroup["Study Group"]
         UC1(("Searching Study Group"))
         UC2(("Filtering Study Group"))
@@ -275,18 +288,6 @@ flowchart LR
     OtherUser(["other user"]) --> User
     GeneralUser(["<center>{abstract}<br>general user</center>"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
-    User ~~~ OtherUser
-    UC1 ~~~ UC2
-    UC2 ~~~ UC3
-    UC3 ~~~ UC5
-    UC5 ~~~ UC4
-    UC4 ~~~ UC6
-    UC6 ~~~ UC7
-    UC7 ~~~ UC8
-    UC8 ~~~ UC9
-    UC9 ~~~ UC10
-    UC10 ~~~ UC11 & UC13
-    UC11 ~~~ UC12
     GeneralUser ~~~~~ StudyGroup
     GeneralUser --- UC1 & UC2 & UC3
     StudyGroupCreator --- UC4 & UC9
@@ -312,13 +313,11 @@ flowchart LR
         UC1(("Adding book favorite"))
         UC2(("View Recomended Book"))
         UC3(("Reset AI Recommend"))
-        UC4(("AI Recommend Module"))
   end
     ActorUser(["user"]) ~~~~ AIRecommendation 
     ActorUser(["user"]) --- UC2
     UC1 -. &lt;&lt; extend &gt;&gt; .-> UC2
     UC3 -. &lt;&lt; extend &gt;&gt; .-> UC2
-    UC3 -. &lt;&lt; include &gt;&gt; .-> UC4
 
     style AIRecommendation fill:#fff,stroke:#333,stroke-width:2px
 ```
