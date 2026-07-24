@@ -68,3 +68,5 @@ export interface StudyGroupQuery { page?: number; pageSize?: number; search?: st
 export interface InviteStudyGroupMemberInput { email: string; message?: string }
 export interface StudyGroupFilterRoom { roomId: number; roomName: string; capacity: number }
 export interface StudyGroupFilterBranch { branchId: number; branchName: string; rooms: StudyGroupFilterRoom[] }
+export type AsyncResult<T> = { success: true; data: T } | { success: false; error: { code: string; message: string; details?: any } };
+export interface PageState<T> { data: T[]; meta: PageMeta; isLoading: boolean; error: string | null; filters: StudyGroupQuery; }

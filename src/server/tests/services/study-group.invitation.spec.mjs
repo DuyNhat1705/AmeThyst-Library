@@ -10,8 +10,8 @@ describe('Study Group email invitations', () => {
     expect(model).toContain("${UTC_ISO_SQL('gr.created_at')} AS \"invitedAt\"");
     expect(service).toContain("request.type !== 'invite'");
     expect(service).toContain('request.user_id !== userId');
-    expect(service).toContain("setRequestStatus(requestId, 'pending', 'approved'");
-    expect(service).toContain("setRequestStatus(requestId, 'pending', 'denied'");
+    expect(service).toContain("setRequestStatus(requestId, 'invite', 'pending', 'approved', client)");
+    expect(service).toContain("setRequestStatus(requestId, 'invite', 'pending', 'denied', client)");
   });
 
   it('reuses the configured mailer and exposes a navigation-only review link', async () => {

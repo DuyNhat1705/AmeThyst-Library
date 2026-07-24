@@ -252,8 +252,8 @@ export const lockRequest = async (groupId, requestId, client) => {
   return result.rows[0] || null;
 };
 
-export const setRequestStatus = async (requestId, fromStatus, toStatus, client) => {
-  const result = await query(`UPDATE group_request SET status = $3, decided_at = timezone('UTC', CURRENT_TIMESTAMP) WHERE request_id = $1 AND status = $2 RETURNING *, ${UTC_ISO_SQL('decided_at')} AS "decidedAtUtc"`, [requestId, fromStatus, toStatus], client);
+export const setRequestStatus = async (requestId, expectedType, fromStatus, toStatus, client) => {
+  const result = await query(`UPDATE group_request SET status = $4, decided_at = timezone('UTC', CURRENT_TIMESTAMP) WHERE request_id = $1 AND type = $2 AND status = $3 RETURNING *, ${UTC_ISO_SQL('decided_at')} AS "decidedAtUtc"`, [requestId, expectedType, fromStatus, toStatus], client);
   return result.rows[0] || null;
 };
 
@@ -333,7 +333,7 @@ export const listGroupNotificationRecipients = async (groupId, hostUserId, clien
 };
 
 export const deletePendingRequest = async (groupId, requestId, userId, client = pool) => {
-  const result = await query(`DELETE FROM group_request WHERE group_id = $1 AND request_id = $2 AND user_id = $3 AND status = 'pending' RETURNING *`, [groupId, requestId, userId], client);
+  const result = await query(`DELETE FROM group_request WHERE group_id = $1 AND request_id = $2 AND user_id = $3 AND type = 'request' AND status = 'pending' RETURNING *`, [groupId, requestId, userId], client);
   return result.rows[0] || null;
 };
 
@@ -343,7 +343,7 @@ export const findLatestParticipation = async (groupId, userId, client = pool) =>
 };
 
 export const deleteDeniedParticipations = async (groupId, userId, client) => {
-  await query(`DELETE FROM group_request WHERE group_id = $1 AND user_id = $2 AND status = 'denied'`, [groupId, userId], client);
+  await query(`DELETE FROM group_request WHERE group_id = $1 AND user_id = $2 AND type = 'request' AND status = 'denied'`, [groupId, userId], client);
 };
 
 export const insertJoinRequest = async ({ groupId, userId, content }, client = pool) => {

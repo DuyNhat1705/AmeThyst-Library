@@ -122,12 +122,18 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
 
   const handleSendMessage = async (message: string) => {
     if (!selectedGroupId) return;
-    const result = await requestToJoin(selectedGroupId, message);
-    if (result.success) {
-      const groupId = selectedGroupId;
-      setPendingRequests((current) => [...new Set([...current, groupId])]);
-      setSelectedGroupId(null);
-      await loadGroups();
+    const groupId = selectedGroupId;
+    
+    setPendingRequests((current) => [...new Set([...current, groupId])]);
+    setSelectedGroupId(null);
+
+    try {
+      const result = await requestToJoin(groupId, message);
+      if (!result.success && result.error?.code !== 'DUPLICATE_PARTICIPATION') {
+        alert(result.message || 'Failed to submit join request. Please try again.');
+      }
+    } finally {
+      await loadGroups(true);
       setPendingRequests((current) => current.filter((id) => id !== groupId));
     }
   };

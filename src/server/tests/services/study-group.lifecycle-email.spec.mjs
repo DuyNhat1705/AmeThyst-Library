@@ -12,7 +12,7 @@ describe('Study Group lifecycle notification emails', () => {
     expect(model).toContain('u.username, u.avatar');
     expect(service).toContain('sendStudyGroupRemovalEmail');
     expect(service).toContain('actor: notificationActor(result.detail.organizerProfile)');
-    expect(service).toContain('await sendLifecycleEmailSafely');
+    expect(service).toContain('sendLifecycleEmailSafely');
     expect(mailer).toContain('sendStudyGroupRemovalEmail');
     expect(mailer).toContain('[MEMBER REMOVED · ĐÃ XÓA]');
     expect(mailer).toContain('Member removed · Đã xóa thành viên');

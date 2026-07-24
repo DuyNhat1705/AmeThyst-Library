@@ -1,8 +1,3 @@
-<!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan:
-`specs/026-study-group-feature/plan.md`
-<!-- SPECKIT END -->
 
 ## Project-local frontend design guidance
 
@@ -13,3 +8,8 @@ shell commands, and other important information, read the current plan:
 
 - Before writing code, carefully inspect and understand the relevant existing system, architecture, conventions, and implementation.
 - Before making any database-related change, carefully inspect the SQL schema files under `database/init_db/postgres` and use the exact table and column names defined there.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

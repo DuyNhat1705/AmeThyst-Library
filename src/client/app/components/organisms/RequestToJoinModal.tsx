@@ -77,13 +77,20 @@ export default function RequestToJoinModal({ isOpen, onClose, onSend, group }: R
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-[#EAEAEA] dark:border-neutral-800 flex justify-end gap-3 bg-gray-50 dark:bg-neutral-900/50">
-          <Button variant="outline" className="px-6 py-2.5 rounded-xl text-sm" onClick={handleClose}>
-            {t('study_together.cancel')}
-          </Button>
-          <Button variant="primary" className="px-8 py-2.5 rounded-xl text-sm shadow-md" onClick={handleSend} disabled={message.trim().length === 0}>
-            {t('study_together.send')}
-          </Button>
+        <div className="px-6 py-5 border-t border-[#EAEAEA] dark:border-neutral-800 flex flex-col gap-3 bg-gray-50 dark:bg-neutral-900/50">
+          {group.retryAt && new Date(group.retryAt).getTime() > Date.now() && (
+            <div className="text-sm text-red-600 dark:text-red-400 text-right font-medium">
+              {t('study_group.cooldown_active')}: {new Date(group.retryAt).toLocaleTimeString()}
+            </div>
+          )}
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" className="px-6 py-2.5 rounded-xl text-sm" onClick={handleClose}>
+              {t('study_together.cancel')}
+            </Button>
+            <Button variant="primary" className="px-8 py-2.5 rounded-xl text-sm shadow-md" onClick={handleSend} disabled={message.trim().length === 0 || (group.retryAt !== null && new Date(group.retryAt).getTime() > Date.now())}>
+              {t('study_together.send')}
+            </Button>
+          </div>
         </div>
 
       </div>

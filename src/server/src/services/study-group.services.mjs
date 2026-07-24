@@ -324,11 +324,11 @@ export const approveRequest = async (groupId, requestId, userId) => {
     const status = requireManageableHost(group, userId, false);
     if (status !== 'upcoming' || group.current_num >= group.capacity) fail('GROUP_FULL', 'The group has no available capacity.', 409);
     const request = await model.lockRequest(groupId, requestId, client);
-    if (!request || request.status !== 'pending') fail('STALE_STATE', 'The request is no longer pending.', 409);
+    if (!request || request.status !== 'pending' || request.type !== 'request') fail('STALE_STATE', 'The request is no longer pending.', 409);
     if (request.user_id === userId) fail('FORBIDDEN', 'Hosts cannot approve themselves.', 403);
     const requester = await model.findNotificationUser(request.user_id, client);
     const creator = await model.findGroupCreatorNotificationUser(groupId, client);
-    const participation = await model.setRequestStatus(requestId, 'pending', 'approved', client);
+    const participation = await model.setRequestStatus(requestId, 'request', 'pending', 'approved', client);
     const updated = await model.reconcileMemberCount(groupId, 1, client);
     if (!updated) fail('GROUP_FULL', 'The group has no available capacity.', 409);
     return { group: await getDetail(groupId, userId, client), participation: projectParticipation(participation), requester, creator };
@@ -346,10 +346,10 @@ export const approveRequest = async (groupId, requestId, userId) => {
     eventId: `member_joined:${requestId}`,
     destination: { mode: 'created', groupId },
   };
-  await Promise.all([
+  Promise.all([
     sendLifecycleEmailSafely(sendStudyGroupRequestApprovedEmail, result.requester, requesterDetails, 'request-approved'),
     sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, creatorDetails, 'member-joined'),
-  ]);
+  ]).catch(() => {});
   return {
     group: result.group,
     participation: result.participation,
@@ -365,9 +365,9 @@ export const denyRequest = async (groupId, requestId, userId) => {
     const group = await model.lockGroup(groupId, client);
     requireManageableHost(group, userId);
     const request = await model.lockRequest(groupId, requestId, client);
-    if (!request || request.status !== 'pending') fail('STALE_STATE', 'The request is no longer pending.', 409);
+    if (!request || request.status !== 'pending' || request.type !== 'request') fail('STALE_STATE', 'The request is no longer pending.', 409);
     const requester = await model.findNotificationUser(request.user_id, client);
-    const participation = await model.setRequestStatus(requestId, 'pending', 'denied', client);
+    const participation = await model.setRequestStatus(requestId, 'request', 'pending', 'denied', client);
     return { group: await getDetail(groupId, userId, client), participation: projectParticipation(participation), requester };
   });
   const details = {
@@ -376,7 +376,7 @@ export const denyRequest = async (groupId, requestId, userId) => {
     eventId: `join_request_denied:${requestId}`,
     destination: { mode: 'dashboard' },
   };
-  await sendLifecycleEmailSafely(sendStudyGroupRequestDeniedEmail, result.requester, details, 'request-denied');
+  sendLifecycleEmailSafely(sendStudyGroupRequestDeniedEmail, result.requester, details, 'request-denied').catch(() => {});
   return {
     group: result.group,
     participation: result.participation,
@@ -403,7 +403,7 @@ export const removeMember = async (groupId, memberId, userId) => {
     eventId: `member_removed:${result.membershipId}`,
     destination: { mode: 'dashboard' },
   };
-  await sendLifecycleEmailSafely(sendStudyGroupRemovalEmail, result.recipient, notificationDetails, 'member-removal');
+  sendLifecycleEmailSafely(sendStudyGroupRemovalEmail, result.recipient, notificationDetails, 'member-removal').catch(() => {});
   return { detail: result.detail, notificationDetails };
 };
 
@@ -438,7 +438,7 @@ export const submitJoinRequest = async (groupId, userId, content) => {
     eventId: `join_request_submitted:${result.participation.requestId}`,
     destination: { mode: 'created', groupId },
   };
-  await sendLifecycleEmailSafely(sendStudyGroupRequestSubmittedEmail, result.creator, details, 'request-submitted');
+  sendLifecycleEmailSafely(sendStudyGroupRequestSubmittedEmail, result.creator, details, 'request-submitted').catch(() => {});
   return {
     ...result.participation,
     notifications: result.creator?.userId
@@ -522,7 +522,14 @@ export const inviteMember = async (groupId, hostUserId, input) => {
       actor: notificationActor(summary.organizerProfile),
     });
   } catch (error) {
-    await model.deletePendingInvitation(created.invitation.requestId);
+    try {
+      await model.deletePendingInvitation(created.invitation.requestId);
+    } catch (cleanupError) {
+      console.error('Invitation SMTP delivery failed:', error);
+      console.error('Invitation cleanup also failed:', cleanupError);
+      fail('INVITATION_STATE_INCONSISTENT', 'The invitation email could not be delivered and cleanup failed.', 503);
+    }
+    console.error('Invitation SMTP delivery failed:', error);
     fail('EMAIL_DELIVERY_FAILED', 'The invitation email could not be delivered.', 502);
   }
   return { invitation: projectParticipation(created.invitation), group: summary };
@@ -539,7 +546,7 @@ const decideInvitation = async (groupId, requestId, userId, decision) => model.w
   const creator = await model.findGroupCreatorNotificationUser(groupId, client);
   if (decision === 'approved') {
     if (effectiveStatus(group) !== 'upcoming' || group.current_num >= group.capacity) fail('GROUP_FULL', 'The group has no available capacity.', 409);
-    const participation = await model.setRequestStatus(requestId, 'pending', 'approved', client);
+    const participation = await model.setRequestStatus(requestId, 'invite', 'pending', 'approved', client);
     const updated = await model.reconcileMemberCount(groupId, 1, client);
     if (!updated) fail('GROUP_FULL', 'The group has no available capacity.', 409);
     const memberDetail = await getDetail(groupId, userId, client);
@@ -560,7 +567,7 @@ const decideInvitation = async (groupId, requestId, userId, decision) => model.w
       },
     };
   }
-  const participation = await model.setRequestStatus(requestId, 'pending', 'denied', client);
+  const participation = await model.setRequestStatus(requestId, 'invite', 'pending', 'denied', client);
   const detail = await getDetail(groupId, userId, client);
   return {
     groupId,
@@ -581,7 +588,7 @@ const decideInvitation = async (groupId, requestId, userId, decision) => model.w
 export const acceptInvitation = async (groupId, requestId, userId) => {
   const result = await decideInvitation(groupId, requestId, userId, 'approved');
   if (result.notification?.recipientId) {
-    await sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, result.notification.details, 'member-joined');
+    sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, result.notification.details, 'member-joined').catch(() => {});
   }
   return result;
 };
@@ -618,7 +625,7 @@ export const leaveGroup = async (groupId, userId) => {
       },
     };
   });
-  await sendLifecycleEmailSafely(sendStudyGroupMemberLeftEmail, result.creator, result.details, 'member-leave');
+  sendLifecycleEmailSafely(sendStudyGroupMemberLeftEmail, result.creator, result.details, 'member-leave').catch(() => {});
   return {
     notificationRecipient: result.creator?.userId || null,
     notificationDetails: result.details,
@@ -648,8 +655,8 @@ export const dissolveStudyGroup = async (groupId, userId) => {
     eventId: `group_dissolved:${groupId}`,
     destination: { mode: 'dashboard' },
   };
-  await Promise.all(result.recipients.map((recipient) =>
-    sendLifecycleEmailSafely(sendStudyGroupDissolvedEmail, recipient, details, 'dissolution')));
+  Promise.all(result.recipients.map((recipient) =>
+    sendLifecycleEmailSafely(sendStudyGroupDissolvedEmail, recipient, details, 'dissolution'))).catch(() => {});
   return {
     groupId,
     deleted: true,
