@@ -2840,26 +2840,38 @@ flowchart LR
 ### Use case diagram
 
 ```mermaid
-flowchart TD
+flowchart LR
  subgraph StudyGroup["Study Group"]
         UC1(("Searching Study Group"))
         UC2(("Filtering Study Group"))
         UC3(("View Study Group Detail"))
         UC5(("Inviting Others into<br>Study Group"))
-        UC4(("<center>{abstract}<br>Interacting with Others</center>"))
+        UC4(("{abstract}<br>Interacting with Others"))
         UC6(("Remove Others from<br>Study Group"))
         UC7(("Finding User By Email"))
         UC8(("View Other Profile"))
-        UC9(("<center>{abstract}<br>Interacting with Study Group</center>"))
-        UC10(("<center>{abstract}<br>Managing Join<br>Request</center>"))
-        UC11(("<center>Creating Join<br>Request</center>"))
-        UC12(("<center>Canceling Join<br>Request</center>"))
+        UC9(("{abstract}<br>Interacting with Study Group"))
+        UC10(("{abstract}<br>Managing Join<br>Request"))
+        UC11(("Creating Join<br>Request"))
+        UC12(("Canceling Join<br>Request"))
         UC13(("Out Study Group"))
   end
-    StudyGroupCreator(["study group creator"]) --> User(["<center>{abstract}<br>user</center>"])
+    StudyGroupCreator(["study group creator"]) --> User(["{abstract}<br>user"])
     OtherUser(["other user"]) --> User
-    GeneralUser(["<center>{abstract}<br>general user</center>"]) ~~~ StudyGroupCreator
+    GeneralUser(["{abstract}<br>general user"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
+    User ~~~ OtherUser
+    UC1 ~~~ UC2
+    UC2 ~~~ UC3
+    UC3 ~~~ UC5
+    UC5 ~~~ UC4
+    UC4 ~~~ UC6
+    UC6 ~~~ UC7
+    UC7 ~~~ UC8
+    UC8 ~~~ UC9
+    UC9 ~~~ UC10
+    UC10 ~~~ UC11 & UC13
+    UC11 ~~~ UC12
     GeneralUser ~~~~~ StudyGroup
     GeneralUser --- UC1 & UC2 & UC3
     StudyGroupCreator --- UC4 & UC9
