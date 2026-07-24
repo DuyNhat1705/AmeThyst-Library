@@ -1,11 +1,16 @@
 # Use-Case Specification
 
 **Project Name:** Modern Library Management System
+
 **Course:** CS300 – CSC13002 – Introduction to Software Engineering 
+
 **Group ID:** 03
+
 **Group Name:** Amethyst
+
 **Assignment:** PA3-2026
-**Version:** 1.1
+
+**Version:** 1.3
 
 *Performed by:* Trần Lê Hoàng Gia, Phan Lê Anh Minh 
 *Reviewed by:* All Members 
@@ -24,7 +29,7 @@
   - [Revision History](#revision-history)
   - [Table of Contents](#table-of-contents)
   - [Regulation](#regulation)
-  - [Authentications](#authentications)
+  - [Authentication](#authentication)
     - [Use case diagram](#use-case-diagram)
     - [UC-AUTH-01: Register](#uc-auth-01-register)
     - [UC-AUTH-02: Verify By Email](#uc-auth-02-verify-by-email)
@@ -39,7 +44,7 @@
     - [UC-PROF-02: Edit Profile](#uc-prof-02-edit-profile)
     - [UC-PROF-03: Change Avatar](#uc-prof-03-change-avatar)
     - [UC-PROF-04: Change Password](#uc-prof-04-change-password)
-  - [Books](#books)
+  - [Books Exploration \& Interaction](#books-exploration--interaction)
     - [Usecase Diagram](#usecase-diagram)
     - [UC-BK-01: Book Searching](#uc-bk-01-book-searching)
     - [UC-BK-02: Filtering Book](#uc-bk-02-filtering-book)
@@ -48,15 +53,15 @@
     - [UC-BK-05: Book Reservation](#uc-bk-05-book-reservation)
     - [UC-BK-06: Canceling Book Reservation](#uc-bk-06-canceling-book-reservation)
     - [UC-BK-07: Generating Pin](#uc-bk-07-generating-pin)
-  - [Facility](#facility)
+  - [Study Group Creation \& Facility Reservation](#study-group-creation--facility-reservation)
     - [Use case diagram](#use-case-diagram-2)
-      - [UC-LIB-01: View Library Map](#uc-lib-01-view-library-map)
-      - [UC-LIB-02: View Facility Information](#uc-lib-02-view-facility-information)
-      - [UC-LIB-03: Room Reservation](#uc-lib-03-room-reservation)
-      - [UC-LIB-04: Canceling Room Reservation](#uc-lib-04-canceling-room-reservation)
-      - [UC-LIB-05: Creating Study Group](#uc-lib-05-creating-study-group)
-      - [UC-LIB-06: Canceling Study Group](#uc-lib-06-canceling-study-group)
-      - [UC-LIB-07: Updating Study Group Information](#uc-lib-07-updating-study-group-information)
+    - [UC-LIB-01: View Library Map](#uc-lib-01-view-library-map)
+    - [UC-LIB-02: View Facility Information](#uc-lib-02-view-facility-information)
+    - [UC-LIB-03: Room Reservation](#uc-lib-03-room-reservation)
+    - [UC-LIB-04: Canceling Room Reservation](#uc-lib-04-canceling-room-reservation)
+    - [UC-LIB-05: Creating Study Group](#uc-lib-05-creating-study-group)
+    - [UC-LIB-06: Canceling Study Group](#uc-lib-06-canceling-study-group)
+    - [UC-LIB-07: Updating Study Group Information](#uc-lib-07-updating-study-group-information)
   - [Study Group](#study-group)
     - [Use case diagram](#use-case-diagram-3)
     - [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
@@ -73,7 +78,6 @@
     - [Use case diagram](#use-case-diagram-4)
     - [UC-AIR-01: View Recommended Book](#uc-air-01-view-recommended-book)
     - [UC-AIR-02: Reset AI Recommend](#uc-air-02-reset-ai-recommend)
-    - [UC-AIR-03: AI Recommend Module](#uc-air-03-ai-recommend-module)
   - [Librarian](#librarian)
     - [Use case diagram](#use-case-diagram-5)
     - [UC-LIB-01: Adding Books](#uc-lib-01-adding-books)
@@ -121,7 +125,7 @@ flowchart RL
     L4_4 --> L3    
 ```
 
-## Authentications
+## Authentication
 
 ### Use case diagram
 
@@ -465,6 +469,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
         <img src="Img/Authentication/google-auth.jfif" alt="Google OAuth Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <img src="Img/Authentication/verify-mail.jfif" alt="Login Prototype" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
       </td>
     </tr>
   </tbody>
@@ -865,10 +870,6 @@ flowchart LR
 
 ---
 
-
-
-
----
 ## Profile Management
 ### Use case diagram
 
@@ -1319,7 +1320,7 @@ flowchart LR
   </tbody>
 </table>
 
-## Books
+## Books Exploration & Interaction
 ### Usecase Diagram
 
 ```mermaid
@@ -1390,6 +1391,7 @@ flowchart TD
 ```
 
 ---
+
 ### UC-BK-01: Book Searching
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
@@ -1788,7 +1790,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li>--</li>
+          None
         </ul>
       </td>
     </tr>
@@ -2095,7 +2097,9 @@ flowchart TD
   </tbody>
 </table>
 
-## Facility
+---
+
+## Study Group Creation & Facility Reservation 
 
 ### Use case diagram
 
@@ -2159,7 +2163,7 @@ flowchart LR
 ```
 ---
 
-#### UC-LIB-01: View Library Map
+### UC-LIB-01: View Library Map
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2251,7 +2255,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-02: View Facility Information
+### UC-LIB-02: View Facility Information
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2344,7 +2348,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-03: Room Reservation
+### UC-LIB-03: Room Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2453,7 +2457,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-04: Canceling Room Reservation
+### UC-LIB-04: Canceling Room Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2546,7 +2550,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-05: Creating Study Group
+### UC-LIB-05: Creating Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2641,7 +2645,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-06: Canceling Study Group
+### UC-LIB-06: Canceling Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2737,7 +2741,7 @@ flowchart LR
 
 ---
 
-#### UC-LIB-07: Updating Study Group Information
+### UC-LIB-07: Updating Study Group Information
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
@@ -2829,44 +2833,33 @@ flowchart LR
   </tbody>
 </table>
 
+---
 
 ## Study Group
 
 ### Use case diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
  subgraph StudyGroup["Study Group"]
         UC1(("Searching Study Group"))
         UC2(("Filtering Study Group"))
         UC3(("View Study Group Detail"))
         UC5(("Inviting Others into<br>Study Group"))
-        UC4(("{abstract}<br>Interacting with Others"))
+        UC4(("<center>{abstract}<br>Interacting with Others</center>"))
         UC6(("Remove Others from<br>Study Group"))
         UC7(("Finding User By Email"))
         UC8(("View Other Profile"))
-        UC9(("{abstract}<br>Interacting with Study Group"))
-        UC10(("{abstract}<br>Managing Join<br>Request"))
-        UC11(("Creating Join<br>Request"))
-        UC12(("Canceling Join<br>Request"))
+        UC9(("<center>{abstract}<br>Interacting with Study Group</center>"))
+        UC10(("<center>{abstract}<br>Managing Join<br>Request</center>"))
+        UC11(("<center>Creating Join<br>Request</center>"))
+        UC12(("<center>Canceling Join<br>Request</center>"))
         UC13(("Out Study Group"))
   end
-    StudyGroupCreator(["study group creator"]) --> User(["{abstract}<br>user"])
+    StudyGroupCreator(["study group creator"]) --> User(["<center>{abstract}<br>user</center>"])
     OtherUser(["other user"]) --> User
-    GeneralUser(["{abstract}<br>general user"]) ~~~ StudyGroupCreator
+    GeneralUser(["<center>{abstract}<br>general user</center>"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
-    User ~~~ OtherUser
-    UC1 ~~~ UC2
-    UC2 ~~~ UC3
-    UC3 ~~~ UC5
-    UC5 ~~~ UC4
-    UC4 ~~~ UC6
-    UC6 ~~~ UC7
-    UC7 ~~~ UC8
-    UC8 ~~~ UC9
-    UC9 ~~~ UC10
-    UC10 ~~~ UC11 & UC13
-    UC11 ~~~ UC12
     GeneralUser ~~~~~ StudyGroup
     GeneralUser --- UC1 & UC2 & UC3
     StudyGroupCreator --- UC4 & UC9
@@ -2882,6 +2875,7 @@ flowchart LR
 
     style StudyGroup fill:#fff,stroke:#333,stroke-width:2px
 ```
+
 
 ---
 ### UC-SG-01: Searching Study Group
@@ -3855,7 +3849,6 @@ flowchart LR
         UC1(("Add Book Favorite"))
         UC2(("View Recommended Book"))
         UC3(("Reset AI Recommend"))
-        UC4(("AI Recommend Module"))
     end
     
     %% Actors
@@ -3868,7 +3861,6 @@ flowchart LR
     ActorUser --- UC2
     UC1 -. "<< extend >>" .-> UC2
     UC3 -. "<< extend >>" .-> UC2
-    UC3 -. "<< include >>" .-> UC4
 
     %% Styling
     style AIRecommendation fill:#fff,stroke:#333,stroke-width:2px
@@ -4067,108 +4059,6 @@ flowchart LR
 </table>
 
 ---
-
-### UC-AIR-03: AI Recommend Module
-
-<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
-  <thead>
-    <tr style="background-color: #1e3a8a; color: #ffffff;">
-      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: AI Recommend Module
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
-      <td style="vertical-align: top;"><strong>UC-AIR-03</strong></td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
-      <td style="vertical-align: top;">
-        Internal algorithmic processing service handling the aggregation of user profile features, execution of ML recommendation graphs, and output generation of recommendation datasets.
-        <br><em>(Includes / Extends: <strong>Included UC supporting parent operational blocks under UC-AIR-02 (Reset AI Recommend).</strong>)</em>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">System (AI Recommendation Engine)</td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
-      <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Relational Data Accessibility:</strong> Target profile behavioral tables (reading histories, interaction flags, item favorites) are completely online and available for parsing queries.</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
-      <td style="vertical-align: top;">
-        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[System Response]:</strong> An external invoking orchestration use case dispatches an execution request payload demanding a new recommendation candidate array.</li>
-          <li><strong>[Data Processing]:</strong> The system queries active data store layers to extract user profile vectors, including favorites matrices, check-out reading history logs, and categorical interest preferences.</li>
-          <li><strong>[Data Processing]:</strong> The system pipes the gathered data arrays directly through the AI recommendation machine learning model engine.</li>
-          <li><strong>[Data Processing]:</strong> The model processes the input fields and outputs a newly calculated list structure of recommended book identifiers.</li>
-          <li><strong>[System Response]:</strong> The system packages the resulting dataset array and returns the completion callback variables directly to the high-level invoking orchestrator workflow.</li>
-        </ol>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
-      <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li style="margin-bottom: 8px;">
-            <strong>Cold-Start Insufficient User Data (Step 2):</strong> If the target user account history records register empty rows or fall below the minimum training thresholds:
-            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system catches the data boundary constraint condition.</li>
-              <li>The system routes processing logic patterns away from custom modeling, generating a default standard recommendation list based on global catalog popularity indexes instead.</li>
-              <li>The system passes the global default dataset back to the master orchestration block.</li>
-            </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> A standard, non-personalized default recommendation collection list generates and returns to avoid application interface rendering breaks.</span>
-          </li>
-          <li style="margin-bottom: 8px;">
-            <strong>Processing Architecture Exception (Step 3):</strong> If the recommendation machine learning framework throws a pipeline error or memory crunch during computation:
-            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system traps the model exception block securely.</li>
-              <li>The system drops execution and returns a structured processing failure error code back out to the invoking use case.</li>
-            </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No fresh recommendation list commits; the parent calling orchestrator receives an explicit processing failure callback warning.</span>
-          </li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
-      <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Matrix Object Return Commitment:</strong> A fresh set of recommendation index keys compiles completely and maps back into the parent caller workflow instance variables.</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
-      <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Model Latency Constraints:</strong> Model processing execution intervals and vector space distance parsing routines must operate within strict time thresholds to block prominent client rendering latency.</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
-      <td style="vertical-align: top;">
-        None
-      </td>
-    </tr>
-    <tr>
-      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
-      <td style="vertical-align: top;">
-        None
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 
 ## Librarian
 
@@ -4866,6 +4756,8 @@ flowchart LR
     </tr>
   </tbody>
 </table>
+
+---
 
 ## Admin
 
