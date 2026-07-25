@@ -172,7 +172,7 @@ This project plan is not a final version and may be subject to change and finish
 | **Sprint 2** | PA2 | 5 weeks | 6 Jun – 11 Jul, 2026 | Completed | Project Plan, Vision Document, Spec Kit Initialization, AI Usage & Weekly Report; ERD/DB Schema, Figma UI Design, Start working on several Functional Groups |
 | **Sprint 3** | PA3 | 2 weeks | 11 Jul – 25 Jul, 2026 | Planned | Revised Project Plan, Detailed Vision Document, Use-Case Model, Use-Case Specification & UI Prototypes, AI Usage & Weekly Report, Implement 1 Functional Group (Authentication) |
 | **Sprint 4** | PA4 | 2 weeks | 25 Jul – 08 Aug, 2026 | Planned | Revised Use-Case Specification, Software Architecture (C4 Model Level 1-3), Deployment Diagram, AI Usage & Weekly Report, Implement 2 Functional Groups (Profile Management, Books) |
-| **Sprint 5** | PA5 | 2 weeks | 08 Aug – 22 Aug, 2026* | Planned | Test Plan, Test Cases, Test Execution Results, Bug Report, Reflective Report, Final Product Demo, Final Submission |
+| **Sprint 5** | PA5 | 2 weeks | 08 Aug – 22 Aug, 2026 | Planned | Test Plan, Test Cases, Test Execution Results, Bug Report, Reflective Report, Final Product Demo, Final Submission |
 
 *Dates above follow the official course schedule provided by the instructor; the PA5 due date is marked with an asterisk (22/08/2026*) per that schedule.*
 

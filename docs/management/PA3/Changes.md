@@ -33,12 +33,14 @@ This file tracks all modifications, refinements, and additions made to the proje
 #### 3. Consolidated the Sprint 2 (PA2) Task Breakdown
 * **Document Section:** Section 4.3 (*Detailed Build Plan*), Sprint 2
 * **Issue / Feedback:** The PA2 task list was excessively long (13, 10, 7, 6, and 10 tasks per member) with several overly granular, loosely-defined items.
-* **Modification / Update:** Merged closely related tasks per member into fewer, clearer, theme-based items (e.g. combining individual page-by-page Figma implementation tasks into single consolidated feature tasks), reducing the per-member task counts to 5, 3, 5, 4, and 6 respectively, while preserving all original due dates and scope. Updated the PA 2 gantt chart.
+* **Modification / Update:** Merged closely related tasks per member into fewer, clearer, theme-based items (e.g. combining individual page-by-page Figma implementation tasks into single consolidated feature tasks), reducing the per-member task counts to 5, 3, 5, 4, and 6 respectively, while preserving all original due dates and scope.
+* **Gantt Chart Update:** Updated the Sprint 2 source data in `Sprint-Tasks.xlsx` and revised the PA2 Gantt chart to reflect the corrected Sprint period (06/06/2026 – 11/07/2026), consolidated task names, and corresponding task dates. The revised chart is used to regenerate `Gantt Charts/Sprint2.svg`.
 
 #### 4. Updated the Sprint 4 (PA4) Task Table and Gantt Chart
 * **Document Section:** Section 4.3 (*Detailed Build Plan*), Sprint 4
 * **Issue / Feedback:** The Sprint 4 task table did not reflect the team's latest Planning Report (PlanningReport.pdf).
-* **Modification / Update:** Replaced the Sprint 4 task table and per-member assignments with the tasks and due dates from the current Planning Report, and corrected the Sprint 4 deliverables description: the two functional groups implemented via Spec Kit in this sprint are **Profile Management** and **Books** (previously listed as Study Group and AI Recommendations). Updated the PA 4 gantt chart based on new task assignments.
+* **Modification / Update:** Replaced the Sprint 4 task table and per-member assignments with the tasks and due dates from the current Planning Report, and corrected the Sprint 4 deliverables description: the two functional groups implemented via Spec Kit in this sprint are **Profile Management** and **Books** (previously listed as Study Group and AI Recommendations).
+* **Gantt Chart Update:** Updated the Sprint 4 source data in `Sprint-Tasks.xlsx` and revised the PA4 Gantt chart to reflect the corrected Sprint period (25/07/2026 – 08/08/2026), latest task assignments, updated due dates, and the Profile Management and Books Spec Kit scope. The revised chart is used to regenerate `Gantt Charts/Sprint4.svg`.
 
 ---
 
