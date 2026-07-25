@@ -12,7 +12,11 @@
     "language_tooltip_en": "Switch to Vietnamese",
     "language_tooltip_vi": "Switch to English",
     "theme_aria_label": "Toggle Theme",
-    "language_aria_label": "Toggle Language"
+    "language_aria_label": "Toggle Language",
+    "announcements_title": "Announcements",
+    "no_new_announcements": "No new announcements",
+    "announcement_published": "Published",
+    "announcement_expires": "Expires"
   },
   "landing": {
     "title": "AmeThyst Library",
@@ -540,8 +544,17 @@
                           "publish_now":  "Publish Now",
                           "announcement_title":  "Announcement Title",
                           "expiry_date":  "Expiry Date",
-                          "pin_to_homepage":  "Pin to Homepage",
                           "content_body":  "Content Body",
-                          "delete":  "Delete"
+                          "delete":  "Delete",
+                          "unsaved_changes_warning": "You have unsaved changes. Are you sure you want to discard them?",
+                          "validation_title_required": "Title is required.",
+                          "validation_content_required": "Content is required.",
+                          "validation_expiry_past": "Cannot set expiration date in the past for active announcements.",
+                          "loading_announcements": "Loading announcements...",
+                          "no_announcements": "No announcements found.",
+                          "unpublish": "Unpublish",
+                          "save_changes": "Save Changes",
+                          "republish": "Republish",
+                          "confirm_unpublish": "Are you sure you want to unpublish this announcement? It will be removed from the public homepage."
                       }
 }

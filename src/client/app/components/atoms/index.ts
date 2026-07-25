@@ -32,6 +32,9 @@ export { default as ModalCloseButton } from './ModalCloseButton';
 export { default as FooterLinkSection } from './FooterLinkSection';
 export { default as Divider } from './Divider';
 export { default as OtpExpiredBanner } from './OtpExpiredBanner';
+export { default as BellIcon } from './BellIcon';
+export { default as NotificationDot } from './NotificationDot';
+
 export { default as KPIProgressBar } from './KPIProgressBar';
 export { default as TrendIndicator } from './TrendIndicator';
 export type { TrendVariant } from './TrendIndicator';

@@ -22,6 +22,8 @@ export { default as VerificationModal } from './VerificationModal';
 export { default as BookLoanConfirmationPanel } from './BookLoanConfirmationPanel';
 export { default as LibrarianBookManagement } from './LibrarianBookManagement';
 export { default as InlinePinVerification } from './InlinePinVerification';
+export { default as AnnouncementReadingModal } from './AnnouncementReadingModal';
+
 export { default as BookManagementTab } from './BookManagementTab';
 export { default as BookPickupTab } from './BookPickupTab';
 export { default as BookReturnTab } from './BookReturnTab';
