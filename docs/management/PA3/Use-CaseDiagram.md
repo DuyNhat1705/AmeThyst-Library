@@ -26,13 +26,13 @@ Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Mem
 ## Regulation
 ```mermaid
 flowchart RL
-    L1(["<center>{abstract} <br> Logged user</center>"])
+    L1(["<center>{abstract} <br> fa:fa-user Logged user</center>"])
 
     L2_1([fa:fa-user Admin])
     L2_2([fa:fa-user User])
     L2_3([fa:fa-user Librarian])
 
-    L3(["<center>{abstract} <br> General user</center>"])
+    L3(["<center>{abstract} <br> fa:fa-user General user</center>"])
 
     L4_1([fa:fa-user Guest])
     L4_2([fa:fa-user Admin])
@@ -289,8 +289,8 @@ flowchart TD
         UC12(["<center>Canceling Join<br>Request</center>"])
         UC13(["Out Study Group"])
   end
-    StudyGroupCreator(["study group creator"]) --> User(["<center>{abstract}<br>user</center>"])
-    OtherUser(["other user"]) --> User
+    StudyGroupCreator(["fa:fa-user study group creator"]) --> User(["<center>{abstract}<br>fa:fa-user user</center>"])
+    OtherUser(["fa:fa-user other user"]) --> User
     GeneralUser(["<center>{abstract}<br>fa:fa-user general user</center>"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
     GeneralUser ~~~~~ StudyGroup
