@@ -1,20 +1,14 @@
 # Use-Case Specification
 
-**Project Name:** Modern Library Management System
+    Project: Modern Library Management System 
+    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Group ID: 03
+    Group Name: AmeThyst 
+    Assignment: PA3-2026
+    Version: 1.4
 
-**Course:** CS300 – CSC13002 – Introduction to Software Engineering 
+Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Phan Lê Anh Minh, Trần Lê Hoàng Gia
 
-**Group ID:** 03
-
-**Group Name:** Amethyst
-
-**Assignment:** PA3-2026
-
-**Version:** 1.4
-
-*Performed by:* Trần Lê Hoàng Gia, Phan Lê Anh Minh 
-*Reviewed by:* All Members 
-*Edited by:* Trần Lê Hoàng Gia, Phan Lê Anh Minh
 
 ## Revision History
 
