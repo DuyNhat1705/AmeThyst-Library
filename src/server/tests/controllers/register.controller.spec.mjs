@@ -40,12 +40,22 @@ vi.mock('bcryptjs', () => ({
   },
 }));
 
-describe('Auth Controller - Register', () => {
+describe("Register Controller", () => {
   let req;
   let res;
 
+  const arrangeHappyPath = () => {
+    findUserByEmail.mockResolvedValue(null);
+    getPendingByEmail.mockResolvedValue(null);
+    bcrypt.hash.mockResolvedValue('hashed_password_123');
+    withTransaction.mockImplementation(async (callback) => callback({}));
+    replacePendingUser.mockResolvedValue('mock-token-xyz');
+    sendVerificationEmail.mockResolvedValue(true);
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    arrangeHappyPath();
 
     req = {
       body: {
@@ -60,167 +70,167 @@ describe('Auth Controller - Register', () => {
     res.json = vi.fn().mockReturnValue(res);
   });
 
-  // Scenario 1
-  it('Scenario 1: should register successfully with valid details (return 201, hash password, create pending user, and send verification email)', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue(null);
-    bcrypt.hash.mockResolvedValue('hashed_password_123');
-    withTransaction.mockImplementation(async (callback) => callback({}));
-    replacePendingUser.mockResolvedValue('mock-token-xyz');
-    sendVerificationEmail.mockResolvedValue(true);
+  describe("Test 1 - Successful registration", { tags: '@A_R1' }, () => {
+    it("should register successfully with valid details", async () => {
+      await register(req, res);
 
-    await register(req, res);
-
-    expect(findUserByEmail).toHaveBeenCalledWith('student@example.com');
-    expect(getPendingByEmail).toHaveBeenCalledWith('student@example.com');
-    expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
-    expect(withTransaction).toHaveBeenCalled();
-    expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), {
-      email: 'student@example.com',
-      passwordHash: 'hashed_password_123',
-      username: 'student_user',
-    });
-    expect(sendVerificationEmail).toHaveBeenCalledWith('student@example.com', 'mock-token-xyz');
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'Verification email sent. Please check your inbox.',
+      expect(findUserByEmail).toHaveBeenCalledWith('student@example.com');
+      expect(getPendingByEmail).toHaveBeenCalledWith('student@example.com');
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Verification email sent. Please check your inbox.',
+      });
     });
   });
 
-  // Scenario 2
-  it('Scenario 2: should return 409 when email already exists in users table', async () => {
-    findUserByEmail.mockResolvedValue({ user_id: 1, email: 'student@example.com' });
+  describe("Test 2 - Reject duplicate email", { tags: '@A_R2' }, () => {
+    it("should return 409 when email already exists in users table", async () => {
+      findUserByEmail.mockResolvedValue({ user_id: 1, email: 'student@example.com' });
 
-    await register(req, res);
+      await register(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(409);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Email already exists' });
-    expect(bcrypt.hash).not.toHaveBeenCalled();
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Email already exists' });
+      expect(bcrypt.hash).not.toHaveBeenCalled();
+      expect(sendVerificationEmail).not.toHaveBeenCalled();
+    });
   });
 
-  // Scenario 3
-  it('Scenario 3: should return 409 when an active pending registration already exists', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue({
-      email: 'student@example.com',
-      expired_at: new Date(Date.now() + 60000).toISOString(),
+  describe("Test 3 - Reject active pending registration", { tags: '@A_R3' }, () => {
+    it("should return 409 when an active pending registration already exists", async () => {
+      getPendingByEmail.mockResolvedValue({
+        email: 'student@example.com',
+        expired_at: new Date(Date.now() + 60000).toISOString(),
+      });
+
+      await register(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'A verification email has already been sent. Please check your inbox.',
+      });
+      expect(deletePendingByEmail).not.toHaveBeenCalled();
+      expect(bcrypt.hash).not.toHaveBeenCalled();
+
+      // Boundary check: exactly now
+      vi.clearAllMocks();
+      arrangeHappyPath();
+      const now = new Date();
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+      try {
+        getPendingByEmail.mockResolvedValue({
+          email: 'student@example.com',
+          expired_at: now.toISOString(),
+        });
+        await register(req, res);
+        expect(res.status).toHaveBeenCalledWith(409);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'A verification email has already been sent. Please check your inbox.',
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  describe("Test 4 - Allow registration after pending registration expires", { tags: '@A_R3' }, () => {
+    it("should delete expired pending record and proceed with new registration", async () => {
+      getPendingByEmail.mockResolvedValue({
+        email: 'student@example.com',
+        expired_at: new Date(Date.now() - 60000).toISOString(),
+      });
+      deletePendingByEmail.mockResolvedValue(true);
+
+      await register(req, res);
+
+      expect(deletePendingByEmail).toHaveBeenCalledWith('student@example.com');
+      expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
+      expect(res.status).toHaveBeenCalledWith(201);
+    });
+  });
+
+  describe("Test 5 - Send verification email", { tags: '@A_R1' }, () => {
+    it("should send verification email with correctly generated token", async () => {
+      await register(req, res);
+
+      expect(sendVerificationEmail).toHaveBeenCalledWith('student@example.com', 'mock-token-xyz');
+    });
+  });
+
+  describe("Test 6 - Protect password confidentiality", { tags: '@A_R7' }, () => {
+    it("should protect user password confidentiality by hashing before database interaction", async () => {
+      await register(req, res);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
+      expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), expect.not.objectContaining({
+        password: 'Password123'
+      }));
+      expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), expect.objectContaining({
+        passwordHash: 'hashed_password_123'
+      }));
+    });
+  });
+
+  describe("Test 7 - Assign default user role", { tags: '@A_R7' }, () => {
+    it("should delegate pending creation to replacePendingUser which assigns default role", async () => {
+      await register(req, res);
+
+      expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), {
+        email: 'student@example.com',
+        passwordHash: 'hashed_password_123',
+        username: 'student_user',
+      });
+    });
+  });
+
+  describe("Test 8 - Handle unexpected failures", { tags: '@A_R8' }, () => {
+    it("should handle database check user error safely", async () => {
+      findUserByEmail.mockRejectedValue(new Error('DB failure checking user'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking user' });
     });
 
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(409);
-    expect(res.json).toHaveBeenCalledWith({
-      error: 'A verification email has already been sent. Please check your inbox.',
+    it("should handle database get pending check error safely", async () => {
+      getPendingByEmail.mockRejectedValue(new Error('DB failure checking pending'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking pending' });
     });
-    expect(deletePendingByEmail).not.toHaveBeenCalled();
-    expect(bcrypt.hash).not.toHaveBeenCalled();
-    expect(replacePendingUser).not.toHaveBeenCalled();
-  });
 
-  // Scenario 4
-  it('Scenario 4: should delete expired pending record and proceed with new registration', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue({
-      email: 'student@example.com',
-      expired_at: new Date(Date.now() - 60000).toISOString(),
+    it("should handle password hashing error safely", async () => {
+      bcrypt.hash.mockRejectedValue(new Error('Bcrypt hash failure'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Bcrypt hash failure' });
     });
-    deletePendingByEmail.mockResolvedValue(true);
-    bcrypt.hash.mockResolvedValue('hashed_password_123');
-    withTransaction.mockImplementation(async (callback) => callback({}));
-    replacePendingUser.mockResolvedValue('new-mock-token');
-    sendVerificationEmail.mockResolvedValue(true);
 
-    await register(req, res);
-
-    expect(deletePendingByEmail).toHaveBeenCalledWith('student@example.com');
-    expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
-    expect(replacePendingUser).toHaveBeenCalled();
-    expect(sendVerificationEmail).toHaveBeenCalledWith('student@example.com', 'new-mock-token');
-    expect(res.status).toHaveBeenCalledWith(201);
-  });
-
-  // Scenario 5
-  it('Scenario 5: should return 400 when database error occurs during existing user check', async () => {
-    findUserByEmail.mockRejectedValue(new Error('DB failure checking user'));
-
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking user' });
-    expect(getPendingByEmail).not.toHaveBeenCalled();
-    expect(bcrypt.hash).not.toHaveBeenCalled();
-  });
-
-  // Scenario 6
-  it('Scenario 6: should return 400 when database error occurs during pending registration check', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockRejectedValue(new Error('DB failure checking pending'));
-
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking pending' });
-    expect(bcrypt.hash).not.toHaveBeenCalled();
-  });
-
-  // Scenario 7
-  it('Scenario 7: should return 400 when password hashing fails', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue(null);
-    bcrypt.hash.mockRejectedValue(new Error('Bcrypt hash failure'));
-
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Bcrypt hash failure' });
-    expect(withTransaction).not.toHaveBeenCalled();
-  });
-
-  // Scenario 8
-  it('Scenario 8: should return 400 when database transaction or pending user insertion fails', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue(null);
-    bcrypt.hash.mockResolvedValue('hashed_pwd');
-    withTransaction.mockRejectedValue(new Error('Transaction rollback/insert failed'));
-
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Transaction rollback/insert failed' });
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
-  });
-
-  // Scenario 9
-  it('Scenario 9: should return 400 when verification email delivery fails', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue(null);
-    bcrypt.hash.mockResolvedValue('hashed_pwd');
-    withTransaction.mockImplementation(async (callback) => callback({}));
-    replacePendingUser.mockResolvedValue('mock-token-abc');
-    sendVerificationEmail.mockRejectedValue(new Error('SMTP transmission error'));
-
-    await register(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'SMTP transmission error' });
-  });
-
-  // Scenario 10
-  it('Scenario 10: should return 400 and halt when deleting expired pending record fails', async () => {
-    findUserByEmail.mockResolvedValue(null);
-    getPendingByEmail.mockResolvedValue({
-      email: 'student@example.com',
-      expired_at: new Date(Date.now() - 60000).toISOString(),
+    it("should handle expired pending cleanup error safely", async () => {
+      getPendingByEmail.mockResolvedValue({
+        email: 'student@example.com',
+        expired_at: new Date(Date.now() - 60000).toISOString(),
+      });
+      deletePendingByEmail.mockRejectedValue(new Error('Failed to delete expired pending record'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Failed to delete expired pending record' });
     });
-    deletePendingByEmail.mockRejectedValue(new Error('Failed to delete expired pending record'));
+  });
 
-    await register(req, res);
+  describe("Test 9 - Maintain registration state consistency", { tags: '@A_R9' }, () => {
+    it("should not send verification email if database transaction fails", async () => {
+      withTransaction.mockRejectedValue(new Error('Transaction rollback/insert failed'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(sendVerificationEmail).not.toHaveBeenCalled();
+    });
 
-    expect(deletePendingByEmail).toHaveBeenCalledWith('student@example.com');
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Failed to delete expired pending record' });
-    expect(bcrypt.hash).not.toHaveBeenCalled();
-    expect(replacePendingUser).not.toHaveBeenCalled();
+    it("should propagate SMTP email delivery failure but complete database write", async () => {
+      sendVerificationEmail.mockRejectedValue(new Error('SMTP transmission error'));
+      await register(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(replacePendingUser).toHaveBeenCalled();
+    });
   });
 });

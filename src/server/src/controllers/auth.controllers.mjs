@@ -12,7 +12,7 @@ export const register = async (req, res) => {
     const result = await registerUser({ email, password, username });
     res.status(201).json(result);
   } catch (err) {
-    const status = err.message.includes('already exists') || err.message.includes('already been sent') ? 409 : 400;
+    const status = err.message.includes('already exists') || err.message.includes('already been sent') ? 409 : 500;
     res.status(status).json({ error: err.message });
   }
 };
@@ -24,7 +24,15 @@ export const verifyEmailHandler = async (req, res) => {
     const result = await verifyEmail({ token });
     res.status(200).json(result);
   } catch (err) {
-    const status = err.message.includes('expired') ? 410 : 400;
+    let status = 500;
+    if (err.message === 'Verification link has expired. Please register again.') {
+      status = 410;
+    } else if (
+      err.message === 'Invalid or expired verification link.' ||
+      err.message === 'Email already exists.'
+    ) {
+      status = 400;
+    }
     res.status(status).json({ error: err.message });
   }
 };
@@ -93,7 +101,7 @@ export const googleCallback = [
     session: false,
   }),
   (req, res) => {
-    const token = signToken(req.user.user_id, req.user.email, req.user.role, req.user.branch_id);
+    const token = signToken(req.user.user_id, req.user.email);
     const user = buildUserPayload(req.user);
     res.redirect(
       `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`

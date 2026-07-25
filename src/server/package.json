@@ -8,13 +8,24 @@
     "onnxruntime-common": "1.14.0",
     "onnxruntime-web": "1.14.0"
   },
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "start": "node src/server.mjs",
-    "dev": "nodemon src/server.mjs"
-  },
+ "scripts": {
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "test:ui": "vitest --ui",
+
+  "test:auth": "vitest run --project \"test_auth*\"",
+  "test:auth:watch": "vitest --project \"test_auth*\"",
+  "test:auth:ui": "vitest --ui --project \"test_auth*\"",
+
+  "test:auth:register": "vitest run --project test_auth_register",
+  "test:auth:register:watch": "vitest --project test_auth_register",
+  "test:auth:register:ui": "vitest --ui --project test_auth_register",
+
+  "test:auth:tag": "vitest run --project \"test_auth*\" --tags-filter",
+
+  "start": "node src/server.mjs",
+  "dev": "nodemon src/server.mjs"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

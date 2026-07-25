@@ -1,138 +1,241 @@
-# Implementation Plan: Account Registration (Register) Flow Test Coverage
+# Implementation Plan: Account Registration (Register) Flow Test Coverage (Expanded Scope)
 
-**Branch**: `022-register-test-coverage` | **Date**: 2026-07-03 | **Spec**: [/specs/022-register-test-coverage/spec.md](file:///D:/HK3/Library/AmeThyst-Library/src/specs/022-register-test-coverage/spec.md)
-
----
-
-## Architecture Review
-
-The Account Registration (`Register`) flow is a multi-layered process that coordinates validation, persistence, password encryption, and notifications:
-1. **HTTP/Routing**: The client sends a `POST /auth/register` request containing `email`, `password`, and `username`.
-2. **Controller (`register` in `auth.controllers.mjs`)**: Extracts parameters from the request body, invokes the registration service, and handles response mapping. Success results in status `201`. Errors containing conflict keywords return `409`, while database/network errors default to status `400`.
-3. **Service (`registerUser` in `auth.services.mjs`)**:
-   - Checks if the email exists in the `users` table via `findUserByEmail`.
-   - Checks if an active pending registration exists in the `pending_users` table via `getPendingByEmail`.
-   - If an expired pending registration exists (TTL > 5 minutes), it deletes it via `deletePendingByEmail`.
-   - Encrypts the password using `bcrypt.hash` with 10 salt rounds.
-   - Saves the pending registration inside a database transaction (`withTransaction` wrapping `replacePendingUser` to insert a token, email, username, and expiration time).
-   - Triggers verification email delivery via `sendVerificationEmail`.
-4. **Model/Data (`auth.models.mjs`)**: Issues parameterized queries to the PostgreSQL connection pool.
-5. **Mailer (`mailer.mjs`)**: Utilizes `nodemailer` to dispatch SMTP emails containing the registration link.
+**Branch**: `022-register-test-coverage` | **Date**: 2026-07-18
+**Spec**: [/specs/022-register-test-coverage/spec.md](file:///D:/HK3/Library/AmeThyst-Library/src/specs/022-register-test-coverage/spec.md)
 
 ---
 
-## Test Architecture
+## 1. Production Code Refactor: Passport Testability
 
-The testing plan covers three distinct architectural layers to guarantee correctness across all components:
+To achieve isolated unit testing of the Google OAuth verify logic without triggering external network calls, initializing Passport strategy setups, or importing the heavy passport configuration at runtime, we will perform a refactor in [passport.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/config/passport.mjs).
 
-```mermaid
-graph TD
-    subgraph API Integration Tests
-        API[POST /auth/register] -->|Route + Controller + Service + Models + Helpers| RealCode[Real Business Logic]
-        RealCode -->|Mock| MockDB[Mock Postgres Pool]
-        RealCode -->|Mock| MockMailer[Mock Mailer]
-    end
+*   **Current State**: The verification logic is an anonymous inline async function:
+    ```javascript
+    passport.use(
+      new GoogleStrategy(
+        { ... },
+        async (accessToken, refreshToken, profile, done) => { ... }
+      )
+    );
+    ```
+*   **Refactored State**: The verification callback is extracted into a named, exported async function:
+    ```javascript
+    export const googleVerifyCallback = async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails[0].value;
+        const username = profile.displayName;
+        const avatar = profile.photos?.[0]?.value ?? null;
 
-    subgraph Controller Tests
-        Ctrl[register controller] -->|Manually Mocked req/res| MockService[Mock Service / Models]
-    end
+        let result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
-    subgraph Service Tests
-        Svc[registerUser service] -->|Direct call| MockDBModels[Mock Model Functions]
-        Svc -->|Mock| MockBcrypt[Mock Bcrypt]
-        Svc -->|Mock| MockMailerService[Mock Mailer]
-    end
+        if (result.rows.length === 0) {
+          result = await pool.query(
+            `INSERT INTO users (email, username, avatar, password_hash, role)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING user_id, email, username, avatar, role`,
+            [email, username, avatar, 'GOOGLE_AUTH', 'user']
+          );
+        }
+
+        return done(null, result.rows[0]);
+      } catch (err) {
+        return done(err, null);
+      }
+    };
+    ```
+    This function is wired back into the `GoogleStrategy` initialization:
+    ```javascript
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        },
+        googleVerifyCallback
+      )
+    );
+    ```
+*   **Scope & Safety**: This is a pure refactor. No business logic or SQL queries are changed. It enables unit testing in [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) by passing mock dependencies.
+
+---
+
+## 2. Test Architecture & Directory Structure
+
+To cover the expanded registration journey, we will implement 9 new test files alongside the existing 3 passing register test files:
+
+```text
+src/server/
+├── src/
+│   └── config/
+│       └── passport.mjs                            # Refactor: Export googleVerifyCallback
+└── tests/
+    ├── config/
+    │   └── googleAuth.strategy.spec.mjs            # NEW: Strategy callback unit tests
+    ├── controllers/
+    │   ├── register.controller.spec.mjs            # EXISTING: Unchanged
+    │   ├── verifyEmail.controller.spec.mjs         # NEW: verifyEmailHandler unit tests
+    │   ├── resendVerification.controller.spec.mjs  # NEW: resendVerification unit tests
+    │   └── googleAuth.controller.spec.mjs          # NEW: googleCallback controller tests
+    ├── services/
+    │   ├── register.service.spec.mjs               # EXISTING: Unchanged
+    │   ├── verifyEmail.service.spec.mjs            # NEW: verifyEmail service unit tests
+    │   └── resendVerification.service.spec.mjs     # NEW: resendVerification service unit tests
+    └── integration/
+        ├── register.api.spec.mjs                   # EXISTING: Unchanged
+        ├── verifyEmail.api.spec.mjs                # NEW: verify-email API tests
+        ├── resendVerification.api.spec.mjs         # NEW: resend-verification API tests
+        └── googleAuth.api.spec.mjs                 # NEW: Google OAuth redirection API tests
 ```
 
-- **API Integration Tests**: Responsible for checking routing, Express JSON body parsing, parameter mapping, status codes, and error body shapes. It verifies the collaboration of Route, Controller, Service, Models, and AuthHelpers as a single unit, with only external network boundaries (Database and SMTP) mocked.
-- **Controller Tests**: Responsible for verifying that the controller properly parses input requests and maps service-level outputs/exceptions into the appropriate HTTP status codes (`201`, `409`, `400`) and JSON error payloads.
-- **Service Tests**: Responsible for verifying the specific workflows, conditional checks (active vs. expired pending registrations), encryption execution, transactional writes, and email triggers in isolation.
+---
+
+## 3. Scenario-to-Layer Coverage Matrix
+
+Not all scenarios are observable at every layer. The following matrix shows where each of the 10 unified scenarios is tested and asserted:
+
+| Scenario | Service Layer Tests | Controller Layer Tests | Strategy Layer Tests | Integration Layer Tests |
+| :--- | :--- | :--- | :--- | :--- |
+| **S1: Success End-to-End** | [verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs) | [verifyEmail.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/verifyEmail.controller.spec.mjs) | N/A | [verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs) |
+| **S2: Reject Duplicate Email** | [verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs) | [verifyEmail.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/verifyEmail.controller.spec.mjs) | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | [verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs) |
+| **S3: Token TTL Lifecycle** | [verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs) | [verifyEmail.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/verifyEmail.controller.spec.mjs) | N/A | [verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs) |
+| **S4: Resend Verification** | [resendVerification.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/resendVerification.service.spec.mjs) | [resendVerification.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/resendVerification.controller.spec.mjs) | N/A | [resendVerification.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/resendVerification.api.spec.mjs) |
+| **S5: Google First-time Sign-in** | N/A | [googleAuth.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/googleAuth.controller.spec.mjs) | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | [googleAuth.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/googleAuth.api.spec.mjs) |
+| **S6: Google Returning User** | N/A | [googleAuth.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/googleAuth.controller.spec.mjs) | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | [googleAuth.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/googleAuth.api.spec.mjs) |
+| **S7: Invariants (Hash/JWT/Role)** | [verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs) | [googleAuth.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/googleAuth.controller.spec.mjs) | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | [verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs) |
+| **S8: Infrastructure Failures** | verify/resend services | verify/resend controllers | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | verify/resend/google APIs |
+| **S9: Transaction Boundaries** | verify/resend services | N/A | [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs) | verify/resend/google APIs |
+| **S10: HTTP Response/Redirect** | N/A | All controllers | N/A | All API integration files |
+
+*Note: Existing tests for `POST /auth/register` (S1, S2, S3, S7, S8, S9) remain active and validated within the pre-existing files. S10 (HTTP Response/Redirect) is intentionally not separately tagged for register: see §7 — the dedicated `Test 10` block was removed at all three layers as duplicate coverage, so the register flow's HTTP status codes are asserted inline within Tests 1–4 but are not reachable via `--tags-filter=@A_R10`.*
 
 ---
 
-## Files to Create
+## 4. Test Implementation Spec
 
-The following new files will be created or initialized:
-- `src/server/tests/integration/register.api.spec.mjs`: Holds the API-level integration tests utilizing a lightweight Express app and `supertest`.
+### 4.1 Service Layer Tests
+Mocking standard dependencies ([auth.models.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/models/auth.models.mjs), [authHelpers.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/utils/authHelpers.mjs), [mailer.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/utils/mailer.mjs)) with `vi.mock` at the top.
 
----
+*   **[verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs)**:
+    *   Verify token expiration comparisons (`new Date() > new Date(row.expired_at)`) and ensure correct deletion triggers.
+    *   Test boundary condition (`time === expired_at` evaluates to valid).
+    *   Verify database transaction rollbacks if user insert fails or pending deletion throws.
+*   **[resendVerification.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/resendVerification.service.spec.mjs)**:
+    *   Verify that if [getPendingByEmail](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/models/auth.models.mjs#L23) returns null, an error is thrown.
+    *   Ensure the existing password hash and username are reused.
+    *   Assert transaction wrappers ([withTransaction](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/utils/authHelpers.mjs#L22)) wrap the replace operation.
 
-## Files to Modify
+### 4.2 Controller Layer Tests
+Mocks request and response objects manually, verifying inputs, statuses, and payloads.
 
-The following existing files will be updated:
-- `src/server/package.json`: Add `supertest` to `devDependencies` to support routing integration tests.
-- `src/server/tests/controllers/register.controller.spec.mjs`: Complete the 10 scenarios at the controller layer using manually mocked `req` and `res` objects.
-- `src/server/tests/services/register.service.spec.mjs`: Expand the existing test suite to cover all 10 registration scenarios directly at the service layer (`registerUser`).
+*   **[verifyEmail.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/verifyEmail.controller.spec.mjs)**:
+    *   Verifies mapping of verify exceptions: missing token yields `400`, expired yields `410`, database/SQL errors yield `400`.
+*   **[resendVerification.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/resendVerification.controller.spec.mjs)**:
+    *   Verifies email presence validation (HTTP `400`).
+    *   Verifies that "No pending" throws maps to HTTP `400`.
+    *   Verifies that database/mailer failures map to HTTP `500`.
+*   **[googleAuth.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/googleAuth.controller.spec.mjs)**:
+    *   Mocks `req.user` with a simulated user payload.
+    *   Stubs `res.redirect`. Asserts redirection string structure containing signed token and serialized URI-encoded user payload.
 
----
+### 4.3 Strategy Layer Tests
+*   **[googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs)**:
+    *   Directly imports `googleVerifyCallback` from [passport.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/config/passport.mjs).
+    *   Stubs `pool.query`.
+    *   **Test 5 (First-time sign-in)**: Profile with email/displayName/photos -> verify SELECT returns empty array, verify INSERT executes with password hash `'GOOGLE_AUTH'`, role `'user'`, and inputs.
+    *   **Test 6 (Returning Google user)**: Verify SELECT returns user with `'GOOGLE_AUTH'` -> returns user, no INSERT executed.
+    *   **Test 7 (NFR - Password user)**: Verify SELECT returns user with standard bcrypt hash -> refuses authentication (calls done(null, false, { message: 'account_exists_with_password' })), no INSERT executed.
+    *   **Test 8 (DB Query error)**: Mocks `pool.query` throw. Verifies strategy passes error to Passport's `done(err, null)`.
+    *   **Test 9 (No transaction)**: Asserts query calls are made directly to connection pool rather than a transactional client.
 
-## Mock Strategy
+### 4.4 API Integration Layer Tests
+Using `supertest` mounting [auth.routes.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/src/routes/auth.routes.mjs) on a test express instance.
 
-Only external infrastructure will be mocked. All internal business logic, validation rules, query string formats, and transaction orchestration must remain real.
-
-- **Database Mocking**:
-  - *Service and Controller Tests*: Mock higher-level model functions (`findUserByEmail`, `getPendingByEmail`, `deletePendingByEmail`) and helper functions (`withTransaction`, `replacePendingUser`) to test layer behavior in isolation.
-  - *API Integration Tests*: Mock `src/server/src/config/postgres.mjs` directly by stubbing the pg `pool` object. Provide a mocked client return value for `pool.connect()` that supports simulated query responses (`query: vi.fn()`) and transactional controls (`BEGIN`, `COMMIT`, `ROLLBACK`).
-- **SMTP/Email Mocking**:
-  - Mock `src/server/src/utils/mailer.mjs` across all test layers to track `sendVerificationEmail` calls, verifying that email triggers execute with correct tokens and destination emails.
-- **Bcrypt Mocking**:
-  - Mock the `bcryptjs` module to return static hash strings, isolating test execution speed from bcrypt hashing workloads.
-
----
-
-## Integration Strategy
-
-Integration tests will test the actual routing pipeline without binding to a live network port:
-1. Initialize a lightweight Express application inside the integration test:
-   ```javascript
-   import express from 'express';
-   import authRoutes from '../../src/routes/auth.routes.mjs';
-   
-   const app = express();
-   app.use(express.json());
-   app.use('/auth', authRoutes);
-   ```
-2. Import `supertest` to dispatch simulated HTTP requests directly to the express pipeline.
-3. Stub the pg `pool` query outputs for each test case to simulate user/pending records in various states.
-4. Issue requests using `supertest(app).post('/auth/register')` and assert HTTP status codes and JSON payloads.
-
----
-
-## Validation Strategy
-
-All tests will adhere to existing conventions:
-- **Vitest Framework**: Use default assertion conventions (`expect`, `vi.mock`, `vi.fn`, `beforeEach`).
-- **No Architectural Drift**: Do not introduce custom testing utilities, testing frameworks, or alternative database abstraction classes.
-- **Express Conventions**: Build standard request/response mocks (`req = { body: ... }`, `res.status().json()`) matching the codebase's existing pattern.
+*   **[verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs)**:
+    *   Verifies body parsing and endpoint mappings on `POST /auth/verify-email`. Mocks pool connection query behaviors.
+*   **[resendVerification.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/resendVerification.api.spec.mjs)**:
+    *   Verifies `POST /auth/resend-verification` integrations, mapping mock outcomes to HTTP `200`, `400`, or `500`.
+*   **[googleAuth.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/googleAuth.api.spec.mjs)**:
+    *   Mocks passport authentication middleware behavior for `/google` and `/google/callback`.
+    *   Asserts redirection responses (`302 Found`) for successful authentication and authentication errors (`failureRedirect`).
 
 ---
 
-## Risk Analysis
+## 5. Non-Functional Constraints
 
-- **Dependency installation in offline environments**: If the testing environment has restricted network access, adding `supertest` to `package.json` might fail.
-  *Mitigation*: Verify network state and install `supertest` immediately. If installation is restricted, use a lightweight, hand-rolled HTTP test client wrapping the express router directly.
-- **Vitest ESM Mocking Caveats**: In ES modules, module mocks (`vi.mock`) must be declared at the top of the file to ensure correct hoisting.
-  *Mitigation*: Place all `vi.mock` declarations immediately below imports and verify mock isolation using `vi.clearAllMocks()` in `beforeEach`.
-- **Database transaction mocking complexity**: Simulating client checkouts (`pool.connect`) and query executions inside transactions can lead to verbose test setup.
-  *Mitigation*: Implement a clean, modular helper function within the integration test to easily setup mock database client states.
+1.  **Isolation**: Absolutely zero network requests to Google or SMTP targets. Nodemailer `transporter` must be fully stubbed. Database pool queries must use mock return values.
+2.  **Execution Time**: Each test execution file must execute in less than 100ms.
+3.  **Stability**: All async operations must be wrapped in try/catch or await blocks to prevent unhandled promise rejections.
+4.  **Preservation**: All existing tests under `tests/` must remain untouched and green.
 
 ---
 
-## Verification Plan
+## 6. Vitest Scenario Tagging Implementation Plan
 
-Verify the complete suite using the following commands:
+To support executing tests targeted by unified business scenarios, we will implement metadata-tagging using Vitest's built-in tag features.
 
-1. **Controller Verification**:
-   ```bash
-   npx vitest run tests/controllers/register.controller.spec.mjs
-   ```
-2. **Service Verification**:
-   ```bash
-   npx vitest run tests/services/register.service.spec.mjs
-   ```
-3. **Integration Verification**:
-   ```bash
-   npx vitest run tests/integration/register.api.spec.mjs
-   ```
-4. **Full Suite Check**:
-   Run `npm test` or `npx vitest run` from `src/server` to ensure all registration tests pass without regressions.
+### 6.1 Vitest Capability Verification (Vitest 4.1.10)
+
+Based on inspection of [package.json](file:///D:/HK3/Library/AmeThyst-Library/src/server/package.json) and checking the available CLI flags, the installed Vitest version is **4.1.10**. It genuinely supports:
+*   `--tagsFilter <expression>` (or `--tags-filter`) to run only tests matching specified tags.
+*   `--listTags` (or `--list-tags`) to list all available tags.
+*   `--strictTags` (or `--strict-tags`) to validate tag existence (default: `true`).
+
+### 6.2 Configuration Setup in [vitest.config.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/vitest.config.mjs)
+
+Since `--strictTags` defaults to `true` in Vitest 4.1.10, using tags not defined in the configuration will cause the test runner to throw an error. We will modify [vitest.config.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/vitest.config.mjs) to:
+*   Define the valid scenario tags `@A_R1` through `@A_R10` inside the `test.tags` configuration array, OR
+*   Disable tag validation by setting `strictTags: false` in the `test` block.
+*(Defining the tags `@A_R1` through `@A_R10` in `test.tags` is the recommended type-safe approach).*
+
+### 6.3 Code Modification Approach (Amended Scope-Completion)
+
+This amendment is a scope-completion task to bring the standard registration flow files into the Vitest tagging fold. No new configuration, dependencies, or version constraints are introduced beyond what is already documented. We will add `tags` options objects (Vitest's built-in tag key) to the level-2 `describe()` blocks of the target files listed in [spec.md](file:///D:/HK3/Library/AmeThyst-Library/src/specs/022-register-test-coverage/spec.md):
+*   Add `{ tags: '@A_Rx' }` as the second argument to `describe('Test N - ...', ...)` blocks for singular scenario mappings.
+*   Add `{ tags: ['@A_Rx', '@A_Ry'] }` as the second argument for multi-scenario mappings.
+
+#### Targeted Files
+1.  **Google Strategy Callback**: [googleAuth.strategy.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/config/googleAuth.strategy.spec.mjs)
+2.  **Service Layer**:
+    *   [verifyEmail.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/verifyEmail.service.spec.mjs)
+    *   [resendVerification.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/resendVerification.service.spec.mjs)
+    *   [register.service.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/services/register.service.spec.mjs) (Scope completion)
+3.  **Controller Layer**:
+    *   [verifyEmail.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/verifyEmail.controller.spec.mjs)
+    *   [resendVerification.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/resendVerification.controller.spec.mjs)
+    *   [googleAuth.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/googleAuth.controller.spec.mjs)
+    *   [register.controller.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/controllers/register.controller.spec.mjs) (Scope completion)
+4.  **API Integration Layer**:
+    *   [verifyEmail.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/verifyEmail.api.spec.mjs)
+    *   [resendVerification.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/resendVerification.api.spec.mjs)
+    *   [googleAuth.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/googleAuth.api.spec.mjs)
+    *   [register.api.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/integration/register.api.spec.mjs) (Scope completion)
+
+#### Excluded Files
+*   The undocumented helper test file [authHelpers.spec.mjs](file:///D:/HK3/Library/AmeThyst-Library/src/server/tests/utils/authHelpers.spec.mjs) is outside the scope of Feature 022 and remains untouched.
+
+
+### 6.4 Documentation Update Plan
+
+We will update documentation (such as testing guidelines or READMEs) to explain how developers can run selective test runs using the exact syntax supported by our installed version of Vitest (4.1.10):
+```bash
+npx vitest run --tags-filter=@A_R5
+```
+*(and equivalent commands for npm scripts).*
+
+### 6.5 Verification Plan
+
+After implementing the changes:
+1.  Run the full test suite using `npx vitest run` or `npm test` from the `src/server` directory.
+2.  Confirm that all test cases (both existing and new) pass successfully with zero failures, ensuring that introducing the options metadata objects has caused no regression in test execution.
+
+---
+
+## 7. Test Code Quality Convention (Amended)
+
+To eliminate code duplication and improve test failure isolation, we implement the following test code quality conventions across standard registration test suites:
+
+*   **Shared `beforeEach` Baseline**: Standardize happy-path arrange logic by calling `arrangeHappyPath()` or setting up inline mocks once in `beforeEach()`, allowing individual test cases to override only the specific mock behaviors they need to deviate from the baseline.
+*   **Failure Case Isolation**: Avoid monolithic `it()` blocks that contain sequential test scenarios separated only by inline comments. Instead, split them using descriptive separate `it()` blocks or `it.each` tables so that each validation case is independently reportable.
+*   **Removal of Redundant Coverage**:
+    *   Remove `Test 10 - Return appropriate registration response` from `register.service.spec.mjs`, `register.controller.spec.mjs`, and `register.api.spec.mjs` entirely, since it duplicates `Test 1`, `Test 2`, and `Test 3` coverage at every layer without asserting anything beyond what those tests already check (the `@A_R10` tag is dropped from all three files). The status-code assertions (201/409/409) already live inline in Tests 1–3; a standalone 400 case was never implemented and is not currently covered for the register flow.
