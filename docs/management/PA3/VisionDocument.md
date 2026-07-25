@@ -224,6 +224,8 @@ The Authentication module handles secure user registration, login, session renew
 ### 5.2. Profile Management
 Profile Management serves as a personalized dashboard where users can view their active borrowed books, transaction history, and upcoming room reservations. It also allows individuals to update personal details and change passwords. This feature is necessary because it centralizes self-service operations, giving users clear visibility over their obligations and reducing manual inquiries at the front desk. Library members directly benefit from this high level of transparency, allowing them to manage their library activities independently.
 
+Patron borrowing history, reading lists, and AI recommendation profiles are strictly accessible to the individual account holder only. System Administrators and Librarians may only access anonymized or task-bounded patron operational data necessary for physical inventory tracking, preventing unauthorized access to patron reading histories.
+
 ### 5.3. Borrowing & Reserving Feature
 This core module enables users to reserve physical books and book available study rooms for specific time slots in real-time. To streamline the physical pickup process and eliminate tedious paperwork, the system generates a unique 6-digit PIN code upon online reservation, which librarians can quickly verify at the counter. This feature addresses the traditional long queues and scheduling conflicts, making resource allocation much faster and more transparent. Both students looking for efficient access to materials/spaces and librarians processing daily physical checkouts benefit significantly from this automation.
 
@@ -235,6 +237,8 @@ Librarian Administration empowers library staff to efficiently oversee daily phy
 
 ### 5.6. System Administration
 System Administration provides high-level system administrators with a comprehensive dashboard containing visual charts on system usage, popular book trends, and peak study room hours. It also grants full control over user roles, enabling administrators to assign or revoke librarian privileges and suspend non-compliant accounts. This data-driven module is required for continuous system maintenance, security oversight, and strategic resource allocation. System administrators and university executives benefit most, as it provides the actionable insights needed to optimize overall library operations.
+
+All administrative access to patron data is restricted to anonymized or aggregated information necessary for operational reporting. Individual borrowing histories, reading lists, and AI recommendation profiles are never exposed to administrative interfaces in identifiable form.
 
 ### 5.7. AI Recommendations
 Leveraging machine learning models, the AI Recommendations feature automatically suggests at least three similar books on any book detail page based on genres, tags, and user preferences. It adapts gracefully by displaying trending materials for new users with no history and smartly excludes books that the user has already borrowed. This feature enhances academic discovery, helping students stumble upon unexpected but highly relevant educational resources they might not have actively searched for. Students benefit from a highly personalized, Netflix-like browsing experience tailored specifically to their academic tastes.
@@ -249,8 +253,10 @@ User Assistance enhances student satisfaction by offering a self-paced onboardin
 
 Here are the two most critical workflows within the Library Management System, illustrating how digital actions trigger physical interactions.
 
+Across all workflows that involve PIN verification, the system enforces strict failure recovery: if a PIN expires or verification fails, the transaction is gracefully reset without marking items as checked out or creating orphaned database records. Users and librarians may safely retry without risk of duplicate transactions.
+
 #### 5.10.1. Book Reservation and Pickup Workflow (PIN Verification)
-This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN.
+This workflow demonstrates how a user reserves a book online and claims it at the physical counter using a secure 6-digit PIN. If the PIN expires before pickup, the reservation is released and the user must generate a new PIN. If the librarian enters an invalid PIN, the system displays an error and allows immediate retry without state corruption.
 
 <div style="max-width: 80%; overflow-x: auto; margin: 0 auto;">
 
@@ -478,7 +484,7 @@ graph TD
 - Patrons are expected to access the system primarily from personal laptops or mobile phones, both on and off the library premises.
 - Librarians and admins are expected to use the system at fixed front-desk or office workstations inside the library building.
 - A stable broadband or Wi-Fi/mobile-data connection is assumed for all users; no offline mode is planned, since both reservation and PIN verification require real-time server communication.
-- The system is deployed to a single cloud region appropriate for the team's target demo audience (Vietnam/Southeast Asia), supported by automated database snapshot backups for disaster recovery.
+- The system is deployed to a single cloud region appropriate for the team's target demo audience (Vietnam/Southeast Asia), supported by automated database snapshot backups for disaster recovery. The database performs daily automated backups ensuring a Recovery Point Objective (RPO) of ≤ 24 hours. In the event of primary server failure or data corruption, recovery procedures achieve a Recovery Time Objective (RTO) of ≤ 2 hours using automated cloud restoration scripts.
 
 ### 6.5 Quality Ranges
 
