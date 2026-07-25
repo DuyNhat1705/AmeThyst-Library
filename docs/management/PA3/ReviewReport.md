@@ -13,7 +13,7 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
 - We have a Use-Case Specification for each use case to describe how it actually works.
 - In terms of implementation of our product, we have:
   - 3 more functional groups completed: Study Group, AI Recommendation, Borrowing & Reserving
-  - Return-Book Confirmation, Loan Record, Book Management in Librarian Administraion
+  - Return-Book Confirmation, Loan Record, Book Management in Librarian Administration
 ## II. Problems
 - Heavy workload during mid-term exam week, requiring us to rush and complete deadlines in a short time frame.
 - Initial confusion regarding the operational concept of the room reservation mechanism.

@@ -57,8 +57,8 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
   - [V. 24127095 - Vũ Duy Nhất](#v-24127095---vũ-duy-nhất)
     - [Note 1 - Redesign table for invitation and request feature](#note-1---redesign-table-for-invitation-and-request-feature)
     - [Note 2 - Tech stack table used in Demo Video](#note-2---tech-stack-table-used-in-demo-video)
-    - [Note 3 - Findout about WebSocket on Real-time feature](#note-3---findout-about-websocket-on-real-time-feature)
-    - [Note 4 - Findout about AWS Cloud for deploy service](#note-4---findout-about-aws-cloud-for-deploy-service)
+    - [Note 3 - Find out about WebSocket on Real-time feature](#note-3---find-out-about-websocket-on-real-time-feature)
+    - [Note 4 - Find out about AWS Cloud for deploy service](#note-4---find-out-about-aws-cloud-for-deploy-service)
 
 ## I. 24127028 - Trần Lê Hoàng Gia
 
@@ -276,7 +276,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 ### Note 1 - Librarian Book Management UI Design (4-Tab Dashboard)
 
 - **Tool Name, Version, and Platform:** OpenCode TUI (DeepSeek V4 Flash Free)
-- **Access Time** 10:00 AM – 5:00 PM ICT, July 17, 2026
+- **Access time:** 10:00 AM – 5:00 PM ICT, July 17, 2026
 - **Prompts Used:**
   - *"read the template/design_books.txt, adjust the 025 spec file and reimplement the interface, I want to change the UI into the design exported from figma. Break into components and comply with the atomic design structure in the constitution.md"*
   - *"add UI for all 4 tabs: Book Management, Book Pickup, Book Return, and Inspection"*
@@ -326,7 +326,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 ### Note 2 - Freely Room Reservation Feature (End-to-End) + Room Localization & Card Redesign
 
 - **Tool Name, Version, and Platform:** OpenCode TUI (DeepSeek V4 Flash Free)
-- **Access Time:** 10:00 AM – 12:00 PM ICT, July 18, 2026
+- **Access time:** 10:00 AM – 12:00 PM ICT, July 18, 2026
 - **Prompts Used:**
   - Full 26-task implementation of the "Freely Room Reservation" feature via Speckit workflow, including backend API (MVC) and frontend dashboard UI
   - *"this status is hard text or depend on table column to render?"* → clarified DB-driven status with i18n display
@@ -364,7 +364,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 ### Note 3 - Room Reservation UI/UX Improvements, Dark Mode Contrast, Date Validation & Branch Name Display
 
 - **Tool Name, Version, and Platform:** OpenCode TUI (DeepSeek V4 Flash Free)
-- **Access Time:** 9:40 AM – 10:30 AM ICT, July 19, 2026
+- **Access time:** 9:40 AM – 10:30 AM ICT, July 19, 2026
 - **Prompts Used:**
   - *"help me implement the following updates and fixes: 1. UI/UX: Update the headers' text color in Dark Mode on the Dashboard/RoomReservation page to make them stand out... 2. Localization: Add a translation key for 'Tạo mã PIN'... 3. Validation: In the room detail panel, restrict users from selecting a booking date earlier than the current date..."*
   - *"adjust the color of the button (freely mode, confirm booking) in room detail panel and create pin, new reservation button in user dashboard room reservation tab such that it match the color of the reserve for pickup button in book reservation (yellow color)"*
@@ -387,7 +387,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 ### Note 4 - Book Return & Inspection System (US1–US7 Implementation)
 
 - **Tool Name, Version, and Platform:** OpenCode TUI (DeepSeek V4 Flash Free)
-- **Access Time:** 9:00 AM – 11:00 AM ICT, July 21, 2026
+- **Access time:** 9:00 AM – 11:00 AM ICT, July 21, 2026
 - **Prompts Used:**
   - Multiple prompts to implement the Book Return & Inspection feature: PIN generation, return verification, condition inspection, penalty calculation, loan/fees management, and borrowing history
   - Debugging prompts for: `chk_issue` constraint violation (missing `OVERDUE` issue type), `chk_status` constraint (borrow_book doesn't allow `'returned'`), `fk_penalty_returnbook` FK violation (UUID type mismatch between JS variable and PostgreSQL), `value.toFixed is not a function` (pg returns numeric as string), `fees.filter is not a function` (API returns object, frontend expects array)
@@ -443,7 +443,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 ### Note 5 - Borrow Book Split, Classification, Lost+Overdue Fix, Extend Due Date & Debt Guard
 
 - **Tool Name, Version, and Platform:** deepseek-v4-flash-free, via opencode CLI
-- **Access Time:** 11:41 ICT, July 22, 2026
+- **Access time:** 11:41 ICT, July 22, 2026
 - **Prompts Used:**
   - Locate borrow_book rendering logic and split into current/past types using return_book and book_penalty existence
   - Remove unnecessary `returned` status and status column from history table
@@ -734,7 +734,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
 ---
 
-### Note 3 - Findout about WebSocket on Real-time feature
+### Note 3 - Find out about WebSocket on Real-time feature
 
 - **Tool name, version, and platform:** Gemini pro (3.6 Flash) via Web
 - **Access time:** July 13, 2026 at 9:29.
@@ -750,7 +750,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
 ---
 
-### Note 4 - Findout about AWS Cloud for deploy service
+### Note 4 - Find out about AWS Cloud for deploy service
 
 - **Tool name, version, and platform:** Gemini pro (3.6 Flash) via Web
 - **Access time:** July 15, 2026 at 14:16.

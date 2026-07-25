@@ -14,7 +14,7 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
 
 | Date | Version | Description | Author |
 | --- | --- | --- | --- |
-| 20-Jul-2026 | 1.1 | Authentication Use case specificaiton (RUP format layout). | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
+| 20-Jul-2026 | 1.1 | Authentication Use case specification (RUP format layout). | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 | 23-Jul-2026 | 1.2 | Update use-case table layout (HTML) | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 | 23-Jul-2026 | 1.3 | Merge file content | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 | 24-Jul-2026 | 1.4 | Update format, fix spellings | Phan Lê Anh Minh, Trần Lê Hoàng Gia |

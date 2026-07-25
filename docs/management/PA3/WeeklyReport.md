@@ -37,7 +37,7 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
       - Need to automate the startup sequence (Python backend before Node.js) to simplify system execution
   - **Phan Lê Anh Minh**
     - Completed task
-      - Write more bussiness tests for register use case
+      - Write more business tests for register use case
       - Complete partially Announcement use case in Librarian Administration
     - To-do task
       - Complete Use-Case Specifications (45 points)
@@ -59,14 +59,14 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
       - Rewrite Revised Project Plan (5 points)
       - Complete Study Group phase 2: (request join, view other profile, cancel request by sender, reject join request by study group creator,...)
     - Obstacles/Issues
-      - Need to disinguish between invite and request in **group_request** table
+      - Need to distinguish between invite and request in **group_request** table
       - There are many announcements generated from sending, receiving features and need to be synchronized
 - **Action:**
   - **Trần Lê Hoàng Gia:** Use Docker to automate startup sequence within only one command
   - **Phan Lê Anh Minh:** Propose detail structure of necessary table to team leader
   - **Nguyễn Lê Hoàng Khải**: Use Socket in sending, receiving features in Study Group
 - **Summary of the meeting:** Firstly, the team reviewed completed progress, including the AI recommendation feature, room reservations, announcement management, and Phase 1 of the Study Group module (creation, deletion, invitations, and editing info). Remaining tasks were identified across Admin Administration, the rest of the Study Group features (e.g., join requests, profile viewing, cancellations, and rejections), and remaining Librarian Administration functions (e.g., book and room return confirmations, loan records, and book management). The team also discussed documentation guidelines for PA3—focusing on Use-case diagram notations, diagram reading techniques, and the Use-case specification outline and template. After that, the team leader proposed using Socket.io library for the product to solve current synchronized problems. Finally, the team leader assigned tasks to team members and provided them implementation ideas if needed.
-- ## II. Meeting Minutes:  23/7/2026
+## II. Meeting Minutes:  23/7/2026
 - **Team member present:**
   - Vũ Duy Nhất
   - Trần Lê Hoàng Gia

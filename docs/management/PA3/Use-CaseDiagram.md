@@ -18,7 +18,7 @@ Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Mem
   - [Books Exploration \& Interaction](#books-exploration--interaction)
   - [Study Group Creation \& Facility Reservation](#study-group-creation--facility-reservation)
   - [Study Group](#study-group)
-  - [AI Recomendations](#ai-recomendations)
+  - [AI Recommendations](#ai-recommendations)
   - [Librarian Administration](#librarian-administration)
   - [Admin Administration](#admin-administration)
 
@@ -311,7 +311,7 @@ flowchart TD
 
 <div class="page"/>
 
-## AI Recomendations
+## AI Recommendations
 ```mermaid
 flowchart LR
  subgraph AIRecommendation["AI Recommedation"]

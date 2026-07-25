@@ -12,8 +12,8 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
 ### 1. Implementation
 - Week 1: 27/7 - 2/8
   - Complete room reserve verification and checkout room confirmation usecases in Borrowing & Reserving
-  - Complete User Management in Admin Aministration (GUI + Functionality)
-  - Complete System Configuration in Admin Aministration (GUI + Functionality)
+  - Complete User Management in Admin Administration (GUI + Functionality)
+  - Complete System Configuration in Admin Administration (GUI + Functionality)
   - Complete Statistics Page in Admin Administration (GUI + Functionality)
 - Week 2: 3/8 - 8/8
   - Write unit test (at least 10 test cases) for Create Study Group usecase (all relevant modules called by this API if possible)
@@ -27,7 +27,7 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
 ### 2. Document
 - Revised Use-Case Specification (5 points)
 - Software Architecture: System Context Diagram (15 points)
-- Software Architecture: Containter Diagram and Component Diagram (20 points)
+- Software Architecture: Container Diagram and Component Diagram (20 points)
 - Deployment Diagram (5 points)
 - AI Usage Report + Weekly Report (5 points)
 ## II. Task assignment
@@ -41,15 +41,15 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
   - Write unit test (at least 10 test cases) for AI Recommendation (all relevant modules called by this API if possible) - Due date: 7/8
   - Software Architecture: System Context Diagram (15 points) - Due date: 8/8
 - **Phan Lê Anh Minh**
-  - Complete User Management in Admin Aministration (GUI + Functionality) - Due date: 1/8
+  - Complete User Management in Admin Administration (GUI + Functionality) - Due date: 1/8
   - Revised Use-Case Specification (5 points) - Due date: 8/8
 - **Nguyễn Nhựt Huy**
   - Complete room reserve verification and checkout room confirmation usecases in Borrowing & Reserving - Due date: 1/8
   - Complete Roles & Permissions in Admin Dashboard (GUI + Functionality) - Due date: 7/8
 - **Nguyễn Lê Hoàng Khải**
-  - Complete System Configuration in Admin Aministration (GUI + Functionality) - Due date: 1/8
+  - Complete System Configuration in Admin Administration (GUI + Functionality) - Due date: 1/8
   - Write unit test (at least 10 test cases) for Create Study Group usecase (all relevant modules called by this API if possible) - Due date: 7/8
-  - Software Architecture: Containter Diagram and Component Diagram (20 points) - Due date: 8/8
+  - Software Architecture: Container Diagram and Component Diagram (20 points) - Due date: 8/8
 - **All members:** Fix bugs in implemented features - Due date: 8/8
 ## III. Expectation for Sprint 4
 - Complete basically the product (website) with 9 functional groups and go to testing stage.
