@@ -104,7 +104,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     finalWhereString = `WHERE ${filterSql.replace(/^\s*AND\s*/i, '')}`;
   }
 
-  // 3. Prepare Dynamic Pagination Indices
+  const isUnlimited = !limit || limit >= 1000;
   const limitParam = `$${paramIndex++}`;
   const offsetParam = `$${paramIndex++}`;
   
@@ -116,30 +116,65 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   `;
 
   const booksQuery = `
-    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url
+    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url, b.publisher, b.genres
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
     ${finalWhereString}
     ORDER BY b.title ASC
-    LIMIT ${limitParam} OFFSET ${offsetParam}
+    ${isUnlimited ? '' : `LIMIT ${limitParam} OFFSET ${offsetParam}`}
   `;
 
-  // 4. Execute Queries concurrently
-  const [countRes, booksRes] = await Promise.all([
+  // 4. Execute Queries concurrently (including public.library branch stocks)
+  const stocksQuery = `
+    SELECT l.book_id, l.branch_id, l.quantity, l.available_quantity, l.shelf, br.name as branch_name, br.name_short
+    FROM public.library l
+    JOIN public.branches br ON l.branch_id = br.branch_id
+    ORDER BY l.branch_id ASC
+  `;
+
+  const [countRes, booksRes, stocksRes] = await Promise.all([
     pool.query(countQuery, queryParams),
-    pool.query(booksQuery, [...queryParams, limit, offset])
+    pool.query(booksQuery, isUnlimited ? queryParams : [...queryParams, limit, offset]),
+    pool.query(stocksQuery)
   ]);
+
+  const stocksByBook = {};
+  (stocksRes.rows || []).forEach((s) => {
+    const key = String(s.book_id || '').trim();
+    if (!key) return;
+    if (!stocksByBook[key]) stocksByBook[key] = [];
+    stocksByBook[key].push({
+      branch_id: parseInt(s.branch_id, 10),
+      branch_name: s.branch_name || '',
+      name_short: s.name_short || `CS${s.branch_id}`,
+      quantity: parseInt(s.quantity, 10) || 0,
+      available_quantity: s.available_quantity !== undefined && s.available_quantity !== null
+        ? parseInt(s.available_quantity, 10)
+        : (parseInt(s.quantity, 10) || 0),
+      shelf: s.shelf || 'N/A'
+    });
+  });
 
   const totalBooks = parseInt(countRes.rows[0].count);
 
   return {
-    books: booksRes.rows.map(book => ({
-      id: book.book_id,
-      title: cleanText(book.title),
-      author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
-      isbn: book.isbn,
-      coverImage: book.image_url || null
-    })),
+    books: booksRes.rows.map(book => {
+      const key = String(book.book_id || '').trim();
+      const stocks = stocksByBook[key] || [];
+      return {
+        id: book.book_id,
+        book_id: book.book_id,
+        title: cleanText(book.title),
+        author: book.author ? (Array.isArray(book.author) ? book.author.map(cleanText).join(', ') : cleanText(book.author)) : 'Unknown Author',
+        isbn: book.isbn,
+        publisher: cleanText(book.publisher) || 'N/A',
+        genres: book.genres || [],
+        coverImage: book.image_url || null,
+        image_url: book.image_url || null,
+        branch_stocks: stocks,
+        inventory: stocks
+      };
+    }),
     totalBooks,
     totalPages: Math.ceil(totalBooks / limit),
     currentPage: page
