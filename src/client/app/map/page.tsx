@@ -33,7 +33,7 @@ export default function MapPage() {
             {t('floor_map.title') || 'Interactive Library Floor Map'}
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm sm:text-base leading-relaxed">
-            Explore available group study rooms, individual desks, PC areas, and library lockers. Hover to highlight and click to view live details and scheduling.
+            {t('floor_map.description') || 'Explore available group study rooms, individual desks, PC areas, and library lockers. Hover to highlight and click to view live details and scheduling.'}
           </p>
         </div>
 

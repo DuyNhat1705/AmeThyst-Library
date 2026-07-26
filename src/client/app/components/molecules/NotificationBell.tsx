@@ -11,7 +11,7 @@ interface NotificationBellProps {
   enabled: boolean;
   locale: string;
   t: (key: string) => string;
-  userId?: number;
+  userId?: string;
 }
 
 export default function NotificationBell({ enabled, locale, t, userId }: NotificationBellProps) {

@@ -8,15 +8,17 @@ interface StudyGroupGridProps {
   groups: StudyGroup[];
   onJoinGroup: (id: string) => void;
   onCardClick: (id: string) => void;
+  onCancelRequest?: (id: string) => void;
   pendingRequests?: string[];
 }
 
-export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, pendingRequests = [] }: StudyGroupGridProps) {
+export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, onCancelRequest, pendingRequests = [] }: StudyGroupGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
   // Reset to page 1 when groups change (e.g. filtered/sorted)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [groups]);
 
@@ -47,8 +49,9 @@ export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, pendi
           <StudyGroupCard
             key={group.id}
             {...group}
-            isPending={pendingRequests.includes(group.id)}
-            onJoin={onJoinGroup}
+            isPending={pendingRequests.includes(group.id) || group.userApplicantStatus === 'pending'}
+            onJoin={group.canJoin === false ? undefined : onJoinGroup}
+            onCancelRequest={onCancelRequest}
             onCardClick={onCardClick}
           />
         ))}

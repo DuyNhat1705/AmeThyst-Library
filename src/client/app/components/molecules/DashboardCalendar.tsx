@@ -90,8 +90,8 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-xl p-8 flex flex-col gap-2 w-full">
       <div className="flex justify-between items-center pb-6">
-        <div className="flex items-center gap-6">
-          <h3 className="font-manrope text-xl font-bold text-black dark:text-neutral-100">
+        <div className="flex min-w-0 items-center gap-6">
+          <h3 className="w-[280px] shrink-0 truncate font-manrope text-xl font-bold text-black dark:text-neutral-100">
             {view === 'month' && `${t(`dashboard.${monthKeys[month]}`)} ${year}`}
             {view === 'week' && (() => {
               const start = getWeekStart(viewDate);
@@ -167,7 +167,7 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
           <div className="flex items-center gap-6 pt-6 border-t border-[#E8E2D5] dark:border-neutral-700 flex-wrap">
             {[
               { label: t('dashboard.legend_book_return'), color: 'bg-[#061D32]' },
-              { label: t('dashboard.legend_room_reservation'), color: 'bg-[#009484]' },
+              { label: t('dashboard.legend_room_reservation'), color: 'bg-[#2F6FA3]' },
               { label: t('dashboard.legend_study_group'), color: 'bg-[#6E5191]' },
               { label: t('dashboard.legend_pin_expiry'), color: 'bg-[#BA1A1A]' },
               { label: t('dashboard.legend_reservation_expiry'), color: 'bg-[#E37400]' },

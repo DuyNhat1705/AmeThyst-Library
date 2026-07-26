@@ -17,7 +17,7 @@ export interface BellAnnouncement {
  * Reads the most recently "seen" announcement id from localStorage.
  * Safe to call on the server (returns null) since it guards on `window` and `userId`.
  */
-function readLastSeenId(userId?: number): string | null {
+function readLastSeenId(userId?: string): string | null {
   if (typeof window === 'undefined' || userId === undefined) return null;
   try {
     return window.localStorage.getItem(`amethyst:announcements:lastSeenId:${userId}`);
@@ -27,7 +27,7 @@ function readLastSeenId(userId?: number): string | null {
   }
 }
 
-function writeLastSeenId(id: string, userId?: number) {
+function writeLastSeenId(id: string, userId?: string) {
   if (typeof window === 'undefined' || userId === undefined) return;
   try {
     window.localStorage.setItem(`amethyst:announcements:lastSeenId:${userId}`, id);
@@ -45,7 +45,7 @@ function writeLastSeenId(id: string, userId?: number) {
  * newest announcement the user has opened the dropdown for. This is
  * intentionally simple and does not sync across devices/browsers.
  */
-export function useAnnouncementBell(enabled: boolean, userId?: number) {
+export function useAnnouncementBell(enabled: boolean, userId?: string) {
   const [announcements, setAnnouncements] = useState<BellAnnouncement[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);

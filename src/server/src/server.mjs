@@ -19,6 +19,7 @@ import { runStartupCleanup as runStartupAnnouncementCleanup, startPeriodicCleanu
 import wishlistRoutes from './routes/wishlist.routes.mjs';
 import recommendationRoutes from './routes/recommendation.routes.mjs';
 import { initScheduler } from './services/scheduler.services.mjs';
+import studyGroupRoutes from './routes/study-group.routes.mjs';
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/user', userRoutes);
 app.use('/dashboard/user', dashboardRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/study-groups', studyGroupRoutes);
 app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use(libraryRoutes);
