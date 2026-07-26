@@ -1,11 +1,18 @@
 export-databook:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t books -t immutable_array_to_string --clean --if-exists >> 01_databook.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t books > 01_databook.sql
 
 export-datalibrary:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t branches -t library > 02_datalibrary.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t branches -t library > 02_datalibrary.sql
+
+export-datafacility:
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t study_room -t room_avail > 03_datafacility.sql
+
+export-datauser:
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -t users > 04_datauser.sql
 
 export-initrest:
-	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -T books -T branches -T branches_branch_id_seq -T library > 03_init_rest.sql
+	docker exec -t library_postgres pg_dump -U lib_admin -d library_db -T books -T branches -T branches_branch_id_seq -T library -T study_room -T room_avail -T users > 05_init_rest.sql
+
 
 export-datacsv:
 	docker exec -i -e PGCLIENTENCODING=UTF8 library_postgres psql -U lib_admin -d postgres -c "\copy (SELECT book_id, title, author, description, genres, publication_date, num_pages, rating, language_code, embedding FROM public.books) TO '/tmp/books.csv' WITH CSV HEADER;"	
@@ -23,16 +30,34 @@ export-cpcsv:
 	docker cp library_postgres:/tmp/searches.csv ./tmp_csv/searches.csv
 	docker cp library_postgres:/tmp/borrow.csv ./tmp_csv/borrow.csv
 
+clean-csv:
+	-rm -rf ./tmp_csv/*.csv
+	-docker exec library_postgres rm -f /tmp/books.csv /tmp/branches.csv /tmp/library.csv /tmp/users.csv /tmp/searches.csv /tmp/borrow.csv
+
+init-graph:
+	python Init_data/Init_graph.py
+
 export-graph:
 	docker exec -i amethyst_memgraph mgconsole -c "DUMP DATABASE;" > ./amethyst_graph_dump.cypherl
 
-
 import-data:
-
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/03_datauser.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/04_init_rest.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/05_indexes.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/01_databook.sql
 	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/02_datalibrary.sql
-nothing:
-	
+
+import-memgraph:
+	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 < ./init_db/init_graph.cypherl
+
+mock-export:
+	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t users -t user_wishlist -t search_history -t borrow_book -t return_book -t recommends --clean --if-exists >> 09_mock_data.sql	
+
+export-memgraph:
+	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 --output-format=cypherl > 010_datagraph.cypher
+
+export-snapshot:
+	python Init_data/Model_snapshot.py export
+
+import-snapshot:
+	python Init_data/Model_snapshot.py import

@@ -15,13 +15,22 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
       const searchHistoryId = sessionStorage.getItem('currentSearchHistoryId');
       const token = localStorage.getItem('token');
       if (token) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+        // Async log recommendation click if it exists
+        fetch(`${apiUrl}/api/dashboard/user/recommendations/${id}/click`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }).catch(err => console.error("Failed to log recommendation click:", err));
+
         const query = sessionStorage.getItem('currentSearchQuery') || '';
         const filtersStr = sessionStorage.getItem('currentFilters');
         const filters = filtersStr ? JSON.parse(filtersStr) : null;
         const hasFilters = filters && Object.keys(filters).length > 0;
 
         if (searchHistoryId || query || hasFilters) {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
           fetch(`${apiUrl}/api/search/history/click`, {
             method: 'POST',
             headers: {

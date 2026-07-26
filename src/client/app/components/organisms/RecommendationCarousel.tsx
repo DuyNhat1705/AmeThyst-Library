@@ -14,13 +14,30 @@ interface RecommendedBook {
 interface RecommendationCarouselProps {
   books: RecommendedBook[];
   title?: string;
+  emptyFallback?: React.ReactNode;
 }
 
-export default function RecommendationCarousel({ books, title }: RecommendationCarouselProps) {
+export default function RecommendationCarousel({ books, title, emptyFallback }: RecommendationCarouselProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
 
-  if (books.length === 0) return null;
+  if (books.length === 0) {
+    if (emptyFallback) {
+      return (
+        <section className="flex flex-col gap-6 w-full mt-8">
+          <div className="flex justify-between items-end border-b border-[#C5C6CD] dark:border-neutral-600 pb-2">
+            <h2 className="text-[#091426] dark:text-neutral-200 text-3xl md:text-4xl font-semibold tracking-[0.1em]">
+              {title || t('book.you_may_like')}
+            </h2>
+          </div>
+          <div className="py-8 text-center text-neutral-500 dark:text-neutral-400 font-medium">
+            {emptyFallback}
+          </div>
+        </section>
+      );
+    }
+    return null;
+  }
 
 
   const scroll = (direction: 'left' | 'right') => {

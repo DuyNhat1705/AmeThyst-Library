@@ -5,6 +5,7 @@ import {
 import { verifyOtp, forgotPassword, resetPassword } from '../services/otp.service.mjs';
 import passport from '../config/passport.mjs';
 import { signToken, buildUserPayload } from '../utils/authHelpers.mjs';
+import { getUserRecommendations } from '../services/recommendation.services.mjs';
 
 export const register = async (req, res) => {
   try {
@@ -23,6 +24,13 @@ export const verifyEmailHandler = async (req, res) => {
     if (!token) return res.status(400).json({ error: 'Verification token is required' });
     const result = await verifyEmail({ token });
     res.status(200).json(result);
+
+    // Precompute recommendations in the background on successful email verification
+    if (result.user && result.user.role === 'user') {
+      getUserRecommendations(result.user.userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute recommendations on verification for user ${result.user.userId}:`, err)
+      );
+    }
   } catch (err) {
     let status = 500;
     if (err.message === 'Verification link has expired. Please register again.') {
@@ -42,6 +50,13 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const data = await loginUser({ email, password });
     res.status(200).json(data);
+
+    // Precompute recommendations in the background on login
+    if (data.user && data.user.role === 'user') {
+      getUserRecommendations(data.user.userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute recommendations on login for user ${data.user.userId}:`, err)
+      );
+    }
   } catch (err) {
     res.status(401).json({ error: err.message });
   }

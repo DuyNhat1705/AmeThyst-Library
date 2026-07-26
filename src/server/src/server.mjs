@@ -16,6 +16,9 @@ import historyRoutes from './routes/history.routes.mjs';
 import roomRoutes from './routes/room.routes.mjs';
 import announcementRoutes from './routes/announcement.routes.mjs';
 import { runStartupCleanup as runStartupAnnouncementCleanup, startPeriodicCleanup as startPeriodicAnnouncementCleanup } from './utils/announcementScheduler.mjs';
+import wishlistRoutes from './routes/wishlist.routes.mjs';
+import recommendationRoutes from './routes/recommendation.routes.mjs';
+import { initScheduler } from './services/scheduler.services.mjs';
 
 
 const app = express();
@@ -26,11 +29,13 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard/user', dashboardRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);
+app.use(recommendationRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -41,6 +46,7 @@ runStartupPinCleanup();
 startPeriodicPinCleanup();
 runStartupAnnouncementCleanup();
 startPeriodicAnnouncementCleanup();
+initScheduler();
 
 
 server.listen(PORT, () => {
