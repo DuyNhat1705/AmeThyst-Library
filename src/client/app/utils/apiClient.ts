@@ -5,6 +5,17 @@ export function getToken(): string | null {
   return localStorage.getItem('token');
 }
 
+export function getBranchId(): string | null {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.branch_id || null;
+  } catch {
+    return null;
+  }
+}
+
 export function authHeaders(): Record<string, string> {
   const token = getToken();
   if (!token) return {};
