@@ -58,7 +58,18 @@ export default function BookTableRow({ book, hasBorder = false, columns, renderA
         switch (col.key) {
           case 'title':
             return (
-              <div key={col.key} className={`flex py-4 px-6 flex-col items-start ${col.width}`}>
+              <div key={col.key} className={`flex py-4 px-6 items-center gap-3 ${col.width}`}>
+                {book.coverSrc && (
+                  <img
+                    src={book.coverSrc}
+                    alt={book.title}
+                    className="w-8 h-11 object-cover rounded shadow-xs border border-slate-200 dark:border-neutral-700 shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).onerror = null;
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=No+Cover';
+                    }}
+                  />
+                )}
                 <p className="text-[#000] dark:text-neutral-100 font-manrope text-sm font-bold leading-5 line-clamp-2">
                   {book.title}
                 </p>

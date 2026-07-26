@@ -16,8 +16,6 @@ const BOOK_FORMAT_OPTIONS = [
   { value: 'Paperback', label: 'Paperback' },
   { value: 'Hardcover', label: 'Hardcover' },
   { value: 'Mass Market Paperback', label: 'Mass Market Paperback' },
-  { value: 'E-book', label: 'E-book' },
-  { value: 'Audiobook', label: 'Audiobook' },
 ];
 
 export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) {

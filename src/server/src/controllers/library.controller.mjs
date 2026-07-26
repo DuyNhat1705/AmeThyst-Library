@@ -1,11 +1,22 @@
-import { getBookById, getRecommendations, getRelatedBooks as getRelatedBooksService, getBooksList, createReservation } from '../services/library.services.mjs';
+import {
+  getBookById,
+  getRecommendations,
+  getRelatedBooks as getRelatedBooksService,
+  getBooksList,
+  createReservation,
+  createBookService,
+  updateBookService,
+  deleteBookService,
+  getAllBranchesService
+} from '../services/library.services.mjs';
+import { uploadToCloudinary } from '../services/user.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 24;
     const { genres, branches, availableOnly, startYear, endYear } = req.query;
-    
+
     const filters = {
       genres: genres ? genres.split(',') : [],
       branches: branches ? branches.split(',').map(Number) : [],
@@ -63,31 +74,98 @@ const reserveBook = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { bookId, branchId } = req.body;
-    
+
     if (!bookId || !branchId) {
-      return res.status(400).json({ 
-        success: false, 
-        error: { code: 'MISSING_PARAMETERS', message: 'bookId and branchId are required' } 
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_PARAMETERS', message: 'bookId and branchId are required' }
       });
     }
 
     const result = await createReservation(userId, bookId, branchId);
-    
+
     if (result.error) {
-      return res.status(result.statusCode || 400).json({ 
-        success: false, 
-        error: result.error 
+      return res.status(result.statusCode || 400).json({
+        success: false,
+        error: result.error
       });
     }
-    
+
     res.status(201).json({ success: true, data: result.reservation });
   } catch (error) {
     console.error('Error reserving book:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } 
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
     });
   }
 };
 
-export { getAllBooks, getBookDetails, getBookRecommendations, getRelatedBooks, reserveBook };
+const createBook = async (req, res) => {
+  try {
+    const createdBook = await createBookService(req.body);
+    res.status(201).json({ success: true, data: createdBook });
+  } catch (error) {
+    console.error('Error in createBook controller:', error);
+    res.status(500).json({ error: error.message || 'Failed to create book' });
+  }
+};
+
+const updateBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedBook = await updateBookService(id, req.body);
+    res.json({ success: true, data: updatedBook });
+  } catch (error) {
+    console.error('Error in updateBook controller:', error);
+    res.status(500).json({ error: error.message || 'Failed to update book' });
+  }
+};
+
+const deleteBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const branchId = req.query.branch_id ? parseInt(req.query.branch_id, 10) : null;
+    const result = await deleteBookService(id, branchId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in deleteBook controller:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete book' });
+  }
+};
+
+const getBranches = async (req, res) => {
+  try {
+    const branches = await getAllBranchesService();
+    res.json(branches);
+  } catch (error) {
+    console.error('Error fetching branches:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+const uploadCoverController = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided for book cover upload' });
+    }
+    const secureUrl = await uploadToCloudinary(req.file.buffer);
+    res.json({ success: true, image_url: secureUrl });
+  } catch (error) {
+    console.error('Error uploading book cover to Cloudinary:', error);
+    res.status(500).json({ error: error.message || 'Failed to upload cover image to Cloudinary' });
+  }
+};
+
+export {
+  getAllBooks,
+  getBookDetails,
+  getBookRecommendations,
+  getRelatedBooks,
+  reserveBook,
+  createBook,
+  updateBook,
+  deleteBook,
+  getBranches,
+  uploadCoverController
+};
