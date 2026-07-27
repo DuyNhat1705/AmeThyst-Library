@@ -497,12 +497,64 @@ export const cancelBorrowing = async (borrowId) => {
 
     return { borrowId, status: 'cancelled' };
   } catch (error) {
-
-
     await client.query('ROLLBACK');
     throw error;
   } finally {
     client.release();
   }
+};
+
+/**
+ * Fetch all borrow/pickup records from public.borrow_book joined with books, users, branches
+ */
+export const getPickupsService = async () => {
+  const query = `
+    SELECT 
+      bb.borrow_id,
+      bb.user_id,
+      bb.book_id,
+      bb.branch_id,
+      bb.reserve_date,
+      bb.borrow_date,
+      bb.due_date,
+      bb.pin,
+      bb.expired_at,
+      bb.status,
+      b.title as book_title,
+      b.isbn as book_isbn,
+      b.image_url as book_image_url,
+      u.username,
+      u.email,
+      u.avatar,
+      br.name as branch_name,
+      br.name_short
+    FROM public.borrow_book bb
+    JOIN public.books b ON bb.book_id = b.book_id
+    JOIN public.users u ON bb.user_id = u.user_id
+    JOIN public.branches br ON bb.branch_id = br.branch_id
+    ORDER BY bb.reserve_date DESC, bb.expired_at ASC
+  `;
+
+  const res = await pool.query(query);
+  return res.rows.map((r) => ({
+    borrow_id: r.borrow_id,
+    user_id: r.user_id,
+    book_id: r.book_id,
+    branch_id: r.branch_id,
+    reserve_date: r.reserve_date,
+    borrow_date: r.borrow_date,
+    due_date: r.due_date,
+    pin: r.pin,
+    expired_at: r.expired_at,
+    status: r.status,
+    book_title: r.book_title || 'Untitled',
+    book_isbn: r.book_isbn || 'N/A',
+    book_image_url: r.book_image_url || '/BookCover.png',
+    username: r.username || 'User',
+    email: r.email || '',
+    avatar: r.avatar || null,
+    branch_name: r.branch_name,
+    name_short: r.name_short || `CS${r.branch_id}`
+  }));
 };
 

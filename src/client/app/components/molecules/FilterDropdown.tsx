@@ -34,6 +34,8 @@ export default function FilterDropdown({
     ? options.find((o) => o.value === value)?.label || label
     : label;
 
+  const hasDefaultOption = options.some((o) => o.value === '');
+
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       <button
@@ -49,15 +51,17 @@ export default function FilterDropdown({
         </svg>
       </div>
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-[#E8E2D5] dark:border-neutral-600 bg-white dark:bg-neutral-800 shadow-lg overflow-hidden">
-          <button
-            onClick={() => { onChange(''); setOpen(false); }}
-            className={`w-full text-left px-6 py-3 font-manrope text-base hover:bg-[#F8F3E9] dark:hover:bg-neutral-700 transition-colors ${
-              value === '' ? 'bg-[#F8F3E9] dark:bg-neutral-700 font-bold text-[#03192E] dark:text-neutral-100' : 'text-[#1D1C16] dark:text-neutral-200'
-            }`}
-          >
-            {label}
-          </button>
+        <div className="absolute z-50 mt-1 w-full rounded-xl border border-[#E8E2D5] dark:border-neutral-600 bg-white dark:bg-neutral-800 shadow-lg overflow-hidden max-h-60 overflow-y-auto">
+          {!hasDefaultOption && (
+            <button
+              onClick={() => { onChange(''); setOpen(false); }}
+              className={`w-full text-left px-6 py-3 font-manrope text-base hover:bg-[#F8F3E9] dark:hover:bg-neutral-700 transition-colors ${
+                value === '' ? 'bg-[#F8F3E9] dark:bg-neutral-700 font-bold text-[#03192E] dark:text-neutral-100' : 'text-[#1D1C16] dark:text-neutral-200'
+              }`}
+            >
+              {label}
+            </button>
+          )}
           {options.map((opt) => (
             <button
               key={opt.value}

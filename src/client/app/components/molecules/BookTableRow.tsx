@@ -9,14 +9,23 @@ import type { ColumnDef } from './BookTableHeader';
 
 export interface BookEntry {
   id: string;
-  coverSrc: string;
+  coverSrc?: string;
   title: string;
   author: string;
   isbn: string;
-  category: string;
-  available: number;
-  total: number;
-  active: boolean;
+  category?: string;
+  publisher?: string;
+  available?: number;
+  total?: number;
+  active?: boolean;
+  branchStocks?: {
+    branch_id: number;
+    branch_name?: string;
+    name_short?: string;
+    quantity: number;
+    available_quantity: number;
+    shelf?: string;
+  }[];
 }
 
 interface BookTableRowProps {
@@ -27,14 +36,12 @@ interface BookTableRowProps {
 }
 
 const DEFAULT_COLUMNS: ColumnDef[] = [
-  { key: 'cover', width: 'w-[84px]', align: 'items-start' },
-  { key: 'title', width: 'w-[147px]', align: 'items-start' },
-  { key: 'author', width: 'w-[103px]', align: 'items-start' },
-  { key: 'isbn', width: 'w-[107px]', align: 'items-start' },
-  { key: 'category', width: 'w-[142px]', align: 'items-start' },
-  { key: 'availability', width: 'w-[126px]', align: 'items-center' },
-  { key: 'status', width: 'w-[122px]', align: 'items-start' },
-  { key: 'actions', width: 'w-[136px]', align: 'items-end' },
+  { key: 'title', width: 'w-[220px]', align: 'items-start' },
+  { key: 'author', width: 'w-[160px]', align: 'items-start' },
+  { key: 'isbn', width: 'w-[140px]', align: 'items-start' },
+  { key: 'availability', width: 'w-[200px]', align: 'items-start' },
+  { key: 'location', width: 'w-[160px]', align: 'items-start' },
+  { key: 'actions', width: 'w-[120px]', align: 'items-end' },
 ];
 
 export default function BookTableRow({ book, hasBorder = false, columns, renderActions }: BookTableRowProps) {
@@ -49,67 +56,75 @@ export default function BookTableRow({ book, hasBorder = false, columns, renderA
     >
       {cols.map((col) => {
         switch (col.key) {
-          case 'cover':
-            return (
-              <div key={col.key} className={`flex py-[25px] px-6 flex-col items-start ${col.width}`}>
-                <img
-                  src={book.coverSrc}
-                  className="rounded-md shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] w-9 h-16 object-cover"
-                  alt={book.title}
-                />
-              </div>
-            );
           case 'title':
             return (
-              <div key={col.key} className={`flex py-[35px] px-6 flex-col items-start ${col.width}`}>
-                <p className="text-[#000] dark:text-neutral-100 font-manrope text-base font-bold">
+              <div key={col.key} className={`flex py-4 px-6 items-center gap-3 ${col.width}`}>
+                {book.coverSrc && (
+                  <img
+                    src={book.coverSrc}
+                    alt={book.title}
+                    className="w-8 h-11 object-cover rounded shadow-xs border border-slate-200 dark:border-neutral-700 shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).onerror = null;
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=No+Cover';
+                    }}
+                  />
+                )}
+                <p className="text-[#000] dark:text-neutral-100 font-manrope text-sm font-bold leading-5 line-clamp-2">
                   {book.title}
                 </p>
               </div>
             );
           case 'author':
             return (
-              <div key={col.key} className={`flex py-[35px] px-6 flex-col items-start ${col.width}`}>
-                <p className="text-[#1D1C16] dark:text-neutral-300 font-manrope text-base">
+              <div key={col.key} className={`flex py-4 px-6 flex-col items-start ${col.width}`}>
+                <p className="text-[#1D1C16] dark:text-neutral-300 font-manrope text-sm line-clamp-2">
                   {book.author}
                 </p>
               </div>
             );
           case 'isbn':
             return (
-              <div key={col.key} className={`flex py-[17px] px-6 flex-col items-start ${col.width}`}>
-                <p className="text-[#1D1C16] dark:text-neutral-300 font-liberationMono text-sm leading-5">
+              <div key={col.key} className={`flex py-4 px-6 flex-col items-start ${col.width}`}>
+                <p className="text-[#1D1C16] dark:text-neutral-300 font-liberationMono text-xs leading-5">
                   {book.isbn}
-                </p>
-              </div>
-            );
-          case 'category':
-            return (
-              <div key={col.key} className={`flex py-[46px] px-6 flex-col items-start ${col.width}`}>
-                <p className="text-[#1D1C16] dark:text-neutral-300 font-manrope text-base">
-                  {book.category}
                 </p>
               </div>
             );
           case 'availability':
             return (
-              <div key={col.key} className="flex pl-6 justify-center items-start w-[102px]">
-                <AvailabilityBadge available={book.available} total={book.total} />
+              <div key={col.key} className={`flex py-4 px-6 flex-col items-start ${col.width} gap-1`}>
+                {book.branchStocks && book.branchStocks.length > 0 ? (
+                  book.branchStocks.map((s) => (
+                    <div key={s.branch_id} className="flex items-center gap-1.5 text-xs font-manrope">
+                      <span className="font-bold text-slate-700 dark:text-slate-300">
+                        {s.name_short || `CS${s.branch_id}`}:
+                      </span>
+                      <span className={`font-semibold ${s.available_quantity > 0 ? 'text-teal-600 dark:text-teal-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                        {s.available_quantity} / {s.quantity}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <AvailabilityBadge available={book.available || 0} total={book.total || 0} />
+                )}
               </div>
             );
-          case 'status':
+          case 'location':
             return (
-              <div key={col.key} className="flex pl-12 items-center gap-2 w-[122px]">
-                <StatusDot active={book.active} />
-                <p
-                  className={`font-manrope text-base ${
-                    book.active
-                      ? 'text-[#5EEAD4] dark:text-teal-300'
-                      : 'text-[#74777D] dark:text-neutral-400'
-                  }`}
-                >
-                  {book.active ? t('librarian.status_active') : t('librarian.status_inactive')}
-                </p>
+              <div key={col.key} className={`flex py-4 px-6 flex-col items-start ${col.width} gap-1`}>
+                {book.branchStocks && book.branchStocks.length > 0 ? (
+                  book.branchStocks.map((s) => (
+                    <div key={s.branch_id} className="flex items-center gap-1 text-xs font-liberationMono">
+                      <span className="font-bold text-slate-500">{s.name_short || `CS${s.branch_id}`}:</span>
+                      <span className="font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded">
+                        {s.shelf || 'N/A'}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-500 font-mono">N/A</span>
+                )}
               </div>
             );
           case 'actions':

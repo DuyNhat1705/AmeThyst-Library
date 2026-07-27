@@ -1,6 +1,7 @@
 import pool from '../config/postgres.mjs';
 import { cleanText, buildFilterSQL } from './search.services.mjs';
 import { invalidateUserRecommendationCache, getUserRecommendations } from './recommendation.services.mjs';
+import { generateQueryEmbedding } from './embedding.services.mjs';
 
 export const MAX_BORROW_LIMIT = 5;
 
@@ -105,7 +106,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     finalWhereString = `WHERE ${filterSql.replace(/^\s*AND\s*/i, '')}`;
   }
 
-  // 3. Prepare Dynamic Pagination Indices
+  const isUnlimited = !limit || limit >= 1000;
   const limitParam = `$${paramIndex++}`;
   const offsetParam = `$${paramIndex++}`;
   
@@ -117,30 +118,65 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   `;
 
   const booksQuery = `
-    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url
+    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url, b.publisher, b.genres
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
     ${finalWhereString}
     ORDER BY b.title ASC
-    LIMIT ${limitParam} OFFSET ${offsetParam}
+    ${isUnlimited ? '' : `LIMIT ${limitParam} OFFSET ${offsetParam}`}
   `;
 
-  // 4. Execute Queries concurrently
-  const [countRes, booksRes] = await Promise.all([
+  // 4. Execute Queries concurrently (including public.library branch stocks)
+  const stocksQuery = `
+    SELECT l.book_id, l.branch_id, l.quantity, l.available_quantity, l.shelf, br.name as branch_name, br.name_short
+    FROM public.library l
+    JOIN public.branches br ON l.branch_id = br.branch_id
+    ORDER BY l.branch_id ASC
+  `;
+
+  const [countRes, booksRes, stocksRes] = await Promise.all([
     pool.query(countQuery, queryParams),
-    pool.query(booksQuery, [...queryParams, limit, offset])
+    pool.query(booksQuery, isUnlimited ? queryParams : [...queryParams, limit, offset]),
+    pool.query(stocksQuery)
   ]);
+
+  const stocksByBook = {};
+  (stocksRes.rows || []).forEach((s) => {
+    const key = String(s.book_id || '').trim();
+    if (!key) return;
+    if (!stocksByBook[key]) stocksByBook[key] = [];
+    stocksByBook[key].push({
+      branch_id: parseInt(s.branch_id, 10),
+      branch_name: s.branch_name || '',
+      name_short: s.name_short || `CS${s.branch_id}`,
+      quantity: parseInt(s.quantity, 10) || 0,
+      available_quantity: s.available_quantity !== undefined && s.available_quantity !== null
+        ? parseInt(s.available_quantity, 10)
+        : (parseInt(s.quantity, 10) || 0),
+      shelf: s.shelf || 'N/A'
+    });
+  });
 
   const totalBooks = parseInt(countRes.rows[0].count);
 
   return {
-    books: booksRes.rows.map(book => ({
-      id: book.book_id,
-      title: cleanText(book.title),
-      author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
-      isbn: book.isbn,
-      coverImage: book.image_url || null
-    })),
+    books: booksRes.rows.map(book => {
+      const key = String(book.book_id || '').trim();
+      const stocks = stocksByBook[key] || [];
+      return {
+        id: book.book_id,
+        book_id: book.book_id,
+        title: cleanText(book.title),
+        author: book.author ? (Array.isArray(book.author) ? book.author.map(cleanText).join(', ') : cleanText(book.author)) : 'Unknown Author',
+        isbn: book.isbn,
+        publisher: cleanText(book.publisher) || 'N/A',
+        genres: book.genres || [],
+        coverImage: book.image_url || null,
+        image_url: book.image_url || null,
+        branch_stocks: stocks,
+        inventory: stocks
+      };
+    }),
     totalBooks,
     totalPages: Math.ceil(totalBooks / limit),
     currentPage: page
@@ -441,6 +477,216 @@ export const cleanupExpiredReservations = async () => {
   } finally {
     client.release();
   }
+};
+
+/**
+ * Generate a unique book_id consisting of '9999' + 6 random digits (e.g. '9999123456')
+ * Checks public.books to ensure uniqueness before assignment.
+ */
+export const generateUniqueBookId = async (clientOrPool = pool) => {
+  let isUnique = false;
+  let newId = '';
+
+  while (!isUnique) {
+    const randomDigits = Math.floor(100000 + Math.random() * 900000).toString();
+    newId = `9999${randomDigits}`;
+
+    const checkRes = await clientOrPool.query(
+      'SELECT 1 FROM public.books WHERE book_id = $1',
+      [newId]
+    );
+    if (checkRes.rows.length === 0) {
+      isUnique = true;
+    }
+  }
+
+  return newId;
+};
+
+/**
+ * Helper to trigger embedding vector calculation and populate public.books.embedding
+ */
+export const triggerEmbeddingUpdate = async (bookId, title, author, description, genres) => {
+  try {
+    const textToEmbed = `${title || ''} ${Array.isArray(author) ? author.join(' ') : author || ''} ${description || ''} ${Array.isArray(genres) ? genres.join(' ') : genres || ''}`;
+    const vectorArray = await generateQueryEmbedding(textToEmbed);
+    if (vectorArray && Array.isArray(vectorArray)) {
+      const vectorStr = `[${vectorArray.join(',')}]`;
+      await pool.query(
+        'UPDATE public.books SET embedding = $1 WHERE book_id = $2',
+        [vectorStr, bookId]
+      );
+      console.log(`[Embedding Phase Triggered] Initialized vector embedding for book_id (${bookId}).`);
+    }
+  } catch (err) {
+    console.error(`[Embedding Error] Failed to update embedding for book ${bookId}:`, err.message || err);
+  }
+};
+
+/**
+ * Create a new catalog book with unique '9999' + 6-digit book_id and vector embedding initialization
+ */
+export const createBookService = async (bookData) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Generate unique 10-char book_id ('9999' + 6 digits)
+    const bookId = await generateUniqueBookId(client);
+
+    const title = bookData.title ? bookData.title.trim() : 'Untitled';
+    const original_title = bookData.original_title || null;
+    const description = bookData.description || null;
+    const num_pages = bookData.num_pages || null;
+    const publisher = bookData.publisher || null;
+    const publication_date = bookData.publication_date || null;
+    const isbn = bookData.isbn ? bookData.isbn.trim() : `ISBN-${Date.now()}`;
+    const author = Array.isArray(bookData.author) ? bookData.author : (bookData.author ? [bookData.author] : []);
+    const language_code = bookData.language_code || 'eng';
+    const book_format = bookData.book_format || 'Paperback';
+    const genres = Array.isArray(bookData.genres) ? bookData.genres : (bookData.genres ? [bookData.genres] : []);
+    const image_url = bookData.image_url || null;
+    const price = bookData.price || 0;
+
+    // 2. Insert into public.books
+    const insertBookQuery = `
+      INSERT INTO public.books (
+        book_id, title, original_title, description, num_pages, publisher, publication_date,
+        isbn, author, language_code, book_format, genres, image_url, price
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING *
+    `;
+
+    const bookRes = await client.query(insertBookQuery, [
+      bookId, title, original_title, description, num_pages, publisher, publication_date,
+      isbn, author, language_code, book_format, genres, image_url, price
+    ]);
+
+    // 3. Insert per-branch physical stocks into public.library
+    const branch_stocks = Array.isArray(bookData.branch_stocks) ? bookData.branch_stocks : [];
+    for (const stock of branch_stocks) {
+      const branchId = parseInt(stock.branch_id, 10);
+      if (!branchId) continue;
+      const qty = Math.max(0, parseInt(stock.quantity || 0, 10));
+      const avail = Math.min(qty, Math.max(0, parseInt(stock.available_quantity !== undefined ? stock.available_quantity : qty, 10)));
+      const shelf = stock.shelf || `CS${branchId}.${title.charAt(0).toUpperCase()}101`;
+
+      await client.query(`
+        INSERT INTO public.library (book_id, branch_id, quantity, available_quantity, shelf)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (book_id, branch_id)
+        DO UPDATE SET quantity = $3, available_quantity = $4, shelf = $5
+      `, [bookId, branchId, qty, avail, shelf]);
+    }
+
+    await client.query('COMMIT');
+
+    const createdBook = bookRes.rows[0];
+
+    // 4. Trigger Vector Embedding initialization asynchronously
+    triggerEmbeddingUpdate(bookId, title, author, description, genres);
+
+    return createdBook;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error creating book in database:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Update existing catalog book metadata and trigger embedding recalculation
+ */
+export const updateBookService = async (bookId, bookData) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const title = bookData.title ? bookData.title.trim() : 'Untitled';
+    const original_title = bookData.original_title || null;
+    const description = bookData.description || null;
+    const num_pages = bookData.num_pages || null;
+    const publisher = bookData.publisher || null;
+    const publication_date = bookData.publication_date || null;
+    const isbn = bookData.isbn ? bookData.isbn.trim() : null;
+    const author = Array.isArray(bookData.author) ? bookData.author : (bookData.author ? [bookData.author] : []);
+    const language_code = bookData.language_code || 'eng';
+    const book_format = bookData.book_format || 'Paperback';
+    const genres = Array.isArray(bookData.genres) ? bookData.genres : (bookData.genres ? [bookData.genres] : []);
+    const image_url = bookData.image_url || null;
+    const price = bookData.price || 0;
+
+    const updateBookQuery = `
+      UPDATE public.books
+      SET title = $1, original_title = $2, description = $3, num_pages = $4, publisher = $5,
+          publication_date = $6, isbn = $7, author = $8, language_code = $9, book_format = $10,
+          genres = $11, image_url = $12, price = $13
+      WHERE book_id = $14
+      RETURNING *
+    `;
+
+    const bookRes = await client.query(updateBookQuery, [
+      title, original_title, description, num_pages, publisher, publication_date,
+      isbn, author, language_code, book_format, genres, image_url, price, bookId
+    ]);
+
+    // Update branch stocks in public.library
+    const branch_stocks = Array.isArray(bookData.branch_stocks) ? bookData.branch_stocks : [];
+    for (const stock of branch_stocks) {
+      const branchId = parseInt(stock.branch_id, 10);
+      if (!branchId) continue;
+      const qty = Math.max(0, parseInt(stock.quantity || 0, 10));
+      const avail = Math.min(qty, Math.max(0, parseInt(stock.available_quantity !== undefined ? stock.available_quantity : qty, 10)));
+      const shelf = stock.shelf || `CS${branchId}.${title.charAt(0).toUpperCase()}101`;
+
+      await client.query(`
+        INSERT INTO public.library (book_id, branch_id, quantity, available_quantity, shelf)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (book_id, branch_id)
+        DO UPDATE SET quantity = $3, available_quantity = $4, shelf = $5
+      `, [bookId, branchId, qty, avail, shelf]);
+    }
+
+    await client.query('COMMIT');
+
+    const updatedBook = bookRes.rows[0];
+
+    // Trigger vector embedding calculation
+    triggerEmbeddingUpdate(bookId, title, author, description, genres);
+
+    return updatedBook;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error updating book in database:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Delete a catalog book or branch stock
+ */
+export const deleteBookService = async (bookId, branchId = null) => {
+  if (branchId) {
+    await pool.query('DELETE FROM public.library WHERE book_id = $1 AND branch_id = $2', [bookId, branchId]);
+    return { success: true, message: `Deleted stock for branch ${branchId}` };
+  } else {
+    await pool.query('DELETE FROM public.library WHERE book_id = $1', [bookId]);
+    await pool.query('DELETE FROM public.books WHERE book_id = $1', [bookId]);
+    return { success: true, message: `Deleted book ${bookId} from catalog` };
+  }
+};
+
+/**
+ * Get all library branches
+ */
+export const getAllBranchesService = async () => {
+  const res = await pool.query('SELECT * FROM public.branches ORDER BY branch_id ASC');
+  return res.rows;
 };
 
 

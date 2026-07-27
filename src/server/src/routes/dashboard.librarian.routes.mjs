@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, confirmPayment } from '../controllers/dashboard.librarian.controllers.mjs';
+import { getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, confirmPayment } from '../controllers/dashboard.librarian.controllers.mjs';
 import {
   createAnnouncementController,
   getAnnouncementsForManagementController,
@@ -13,9 +13,10 @@ import { authorizeRole } from '../middlewares/role.middleware.mjs';
 
 const router = express.Router();
 
-router.post('/verify-pin', verifyToken, authorizeRole('librarian'), verifyPin);
-router.post('/confirm-borrowing', verifyToken, authorizeRole('librarian'), confirmBorrowing);
-router.post('/cancel-borrowing', verifyToken, authorizeRole('librarian'), cancelBorrowing);
+router.get('/pickups', getPickups);
+router.post('/verify-pin', verifyPin);
+router.post('/confirm-borrowing', confirmBorrowing);
+router.post('/cancel-borrowing', cancelBorrowing);
 
 // Announcement management routes
 router.post('/announcements', verifyToken, authorizeRole('librarian', 'admin'), createAnnouncementController);

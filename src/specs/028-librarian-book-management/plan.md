@@ -1,113 +1,116 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Librarian Book Management
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Branch**: `028-librarian-book-management` | **Date**: 2026-07-23 | **Spec**: [spec.md](file:///C:/Local_D/HCMUS/SE2/AmeThyst-Library/src/specs/028-librarian-book-management/spec.md)
 
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Input**: Feature specification from `specs/028-librarian-book-management/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
+---
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement the librarian-only Book Management workflow, supporting full catalog CRUD and branch inventory synchronization. Key features include:
+- **Role Authorization**: Restrict interface and endpoints strictly to `librarian` and `admin` roles.
+- **Database Row Mutations & Safeguards**: Support creating, updating, and deleting rows in `public.books` and `public.library`. Protect against deleting or over-reducing stock for books with active borrowings in `public.borrow_book`.
+- **Uniqueness Verification**: Enforce ISBN and Book ID uniqueness before inserting or updating catalog records.
+- **Branch Stock Configuration**: Allow configuring total and available quantities per branch.
+- **Bookshelf Location Code Logic**: Auto-prefix shelf codes with the capitalized first letter of the English title (or `'X'` for non-English, numeric, or special character titles) combined with user-entered numeric values (e.g., `F104` or `X12`).
+- **Cover Image Upload Reuse**: Reuse profile management avatar upload component supporting local device file uploads and external image URLs.
+- **Dual Database Synchronization**: Synchronize all PostgreSQL catalog/inventory changes with Memgraph graph database.
+
+---
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+**Language/Version**: JavaScript (Node.js ES Modules `.mjs` for backend, React 18 / Next.js App Router for frontend)  
+**Primary Dependencies**: Express.js, Next.js, `pg` (PostgreSQL), `neo4j-driver` (Memgraph), `multer` (file upload)  
+**Storage**: PostgreSQL (`books`, `library`, `branches`, `borrow_book`), Memgraph (graph database nodes and relationships)  
+**Testing**: Vitest (backend services & controllers), React Testing Library (frontend components)  
+**Target Platform**: Web Browsers (Responsive Desktop, Tablet, Mobile)  
+**Project Type**: Full-Stack Web Application (`client/` + `server/`)  
+**Performance Goals**: API response time < 2s for book operations including graph sync and vector embedding calculation  
+**Constraints**: strictly enforce role authorization (`librarian`/`admin`), ensure transactional integrity between PostgreSQL and Memgraph  
+**Scale/Scope**: Multi-branch library inventory system with full catalog management  
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
-
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
-
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
-
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
-
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
-
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
-
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
-
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+---
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*GATE: Must pass before Phase 0 research. Re-checked post Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [x] **Core Principle I (Component-Driven & Atomic Design)**: Reuses `ImageUploader` component derived from profile avatar upload. Form inputs, modals, and buttons follow Atomic Design.
+- [x] **Core Principle II (State Management & API Base URL)**: Frontend fetches via `NEXT_PUBLIC_API_URL`. Handles `loading`, `error`, and `success` explicitly.
+- [x] **Core Principle III (Responsive Design)**: UI layout uses flexible grid/flexbox for branch stock list and book forms.
+- [x] **Core Principle V (Error Handling & Accessibility)**: Form validates ISBN, price, page counts, and shelf numbers before submitting. User-friendly toast error messages for duplicate ISBN or active loan deletion blocks.
+- [x] **Core Principle VI & VIII (Directory Structure & Import Verification)**: Verified workspace hierarchy (`client/` and `server/src/`).
+- [x] **Core Principle VII & Backend Conventions**: Backend follows `routes -> middlewares -> controllers -> services -> models` with `.mjs` ES Modules extension.
+- [x] **Core Principle IX (Theme & Localization)**: Uses design tokens for dark/light mode and extracts text keys to `en.json` and `vi.json`.
+
+---
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+specs/028-librarian-book-management/
+├── plan.md              # This file
+├── research.md          # Phase 0 output
+├── data-model.md        # Phase 1 output
+├── quickstart.md        # Phase 1 output
+├── contracts/           # Phase 1 output
+│   └── book-management-api.md
+└── tasks.md             # Phase 2 output (to be generated by /speckit-tasks)
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+server/src/
+├── config/
+│   ├── postgres.config.mjs
+│   └── memgraph.config.mjs
+├── controllers/
+│   └── book.controllers.mjs
+├── middlewares/
+│   ├── auth.middlewares.mjs
+│   └── role.middlewares.mjs
+├── models/
+│   └── book.models.mjs
+├── routes/
+│   └── book.routes.mjs
+├── services/
+│   ├── book.services.mjs
+│   └── graph.services.mjs
+└── utils/
+    └── book.utils.mjs
 
 frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+client/
+├── app/
+│   ├── (dashboard)/
+│   │   └── librarian/
+│   │       └── books/
+│   │           └── page.jsx
+│   └── components/
+│       └── ui/
+│           └── ImageUploader.jsx
+└── public/
+    └── locales/
+        ├── en.json
+        └── vi.json
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web application layout split into `server/` (Express.js backend with layered architecture `.mjs`) and `client/` (Next.js App Router).
+
+---
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+> No constitution violations detected. Standard multi-tier architecture with role middleware and service layer.
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Feature Area | Complexity Reason | Mitigation / Design Choice |
+|---|---|---|
+| Bookshelf Code Generation | Handles English vs. Non-English / Special characters | Centralized in `book.utils.mjs` with regex testing `/^[a-zA-Z]$/` |
+| Image Upload Reuse | Needs local device file upload + web URL input | Unified `ImageUploader` component with dual mode tab |
+| Active Loan Safeguards | Preventing deletion of active inventory | Pre-deletion SQL check on `borrow_book` status before executing `DELETE` |
