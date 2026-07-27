@@ -125,3 +125,7 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+
+html {
+  scrollbar-gutter: stable;
+}

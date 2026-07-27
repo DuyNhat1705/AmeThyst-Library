@@ -5,7 +5,7 @@ import { useI18n } from '../../providers/I18nProvider';
 import { AgendaEventRow } from '../atoms';
 
 interface AgendaEvent {
-  id: number;
+  id: number | string;
   title: string;
   time: string;
   location: string;

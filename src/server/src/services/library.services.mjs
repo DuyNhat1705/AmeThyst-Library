@@ -1,5 +1,6 @@
 import pool from '../config/postgres.mjs';
 import { cleanText, buildFilterSQL } from './search.services.mjs';
+import { invalidateUserRecommendationCache, getUserRecommendations } from './recommendation.services.mjs';
 import { generateQueryEmbedding } from './embedding.services.mjs';
 
 export const MAX_BORROW_LIMIT = 5;
@@ -210,14 +211,15 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
 /**
  * Lấy gợi ý sách ngẫu nhiên từ database để tạo tính năng khám phá sách
  */
-export const getRecommendations = async (id) => {
+export const getRecommendations = async (id, limit = 20) => {
   const recQuery = `
     SELECT book_id, title, author, isbn, image_url
     FROM public.books 
     WHERE book_id != $1
-    LIMIT 6
+    ORDER BY RANDOM()
+    LIMIT $2
   `;
-  const recRes = await pool.query(recQuery, [id]);
+  const recRes = await pool.query(recQuery, [id, limit]);
   
   return recRes.rows.map(book => ({
     id: book.book_id,
@@ -231,18 +233,18 @@ export const getRecommendations = async (id) => {
  * Lấy sách cùng chủ đề (genres)
  */
 export const getRelatedBooks = async (id) => {
-  // 1. Lấy genres của sách hiện tại
+  // 1. Fetch current book's genres
   const bookQuery = 'SELECT genres FROM public.books WHERE book_id = $1';
   const bookRes = await pool.query(bookQuery, [id]);
   
   if (bookRes.rows.length === 0 || !bookRes.rows[0].genres || bookRes.rows[0].genres.length === 0) {
-    // Fallback: Nếu không có genres thì trả về random
-    return getRecommendations(id);
+    // Fallback: If no genres found, return random books
+    return getRecommendations(id, 20);
   }
   
   const genres = bookRes.rows[0].genres;
   
-  // 2. Tìm sách khác có ít nhất một genre chung (&&)
+  // 2. Query books in the same genres (ordered by RANDOM)
   const recQuery = `
     SELECT book_id, title, author, isbn, image_url
     FROM public.books 
@@ -252,9 +254,9 @@ export const getRelatedBooks = async (id) => {
   `;
   const recRes = await pool.query(recQuery, [id, genres]);
   
-  // Fallback: Nếu không tìm thấy sách cùng chủ đề, trả về random
+  // Fallback: If no related books found in same genres, return random books
   if (recRes.rows.length === 0) {
-    return getRecommendations(id);
+    return getRecommendations(id, 20);
   }
   
   return recRes.rows.map(book => ({
@@ -275,6 +277,18 @@ export const createReservation = async (userId, bookId, branchId) => {
       return { 
         error: { code: 'USER_NOT_FOUND', message: 'User account not found. Please re-login.' },
         statusCode: 404
+      };
+    }
+
+    const debtCheck = await client.query(
+      'SELECT COUNT(*) as unpaid FROM public.book_penalty WHERE user_id = $1 AND is_paid = false',
+      [userId]
+    );
+    if (parseInt(debtCheck.rows[0].unpaid) > 0) {
+      await client.query('ROLLBACK');
+      return {
+        error: { code: 'UNPAID_DEBT', message: 'You have unpaid debts. Please clear all outstanding penalties before reserving a new book.' },
+        statusCode: 400
       };
     }
 
@@ -357,6 +371,14 @@ export const createReservation = async (userId, bookId, branchId) => {
 
     await client.query('COMMIT');
 
+    // Invalidate recommendation cache and precompute new recommendations
+    invalidateUserRecommendationCache(userId);
+    if (process.env.NODE_ENV !== 'test') {
+      getUserRecommendations(userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute after reservation for user ${userId}:`, err)
+      );
+    }
+
     return {
       reservation: {
         reservationId: borrow_id,
@@ -381,8 +403,13 @@ export const cleanupExpiredPins = async () => {
   try {
     const query = `
       UPDATE public.borrow_book
-      SET pin = NULL, expired_at = NULL, status = 'reserved'
-      WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at <= NOW()
+      SET pin = NULL, expired_at = NULL,
+          status = CASE
+            WHEN status = 'pending' THEN 'reserved'
+            WHEN status = 'pending_return' THEN 'borrowed'
+            ELSE status
+          END
+      WHERE status IN ('pending', 'pending_return') AND expired_at IS NOT NULL AND expired_at <= NOW()
     `;
     const result = await pool.query(query);
     return result.rowCount;
@@ -399,8 +426,13 @@ export const clearAllPins = async () => {
   try {
     const query = `
       UPDATE public.borrow_book
-      SET pin = NULL, expired_at = NULL, status = 'reserved'
-      WHERE status = 'pending'
+      SET pin = NULL, expired_at = NULL,
+          status = CASE
+            WHEN status = 'pending' THEN 'reserved'
+            WHEN status = 'pending_return' THEN 'borrowed'
+            ELSE status
+          END
+      WHERE status IN ('pending', 'pending_return')
     `;
     const result = await pool.query(query);
     return result.rowCount;

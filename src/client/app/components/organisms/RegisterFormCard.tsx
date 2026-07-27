@@ -74,7 +74,7 @@ export default function RegisterFormCard({
       }
 
       setState(prev => ({ ...prev, isLoading: false }));
-      router.push(`/check-email?email=${encodeURIComponent(formData.email)}`);
+      router.push(`/check-mail?email=${encodeURIComponent(formData.email)}`);
     } catch (err: unknown) {
       console.error('Register error:', err);
       const raw = err instanceof Error ? err.message : undefined;
@@ -120,18 +120,26 @@ export default function RegisterFormCard({
           <PasswordInput
             label={t('auth.password_label')}
             id="password"
+            name="password"
             placeholder={t('auth.password_placeholder_short')}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            autoComplete="new-password"
+            autoCapitalize="none"
+            spellCheck={false}
             error={state.validationErrors?.password}
             disabled={state.isLoading}
           />
           <PasswordInput
             label={t('auth.confirm_password_label')}
             id="confirmPassword"
+            name="confirmPassword"
             placeholder={t('auth.confirm_password_placeholder')}
             value={formData.confirmPassword || ""}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            autoComplete="new-password"
+            autoCapitalize="none"
+            spellCheck={false}
             error={state.validationErrors?.confirmPassword}
             disabled={state.isLoading}
           />

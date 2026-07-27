@@ -90,4 +90,12 @@ yarn-error.log*
 
 /database/init_db
 /database/.env
-/database/Init_data/lightgbm_ranker.txt
+/database/tmp_csv
+/database/*.sql
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+lightgbm_ranker.txt

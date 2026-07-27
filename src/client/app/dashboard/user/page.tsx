@@ -5,11 +5,15 @@ import { UpcomingAgenda } from '../../components/organisms';
 import { DashboardCalendar } from '../../components/molecules';
 import { getLoggedInUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
+import { apiFetch } from '../../utils/apiClient';
+import { listCreatedStudyGroups, listJoinedStudyGroups } from '../../utils/studyGroup';
+import { localizedBranchName, localizedRoomName } from '../../utils/room';
+import type { Reservation } from '../../components/molecules/ReservationCard';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 interface EventItem {
-  id: number;
+  id: number | string;
   title: string;
   time: string;
   location: string;
@@ -36,13 +40,16 @@ export default function UserDashboardPage() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const [eventsRes, borrowedRes] = await Promise.all([
+        const [eventsRes, borrowedRes, reservationsResult, createdResult, joinedResult] = await Promise.all([
           fetch(`${API_BASE}/dashboard/events`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${API_BASE}/dashboard/user/my-borrowed`, {
             headers: { Authorization: `Bearer ${token}` },
-          })
+          }),
+          apiFetch<{ upcoming: Reservation[]; past: Reservation[] }>('/api/rooms/user-reservations'),
+          listCreatedStudyGroups({ page: 1, pageSize: 50 }),
+          listJoinedStudyGroups({ page: 1, pageSize: 50 }),
         ]);
 
         const eventsData = eventsRes.ok ? await eventsRes.json() : { events: [] };
@@ -66,7 +73,35 @@ export default function UserDashboardPage() {
             };
           });
 
-        setAllEvents([...events, ...reservationEvents]);
+        const createdGroups = createdResult.success ? createdResult.data || [] : [];
+        const joinedGroups = joinedResult.success
+          ? (joinedResult.data || []).filter((item) => item.participation.status === 'approved').map((item) => item.group)
+          : [];
+        const studyGroups = [...new Map([...createdGroups, ...joinedGroups].map((group) => [group.groupId, group])).values()];
+        const studyGroupReservationIds = new Set(studyGroups.map((group) => group.reservation.reserveId));
+        const studyGroupEvents: EventItem[] = studyGroups.map((group) => ({
+          id: `study-group-${group.groupId}`,
+          title: group.title,
+          time: `${group.reservation.startTime.slice(0, 5)} - ${group.reservation.endTime.slice(0, 5)}`,
+          location: `${localizedBranchName(t, group.reservation.room.branchId, group.reservation.room.branchName)} · ${localizedRoomName(t, group.reservation.room.roomId, group.reservation.room.roomName)}`,
+          type: 'study_group',
+          date: String(group.reservation.startDate).slice(0, 10),
+        }));
+        const roomReservations = reservationsResult.success && reservationsResult.data
+          ? [...(reservationsResult.data.upcoming || []), ...(reservationsResult.data.past || [])]
+          : [];
+        const roomReservationEvents: EventItem[] = roomReservations
+          .filter((reservation) => !studyGroupReservationIds.has(reservation.reserveId))
+          .map((reservation) => ({
+            id: `room-reservation-${reservation.reserveId}`,
+            title: localizedRoomName(t, reservation.roomId, reservation.roomName),
+            time: `${reservation.startTime.slice(0, 5)} - ${reservation.endTime.slice(0, 5)}`,
+            location: localizedBranchName(t, reservation.branchId, reservation.branchName),
+            type: 'room_reservation',
+            date: String(reservation.startDate).slice(0, 10),
+          }));
+
+        setAllEvents([...events, ...reservationEvents, ...studyGroupEvents, ...roomReservationEvents]);
       } catch {
         // silently fail; UI shows empty state
       } finally {
@@ -74,7 +109,7 @@ export default function UserDashboardPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [t]);
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;

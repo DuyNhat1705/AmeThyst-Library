@@ -5,22 +5,35 @@
   "main": "src/server.mjs",
   "overrides": {
     "tar": "^7.5.16",
-    "onnxruntime-common": "1.14.0",
-    "onnxruntime-web": "1.14.0"
+    "protobufjs": "^7.5.6",
+    "onnxruntime-node": "1.19.2",
+    "onnxruntime-web": "1.19.2",
+    "onnxruntime-common": "1.19.2"
   },
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "start": "node src/server.mjs",
-    "dev": "nodemon src/server.mjs"
-  },
+ "scripts": {
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "test:ui": "vitest --ui",
+
+  "test:auth": "vitest run --project \"test_auth*\"",
+  "test:auth:watch": "vitest --project \"test_auth*\"",
+  "test:auth:ui": "vitest --ui --project \"test_auth*\"",
+
+  "test:auth:register": "vitest run --project test_auth_register",
+  "test:auth:register:watch": "vitest --project test_auth_register",
+  "test:auth:register:ui": "vitest --ui --project test_auth_register",
+
+  "test:auth:tag": "vitest run --project \"test_auth*\" --tags-filter",
+
+  "start": "node src/server.mjs",
+  "dev": "nodemon src/server.mjs"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@xenova/transformers": "^2.0.1",
+    "@huggingface/transformers": "^3.8.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
@@ -28,6 +41,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.2.0",
+    "neo4j-driver": "^6.2.0",
+    "node-cron": "^3.0.3",
     "nodemailer": "^9.0.1",
     "nodemon": "^3.1.14",
     "passport": "^0.7.0",
