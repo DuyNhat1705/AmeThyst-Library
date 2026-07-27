@@ -16,6 +16,8 @@ const BOOK_FORMAT_OPTIONS = [
   { value: 'Paperback', label: 'Paperback' },
   { value: 'Hardcover', label: 'Hardcover' },
   { value: 'Mass Market Paperback', label: 'Mass Market Paperback' },
+  { value: 'E-book', label: 'E-book' },
+  { value: 'Audiobook', label: 'Audiobook' },
 ];
 
 export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) {
@@ -77,13 +79,13 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
     setShelfNumberInputs(initialShelf);
   }, [branches]);
 
-  // Compute title first letter (e.g., 'B' for 'Book')
   const computeTitleFirstLetter = (t) => {
     const trimmed = (t || '').replace(/^["'“`{\[\(\s]+/, '').trim();
     if (trimmed.length > 0) {
-      return trimmed.charAt(0).toUpperCase();
+      const firstChar = trimmed.charAt(0).toUpperCase();
+      return /[A-Z]/.test(firstChar) ? firstChar : 'X';
     }
-    return 'B';
+    return 'Z';
   };
 
   const currentTitleLetter = computeTitleFirstLetter(formData.title);
@@ -108,7 +110,6 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
   };
 
   const handleShelfInputChange = (branchId, rawVal) => {
-    // Only numeric digits, max 3 digits (e.g., 91 or 101)
     const digitsOnly = (rawVal || '').replace(/\D/g, '').slice(0, 3);
     setShelfNumberInputs((prev) => ({ ...prev, [branchId]: digitsOnly }));
   };
@@ -125,7 +126,6 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
     setIsSubmitting(true);
 
     try {
-      // Build branch_stocks array: format NVC.B91 (branch short name + '.' + title letter + max 3 digit number)
       const branch_stocks = activeBranches.map((b) => {
         const qty = parseInt(stockInputs[b.branch_id] || 0, 10);
         const avail = Math.min(qty, parseInt(availInputs[b.branch_id] !== undefined ? availInputs[b.branch_id] : qty, 10));
@@ -176,44 +176,44 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto backdrop-blur-xs">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b pb-3 border-slate-200 dark:border-slate-800">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Catalog New Book</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-2xl font-bold">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto backdrop-blur-xs font-manrope">
+      <div className="bg-white dark:bg-neutral-800 border border-[#E8E2D5] dark:border-neutral-700 rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto text-[#1D1C16] dark:text-neutral-100">
+        <div className="flex justify-between items-center border-b pb-3 border-[#E8E2D5] dark:border-neutral-700">
+          <h2 className="text-xl font-bold text-[#1D1C16] dark:text-neutral-100">Catalog New Book</h2>
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 text-2xl font-bold">
             &times;
           </button>
         </div>
 
         {errorMsg && (
-          <div className="p-3 text-sm text-red-700 bg-red-100 dark:bg-red-950 dark:text-red-300 rounded-md">
+          <div className="p-3 text-sm text-red-700 bg-red-100 dark:bg-red-950 dark:text-red-300 rounded-md border border-red-200 dark:border-red-800">
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5 text-sm text-slate-800 dark:text-slate-200">
+        <form onSubmit={handleSubmit} className="space-y-5 text-sm">
           {/* Title & Original Title */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold mb-1">Title *</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Title *</label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g. Harry Potter and the Sorcerer's Stone"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-medium outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Original Title</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Original Title</label>
               <input
                 type="text"
                 value={formData.original_title}
                 onChange={(e) => setFormData({ ...formData, original_title: e.target.value })}
                 placeholder="e.g. Harry Potter 1"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
           </div>
@@ -221,25 +221,25 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
           {/* ISBN & Authors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold mb-1">ISBN *</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">ISBN *</label>
               <input
                 type="text"
                 required
                 value={formData.isbn}
                 onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
                 placeholder="e.g. 9780590353427"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-mono outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Authors (comma separated)</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Authors (comma separated)</label>
               <input
                 type="text"
                 value={formData.author}
                 onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                 placeholder="e.g. J.K. Rowling, Mary GrandPré"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
           </div>
@@ -247,11 +247,11 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
           {/* Language & Book Format */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold mb-1">Language</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Language</label>
               <select
                 value={formData.language_code}
                 onChange={(e) => setFormData({ ...formData, language_code: e.target.value })}
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-medium outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               >
                 {LANGUAGE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -262,11 +262,11 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Book Format</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Book Format</label>
               <select
                 value={formData.book_format}
                 onChange={(e) => setFormData({ ...formData, book_format: e.target.value })}
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-medium outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               >
                 {BOOK_FORMAT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -280,23 +280,23 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
           {/* Publisher & Publication Date */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold mb-1">Publisher</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Publisher</label>
               <input
                 type="text"
                 value={formData.publisher}
                 onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
                 placeholder="e.g. Scholastic"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Publication Date</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Publication Date</label>
               <input
                 type="date"
                 value={formData.publication_date}
                 onChange={(e) => setFormData({ ...formData, publication_date: e.target.value })}
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
           </div>
@@ -304,36 +304,36 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
           {/* Pages, Price, Genres */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block font-semibold mb-1">Pages</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Number of Pages</label>
               <input
                 type="number"
                 value={formData.num_pages}
                 onChange={(e) => setFormData({ ...formData, num_pages: e.target.value })}
                 placeholder="309"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-mono outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Price ($)</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Price ($)</label>
               <input
                 type="number"
                 step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 placeholder="19.99"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 font-mono outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Genres (comma separated)</label>
+              <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Genres (comma separated)</label>
               <input
                 type="text"
                 value={formData.genres}
                 onChange={(e) => setFormData({ ...formData, genres: e.target.value })}
                 placeholder="Fantasy, Fiction"
-                className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               />
             </div>
           </div>
@@ -349,23 +349,23 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
 
           {/* Description */}
           <div>
-            <label className="block font-semibold mb-1">Description</label>
+            <label className="block font-semibold mb-1 text-[#1D1C16] dark:text-neutral-200">Description</label>
             <textarea
               rows="3"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+              className="w-full px-3 py-2 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-[#FBF9F5] dark:bg-neutral-900 text-[#1D1C16] dark:text-neutral-100 outline-none focus:ring-2 focus:ring-[#006F66] dark:focus:ring-teal-400"
               placeholder="Book summary or description..."
             />
           </div>
 
           {/* Branch Physical Stock Section */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+          <div className="pt-4 border-t border-[#E8E2D5] dark:border-neutral-700 space-y-4">
             <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">
+              <h3 className="font-bold text-base text-[#1D1C16] dark:text-neutral-100">
                 Physical Stock & Branch Bookshelf Location
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                 Auto-generated location format: <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">&apos;[BranchShortName].{currentTitleLetter}[Number]&apos;</span> (e.g., NVC.B91). Max 3 digits for shelf number.
               </p>
             </div>
@@ -382,17 +382,17 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
                 return (
                   <div
                     key={b.branch_id}
-                    className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl space-y-3"
+                    className="p-4 bg-[#F8F3E9] dark:bg-neutral-900/60 border border-[#E8E2D5] dark:border-neutral-700 rounded-xl space-y-3"
                   >
                     {/* Header: NVC (1) Nguyen Van Cu */}
-                    <div className="flex items-center justify-between border-b pb-2 border-slate-200 dark:border-slate-700/60">
+                    <div className="flex items-center justify-between border-b pb-2 border-[#E8E2D5] dark:border-neutral-700">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
+                        <span className="font-mono font-bold text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
                           {shortName} ({b.branch_id})
                         </span>
-                        <span className="font-bold text-sm text-slate-900 dark:text-slate-100">{b.name}</span>
+                        <span className="font-bold text-sm text-[#1D1C16] dark:text-neutral-100">{b.name}</span>
                       </div>
-                      <span className="text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
+                      <span className="text-xs font-mono font-bold text-indigo-800 dark:text-indigo-300 bg-white dark:bg-neutral-800 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
                         {generatedShelf}
                       </span>
                     </div>
@@ -401,7 +401,7 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
                       {/* Quantity */}
                       <div>
-                        <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                        <label className="font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                           Quantity:
                         </label>
                         <input
@@ -409,14 +409,14 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
                           min="0"
                           value={qty}
                           onChange={(e) => handleStockChange(b.branch_id, e.target.value)}
-                          className="w-full px-2.5 py-1.5 border rounded-md dark:bg-slate-800 dark:border-slate-700 font-mono font-bold text-slate-900 dark:text-slate-100"
+                          className="w-full px-2.5 py-1.5 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 font-mono font-bold text-[#1D1C16] dark:text-neutral-100"
                         />
                       </div>
 
                       {/* Available for lending */}
                       <div>
                         <div className="flex items-center justify-between mb-1">
-                          <label className="font-semibold text-slate-700 dark:text-slate-300">
+                          <label className="font-semibold text-neutral-700 dark:text-neutral-300">
                             Available for lending:
                           </label>
                         </div>
@@ -426,14 +426,14 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
                           max={qty}
                           value={avail}
                           onChange={(e) => handleAvailChange(b.branch_id, e.target.value)}
-                          className="w-full px-2.5 py-1.5 border rounded-md dark:bg-slate-800 dark:border-slate-700 font-mono font-bold text-emerald-600 dark:text-emerald-400"
+                          className="w-full px-2.5 py-1.5 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 font-mono font-bold text-emerald-600 dark:text-emerald-400"
                         />
-                        <span className="text-[10px] text-slate-400 italic block mt-1">(must not exceed Quantity)</span>
+                        <span className="text-[10px] text-neutral-400 italic block mt-1">(must not exceed Quantity)</span>
                       </div>
 
-                      {/* Shelf Input (Max 3 digits, no hyphen) */}
+                      {/* Shelf Input */}
                       <div>
-                        <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                        <label className="font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                           Shelf Number (max 3 digits):
                         </label>
                         <input
@@ -441,7 +441,7 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
                           maxLength={3}
                           value={userShelfNum}
                           onChange={(e) => handleShelfInputChange(b.branch_id, e.target.value)}
-                          className="w-full px-2.5 py-1.5 border rounded-md dark:bg-slate-800 dark:border-slate-700 font-mono text-xs"
+                          className="w-full px-2.5 py-1.5 border border-[#E8E2D5] dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 font-mono text-xs text-[#1D1C16] dark:text-neutral-100"
                           placeholder="e.g. 91 or 101"
                         />
                       </div>
@@ -452,18 +452,18 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-[#E8E2D5] dark:border-neutral-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+              className="px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-[#F8F3E9] dark:hover:bg-neutral-700 rounded-md transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors disabled:opacity-50 shadow-sm"
+              className="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
             >
               {isSubmitting ? 'Saving...' : 'Create Book'}
             </button>

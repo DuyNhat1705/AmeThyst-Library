@@ -67,17 +67,36 @@ export const getBookById = async (id, userId = null) => {
 
   return {
     id: book.book_id,
+    book_id: book.book_id,
     title: cleanText(book.title),
-    author: book.author ? book.author.map(cleanText).join(', ') : 'Unknown Author',
-    description: cleanText(book.description),
-    isbn: book.isbn,
+    original_title: cleanText(book.original_title) || '',
+    author: book.author ? (Array.isArray(book.author) ? book.author.map(cleanText).join(', ') : cleanText(book.author)) : 'Unknown Author',
+    description: cleanText(book.description) || '',
+    isbn: book.isbn || '',
+    language_code: book.language_code || 'eng',
     language: book.language_code ? book.language_code.toUpperCase() : 'ENG',
+    book_format: book.book_format || 'Paperback',
     publisher: cleanText(book.publisher) || 'N/A',
+    publication_date: book.publication_date ? new Date(book.publication_date).toISOString().split('T')[0] : '',
     publicationYear: book.publication_year || 'N/A',
+    num_pages: book.num_pages !== undefined && book.num_pages !== null ? book.num_pages : null,
     numPages: book.num_pages || 'N/A',
+    price: book.price !== undefined && book.price !== null ? book.price : null,
     rating: book.rating ? `${book.rating} / 5` : 'N/A',
+    genres: book.genres || [],
     coverImage: book.image_url || null,
+    image_url: book.image_url || null,
     inventory: inventory,
+    branch_stocks: result.rows
+      .filter(row => row.branch_id)
+      .map(row => ({
+        branch_id: row.branch_id,
+        branch_name: row.branch_name,
+        name_short: row.name_short || `CS${row.branch_id}`,
+        quantity: row.quantity !== undefined ? row.quantity : 0,
+        available_quantity: row.available_quantity !== undefined ? row.available_quantity : 0,
+        shelf: row.shelf || 'N/A'
+      })),
     userReservation: userReservation
   };
 };
@@ -117,7 +136,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
   `;
 
   const booksQuery = `
-    SELECT DISTINCT b.book_id, b.title, b.author, b.isbn, b.image_url, b.publisher, b.genres
+    SELECT DISTINCT b.book_id, b.title, b.original_title, b.description, b.num_pages, b.publisher, b.publication_date, b.isbn, b.author, b.language_code, b.book_format, b.genres, b.image_url, b.price
     FROM public.books b
     LEFT JOIN public.library l ON b.book_id = l.book_id
     ${finalWhereString}
@@ -166,6 +185,13 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
         id: book.book_id,
         book_id: book.book_id,
         title: cleanText(book.title),
+        original_title: cleanText(book.original_title) || '',
+        description: cleanText(book.description) || '',
+        num_pages: book.num_pages !== undefined && book.num_pages !== null ? book.num_pages : null,
+        price: book.price !== undefined && book.price !== null ? book.price : null,
+        publication_date: book.publication_date ? new Date(book.publication_date).toISOString().split('T')[0] : '',
+        language_code: book.language_code || 'eng',
+        book_format: book.book_format || 'Paperback',
         author: book.author ? (Array.isArray(book.author) ? book.author.map(cleanText).join(', ') : cleanText(book.author)) : 'Unknown Author',
         isbn: book.isbn,
         publisher: cleanText(book.publisher) || 'N/A',
