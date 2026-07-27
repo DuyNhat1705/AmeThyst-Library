@@ -35,7 +35,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Custom Utilities if needed */
+/* Custom Utilities */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -60,7 +60,45 @@ body {
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* Custom Scrollbar */
+/* Centralized Custom Scrollbar for Book Form Modals */
+.modal-custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.modal-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1; /* Slate 300 for light theme */
+  border-radius: 9999px;
+}
+.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
+html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
+body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #525252; /* Neutral 600 for dark theme */
+  border-radius: 9999px;
+}
+.modal-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94A3B8; /* Slate 400 */
+}
+.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
+body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #737373; /* Neutral 500 */
+}
+
+/* Firefox support for Book Form Modals */
+.modal-custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+.dark .modal-custom-scrollbar,
+html.dark .modal-custom-scrollbar,
+body.dark .modal-custom-scrollbar {
+  scrollbar-color: #525252 transparent;
+}
+
+/* Standard Custom Scrollbar helper */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -69,11 +107,11 @@ body {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5); /* text-gray-400 */
+  background-color: rgba(156, 163, 175, 0.5);
   border-radius: 10px;
 }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.5); /* text-gray-600 */
+  background-color: rgba(75, 85, 99, 0.5);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(107, 114, 128, 0.8);
@@ -82,7 +120,7 @@ body {
   background-color: rgba(156, 163, 175, 0.8);
 }
 
-/* Hide the clear and reveal buttons in password inputs for IE/Edge*/
+/* Hide the clear and reveal buttons in password inputs for IE/Edge */
 input::-ms-reveal,
 input::-ms-clear {
   display: none;

@@ -262,7 +262,7 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto backdrop-blur-xs font-manrope">
-      <div className="bg-white dark:bg-neutral-800 border border-[#E8E2D5] dark:border-neutral-700 rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto text-[#1D1C16] dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-800 border border-[#E8E2D5] dark:border-neutral-700 rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto modal-custom-scrollbar text-[#1D1C16] dark:text-neutral-100">
         <div className="flex justify-between items-center border-b pb-3 border-[#E8E2D5] dark:border-neutral-700">
           <h2 className="text-xl font-bold text-[#1D1C16] dark:text-neutral-100">
             Edit Book Catalog (ID: {book.book_id || book.id})
@@ -472,11 +472,11 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
                         />
                       </div>
 
-                      {/* Available for lending */}
+                      {/* Available for borrowing */}
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <label className="font-semibold text-neutral-700 dark:text-neutral-300">
-                            Available for lending:
+                            Available for borrowing:
                           </label>
                         </div>
                         <input
