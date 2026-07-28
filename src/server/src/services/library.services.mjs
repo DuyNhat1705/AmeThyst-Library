@@ -306,8 +306,10 @@ export const createReservation = async (userId, bookId, branchId) => {
     }
 
     const duplicateQuery = `
-      SELECT borrow_id FROM public.borrow_book 
-      WHERE user_id = $1 AND book_id = $2 AND status IN ('reserved', 'pending', 'borrowed')
+      SELECT bb.borrow_id FROM public.borrow_book bb
+      WHERE bb.user_id = $1 AND bb.book_id = $2 AND bb.status IN ('reserved', 'pending', 'borrowed')
+        AND NOT EXISTS (SELECT 1 FROM public.return_book rb WHERE rb.borrow_id = bb.borrow_id)
+        AND NOT EXISTS (SELECT 1 FROM public.book_penalty bp WHERE bp.borrow_id = bb.borrow_id)
     `;
     const duplicateResult = await client.query(duplicateQuery, [userId, bookId]);
     

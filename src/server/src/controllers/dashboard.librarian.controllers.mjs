@@ -1,4 +1,4 @@
-import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, confirmPayment as confirmPaymentService, getPickupsService } from '../services/dashboard.librarian.services.mjs';
+import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService } from '../services/dashboard.librarian.services.mjs';
 
 const getPickups = async (req, res) => {
   try {
@@ -106,6 +106,25 @@ const confirmReturn = async (req, res) => {
   }
 };
 
+const getPaidFees = async (req, res) => {
+  try {
+    const { search } = req.query;
+    const result = await getPaidFeesService(search || null);
+    res.json({ success: true, data: result, message: 'Paid fees retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const getActiveBorrowings = async (req, res) => {
+  try {
+    const result = await getActiveBorrowingsService();
+    res.json({ success: true, data: result, message: 'Active borrowings retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
 const getOutstandingDebts = async (req, res) => {
   try {
     const { search } = req.query;
@@ -136,5 +155,5 @@ const confirmPayment = async (req, res) => {
   }
 };
 
-export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, confirmPayment };
+export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment };
 

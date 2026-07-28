@@ -5,10 +5,9 @@ import SubTabBar from '../molecules/SubTabBar';
 import BookManagementTab from '../organisms/BookManagementTab';
 import BookPickupTab from '../organisms/BookPickupTab';
 import BookReturnTab from '../organisms/BookReturnTab';
-import ReturnFlowPanel from '../organisms/ReturnFlowPanel';
 import LoanFeesPanel from '../organisms/LoanFeesPanel';
 
-const TABS = ['book_management', 'book_pickup', 'book_return', 'inspection', 'loan_fees'] as const;
+const TABS = ['book_management', 'book_pickup', 'book_return', 'loan_fees'] as const;
 type TabId = typeof TABS[number];
 
 export default function LibrarianBookDashboard() {
@@ -21,7 +20,6 @@ export default function LibrarianBookDashboard() {
       {activeTab === 'book_management' && <BookManagementTab />}
       {activeTab === 'book_pickup' && <BookPickupTab />}
       {activeTab === 'book_return' && <BookReturnTab />}
-      {activeTab === 'inspection' && <ReturnFlowPanel />}
       {activeTab === 'loan_fees' && <LoanFeesPanel />}
     </div>
   );

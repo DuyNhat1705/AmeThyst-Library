@@ -56,6 +56,12 @@ export default function FeesBreakdownPanel({ fees }: FeesBreakdownPanelProps) {
       </div>
 
       <div className="divide-y divide-[#F2EDE3] dark:divide-neutral-700/50">
+        <div className="flex items-center gap-4 py-2 px-5 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">
+          <div className="w-5 shrink-0" />
+          <div className="flex-1 min-w-0">{t('dashboard.loan_fees_header_type')}</div>
+          <div className="w-[100px] shrink-0 text-right">{t('dashboard.loan_fees_header_amount')}</div>
+          <div className="w-20 shrink-0 text-right">{t('dashboard.loan_fees_header_date')}</div>
+        </div>
         {filtered.length === 0 ? (
           <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">
             {t('dashboard.loan_fees_no_fees')}
