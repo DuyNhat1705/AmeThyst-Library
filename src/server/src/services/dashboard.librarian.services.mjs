@@ -41,9 +41,12 @@ export const getOutstandingDebts = async (search) => {
   try {
     let query = `
       SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,
-             bp.penalty_amount, bp.record_date, bp.is_paid, u.username
+             bp.penalty_amount, bp.record_date, bp.is_paid, u.username, u.avatar,
+             b.title as book_title
       FROM public.book_penalty bp
       JOIN public.users u ON bp.user_id = u.user_id
+      LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+      LEFT JOIN public.books b ON bb.book_id = b.book_id
       WHERE bp.is_paid = false
     `;
     const params = [];
@@ -59,6 +62,35 @@ export const getOutstandingDebts = async (search) => {
     return result.rows;
   } catch (error) {
     console.error('Error fetching outstanding debts:', error);
+    throw error;
+  }
+};
+
+export const getPaidFees = async (search) => {
+  try {
+    let query = `
+      SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,
+             bp.penalty_amount, bp.record_date, bp.paid_at, u.username, u.avatar,
+             b.title as book_title
+      FROM public.book_penalty bp
+      JOIN public.users u ON bp.user_id = u.user_id
+      LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+      LEFT JOIN public.books b ON bb.book_id = b.book_id
+      WHERE bp.is_paid = true
+    `;
+    const params = [];
+
+    if (search) {
+      query += ` AND u.username ILIKE $1`;
+      params.push(`%${search}%`);
+    }
+
+    query += ` ORDER BY bp.paid_at DESC`;
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching paid fees:', error);
     throw error;
   }
 };
@@ -508,6 +540,69 @@ export const cancelBorrowing = async (borrowId) => {
  * Fetch all borrow/pickup records from public.borrow_book joined with books, users, branches
  */
 export const getPickupsService = async () => {
+  const [pickupsRes, redeemedRes] = await Promise.all([
+    pool.query(`
+      SELECT 
+        bb.borrow_id,
+        bb.user_id,
+        bb.book_id,
+        bb.branch_id,
+        bb.reserve_date,
+        bb.borrow_date,
+        bb.due_date,
+        bb.pin,
+        bb.expired_at,
+        bb.status,
+        b.title as book_title,
+        b.isbn as book_isbn,
+        b.image_url as book_image_url,
+        u.username,
+        u.email,
+        u.avatar,
+        br.name as branch_name,
+        br.name_short
+      FROM public.borrow_book bb
+      JOIN public.books b ON bb.book_id = b.book_id
+      JOIN public.users u ON bb.user_id = u.user_id
+      JOIN public.branches br ON bb.branch_id = br.branch_id
+      WHERE bb.status = 'reserved'
+      ORDER BY bb.reserve_date DESC, bb.expired_at ASC
+    `),
+    pool.query(`
+      SELECT COUNT(*) as count
+      FROM public.borrow_book
+      WHERE status = 'borrowed' AND borrow_date::date = CURRENT_DATE
+    `),
+  ]);
+
+  const pickups = pickupsRes.rows.map((r) => ({
+    borrow_id: r.borrow_id,
+    user_id: r.user_id,
+    book_id: r.book_id,
+    branch_id: r.branch_id,
+    reserve_date: r.reserve_date,
+    borrow_date: r.borrow_date,
+    due_date: r.due_date,
+    pin: r.pin,
+    expired_at: r.expired_at,
+    status: r.status,
+    book_title: r.book_title || 'Untitled',
+    book_isbn: r.book_isbn || 'N/A',
+    book_image_url: r.book_image_url || '/BookCover.png',
+    username: r.username || 'User',
+    email: r.email || '',
+    avatar: r.avatar || null,
+    branch_name: r.branch_name,
+    name_short: r.name_short || `CS${r.branch_id}`
+  }));
+
+  return {
+    pickups,
+    redeemedToday: parseInt(redeemedRes.rows[0].count, 10),
+  };
+};
+
+export const getActiveBorrowings = async () => {
   const query = `
     SELECT 
       bb.borrow_id,
@@ -520,9 +615,11 @@ export const getPickupsService = async () => {
       bb.pin,
       bb.expired_at,
       bb.status,
+      bb.extend_num,
       b.title as book_title,
       b.isbn as book_isbn,
       b.image_url as book_image_url,
+      b.author as book_author,
       u.username,
       u.email,
       u.avatar,
@@ -532,7 +629,10 @@ export const getPickupsService = async () => {
     JOIN public.books b ON bb.book_id = b.book_id
     JOIN public.users u ON bb.user_id = u.user_id
     JOIN public.branches br ON bb.branch_id = br.branch_id
-    ORDER BY bb.reserve_date DESC, bb.expired_at ASC
+    WHERE bb.status = 'borrowed'
+      AND NOT EXISTS (SELECT 1 FROM public.return_book rb WHERE rb.borrow_id = bb.borrow_id)
+      AND NOT EXISTS (SELECT 1 FROM public.book_penalty bp WHERE bp.borrow_id = bb.borrow_id)
+    ORDER BY bb.due_date ASC
   `;
 
   const res = await pool.query(query);
@@ -547,9 +647,11 @@ export const getPickupsService = async () => {
     pin: r.pin,
     expired_at: r.expired_at,
     status: r.status,
+    extend_num: r.extend_num || 0,
     book_title: r.book_title || 'Untitled',
     book_isbn: r.book_isbn || 'N/A',
     book_image_url: r.book_image_url || '/BookCover.png',
+    book_author: Array.isArray(r.book_author) ? r.book_author.join(', ') : (r.book_author || 'Unknown Author'),
     username: r.username || 'User',
     email: r.email || '',
     avatar: r.avatar || null,

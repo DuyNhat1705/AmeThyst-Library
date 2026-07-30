@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
 import { apiFetch } from '../../utils/apiClient';
 import OutstandingDebtRow from '../molecules/OutstandingDebtRow';
+import PaidFeeRow from '../molecules/PaidFeeRow';
 
 interface Debt {
   penalty_id: number;
@@ -14,12 +15,15 @@ interface Debt {
   penalty_amount: number;
   record_date: string;
   username: string;
+  avatar?: string | null;
+  book_title?: string;
 }
 
 export default function LoanFeesPanel() {
   const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [debts, setDebts] = useState<Debt[]>([]);
+  const [paidFees, setPaidFees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,11 +32,17 @@ export default function LoanFeesPanel() {
     setError(null);
     try {
       const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
-      const result = await apiFetch<Debt[]>(`/dashboard/librarian/loan-fees/outstanding${params}`);
-      if (result.success) {
-        setDebts(result.data!);
+      const [outstandingRes, paidRes] = await Promise.all([
+        apiFetch<Debt[]>(`/dashboard/librarian/loan-fees/outstanding${params}`),
+        apiFetch<any[]>(`/dashboard/librarian/loan-fees/history${params}`),
+      ]);
+      if (outstandingRes.success) {
+        setDebts(outstandingRes.data!);
       } else {
-        setError(result.message || 'Failed to load debts');
+        setError(outstandingRes.message || 'Failed to load debts');
+      }
+      if (paidRes.success) {
+        setPaidFees(paidRes.data!);
       }
     } catch {
       setError('Network error');
@@ -83,22 +93,53 @@ export default function LoanFeesPanel() {
           <div className="py-16 text-center text-red-500 dark:text-red-400 font-manrope text-sm">
             {error}
           </div>
-        ) : debts.length === 0 ? (
-          <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">
-            {t('dashboard.loan_fees_librarian_no_debts')}
-          </div>
         ) : (
-          <div className="divide-y divide-[#F2EDE3] dark:divide-neutral-700/50">
-            {debts.map((debt) => (
-              <OutstandingDebtRow
-                key={debt.penalty_id}
-                debt={debt}
-                onPaymentConfirmed={() => fetchDebts(search || undefined)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="flex items-center gap-4 py-2 px-5 border-b border-[#E8E2D5] dark:border-neutral-700 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">
+              <div className="w-10 shrink-0" />
+              <div className="flex-1 min-w-0">{t('dashboard.loan_fees_librarian_header_borrower')}</div>
+              <div className="w-[120px] shrink-0 text-right">{t('dashboard.loan_fees_librarian_header_amount')}</div>
+              <div className="w-[100px] shrink-0 text-right">{t('dashboard.loan_fees_librarian_header_action')}</div>
+            </div>
+            {debts.length === 0 ? (
+              <div className="py-10 text-center text-neutral-400 dark:text-neutral-500 font-manrope text-sm">
+                {t('dashboard.loan_fees_librarian_no_debts')}
+              </div>
+            ) : (
+              <div className="divide-y divide-[#F2EDE3] dark:divide-neutral-700/50">
+                {debts.map((debt) => (
+                  <OutstandingDebtRow
+                    key={debt.penalty_id}
+                    debt={debt}
+                    onPaymentConfirmed={() => fetchDebts(search || undefined)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      {paidFees.length > 0 && (
+        <div className="flex flex-col border border-[#E8E2D5] dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-[0_10px_30px_-5px_rgba(26,46,68,0.06)] rounded-xl w-full overflow-hidden">
+          <div className="flex pt-6 px-5 pb-3 items-center border-b border-[#E8E2D5] dark:border-neutral-700">
+            <p className="text-[#43474D] dark:text-neutral-300 font-hankenGrotesk text-sm font-bold tracking-[0.05em]">
+              {t('dashboard.fees_history')} ({paidFees.length})
+            </p>
+          </div>
+          <div className="flex items-center gap-4 py-2 px-5 border-b border-[#E8E2D5] dark:border-neutral-700 text-[10px] font-bold text-[#75777D] dark:text-neutral-400 tracking-[0.1em] uppercase">
+            <div className="w-10 shrink-0" />
+            <div className="flex-1 min-w-0">{t('dashboard.loan_fees_librarian_header_borrower')}</div>
+            <div className="w-[120px] shrink-0 text-right">{t('dashboard.loan_fees_header_amount')}</div>
+            <div className="w-[100px] shrink-0 text-right">{t('dashboard.fees_header_paid_date')}</div>
+          </div>
+          <div className="divide-y divide-[#F2EDE3] dark:divide-neutral-700/50">
+            {paidFees.map((fee: any) => (
+              <PaidFeeRow key={fee.penalty_id} fee={fee} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

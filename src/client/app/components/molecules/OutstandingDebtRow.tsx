@@ -14,6 +14,8 @@ interface Debt {
   penalty_amount: number;
   record_date: string;
   username: string;
+  avatar?: string | null;
+  book_title?: string;
 }
 
 interface OutstandingDebtRowProps {
@@ -47,31 +49,51 @@ export default function OutstandingDebtRow({ debt, onPaymentConfirmed }: Outstan
   return (
     <>
       <div className="flex items-center gap-4 py-4 px-5 border-b border-[#F2EDE3] dark:border-neutral-700/50 last:border-0 hover:bg-[#F8F3E9]/30 dark:hover:bg-neutral-700/30 transition-colors w-full">
-        <div className="w-10 h-10 rounded-full bg-[#D7B6FE] dark:bg-purple-800 flex items-center justify-center shrink-0">
-          <span className="text-[#604382] dark:text-purple-200 font-manrope text-xs font-bold">
-            {debt.username.slice(0, 2).toUpperCase()}
-          </span>
+        <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden">
+          {debt.avatar ? (
+            <img src={debt.avatar} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-[#D7B6FE] dark:bg-purple-800 flex items-center justify-center">
+              <span className="text-[#604382] dark:text-purple-200 font-manrope text-xs font-bold">
+                {debt.username.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
           <p className="font-manrope text-sm font-bold text-black dark:text-neutral-100">{debt.username}</p>
-          <p className="text-[#75777D] dark:text-neutral-400 font-inter text-xs mt-0.5 truncate">
-            {debt.issue}{debt.description ? ` — ${debt.description}` : ''}
+          {debt.book_title && (
+            <p className="text-[#75777D] dark:text-neutral-400 font-inter text-xs mt-0.5 truncate">
+              <span className="font-bold">{t('dashboard.loan_fees_header_book')}:</span> {debt.book_title}
+            </p>
+          )}
+          {debt.description && (
+            <p className="text-[#75777D] dark:text-neutral-500 font-inter text-[10px] mt-0.5 truncate">
+              <span className="font-bold">{t('dashboard.loan_fees_header_description')}:</span> {debt.description}
+            </p>
+          )}
+          <p className="text-[#75777D] dark:text-neutral-500 font-inter text-[10px] mt-0.5">
+            {debt.record_date ? new Date(debt.record_date).toLocaleDateString() : ''}
           </p>
         </div>
 
-        <Amount
-          value={debt.penalty_amount}
-          className="text-sm font-bold text-[#D93025] dark:text-red-300 shrink-0"
-        />
+        <div className="w-[120px] shrink-0 text-right">
+          <Amount
+            value={debt.penalty_amount}
+            className="text-sm font-bold text-[#D93025] dark:text-red-300"
+          />
+        </div>
 
-        <button
-          onClick={() => setShowConfirm(true)}
-          disabled={confirming}
-          className="px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black font-hankenGrotesk text-[11px] font-bold hover:opacity-90 transition-opacity tracking-[0.05em] disabled:opacity-40 shrink-0"
-        >
-          {confirming ? '...' : t('dashboard.loan_fees_librarian_confirm')}
-        </button>
+        <div className="w-[100px] shrink-0 flex justify-end">
+          <button
+            onClick={() => setShowConfirm(true)}
+            disabled={confirming}
+            className="px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black font-hankenGrotesk text-[11px] font-bold hover:opacity-90 transition-opacity tracking-[0.05em] disabled:opacity-40"
+          >
+            {confirming ? '...' : t('dashboard.loan_fees_librarian_confirm')}
+          </button>
+        </div>
       </div>
 
       {showConfirm && (

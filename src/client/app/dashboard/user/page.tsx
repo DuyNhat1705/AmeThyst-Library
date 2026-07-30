@@ -25,6 +25,7 @@ interface BorrowRecord {
   id: string;
   title: string;
   reserveDate?: string;
+  dueDate?: string;
   status: string;
 }
 
@@ -59,16 +60,34 @@ export default function UserDashboardPage() {
         const events = eventsData.events || [];
 
         const reservationEvents: EventItem[] = (borrowedData.current || [])
-          .filter((record: BorrowRecord) => ['reserved', 'pending'].includes(record.status) && record.reserveDate)
+          .filter((record: BorrowRecord) => {
+            if (['reserved', 'pending'].includes(record.status)) return !!record.reserveDate;
+            if (record.status === 'borrowed') return !!record.dueDate;
+            return false;
+          })
           .map((record: BorrowRecord) => {
-            const dueDate = new Date(new Date(record.reserveDate!).getTime() + 7 * 24 * 60 * 60 * 1000);
-            const dateStr = `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
+            let dateStr: string;
+            let title: string;
+            let type: string;
+
+            if (['reserved', 'pending'].includes(record.status)) {
+              const dueDate = new Date(new Date(record.reserveDate!).getTime() + 7 * 24 * 60 * 60 * 1000);
+              dateStr = `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
+              title = `Pickup due: ${record.title}`;
+              type = 'reservation_expiry';
+            } else {
+              const d = new Date(record.dueDate!);
+              dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+              title = `Return due: ${record.title}`;
+              type = 'borrow_due';
+            }
+
             return {
               id: parseInt(record.id.replace(/-/g, '').slice(0, 8), 16),
-              title: `Pickup due: ${record.title}`,
+              title,
               time: '',
               location: '',
-              type: 'reservation_expiry',
+              type,
               date: dateStr,
             };
           });
