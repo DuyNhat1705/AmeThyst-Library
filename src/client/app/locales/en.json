@@ -709,6 +709,15 @@
                        "complete_inspection":  "Complete Inspection",
                        "cancel_inspection":  "Cancel"
                    },
+    "admin":  {
+                     "dashboard_title":  "ADMIN",
+                     "sidebar_user_management":  "User Management",
+                     "sidebar_roles_permissions":  "Roles & Permissions",
+                     "sidebar_statistics":  "Statistics",
+                     "sidebar_system_configuration":  "System Configuration",
+                     "placeholder_title":  "Coming Soon",
+                     "placeholder_message":  "This section is under construction and will be available soon."
+                 },
     "verification":  {
                          "modal_title":  "Confirm Book Loan",
                          "pin_label":  "Enter PIN provided by user:",

@@ -709,6 +709,15 @@
                        "complete_inspection":  "Hoàn tất kiểm tra",
                        "cancel_inspection":  "Hủy"
                    },
+    "admin":  {
+                     "dashboard_title":  "QUẢN TRỊ",
+                     "sidebar_user_management":  "Quản lý người dùng",
+                     "sidebar_roles_permissions":  "Vai trò & Quyền hạn",
+                     "sidebar_statistics":  "Thống kê",
+                     "sidebar_system_configuration":  "Cấu hình hệ thống",
+                     "placeholder_title":  "Sắp ra mắt",
+                     "placeholder_message":  "Phần này đang được xây dựng và sẽ sớm được hoàn thiện."
+                 },
     "verification":  {
                          "modal_title":  "Xác nhận mượn sách",
                          "pin_label":  "Nhập mã PIN do người dùng cung cấp:",

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isLoggedIn, getLoggedInUser } from '../utils/user';
+import { isLoggedIn, getLoggedInUser, getRedirectPathForUser } from '../utils/user';
 import { Toast } from '../components/atoms';
 import { useI18n } from '../providers/I18nProvider';
 
@@ -23,10 +23,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     const user = getLoggedInUser();
     const role = user?.role || 'user';
-    if (role !== 'user' && role !== 'librarian') {
+    const pathname = window.location.pathname;
+    const isAdminSection = pathname.startsWith('/dashboard/admin');
+    const isLibrarianSection = pathname.startsWith('/dashboard/librarian');
+    const hasValidRole = role === 'user' || role === 'librarian' || role === 'admin';
+    const hasSectionAccess =
+      (!isAdminSection || role === 'admin') &&
+      (!isLibrarianSection || role === 'librarian' || role === 'admin');
+    if (!hasValidRole || !hasSectionAccess) {
       setNotification({ message: t('dashboard.auth_forbidden'), type: 'error' });
       setAuthState('forbidden');
-      setTimeout(() => router.push('/'), 2000);
+      setTimeout(() => router.push(hasValidRole ? getRedirectPathForUser(user) : '/'), 2000);
       return;
     }
     setAuthState('authorized');

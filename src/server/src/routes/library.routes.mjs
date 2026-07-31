@@ -26,9 +26,9 @@ router.post('/api/library/reserve', verifyToken, authorizeRole('user'), reserveB
 
 // Catalog Book CRUD endpoints
 router.get('/api/branches', getBranches);
-router.post('/api/books/upload-cover', handleAvatarUpload, uploadCoverController);
-router.post('/api/books', createBook);
-router.put('/api/books/:id', updateBook);
-router.delete('/api/books/:id', deleteBook);
+router.post('/api/books/upload-cover', verifyToken, authorizeRole('librarian', 'admin'), handleAvatarUpload, uploadCoverController);
+router.post('/api/books', verifyToken, authorizeRole('librarian', 'admin'), createBook);
+router.put('/api/books/:id', verifyToken, authorizeRole('librarian', 'admin'), updateBook);
+router.delete('/api/books/:id', verifyToken, authorizeRole('librarian', 'admin'), deleteBook);
 
 export default router;

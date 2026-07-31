@@ -13,10 +13,10 @@ import { authorizeRole } from '../middlewares/role.middleware.mjs';
 
 const router = express.Router();
 
-router.get('/pickups', getPickups);
-router.post('/verify-pin', verifyPin);
-router.post('/confirm-borrowing', confirmBorrowing);
-router.post('/cancel-borrowing', cancelBorrowing);
+router.get('/pickups', verifyToken, authorizeRole('librarian'), getPickups);
+router.post('/verify-pin', verifyToken, authorizeRole('librarian'), verifyPin);
+router.post('/confirm-borrowing', verifyToken, authorizeRole('librarian'), confirmBorrowing);
+router.post('/cancel-borrowing', verifyToken, authorizeRole('librarian'), cancelBorrowing);
 
 // Announcement management routes
 router.post('/announcements', verifyToken, authorizeRole('librarian', 'admin'), createAnnouncementController);
