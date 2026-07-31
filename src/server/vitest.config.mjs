@@ -40,6 +40,27 @@ export default defineConfig({
         },
       },
 
+      {
+        test: {
+          name: 'test_study_group',
+          globals: true,
+          strictTags: false,
+          include: ['tests/services/study-group.services.spec.mjs'],
+          tags: [
+            { name: '@SG_1', description: 'Atomic Study Group and reservation creation' },
+            { name: '@SG_2', description: 'Elapsed or unavailable slot rejection' },
+            { name: '@SG_3', description: 'Join retry after denial cooldown' },
+            { name: '@SG_4', description: 'Duplicate active participation rejection' },
+            { name: '@SG_5', description: 'Request approval and capacity reconciliation' },
+            { name: '@SG_6', description: 'Request and invitation operation separation' },
+            { name: '@SG_7', description: 'Invitee role restriction' },
+            { name: '@SG_8', description: 'Invitation SMTP compensation' },
+            { name: '@SG_9', description: 'Invitation recipient authorization and acceptance' },
+            { name: '@SG_10', description: 'Transactional group dissolution and notifications' },
+          ],
+        },
+      },
+
       // To add another auth sub-feature (e.g. Login), copy the block above,
       // keep the "test_auth_" prefix so it groups under --project "test_auth*",
       // then update name + include + tags accordingly:

@@ -4,15 +4,18 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { StudyGroup } from '../../../study-together/mockData';
 import StudyGroupCard from '../../../components/molecules/StudyGroupCard';
+import StudyGroupInvitationCard from '../../../components/molecules/StudyGroupInvitationCard';
 import StudyGroupInfoModal from '../../../components/organisms/StudyGroupInfoModal';
 import { I18nProvider, useI18n } from '../../../providers/I18nProvider';
-import { getStudyGroup, listCreatedStudyGroups, listJoinedStudyGroups, toLegacyStudyGroup } from '../../../utils/studyGroup';
+import { acceptStudyGroupInvitation, denyStudyGroupInvitation, getStudyGroup, listCreatedStudyGroups, listJoinedStudyGroups, listStudyGroupInvitations, toLegacyStudyGroup } from '../../../utils/studyGroup';
 import { getAuthToken } from '../../../utils/user';
 import { useSocket } from '../../../utils/useSocket';
+import type { StudyGroupInvitation } from '../../../types/studyGroup';
 
-type CreatedStatusFilter = 'inprogress' | 'full' | 'upcoming' | 'completed' | 'cancelled' | 'expired';
+type CreatedStatusFilter = 'inprogress' | 'full' | 'upcoming' | 'completed' | 'expired';
 type JoinedStatusFilter = 'approved' | 'pending' | 'denied' | 'expired';
 type DashboardGroupMode = 'created' | 'joined';
+type DashboardTab = DashboardGroupMode | 'invitations';
 
 interface YourStudyGroupsContentProps {
   initialGroupId?: string | null;
@@ -35,29 +38,45 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(initialGroupId);
   const [routedGroup, setRoutedGroup] = useState<StudyGroup | null>(null);
   const [modalMode, setModalMode] = useState<DashboardGroupMode>(initialMode || 'created');
-  const [activeTab, setActiveTab] = useState<DashboardGroupMode>(initialMode || 'created');
+  const [activeTab, setActiveTab] = useState<DashboardTab>(initialMode || 'created');
   const [routeGroupLoading, setRouteGroupLoading] = useState(Boolean(initialGroupId));
   const [routeGroupError, setRouteGroupError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [createdGroups, setCreatedGroups] = useState<StudyGroup[]>([]);
   const [joinedGroups, setJoinedGroups] = useState<StudyGroup[]>([]);
+  const [invitations, setInvitations] = useState<StudyGroupInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [createdStatuses, setCreatedStatuses] = useState<CreatedStatusFilter[]>([]);
   const [joinedStatuses, setJoinedStatuses] = useState<JoinedStatusFilter[]>([]);
+  const [actingInvitationId, setActingInvitationId] = useState<string | null>(null);
+  const [invitationError, setInvitationError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const itemsPerPage = 8;
+  const invitationsPerPage = 6;
 
   const loadGroups = useCallback(async (silent = false) => {
     if (!silent) { setLoading(true); setLoadError(null); }
-    const [created, joined] = await Promise.all([listCreatedStudyGroups({ page: 1, pageSize: 50 }), listJoinedStudyGroups({ page: 1, pageSize: 50 })]);
-    if (created.success && created.data) setCreatedGroups(created.data.map((group) => toLegacyStudyGroup(group, undefined, t)));
+    const [created, joined, pendingInvitations] = await Promise.all([
+      listCreatedStudyGroups({ page: 1, pageSize: 50 }),
+      listJoinedStudyGroups({ page: 1, pageSize: 50 }),
+      listStudyGroupInvitations(),
+    ]);
+    if (created.success && created.data) setCreatedGroups(created.data.filter((group) => group.status !== 'cancelled').map((group) => toLegacyStudyGroup(group, undefined, t)));
     else { setCreatedGroups([]); setLoadError(created.message || 'Unable to load Study Groups.'); }
     if (joined.success && joined.data) {
-      const uniqueJoined = [...new Map(joined.data.map((item) => [item.group.groupId, item])).values()];
+      const visibleJoined = joined.data.filter((item) => item.group.status !== 'cancelled');
+      const uniqueJoined = [...new Map(visibleJoined.map((item) => [item.group.groupId, item])).values()];
       setJoinedGroups(uniqueJoined.map((item) => toLegacyStudyGroup(item.group, item.participation.status, t)));
     }
     else { setJoinedGroups([]); setLoadError((error) => error || joined.message || 'Unable to load Study Groups.'); }
+    if (pendingInvitations.success && pendingInvitations.data) {
+      setInvitations(pendingInvitations.data);
+      setInvitationError(null);
+    } else {
+      setInvitations([]);
+      setInvitationError(pendingInvitations.message || t('study_group.invitation_action_error'));
+    }
     if (!silent) setLoading(false);
   }, [t]);
 
@@ -92,9 +111,38 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
     setModalMode(mode);
   };
 
-  const handleTabChange = (tab: DashboardGroupMode) => {
+  const handleTabChange = (tab: DashboardTab) => {
     setActiveTab(tab);
     setCurrentPage(1);
+    setInvitationError(null);
+  };
+
+  const handleInvitationDecision = async (invitation: StudyGroupInvitation, decision: 'accept' | 'deny') => {
+    if (actingInvitationId) return;
+    setActingInvitationId(invitation.requestId);
+    setInvitationError(null);
+    const result = decision === 'accept'
+      ? await acceptStudyGroupInvitation(invitation.group.groupId, invitation.requestId)
+      : await denyStudyGroupInvitation(invitation.group.groupId, invitation.requestId);
+    if (!result.success) {
+      setInvitationError(result.message || t('study_group.invitation_action_error'));
+      setActingInvitationId(null);
+      return;
+    }
+    setInvitations((current) => current.filter((item) => item.requestId !== invitation.requestId));
+    await loadGroups(true);
+    setActingInvitationId(null);
+    if (decision === 'accept') {
+      setActiveTab('joined');
+      setCurrentPage(1);
+      setNotice(t('study_group.joined_from_invitation'));
+      handleCardClick(invitation.group.groupId, 'joined');
+    } else {
+      const remainingPages = Math.max(1, Math.ceil(Math.max(0, invitations.length - 1) / invitationsPerPage));
+      setCurrentPage((page) => Math.min(page, remainingPages));
+      setNotice(t('study_group.invitation_declined_self'));
+    }
+    window.setTimeout(() => setNotice(null), 5000);
   };
 
   useEffect(() => {
@@ -166,7 +214,6 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
     { value: 'full', label: t('study_group.status_full') },
     { value: 'upcoming', label: t('study_group.status_upcoming') },
     { value: 'completed', label: t('study_group.status_completed') },
-    { value: 'cancelled', label: t('study_group.status_cancelled') },
     { value: 'expired', label: t('study_group.status_expired') },
   ];
   const joinedStatusOptions: { value: 'all' | JoinedStatusFilter; label: string }[] = [
@@ -178,10 +225,15 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
   ];
   const currentItems = useMemo(() => activeTab === 'created'
     ? createdGroups.filter((group) => createdStatuses.length === 0 || createdStatuses.includes(group.userStatus as CreatedStatusFilter))
-    : joinedGroups.filter((group) => joinedStatuses.length === 0 || joinedStatuses.includes(group.userApplicantStatus as JoinedStatusFilter)),
+    : activeTab === 'joined'
+      ? joinedGroups.filter((group) => joinedStatuses.length === 0 || joinedStatuses.includes(group.userApplicantStatus as JoinedStatusFilter))
+      : [],
   [activeTab, createdGroups, createdStatuses, joinedGroups, joinedStatuses]);
-  const totalPages = Math.ceil(currentItems.length / itemsPerPage);
+  const totalPages = activeTab === 'invitations'
+    ? Math.ceil(invitations.length / invitationsPerPage)
+    : Math.ceil(currentItems.length / itemsPerPage);
   const displayedItems = currentItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const displayedInvitations = invitations.slice((currentPage - 1) * invitationsPerPage, currentPage * invitationsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -210,12 +262,19 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
               >
                 {t('study_group.groups_joined')}
               </button>
+              <button
+                onClick={() => handleTabChange('invitations')}
+                className={`flex items-center gap-2 pb-4 border-b-2 font-hankenGrotesk text-sm transition-colors ${activeTab === 'invitations' ? 'border-[#42474E] dark:border-white text-[#595C61] dark:text-white font-bold' : 'border-transparent text-[#42474E] dark:text-gray-400 hover:text-black dark:hover:text-white'}`}
+              >
+                {t('study_group.groups_invitations')}
+                {invitations.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[#006A61] px-1.5 py-0.5 text-[10px] font-bold leading-4 text-white dark:bg-teal-600">{invitations.length}</span>}
+              </button>
             </div>
           </div>
 
           <div className="space-y-12">
             <section className="space-y-6 animate-fade-in">
-              <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('study_group.filter_status')}>
+              {activeTab !== 'invitations' && <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('study_group.filter_status')}>
                 {(activeTab === 'created' ? createdStatusOptions : joinedStatusOptions).map((option) => {
                   const selected = option.value === 'all'
                     ? (activeTab === 'created' ? createdStatuses.length === 0 : joinedStatuses.length === 0)
@@ -249,10 +308,18 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
                     </button>
                   );
                 })}
-              </div>
+              </div>}
               {loading && <p role="status" className="py-12 text-center text-[#595C61] dark:text-gray-300">Loading Study Groups…</p>}
               {loadError && <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/30 dark:text-red-200">{loadError}<button onClick={() => void loadGroups()} className="ml-3 underline">Retry</button></div>}
-              {!loading && !loadError && <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {activeTab === 'invitations' && invitationError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200">{invitationError}</div>}
+              {!loading && !loadError && activeTab === 'invitations' && (
+                invitations.length > 0
+                  ? <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      {displayedInvitations.map((invitation) => <StudyGroupInvitationCard key={invitation.requestId} invitation={invitation} acting={actingInvitationId === invitation.requestId} onAccept={(item) => void handleInvitationDecision(item, 'accept')} onDecline={(item) => void handleInvitationDecision(item, 'deny')} />)}
+                    </div>
+                  : <div className="rounded-2xl border border-dashed border-[#C8BEB3] bg-[#FFFDF9]/70 px-6 py-14 text-center dark:border-neutral-700 dark:bg-neutral-900/50"><p className="font-manrope text-lg font-bold text-[#253442] dark:text-white">{t('study_group.no_pending_invitations')}</p><p className="mt-2 text-sm text-[#716B65] dark:text-neutral-400">{t('study_group.no_pending_invitations_description')}</p></div>
+              )}
+              {!loading && !loadError && activeTab !== 'invitations' && <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {displayedItems.map((group) => (
                   <div key={group.id} className="transition-transform">
                     <StudyGroupCard

@@ -159,6 +159,27 @@ As a user or system consumer, I need Study Group outcomes and labels to mean wha
 - **FR-027**: No database schema, migration, or notification persistence change is included in this feature without separate approval.
 - **FR-028**: Regression coverage MUST exercise relationship type boundaries, role authorization, strict dates, past/elapsed slots, pagination beyond fifty, join failure recovery, duplicate submission, and documented response shapes through behavior rather than source-text matching alone.
 - **FR-029**: The normal-load acceptance check inherited from feature 026 MUST be executed in an approved isolated dataset before performance completion is claimed.
+- **FR-030**: Your Study Groups MUST preserve the participation relationship type at the client boundary. Pending invitations MUST be rendered in a dedicated Invitations tab with Accept and Deny only; they MUST NOT be rendered as Pending request cards or expose Cancel Request.
+- **FR-031**: Joined MUST include normal request relationships and Approved invitation relationships only. Pending, Denied, expired, or otherwise non-actionable invitations MUST be omitted from Joined, while the Invitations tab MUST expose only Pending invitations whose group can still be acted on.
+- **FR-032**: Study Group invitation lookup MUST authorize the recipient's persisted role before creating a relationship: only `user` accounts are eligible, while `librarian` and `admin` accounts are rejected without sending email. Study Together MUST hide Join Group from staff accounts while retaining backend role enforcement against direct requests.
+- **FR-033**: Relationship type MUST control Study Together actions: Pending requests expose Cancel Request, while Pending invitations expose Accept Invitation and interpret that action as recipient-authorized invitation acceptance. Card and popup text MUST remain bounded for ordinary and unbroken input, popup actions MUST not shift with title length, and the Invitations dashboard projection MUST be paginated without changing invitation state.
+
+### Critical Service Unit-Test Matrix
+
+The Study Group service regression project MUST keep exactly one primary unit test for each of these critical business boundaries:
+
+1. Reservation and Study Group creation occur in one transaction, in that order, and the generated reservation identifier is linked to the group.
+2. An elapsed or unavailable slot omitted by the authoritative availability lookup creates neither a reservation nor a group.
+3. A denied join request may be replaced by exactly one new Pending request after the 30-minute cooldown.
+4. An existing Pending or Approved relationship prevents duplicate join-request insertion.
+5. Approving a Pending join request uses the `request` type boundary, increments member count once, and produces requester/creator notifications.
+6. Join-request approve and cancel operations cannot mutate a Pending invitation.
+7. Librarian and administrator accounts cannot be invited and receive no invitation email.
+8. SMTP failure during invitation creation compensates by deleting the new Pending invitation.
+9. Only the intended recipient can accept a Pending invitation; successful acceptance uses the `invite` type boundary and increments member count once.
+10. Dissolution snapshots recipients and deletes within the transaction, then dispatches notifications after the committed result.
+
+These tests live in `server/tests/services/study-group.services.spec.mjs` and are registered as the `test_study_group` Vitest project with tags `@SG_1` through `@SG_10`.
 
 ### Key Entities
 

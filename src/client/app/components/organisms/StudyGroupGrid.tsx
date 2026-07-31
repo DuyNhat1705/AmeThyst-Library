@@ -10,9 +10,10 @@ interface StudyGroupGridProps {
   onCardClick: (id: string) => void;
   onCancelRequest?: (id: string) => void;
   pendingRequests?: string[];
+  joiningGroups?: string[];
 }
 
-export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, onCancelRequest, pendingRequests = [] }: StudyGroupGridProps) {
+export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, onCancelRequest, pendingRequests = [], joiningGroups = [] }: StudyGroupGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -49,7 +50,8 @@ export default function StudyGroupGrid({ groups, onJoinGroup, onCardClick, onCan
           <StudyGroupCard
             key={group.id}
             {...group}
-            isPending={pendingRequests.includes(group.id) || group.userApplicantStatus === 'pending'}
+            isPending={pendingRequests.includes(group.id) || (group.userApplicantStatus === 'pending' && group.participationType !== 'invite')}
+            isJoining={joiningGroups.includes(group.id)}
             onJoin={group.canJoin === false ? undefined : onJoinGroup}
             onCancelRequest={onCancelRequest}
             onCardClick={onCardClick}

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useStoredUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
 import { apiFetch } from '../../utils/apiClient';
 import { localizedDesc, localizedRoomName } from '../../utils/room';
 import { createStudyGroup } from '../../utils/studyGroup';
+import styles from './RoomDetailPanel.module.css';
 
 interface RoomDetails {
   roomId: number;
@@ -59,8 +60,47 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   const [groupDescription, setGroupDescription] = useState('');
   const [groupSubject, setGroupSubject] = useState('');
   const [groupRequirements, setGroupRequirements] = useState(['']);
+  const contentScrollRef = useRef<HTMLDivElement>(null);
+  const [contentScrollbar, setContentScrollbar] = useState({ visible: false, thumbHeight: 0, thumbTop: 0 });
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+  const updateContentScrollbar = useCallback(() => {
+    const element = contentScrollRef.current;
+    if (!element) return;
+    const viewportHeight = element.clientHeight;
+    const contentHeight = element.scrollHeight;
+    if (contentHeight <= viewportHeight + 1) {
+      setContentScrollbar({ visible: false, thumbHeight: 0, thumbTop: 0 });
+      return;
+    }
+    const trackHeight = Math.max(0, viewportHeight - 16);
+    const thumbHeight = Math.max(42, (viewportHeight / contentHeight) * trackHeight);
+    const scrollRange = contentHeight - viewportHeight;
+    const thumbRange = Math.max(0, trackHeight - thumbHeight);
+    setContentScrollbar({
+      visible: true,
+      thumbHeight,
+      thumbTop: scrollRange > 0 ? (element.scrollTop / scrollRange) * thumbRange : 0,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const frame = requestAnimationFrame(updateContentScrollbar);
+    const element = contentScrollRef.current;
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateContentScrollbar);
+    if (element) {
+      observer?.observe(element);
+      if (element.firstElementChild) observer?.observe(element.firstElementChild);
+    }
+    window.addEventListener('resize', updateContentScrollbar);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener('resize', updateContentScrollbar);
+    };
+  }, [availability, confirmed, error, isOpen, loading, mode, roomDetails, updateContentScrollbar]);
 
   // Lock body scroll when panel is open
   useEffect(() => {
@@ -200,7 +240,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
 
       {/* Slide-out drawer panel */}
         <div
-      className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col overflow-y-auto scrollbar-thin [scrollbar-color:#C5C6CD_transparent] dark:[scrollbar-color:theme(colors.neutral.700)_transparent] ${
+      className={`fixed top-[84px] right-0 h-[calc(100vh-84px)] w-full sm:w-[450px] bg-[#FFF8EB] dark:bg-neutral-900 border-l border-[#C5C6CD] dark:border-neutral-800 shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col overflow-hidden ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
 >
@@ -221,7 +261,8 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        <div ref={contentScrollRef} onScroll={updateContentScrollbar} className={`${styles.roomDetailScroller} min-h-0 flex-1 overflow-y-auto p-5 pr-7 space-y-6`}>
           {loading && (
             <div className="flex flex-col items-center justify-center py-10 space-y-2">
               <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
@@ -534,6 +575,12 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
               ) : null}
             </div>
           )}
+        </div>
+        {contentScrollbar.visible && (
+          <span className={styles.roomDetailScrollRail} aria-hidden="true">
+            <span className={styles.roomDetailScrollThumb} style={{ height: `${contentScrollbar.thumbHeight}px`, transform: `translateY(${contentScrollbar.thumbTop}px)` }} />
+          </span>
+        )}
         </div>
       </div>
     </>

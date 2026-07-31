@@ -79,7 +79,7 @@
 
 **Goal**: Replace created-group mock data with persisted, correctly ordered groups and allow valid Upcoming/Full metadata edits.
 
-**Independent Test**: Seed all lifecycle statuses, verify In Progress → Full → Upcoming → Completed → Cancelled → Expired ordering, edit an Upcoming/Full group, reload and confirm persistence, and verify historical groups are read-only and only Completed/Cancelled/Expired cards are dimmed.
+**Independent Test**: Seed all lifecycle statuses, verify Cancelled groups are omitted and the remaining order is In Progress → Full → Upcoming → Completed → Expired, edit an Upcoming/Full group, reload and confirm persistence, and verify historical groups are read-only and only Completed/Expired cards are dimmed.
 
 ### Tests for User Story 2
 
@@ -368,4 +368,7 @@ Coordinate edits to `study-group.models.mjs`, `study-group.services.mjs`, `Study
 - [X] T103 Add shareable URL-backed detail modals for `/study-together/{groupId}`, `/dashboard/user/yourstudygroups/created/{groupId}`, and `/dashboard/user/yourstudygroups/joined/{groupId}` with client-side History navigation, Back/Forward synchronization, direct-load detail resolution and relationship checks, localized loading/unavailable states, and preservation of each underlying list/filter/tab/pagination/scroll experience
 - [X] T104 Merge invitation and lifecycle bell items into one deterministic newest-first timeline, replace the notification tray's native scrollbar with a thin rounded light/dark overlay that has no arrow buttons, and distinguish dissolution/cancellation using a red warning icon
 - [X] T105 Add the approved balanced Study Group communication matrix: email-plus-bell for request submission/decision and member entry, bell-only for request cancellation/invitation decline/metadata update, post-commit member counts, stable non-duplicating event snapshots, safe invitation review links, permission-aware Created/Joined/general CTA routing with stale fallback, EN/VI content, and backend/client regression coverage without changing SQL schema
+- [X] T106 Separate Pending invitations from join-request cards in Your Study Groups: add an Invitations tab with invitation-specific Accept/Deny cards and no status filter, preserve relationship type through the client view model, expose Cancel Request only for `type=request`, include only Approved invitations in Joined, and omit resolved or no-longer-actionable invitations without changing SQL schema
+- [X] T107 Reject librarian/admin invitation recipients using the persisted user role before relationship creation or email delivery, localize the validation response, and hide Study Together join actions and join-modal entry points from staff viewers while retaining backend authorization
+- [X] T108 Treat Join Group on a Study Together card with a Pending invitation as explicit invitation acceptance, keep Cancel Request exclusive to join requests, harden card/popup text overflow, anchor popup actions beside tags independently of title length, and paginate Invitations at six cards/two desktop rows using the shared dashboard controls
 - Commit after each task or coherent dependency group; stop at each checkpoint for independent verification.
