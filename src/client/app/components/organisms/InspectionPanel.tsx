@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
 import { apiFetch } from '../../utils/apiClient';
 import BorrowInfoPanel from '../molecules/BorrowInfoPanel';
@@ -35,59 +35,54 @@ interface InspectionPanelProps {
   book: Book;
   borrowing: Borrowing;
   branchId: string;
+  configurationVersion: string;
   onComplete: () => void;
   onCancel: () => void;
+  onConfigurationChanged: () => void;
 }
 
-export default function InspectionPanel({ borrowId, borrower, book, borrowing, branchId, onComplete, onCancel }: InspectionPanelProps) {
+export default function InspectionPanel({ borrowId, borrower, book, borrowing, branchId, configurationVersion, onComplete, onCancel, onConfigurationChanged }: InspectionPanelProps) {
   const { t } = useI18n();
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [confirming, setConfirming] = useState(false);
+  const [estimatedPenalty, setEstimatedPenalty] = useState(0);
+  const [previewing, setPreviewing] = useState(false);
   const [error, setError] = useState('');
+  const previewRequestId = useRef(0);
 
   const hasDamage = selectedConditions.some(c => c !== 'perfect_condition' && c !== 'lost');
   const isPerfect = selectedConditions.includes('perfect_condition');
   const isLost = selectedConditions.includes('lost');
 
-  const damageCoefficients: Record<string, number> = {
-    slight_cover_scratches: 0.05,
-    folded_pages: 0.10,
-    pencil_marks: 0.15,
-    ink_marks: 0.40,
-    torn_pages: 0.50,
-    water_damage: 0.70,
-    damaged_binding: 0.30,
-    missing_mats: 0.30,
-    missing_pages: 1.00,
-  };
+  const handleConditionsChange = async (nextConditions: string[]) => {
+    setSelectedConditions(nextConditions);
+    setPreviewing(true);
+    setError('');
+    const requestId = ++previewRequestId.current;
+    const result = await apiFetch<{ amount: number; issue: string | null }>('/dashboard/librarian/return-penalty-preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        borrow_id: borrowId,
+        conditions: nextConditions,
+        is_lost: nextConditions.includes('lost'),
+        expected_configuration_version: configurationVersion,
+      }),
+    });
 
-  const overdueDays = borrowing.due_date
-    ? Math.max(0, Math.ceil((Date.now() - new Date(borrowing.due_date).getTime()) / (1000 * 60 * 60 * 24)))
-    : 0;
-  const isOverdue = overdueDays > 0;
-
-  let estimatedPenalty = 0;
-
-  if (isLost) {
-    estimatedPenalty = book.price * 2;
-  } else if (selectedConditions.length > 0 && !isPerfect) {
-    const damageConditions = selectedConditions.filter(c => c in damageCoefficients);
-    const coeffs = damageConditions.map(c => damageCoefficients[c]).filter(c => c > 0);
-    const m_max = coeffs.length > 0 ? Math.max(...coeffs) : 0;
-    const N_errors = damageConditions.length;
-    const damageCost = N_errors > 0 ? Math.max(0, m_max * book.price + 1 + (N_errors - 1) * 0.5) : 0;
-
-    if (isOverdue) {
-      const overdueCost = 0.05 * book.price + Math.max(0, overdueDays - 3) * 0.02 * book.price;
-      estimatedPenalty = damageCost + overdueCost;
-    } else {
-      estimatedPenalty = damageCost;
+    if (requestId !== previewRequestId.current) return;
+    setPreviewing(false);
+    if (result.success && result.data) {
+      setEstimatedPenalty(result.data.amount);
+      return;
     }
-  } else if (isOverdue && !isLost) {
-    const overdueCost = 0.05 * book.price + Math.max(0, overdueDays - 3) * 0.02 * book.price;
-    estimatedPenalty = overdueCost;
-  }
+    if (result.error?.code === 'CONFIGURATION_CHANGED') {
+      onConfigurationChanged();
+      return;
+    }
+    setError(result.message || t('dashboard.inspection_return_error'));
+  };
 
   const handleConfirmReturn = async () => {
     setConfirming(true);
@@ -102,11 +97,14 @@ export default function InspectionPanel({ borrowId, borrower, book, borrowing, b
           conditions: selectedConditions,
           description: hasDamage ? description : null,
           is_lost: isLost,
+          expected_configuration_version: configurationVersion,
         }),
       });
 
       if (result.success) {
         onComplete();
+      } else if (result.error?.code === 'CONFIGURATION_CHANGED') {
+        onConfigurationChanged();
       } else {
         setError(result.message || t('dashboard.inspection_return_error'));
       }
@@ -123,7 +121,7 @@ export default function InspectionPanel({ borrowId, borrower, book, borrowing, b
 
       <div className="p-6 rounded-xl border border-[#E8E2D5] dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm">
         <p className="text-lg font-semibold dark:text-neutral-100 mb-4">{t('dashboard.inspection_condition_title')}</p>
-        <ConditionSelector selected={selectedConditions} onChange={setSelectedConditions} />
+        <ConditionSelector selected={selectedConditions} onChange={(next) => void handleConditionsChange(next)} />
 
         {hasDamage && (
           <div className="mt-4">
@@ -140,7 +138,7 @@ export default function InspectionPanel({ borrowId, borrower, book, borrowing, b
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-lg font-semibold dark:text-neutral-100">
+        <div className="text-lg font-semibold dark:text-neutral-100" aria-busy={previewing}>
           {estimatedPenalty > 0
             ? t('dashboard.inspection_penalty_preview', { amount: estimatedPenalty.toFixed(2) })
             : t('dashboard.inspection_no_penalty')}

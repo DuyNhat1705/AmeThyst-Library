@@ -428,6 +428,7 @@
     "inspection_confirming": "Confirming...",
     "inspection_return_success": "Return confirmed successfully",
     "inspection_return_error": "Failed to confirm return",
+    "inspection_configuration_changed": "System settings changed during this inspection. The previous Return PIN was cancelled; ask the patron to generate a new PIN and enter it here.",
     "inspection_no_penalty": "No penalty",
     "loan_fees_librarian_title": "Loan & Fees",
     "loan_fees_librarian_search": "Search by username...",
@@ -715,7 +716,40 @@
                      "sidebar_statistics":  "Statistics",
                      "sidebar_system_configuration":  "System Configuration",
                      "placeholder_title":  "Coming Soon",
-                     "placeholder_message":  "This section is under construction and will be available soon."
+                     "placeholder_message":  "This section is under construction and will be available soon.",
+                     "system_configuration": {
+                       "eyebrow": "Administration policy",
+                       "title": "System Configuration",
+                       "description": "Adjust borrowing and return-penalty rules. Saved changes apply to the next eligible operation without restarting the server.",
+                       "form_label": "System configuration policy form",
+                       "loading": "Loading the active policy...",
+                       "version": "Version {version}",
+                       "sections": {
+                         "borrowing": { "title": "Borrowing policy", "description": "Control how many active books one patron may hold at the same time." },
+                         "fees": { "title": "Penalty fees", "description": "Set the fixed administrative and additional-condition amounts used by damage calculations." },
+                         "damage": { "title": "Damage coefficients", "description": "Set the book-price multiplier for each return condition. Perfect condition is fixed at zero." }
+                       },
+                       "fields": {
+                         "maxBorrowLimit": { "label": "Simultaneous borrowing limit", "description": "Positive whole-number policy for active loans per patron." },
+                         "feeAdmin": { "label": "Administrative fee", "description": "Base fixed amount added to each chargeable damage condition." },
+                         "feeAddon": { "label": "Additional-condition fee", "description": "Fixed amount added for each applicable condition after the first." },
+                         "perfectCondition": { "label": "Perfect condition", "description": "Always zero and read-only because no damage charge applies." },
+                         "slightCoverScratches": { "label": "Slight cover scratches", "description": "Multiplier for minor scratches on the book cover." },
+                         "foldedPages": { "label": "Folded pages", "description": "Multiplier when returned pages are folded." },
+                         "pencilMarks": { "label": "Pencil marks", "description": "Multiplier for erasable pencil markings." },
+                         "inkMarks": { "label": "Ink marks", "description": "Multiplier for permanent ink markings." },
+                         "tornPages": { "label": "Torn pages", "description": "Multiplier for pages with tears." },
+                         "waterDamage": { "label": "Water damage", "description": "Multiplier for moisture or liquid damage." },
+                         "damagedBinding": { "label": "Damaged binding", "description": "Multiplier for a loose or damaged binding." },
+                         "missingMats": { "label": "Missing materials", "description": "Multiplier for missing included materials or supplements." },
+                         "missingPages": { "label": "Missing pages", "description": "Multiplier when one or more pages are missing." },
+                         "lost": { "label": "Lost book", "description": "General replacement multiplier when no item-specific lost amount is supplied." }
+                       },
+                       "actions": { "save": "Save Changes", "discard": "Discard changes", "retry": "Try again", "reload": "Load latest" },
+                       "status": { "modified": "Unsaved changes", "up_to_date": "Policy up to date" },
+                       "feedback": { "saving": "Saving the complete policy...", "saved": "System policy saved successfully.", "discarded": "Unsaved changes discarded.", "fix_errors": "Correct the highlighted values before saving.", "unsaved": "Review and save the complete policy when ready.", "up_to_date": "No unsaved changes." },
+                       "errors": { "required": "A value is required.", "non_negative": "Enter a finite number greater than or equal to zero.", "positive_integer": "Enter a positive whole number.", "load": "The active system configuration could not be loaded.", "save": "The policy could not be saved. Your current input is still available.", "conflict": "Another administrator saved a newer policy. Load the latest values and review your changes." }
+                     }
                  },
     "verification":  {
                          "modal_title":  "Confirm Book Loan",

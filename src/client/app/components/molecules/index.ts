@@ -32,6 +32,7 @@ export { default as NotificationDropdownPanel } from './NotificationDropdownPane
 export { default as AnnouncementNotificationItem } from './AnnouncementNotificationItem';
 export { default as AnnouncementManagementList } from './AnnouncementManagementList';
 export { default as AnnouncementForm } from './AnnouncementForm';
+export { default as ConfigurationField } from './ConfigurationField';
 
 export { default as KPIStatCard } from './KPIStatCard';
 export { default as FilterDropdown } from './FilterDropdown';

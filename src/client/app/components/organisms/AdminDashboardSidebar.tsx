@@ -36,13 +36,13 @@ export default function AdminDashboardSidebar() {
   const { t } = useI18n();
 
   return (
-    <aside className="w-[260px] min-h-screen bg-white dark:bg-neutral-900 border-r border-[#C2C9C4] dark:border-neutral-700 shadow-sm flex flex-col shrink-0">
-      <div className="py-12 px-8">
-        <p className="text-[#1A2E44] dark:text-neutral-100 font-hankenGrotesk text-2xl font-bold text-center tracking-[0.1667em]">
+    <aside className="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white shadow-sm dark:border-neutral-700 dark:bg-neutral-900 lg:min-h-screen lg:w-[260px] lg:border-b-0 lg:border-r">
+      <div className="hidden px-8 py-12 lg:block">
+        <p className="text-center font-hankenGrotesk text-2xl font-bold tracking-[0.1667em] text-slate-800 dark:text-neutral-100">
           {t('admin.dashboard_title')}
         </p>
       </div>
-      <nav className="flex flex-col gap-1 w-full">
+      <nav className="flex w-full gap-1 overflow-x-auto p-2 lg:flex-col lg:overflow-visible lg:p-0">
         {sidebarItems.map((item) => {
           const isActive = item.href === '/dashboard/admin'
             ? pathname === item.href
@@ -51,16 +51,16 @@ export default function AdminDashboardSidebar() {
             <Link
               key={item.key}
               href={item.href}
-              className={`flex py-3.5 px-8 items-center gap-3 w-full transition-colors ${
+              className={`flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 transition-colors lg:w-full lg:rounded-none lg:px-8 lg:py-3.5 ${
                 isActive
-                  ? 'bg-amber-50 dark:bg-neutral-800'
-                  : 'hover:bg-amber-50/50 dark:hover:bg-neutral-800/50'
+                  ? 'bg-amber-100 dark:bg-neutral-800'
+                  : 'hover:bg-amber-50 dark:hover:bg-neutral-800/50'
               }`}
             >
               <svg width="20" height="20" viewBox={item.viewBox} fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                <path d={item.icon} fill="#424945" className="dark:fill-neutral-300" />
+                <path d={item.icon} className="fill-slate-600 dark:fill-neutral-300" />
               </svg>
-              <span className="text-[#424945] dark:text-neutral-300 font-hankenGrotesk text-sm font-semibold leading-[22px]">
+              <span className="whitespace-nowrap font-hankenGrotesk text-sm font-semibold leading-[22px] text-slate-700 dark:text-neutral-300">
                 {t(`admin.${item.key}`)}
               </span>
             </Link>

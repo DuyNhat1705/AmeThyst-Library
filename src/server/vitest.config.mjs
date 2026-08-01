@@ -74,6 +74,15 @@ export default defineConfig({
         },
       },
 
+      {
+        test: {
+          name: 'test_system_configuration',
+          globals: true,
+          strictTags: false,
+          include: ['tests/integration/system-configuration.api.spec.mjs'],
+        },
+      },
+
       // To add another auth sub-feature (e.g. Login), copy the block above,
       // keep the "test_auth_" prefix so it groups under --project "test_auth*",
       // then update name + include + tags accordingly:

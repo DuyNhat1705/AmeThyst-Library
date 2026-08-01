@@ -1,4 +1,4 @@
-import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService } from '../services/dashboard.librarian.services.mjs';
+import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, previewReturnPenalty as previewReturnPenaltyService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService } from '../services/dashboard.librarian.services.mjs';
 
 const getPickups = async (req, res) => {
   try {
@@ -88,21 +88,39 @@ const verifyReturnPin = async (req, res) => {
 
 const confirmReturn = async (req, res) => {
   try {
-    const { borrow_id, branch_id, conditions, description, is_lost } = req.body;
+    const { borrow_id, branch_id, conditions, description, is_lost, expected_configuration_version } = req.body;
 
     if (!borrow_id || !branch_id) {
       return res.status(400).json({ success: false, data: null, message: 'borrow_id and branch_id are required' });
     }
 
-    const result = await confirmReturnService(borrow_id, branch_id, conditions || [], description || null, is_lost || false);
+    const result = await confirmReturnService(borrow_id, branch_id, conditions || [], description || null, is_lost || false, expected_configuration_version);
 
     if (result.error) {
-      return res.status(result.statusCode).json({ success: false, data: null, message: result.error.message });
+      return res.status(result.statusCode).json({ success: false, data: null, error: result.error, message: result.error.message });
     }
 
     res.json({ success: true, data: result.data, message: 'Return confirmed successfully' });
   } catch (error) {
     res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const previewReturnPenalty = async (req, res) => {
+  try {
+    const { borrow_id, conditions, is_lost, expected_configuration_version } = req.body;
+    if (!borrow_id) {
+      return res.status(400).json({ success: false, data: null, message: 'borrow_id is required' });
+    }
+
+    const result = await previewReturnPenaltyService(borrow_id, conditions || [], is_lost || false, expected_configuration_version);
+    if (result.error) {
+      return res.status(result.statusCode).json({ success: false, data: null, error: result.error, message: result.error.message });
+    }
+
+    return res.json({ success: true, data: result, message: 'Return penalty preview calculated successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
   }
 };
 
@@ -155,5 +173,5 @@ const confirmPayment = async (req, res) => {
   }
 };
 
-export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment };
+export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, previewReturnPenalty, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment };
 

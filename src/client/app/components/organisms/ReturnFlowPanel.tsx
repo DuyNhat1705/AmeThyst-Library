@@ -35,6 +35,7 @@ interface VerifyReturnData {
   borrower: Borrower;
   book: Book;
   borrowing: Borrowing;
+  configurationVersion: string;
 }
 
 type Step = 'pin' | 'inspection' | 'done';
@@ -49,6 +50,7 @@ export default function ReturnFlowPanel() {
   const [error, setError] = useState<string | null>(null);
   const [returnData, setReturnData] = useState<VerifyReturnData | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -109,6 +111,7 @@ export default function ReturnFlowPanel() {
 
     setLoading(true);
     setError(null);
+    setNotice(null);
 
     try {
       const result = await apiFetch<VerifyReturnData>('/dashboard/librarian/verify-return-pin', {
@@ -134,6 +137,15 @@ export default function ReturnFlowPanel() {
   const handleInspectionComplete = () => {
     setResultMessage('Book return confirmed successfully');
     setStep('done');
+  };
+
+  const handleConfigurationChanged = () => {
+    setDigits(Array(SLOT_COUNT).fill(''));
+    setStep('pin');
+    setError(null);
+    setReturnData(null);
+    setResultMessage(null);
+    setNotice(t('dashboard.inspection_configuration_changed'));
   };
 
   const handleReset = () => {
@@ -187,8 +199,10 @@ export default function ReturnFlowPanel() {
             book={returnData.book}
             borrowing={returnData.borrowing}
             branchId={getBranchId() || ''}
+            configurationVersion={returnData.configurationVersion}
             onComplete={handleInspectionComplete}
             onCancel={handleReset}
+            onConfigurationChanged={handleConfigurationChanged}
           />
         </div>
       </div>
@@ -278,6 +292,14 @@ export default function ReturnFlowPanel() {
               <div className="pb-6 w-full">
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
                   <p className="text-red-600 dark:text-red-400 text-sm font-medium text-center">{error}</p>
+                </div>
+              </div>
+            )}
+
+            {notice && (
+              <div className="pb-6 w-full" role="alert">
+                <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/20">
+                  <p className="text-center text-sm font-medium text-amber-900 dark:text-amber-200">{notice}</p>
                 </div>
               </div>
             )}

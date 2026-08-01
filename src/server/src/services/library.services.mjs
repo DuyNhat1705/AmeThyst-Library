@@ -2,8 +2,7 @@ import pool from '../config/postgres.mjs';
 import { cleanText, buildFilterSQL } from './search.services.mjs';
 import { invalidateUserRecommendationCache, getUserRecommendations } from './recommendation.services.mjs';
 import { generateQueryEmbedding } from './embedding.services.mjs';
-
-export const MAX_BORROW_LIMIT = 5;
+import { systemConfigurationService } from './system-configuration.services.mjs';
 
 /**
  * Lấy chi tiết một cuốn sách bằng ID
@@ -267,6 +266,7 @@ export const getRelatedBooks = async (id) => {
   }));
 };
 export const createReservation = async (userId, bookId, branchId) => {
+  const { MAX_BORROW_LIMIT: borrowLimit } = systemConfigurationService.getSnapshot();
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -297,10 +297,10 @@ export const createReservation = async (userId, bookId, branchId) => {
     const userBorrowResult = await client.query(userBorrowQuery, [userId]);
     const currentBorrowNum = userBorrowResult.rows[0].borrow_num || 0;
 
-    if (currentBorrowNum >= MAX_BORROW_LIMIT) {
+    if (currentBorrowNum >= borrowLimit) {
       await client.query('ROLLBACK');
       return { 
-        error: { code: 'BORROW_LIMIT_EXCEEDED', message: `You have reached the maximum borrow limit of ${MAX_BORROW_LIMIT} books` },
+        error: { code: 'BORROW_LIMIT_EXCEEDED', message: `You have reached the maximum borrow limit of ${borrowLimit} books` },
         statusCode: 400
       };
     }

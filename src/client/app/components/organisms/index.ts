@@ -29,3 +29,4 @@ export { default as BookManagementTab } from './BookManagementTab';
 export { default as BookPickupTab } from './BookPickupTab';
 export { default as BookReturnTab } from './BookReturnTab';
 export { default as InspectionTab } from './InspectionTab';
+export { default as SystemConfigurationForm } from './SystemConfigurationForm';
