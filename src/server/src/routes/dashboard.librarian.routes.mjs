@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment } from '../controllers/dashboard.librarian.controllers.mjs';
+import { getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment, verifyRoomPin, confirmRoomCheckin } from '../controllers/dashboard.librarian.controllers.mjs';
 import {
   createAnnouncementController,
   getAnnouncementsForManagementController,
@@ -31,5 +31,7 @@ router.get('/active-borrowings', verifyToken, authorizeRole('librarian'), getAct
 router.get('/loan-fees/outstanding', verifyToken, authorizeRole('librarian'), getOutstandingDebts);
 router.get('/loan-fees/history', verifyToken, authorizeRole('librarian'), getPaidFees);
 router.post('/loan-fees/confirm-payment', verifyToken, authorizeRole('librarian'), confirmPayment);
+router.post('/verify-room-pin', verifyToken, authorizeRole('librarian'), verifyRoomPin);
+router.post('/confirm-room-checkin', verifyToken, authorizeRole('librarian'), confirmRoomCheckin);
 
 export default router;

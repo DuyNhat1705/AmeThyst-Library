@@ -148,3 +148,112 @@ export const cancelReservationController = async (req, res) => {
     });
   }
 };
+
+/**
+ * Controller to generate a check-in PIN for a room reservation.
+ */
+export const generateRoomPinController = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required.' });
+    }
+
+    const { reserveId } = req.params;
+    if (!reserveId) {
+      return res.status(400).json({ success: false, error: 'Missing reservation ID.' });
+    }
+
+    const result = await roomService.generateRoomPin(userId, reserveId);
+    if (result.error) {
+      return res.status(result.statusCode).json({ success: false, error: result.error });
+    }
+
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
+      success: false,
+      error: error.message || 'An error occurred while generating PIN.'
+    });
+  }
+};
+
+/**
+ * Controller to fetch a user's room reservation history.
+ */
+export const getRoomHistoryController = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required.' });
+    }
+
+    const { from, to } = req.query;
+    const history = await roomService.getRoomHistory(userId, from, to);
+    return res.status(200).json({
+      success: true,
+      data: history
+    });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
+      success: false,
+      error: error.message || 'An error occurred while fetching room history.'
+    });
+  }
+};
+
+/**
+ * Controller to clear a pending room check-in PIN (user dismisses flow).
+ */
+export const cleanupRoomPinController = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required.' });
+    }
+
+    const { reserveId } = req.params;
+    if (!reserveId) {
+      return res.status(400).json({ success: false, error: 'Missing reservation ID.' });
+    }
+
+    const result = await roomService.cleanupRoomPin(userId, reserveId);
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
+      success: false,
+      error: error.message || 'An error occurred while clearing PIN.'
+    });
+  }
+};
+
+/**
+ * Controller to confirm checkout for a used room reservation.
+ */
+export const confirmCheckoutController = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required.' });
+    }
+
+    const { reserveId } = req.params;
+    if (!reserveId) {
+      return res.status(400).json({ success: false, error: 'Missing reservation ID.' });
+    }
+
+    const result = await roomService.confirmCheckout(userId, reserveId);
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
+      success: false,
+      error: error.code
+        ? { code: error.code, message: error.message || 'An error occurred while confirming checkout.' }
+        : error.message || 'An error occurred while confirming checkout.'
+    });
+  }
+};

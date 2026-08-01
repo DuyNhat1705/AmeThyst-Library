@@ -414,7 +414,15 @@ export const cleanupExpiredPins = async () => {
       WHERE status IN ('pending', 'pending_return') AND expired_at IS NOT NULL AND expired_at <= NOW()
     `;
     const result = await pool.query(query);
-    return result.rowCount;
+
+    const roomQuery = `
+      UPDATE public.reserve_room
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at <= NOW()
+    `;
+    const roomResult = await pool.query(roomQuery);
+
+    return result.rowCount + roomResult.rowCount;
   } catch (error) {
     console.error('Error cleaning up expired PINs:', error);
     return 0;
@@ -437,7 +445,15 @@ export const clearAllPins = async () => {
       WHERE status IN ('pending', 'pending_return')
     `;
     const result = await pool.query(query);
-    return result.rowCount;
+
+    const roomQuery = `
+      UPDATE public.reserve_room
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending'
+    `;
+    const roomResult = await pool.query(roomQuery);
+
+    return result.rowCount + roomResult.rowCount;
   } catch (error) {
     console.error('Error clearing all pending PINs:', error);
     return 0;

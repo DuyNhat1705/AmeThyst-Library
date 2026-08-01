@@ -1,4 +1,5 @@
 import pool from '../config/postgres.mjs';
+import * as roomModel from '../models/room.models.mjs';
 
 
 /**
@@ -37,7 +38,89 @@ export const verifyReturnPin = async (pin) => {
   };
 };
 
+/**
+ * Verifies a pending room check-in PIN and returns reservation/user/room details.
+ * @param {string} pin
+ * @param {number} librarianBranchId
+ * @returns {Promise<Object>}
+ */
+export const verifyRoomPin = async (pin, librarianBranchId) => {
+  const record = await roomModel.findPendingRoomReservationByPin(pin);
+  if (!record) {
+    return { error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' }, statusCode: 404 };
+  }
+
+  if (record.branchId !== librarianBranchId) {
+    return { error: { code: 'WRONG_BRANCH', message: 'This room reservation belongs to a different branch.' }, statusCode: 403 };
+  }
+
+  return {
+    reserveId: record.reserveId,
+    reservation: {
+      startDate: record.startDate,
+      startTime: record.startTime,
+      endTime: record.endTime
+    },
+    user: {
+      userId: record.userId,
+      username: record.username,
+      gender: record.gender,
+      phoneNumber: record.phoneNumber,
+      email: record.email,
+      avatar: record.avatar
+    },
+    room: {
+      roomName: record.roomName,
+      description: record.description,
+      capacity: record.capacity,
+      imgUrl: record.imgUrl,
+      branchName: record.branchName,
+      branchAddress: record.branchAddress
+    }
+  };
+};
+
+/**
+ * Confirms a room check-in, transitioning the reservation to 'used' and clearing the PIN.
+ * Guards that the reservation's room belongs to the librarian's branch.
+ * @param {string} reserveId
+ * @param {number} librarianBranchId
+ * @returns {Promise<Object>}
+ */
+export const confirmRoomCheckin = async (reserveId, librarianBranchId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const branch = await roomModel.findReservationBranch(reserveId, client);
+    if (!branch) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Reservation not found' }, statusCode: 404 };
+    }
+    if (branch.branchId !== librarianBranchId) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'WRONG_BRANCH', message: 'This room reservation belongs to a different branch.' }, statusCode: 403 };
+    }
+
+    const confirmed = await roomModel.confirmRoomCheckin(reserveId, client);
+    if (!confirmed) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Reservation not found or already checked in' }, statusCode: 404 };
+    }
+
+    await client.query('COMMIT');
+    return { success: true, reserveId, status: 'used' };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error confirming room check-in:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 export const getOutstandingDebts = async (search) => {
+
   try {
     let query = `
       SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,

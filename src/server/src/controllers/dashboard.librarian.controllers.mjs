@@ -1,4 +1,4 @@
-import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService } from '../services/dashboard.librarian.services.mjs';
+import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService, verifyRoomPin as verifyRoomPinService, confirmRoomCheckin as confirmRoomCheckinService } from '../services/dashboard.librarian.services.mjs';
 
 const getPickups = async (req, res) => {
   try {
@@ -86,6 +86,48 @@ const verifyReturnPin = async (req, res) => {
   }
 };
 
+const verifyRoomPin = async (req, res) => {
+  try {
+    const { pin } = req.body;
+    const branchId = req.user?.branch_id || 1;
+
+    if (!pin || !/^\d{6}$/.test(pin)) {
+      return res.status(400).json({ success: false, data: null, message: 'A valid 6-digit PIN is required.' });
+    }
+
+    const result = await verifyRoomPinService(pin, branchId);
+
+    if (result.error) {
+      return res.status(result.statusCode).json({ success: false, data: null, message: result.error.message });
+    }
+
+    res.json({ success: true, data: result, message: 'Room PIN verified successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const confirmRoomCheckin = async (req, res) => {
+  try {
+    const { reserve_id } = req.body;
+    const branchId = req.user?.branch_id || 1;
+
+    if (!reserve_id) {
+      return res.status(400).json({ success: false, data: null, message: 'reserve_id is required.' });
+    }
+
+    const result = await confirmRoomCheckinService(reserve_id, branchId);
+
+    if (result.error) {
+      return res.status(result.statusCode).json({ success: false, data: null, message: result.error.message });
+    }
+
+    res.json({ success: true, data: result, message: 'Room check-in confirmed successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
 const confirmReturn = async (req, res) => {
   try {
     const { borrow_id, branch_id, conditions, description, is_lost } = req.body;
@@ -155,5 +197,5 @@ const confirmPayment = async (req, res) => {
   }
 };
 
-export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment };
+export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment, verifyRoomPin, confirmRoomCheckin };
 

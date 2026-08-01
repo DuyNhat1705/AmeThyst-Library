@@ -39,6 +39,17 @@ export default defineConfig({
           ],
         },
       },
+      {
+        test: {
+          name: 'test_room_checkin',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/room.services.spec.mjs',
+            'tests/services/dashboard.librarian.services.spec.mjs',
+          ],
+        },
+      },
 
       // To add another auth sub-feature (e.g. Login), copy the block above,
       // keep the "test_auth_" prefix so it groups under --project "test_auth*",

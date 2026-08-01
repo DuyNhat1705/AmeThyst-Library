@@ -37,6 +37,25 @@ export default function RoomReservationsPage() {
     }
   };
 
+  const fetchHistory = async (from?: string, to?: string) => {
+    try {
+      const params = new URLSearchParams();
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+      const query = params.toString();
+      const result = await apiFetch<Reservation[]>(`/api/rooms/history${query ? `?${query}` : ''}`);
+      if (result.success && result.data) {
+        setPast(result.data);
+        setFetchError(null);
+      } else {
+        setFetchError(result.message || 'Failed to load history');
+      }
+    } catch (err) {
+      setFetchError('Network error loading history');
+      console.error('Failed to fetch history:', err);
+    }
+  };
+
   useEffect(() => { fetchReservations(); }, []);
 
   const totalPages = Math.max(1, Math.ceil(upcoming.length / itemsPerPage));
@@ -122,7 +141,7 @@ export default function RoomReservationsPage() {
         {past.length === 0 ? (
           <p className="text-neutral-500">{t('room.no_reservations')}</p>
         ) : (
-          <PastBookingsTable bookings={past} />
+          <PastBookingsTable bookings={past} onFilter={fetchHistory} onClear={fetchReservations} />
         )}
       </div>
     </div>
