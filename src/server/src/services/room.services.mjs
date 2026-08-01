@@ -1,6 +1,7 @@
 import pool from '../config/postgres.mjs';
 import * as roomModel from '../models/room.models.mjs';
 import { generateEntityPin } from './dashboard.user.services.mjs';
+import { emitRoomDashboardChanged } from '../config/socket.mjs';
 
 export const MAX_ROOM_RESERVE_LIMIT = 5;
 
@@ -147,6 +148,10 @@ export const createReservation = async (userId, availId, startDate) => {
     }
 
     await client.query('COMMIT');
+
+    const { branchId } = (await roomModel.findReservationBranch(reservation.reserveId)) || {};
+    if (branchId) emitRoomDashboardChanged(branchId, 'created');
+
     return reservation;
   } catch (error) {
     await client.query('ROLLBACK');
@@ -225,6 +230,7 @@ export const cancelReservation = async (reserveId, userId) => {
   try {
     await client.query('BEGIN');
 
+    const { branchId } = (await roomModel.findReservationBranch(reserveId, client)) || {};
     const cancelled = await roomModel.cancelReservation(reserveId, userId, client);
     if (!cancelled) {
       await client.query('ROLLBACK');
@@ -236,6 +242,9 @@ export const cancelReservation = async (reserveId, userId) => {
     await roomModel.decrementReserveNum(userId, client);
 
     await client.query('COMMIT');
+
+    if (branchId) emitRoomDashboardChanged(branchId, 'cancelled');
+
     return true;
   } catch (error) {
     await client.query('ROLLBACK');
@@ -247,12 +256,33 @@ export const cancelReservation = async (reserveId, userId) => {
 
 /**
  * Generates a check-in PIN for a room reservation, reusing the shared PIN core.
+ * Guarded so the PIN can only be generated once the reservation slot window has
+ * started (Vietnam local time).
  * @param {string} userId UUID
  * @param {string} reserveId
  * @returns {Promise<{pin: string, expiresAt: Date}|{error: Object, statusCode: number}>}
  */
 export const generateRoomPin = async (userId, reserveId) => {
-  return generateEntityPin({
+  const slot = await roomModel.findReservationSlotStart(reserveId, userId);
+
+  if (!slot || !['reserved', 'pending'].includes(slot.status)) {
+    return {
+      error: { code: 'RESERVATION_NOT_FOUND', message: 'Reservation not found or invalid status' },
+      statusCode: 404,
+    };
+  }
+
+  if (!slot.slotStarted) {
+    return {
+      error: {
+        code: 'PIN_NOT_ELIGIBLE_YET',
+        message: `Check-in PIN can only be generated once the reservation slot starts (${slot.startDate} ${String(slot.startTime).slice(0, 5)})`,
+      },
+      statusCode: 409,
+    };
+  }
+
+  const result = await generateEntityPin({
     table: 'reserve_room',
     idColumn: 'reserve_id',
     userId,
@@ -264,6 +294,13 @@ export const generateRoomPin = async (userId, reserveId) => {
     notFoundMessage: 'Reservation not found or invalid status',
     expiryMs: ROOM_PIN_EXPIRY_MS,
   });
+
+  if (result.pin) {
+    const branch = await roomModel.findReservationBranch(reserveId);
+    if (branch?.branchId) emitRoomDashboardChanged(branch.branchId, 'pin_generated');
+  }
+
+  return result;
 };
 
 /**
@@ -274,6 +311,10 @@ export const generateRoomPin = async (userId, reserveId) => {
  */
 export const cleanupRoomPin = async (userId, reserveId) => {
   const cleaned = await roomModel.cleanupRoomPin(reserveId, userId);
+  if (cleaned) {
+    const branch = await roomModel.findReservationBranch(reserveId);
+    if (branch?.branchId) emitRoomDashboardChanged(branch.branchId, 'pin_cleaned');
+  }
   return { cleaned };
 };
 
@@ -366,6 +407,10 @@ export const confirmCheckout = async (userId, reserveId) => {
     const { returnId, checkoutTime } = await roomModel.checkoutRoom(reserveId, userId, null, client);
 
     await client.query('COMMIT');
+
+    const { branchId } = (await roomModel.findReservationBranch(reserveId)) || {};
+    if (branchId) emitRoomDashboardChanged(branchId, 'checked_out');
+
     return { alreadyCheckedOut: false, returnId, checkoutTime };
   } catch (error) {
     await client.query('ROLLBACK');

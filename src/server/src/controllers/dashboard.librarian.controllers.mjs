@@ -1,4 +1,65 @@
-import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService, verifyRoomPin as verifyRoomPinService, confirmRoomCheckin as confirmRoomCheckinService } from '../services/dashboard.librarian.services.mjs';
+import { verifyPin as verifyPinService, confirmBorrowing as confirmBorrowingService, cancelBorrowing as cancelBorrowingService, verifyReturnPin as verifyReturnPinService, confirmReturn as confirmReturnService, getOutstandingDebts as getOutstandingDebtsService, getPaidFees as getPaidFeesService, confirmPayment as confirmPaymentService, getPickupsService, getActiveBorrowings as getActiveBorrowingsService, verifyRoomPin as verifyRoomPinService, confirmRoomCheckin as confirmRoomCheckinService, getRoomsOverview as getRoomsOverviewService, getActiveReservations as getActiveReservationsService, getRoomSchedule as getRoomScheduleService, getReservationDetail as getReservationDetailService } from '../services/dashboard.librarian.services.mjs';
+
+const getRoomsOverview = async (req, res) => {
+  try {
+    const branchId = req.user?.branch_id || 1;
+    const data = await getRoomsOverviewService(branchId);
+    res.json({ success: true, data, message: 'Room dashboard overview retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const getActiveReservations = async (req, res) => {
+  try {
+    const branchId = req.user?.branch_id || 1;
+    const { search, status, from, to } = req.query;
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 10));
+    const data = await getActiveReservationsService(branchId, {
+      search: search || undefined,
+      status: status || undefined,
+      from: from || undefined,
+      to: to || undefined,
+      page,
+      limit,
+    });
+    res.json({ success: true, data, message: 'Active room reservations retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const getRoomSchedule = async (req, res) => {
+  try {
+    const branchId = req.user?.branch_id || 1;
+    const { from, to } = req.query;
+    const view = req.query.view === 'day' ? 'day' : 'week';
+    if (!from) {
+      return res.status(400).json({ success: false, data: null, message: 'The `from` date is required.' });
+    }
+    const data = await getRoomScheduleService(branchId, from, to || from, view);
+    res.json({ success: true, data, message: 'Room schedule retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
+
+const getReservationDetail = async (req, res) => {
+  try {
+    const branchId = req.user?.branch_id || 1;
+    const { reserveId } = req.params;
+    const result = await getReservationDetailService(reserveId, branchId);
+
+    if (result.error) {
+      return res.status(result.statusCode).json({ success: false, data: null, message: result.error.message });
+    }
+
+    res.json({ success: true, data: result, message: 'Reservation detail retrieved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, data: null, message: error.message || 'An unexpected error occurred.' });
+  }
+};
 
 const getPickups = async (req, res) => {
   try {
@@ -197,5 +258,5 @@ const confirmPayment = async (req, res) => {
   }
 };
 
-export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment, verifyRoomPin, confirmRoomCheckin };
+export {getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment, verifyRoomPin, confirmRoomCheckin, getRoomsOverview, getActiveReservations, getRoomSchedule, getReservationDetail };
 

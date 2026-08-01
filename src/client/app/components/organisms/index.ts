@@ -30,3 +30,4 @@ export { default as BookPickupTab } from './BookPickupTab';
 export { default as BookReturnTab } from './BookReturnTab';
 export { default as InspectionTab } from './InspectionTab';
 export { default as RoomCheckinTab } from './RoomCheckinTab';
+export { default as RoomManagementDashboard } from './RoomManagementDashboard';

@@ -480,6 +480,7 @@
   },
   "pin": {
     "title": "Pickup PIN",
+    "return_title": "Return PIN",
     "expires_in": "Expires in {minutes}:{seconds}",
     "expired": "PIN Expired",
     "generated": "PIN Generated",
@@ -945,5 +946,51 @@
     ,"view_created_group": "Review group"
     ,"view_joined_group": "View joined group"
     ,"view_your_groups": "View your Study Groups"
+  },
+  "room_dashboard": {
+    "title": "Room Management Dashboard"
+    ,"view_list": "List"
+    ,"view_calendar": "Calendar"
+    ,"kpi_total_bookings": "Total Bookings Today"
+    ,"kpi_occupied": "Currently Occupied"
+    ,"kpi_pending_checkins": "Pending Check-ins"
+    ,"search_placeholder": "Search by user name, ID, or room..."
+    ,"all_statuses": "All Statuses"
+    ,"status_confirmed": "Confirmed"
+    ,"status_pending_checkin": "Pending Check-in"
+    ,"status_in_progress": "In Progress"
+    ,"status_completed": "Completed"
+    ,"table_room": "Room"
+    ,"table_user": "User"
+    ,"table_date": "Date"
+    ,"table_time": "Time Slot"
+    ,"table_duration": "Duration"
+    ,"table_status": "Status"
+    ,"table_actions": "Actions"
+    ,"loading": "Loading..."
+    ,"no_reservations": "No reservations found."
+    ,"no_rooms": "No rooms in this branch."
+    ,"load_failed": "Failed to load data. Please try again."
+    ,"capacity": "Capacity {count}"
+    ,"minutes_short": "min"
+    ,"view_detail": "View detail"
+    ,"calendar_week": "Week"
+    ,"calendar_day": "Day"
+    ,"day_sun": "Sun"
+    ,"day_mon": "Mon"
+    ,"day_tue": "Tue"
+    ,"day_wed": "Wed"
+    ,"day_thu": "Thu"
+    ,"day_fri": "Fri"
+    ,"day_sat": "Sat"
+    ,"detail_title": "Reservation Details"
+    ,"detail_status": "Status"
+    ,"detail_date": "Date"
+    ,"detail_time": "Time Slot"
+    ,"detail_checkin": "Check-in"
+    ,"detail_checkout": "Check-out"
+    ,"detail_room": "Room"
+    ,"detail_user": "User"
+    ,"close": "Close"
   }
 }

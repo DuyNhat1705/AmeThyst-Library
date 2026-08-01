@@ -30,6 +30,7 @@ const buildClientMock = () => ({
 describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    pool.query.mockResolvedValue({ rows: [] });
   });
 
   describe('createReservation', () => {
@@ -118,6 +119,7 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       const clientMock = buildClientMock();
       clientMock.query
         .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [{ branchId: 1 }] }) // findReservationBranch
         .mockResolvedValueOnce({ rowCount: 1 }) // DELETE reserve_room
         .mockResolvedValueOnce({ rowCount: 1 }) // decrementReserveNum
         .mockResolvedValueOnce({ rows: [] }); // COMMIT
@@ -126,9 +128,9 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       const result = await cancelReservation('r1', 'u1');
 
       expect(clientMock.query).toHaveBeenNthCalledWith(1, 'BEGIN');
-      expect(clientMock.query.mock.calls[1][0]).toContain('DELETE FROM reserve_room');
-      expect(clientMock.query.mock.calls[2][0]).toContain('GREATEST(reserve_num - 1, 0)');
-      expect(clientMock.query).toHaveBeenNthCalledWith(4, 'COMMIT');
+      expect(clientMock.query.mock.calls[2][0]).toContain('DELETE FROM reserve_room');
+      expect(clientMock.query.mock.calls[3][0]).toContain('GREATEST(reserve_num - 1, 0)');
+      expect(clientMock.query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(clientMock.release).toHaveBeenCalled();
       expect(result).toBe(true);
     });
@@ -137,6 +139,7 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       const clientMock = buildClientMock();
       clientMock.query
         .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [{ branchId: 1 }] }) // findReservationBranch
         .mockResolvedValueOnce({ rowCount: 0 }) // no row deleted
         .mockResolvedValueOnce({ rows: [] }); // ROLLBACK
       pool.connect.mockResolvedValueOnce(clientMock);
@@ -150,7 +153,7 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
 
   describe('generateRoomPin', () => {
     it('returns RESERVATION_NOT_FOUND when the reservation is not owned or invalid status', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // ownership/status check
+      pool.query.mockResolvedValueOnce({ rows: [] }); // findReservationSlotStart
 
       const result = await generateRoomPin('u1', 'missing');
 
@@ -158,15 +161,36 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       expect(result.statusCode).toBe(404);
     });
 
+    it('returns PIN_NOT_ELIGIBLE_YET when the reservation slot has not started', async () => {
+      pool.query.mockResolvedValueOnce({
+        rows: [{
+          reserveId: 'r1',
+          userId: 'u1',
+          status: 'reserved',
+          startDate: '2026-08-19',
+          startTime: '10:30:00',
+          endTime: '12:30:00',
+          slotStarted: false,
+        }],
+      });
+
+      const result = await generateRoomPin('u1', 'r1');
+
+      expect(result.error.code).toBe('PIN_NOT_ELIGIBLE_YET');
+      expect(result.statusCode).toBe(409);
+      expect(result).not.toHaveProperty('pin');
+    });
+
     it('returns the existing active PIN without generating a new one (idempotent)', async () => {
       pool.query
+        .mockResolvedValueOnce({ rows: [{ reserveId: 'r1', userId: 'u1', status: 'reserved', startDate: '2026-08-01', startTime: '09:00:00', endTime: '11:00:00', slotStarted: true }] }) // findReservationSlotStart
         .mockResolvedValueOnce({ rows: [{ reserve_id: 'r1', user_id: 'u1' }] }) // ownership/status check
         .mockResolvedValueOnce({ rows: [{ pin: '482913', expired_at: '2026-08-01T09:33:00.000Z' }] }); // active PIN
 
       const result = await generateRoomPin('u1', 'r1');
 
       expect(result).toEqual({ pin: '482913', expiresAt: '2026-08-01T09:33:00.000Z' });
-      expect(pool.query.mock.calls[1][0]).toContain('expired_at > NOW()');
+      expect(pool.query.mock.calls[2][0]).toContain('expired_at > NOW()');
     });
 
     it('resets a stale PIN, transitions status to pending, and sets a 3-minute expiry', async () => {
@@ -175,6 +199,7 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       vi.setSystemTime(now);
 
       pool.query
+        .mockResolvedValueOnce({ rows: [{ reserveId: 'r1', userId: 'u1', status: 'reserved', startDate: '2026-08-01', startTime: '09:00:00', endTime: '11:00:00', slotStarted: true }] }) // findReservationSlotStart
         .mockResolvedValueOnce({ rows: [{ reserve_id: 'r1', user_id: 'u1' }] }) // ownership/status check
         .mockResolvedValueOnce({ rows: [] }) // no active PIN
         .mockResolvedValueOnce({ rowCount: 1 }) // reset stale PIN
@@ -182,8 +207,8 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
 
       const result = await generateRoomPin('u1', 'r1');
 
-      expect(pool.query.mock.calls[2][0]).toContain("status = 'reserved'");
-      const updateSql = pool.query.mock.calls[3][0];
+      expect(pool.query.mock.calls[3][0]).toContain("status = 'reserved'");
+      const updateSql = pool.query.mock.calls[4][0];
       expect(updateSql).toContain('reserve_room');
       expect(updateSql).toContain("status = 'pending'");
       expect(result.pin).toMatch(/^\d{6}$/);
@@ -194,6 +219,7 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
 
     it('retries on uniqueness violation and fails after 3 attempts', async () => {
       pool.query
+        .mockResolvedValueOnce({ rows: [{ reserveId: 'r1', userId: 'u1', status: 'reserved', startDate: '2026-08-01', startTime: '09:00:00', endTime: '11:00:00', slotStarted: true }] }) // findReservationSlotStart
         .mockResolvedValueOnce({ rows: [{ reserve_id: 'r1', user_id: 'u1' }] }) // ownership/status check
         .mockResolvedValueOnce({ rows: [] }) // no active PIN
         .mockResolvedValueOnce({ rowCount: 1 }) // reset stale PIN
@@ -329,7 +355,8 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
     it('inserts return_room rows with slot end_time and decrements reserve_num', async () => {
       pool.query
         .mockResolvedValueOnce({ rows: [{ reserve_id: 'r1' }, { reserve_id: 'r2' }] }) // INSERT ... RETURNING
-        .mockResolvedValueOnce({ rowCount: 2 }); // UPDATE users
+        .mockResolvedValueOnce({ rowCount: 2 }) // UPDATE users
+        .mockResolvedValueOnce({ rows: [{ branchId: 1 }] }); // SELECT branch ids
 
       const backfilled = await backfillDefaultedCheckouts();
 
@@ -337,7 +364,8 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
       expect(pool.query.mock.calls[0][0]).toContain("status = 'used'");
       expect(pool.query.mock.calls[0][0]).toContain("interval '15 minutes'");
       expect(pool.query.mock.calls[0][0]).toContain('NOT EXISTS');
-      expect(backfilled).toBe(2);
+      expect(backfilled.count).toBe(2);
+      expect(backfilled.branchIds).toEqual([1]);
     });
 
     it('skips the reserve_num decrement when nothing is backfilled', async () => {
@@ -345,7 +373,8 @@ describe('room.services.mjs - reserve_num lifecycle and limit guard', () => {
 
       const backfilled = await backfillDefaultedCheckouts();
 
-      expect(backfilled).toBe(0);
+      expect(backfilled.count).toBe(0);
+      expect(backfilled.branchIds).toEqual([]);
       expect(pool.query).toHaveBeenCalledTimes(1);
     });
   });

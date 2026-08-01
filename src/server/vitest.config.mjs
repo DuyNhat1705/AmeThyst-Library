@@ -47,6 +47,7 @@ export default defineConfig({
           include: [
             'tests/services/room.services.spec.mjs',
             'tests/services/dashboard.librarian.services.spec.mjs',
+            'tests/services/dashboard.librarian.rooms.spec.mjs',
           ],
         },
       },

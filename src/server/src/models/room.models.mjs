@@ -4,7 +4,263 @@ import pool from '../config/postgres.mjs';
 // stored without timezone and represent Vietnam local time. Recorded instants
 // (checkin_time, expired_at, checkout_time) are stored in UTC (DB session tz).
 const VIETNAM_NOW_SQL = `(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')`;
+const VIETNAM_TIME_SQL = `((CURRENT_TIME AT TIME ZONE 'Asia/Ho_Chi_Minh')::time)`;
 const UTC_ISO_SQL = (value) => `to_char(${value}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
+
+/**
+ * Branch-scoped active reservations list with search, status/date filters,
+ * and server-side pagination. Status display mapping:
+ * reserved -> confirmed, pending -> pending_checkin,
+ * used (no return) -> in_progress, used (return exists) -> completed.
+ * @param {number} branchId
+ * @param {{search?: string, status?: string, from?: string, to?: string, page?: number, limit?: number}} [filters={}]
+ * @returns {Promise<{items: Array, pagination: {page: number, limit: number, total: number, totalPages: number}}>}
+ */
+export const findActiveReservations = async (branchId, filters = {}) => {
+  const { search, status, from, to, page = 1, limit = 10 } = filters;
+
+  const conditions = [`sr.branch_id = $1`, `rr.start_date >= (${VIETNAM_NOW_SQL})::date`];
+  const params = [branchId];
+
+  const completedOnly = status === 'completed';
+
+  if (search) {
+    params.push(`%${search}%`);
+    conditions.push(`(u.username ILIKE $${params.length} OR u.user_id::text ILIKE $${params.length} OR sr.room_name ILIKE $${params.length})`);
+  }
+  if (status && status !== 'completed') {
+    params.push(status);
+    conditions.push(`rr.status = $${params.length}`);
+  }
+  if (completedOnly) {
+    conditions.push(`rr.status = 'used'`);
+    conditions.push(`EXISTS (SELECT 1 FROM public.return_room rt WHERE rt.reserve_id = rr.reserve_id)`);
+  }
+  if (from) {
+    params.push(from);
+    conditions.push(`rr.start_date >= $${params.length}::date`);
+  }
+  if (to) {
+    params.push(to);
+    conditions.push(`rr.start_date <= $${params.length}::date`);
+  }
+
+  const join = `
+    FROM reserve_room rr
+    JOIN room_avail ra ON rr.avail_id = ra.avail_id
+    JOIN study_room sr ON ra.room_id = sr.room_id
+    JOIN public.users u ON rr.user_id = u.user_id
+    LEFT JOIN public.return_room rt ON rt.reserve_id = rr.reserve_id
+  `;
+  const where = `WHERE ${conditions.join(' AND ')}`;
+
+  const countQuery = `SELECT COUNT(DISTINCT rr.reserve_id)::int AS total ${join} ${where}`;
+  const countRes = await pool.query(countQuery, params);
+  const total = countRes.rows[0]?.total || 0;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  const offset = (page - 1) * limit;
+  params.push(limit, offset);
+
+  const dataQuery = `
+    SELECT
+      rr.reserve_id AS "reserveId",
+      sr.room_id AS "roomId",
+      sr.room_name AS "roomName",
+      sr.description AS "location",
+      sr.capacity,
+      sr.img_url AS "imgUrl",
+      u.user_id AS "userId",
+      u.username,
+      u.avatar,
+      rr.start_date AS "date",
+      ra.start_time AS "startTime",
+      ra.end_time AS "endTime",
+      ${UTC_ISO_SQL('rr.checkin_time')} AS "checkinTime",
+      ${UTC_ISO_SQL('rt.checkout_time')} AS "checkoutTime",
+      (EXTRACT(EPOCH FROM (ra.end_time - ra.start_time)) / 60)::int AS "durationMinutes",
+      rr.status,
+      sr.branch_id AS "branchId"
+    ${join}
+    ${where}
+    ORDER BY rr.start_date ASC, ra.start_time ASC
+    LIMIT $${params.length - 1} OFFSET $${params.length}
+  `;
+
+  const dataRes = await pool.query(dataQuery, params);
+
+  const items = dataRes.rows.map((r) => ({
+    reserveId: r.reserveId,
+    roomId: r.roomId,
+    roomName: r.roomName,
+    location: r.location,
+    capacity: r.capacity,
+    imgUrl: r.imgUrl,
+    user: { userId: r.userId, username: r.username, avatar: r.avatar },
+    date: r.date,
+    startTime: r.startTime,
+    endTime: r.endTime,
+    durationMinutes: r.durationMinutes,
+    checkinTime: r.checkinTime,
+    checkoutTime: r.checkoutTime,
+    status: r.status,
+    branchId: r.branchId,
+  }));
+
+  return { items, pagination: { page, limit, total, totalPages } };
+};
+
+/**
+ * Branch-scoped overview statistics for the librarian room dashboard.
+ * @param {number} branchId
+ * @returns {Promise<{branchId: number, totalBookingsToday: number, occupied: number, totalRooms: number, pendingCheckins: number}>}
+ */
+export const getRoomsOverviewStats = async (branchId) => {
+  const query = `
+    SELECT
+      (SELECT COUNT(rr.reserve_id)
+         FROM reserve_room rr
+         JOIN room_avail ra ON rr.avail_id = ra.avail_id
+         JOIN study_room sr ON ra.room_id = sr.room_id
+        WHERE sr.branch_id = $1 AND rr.start_date = (${VIETNAM_NOW_SQL})::date)::int AS "totalBookingsToday",
+      (SELECT COUNT(DISTINCT sr.room_id)
+         FROM reserve_room rr
+         JOIN room_avail ra ON rr.avail_id = ra.avail_id
+         JOIN study_room sr ON ra.room_id = sr.room_id
+        WHERE sr.branch_id = $1
+          AND rr.start_date = (${VIETNAM_NOW_SQL})::date
+          AND rr.status IN ('reserved', 'pending', 'used')
+          AND ${VIETNAM_TIME_SQL} BETWEEN ra.start_time AND ra.end_time)::int AS "occupied",
+      (SELECT COUNT(*)::int
+         FROM study_room sr
+        WHERE sr.branch_id = $1) AS "totalRooms",
+      (SELECT COUNT(rr.reserve_id)
+         FROM reserve_room rr
+         JOIN room_avail ra ON rr.avail_id = ra.avail_id
+         JOIN study_room sr ON ra.room_id = sr.room_id
+        WHERE sr.branch_id = $1 AND rr.start_date = (${VIETNAM_NOW_SQL})::date AND rr.status = 'pending')::int AS "pendingCheckins"
+  `;
+  const result = await pool.query(query, [branchId]);
+  return result.rows[0];
+};
+
+/**
+ * Branch-scoped calendar schedule: all bookable rooms as rows, reservation
+ * events in range, and the operating time window derived from the branch's
+ * actual availability slots (min start time .. max end time).
+ * @param {number} branchId
+ * @param {string} from (YYYY-MM-DD)
+ * @param {string} to (YYYY-MM-DD)
+ * @returns {Promise<{rooms: Array, events: Array, timeWindow: {start: string, end: string}|null}>}
+ */
+export const findRoomSchedule = async (branchId, from, to) => {
+  const [roomsRes, eventsRes, windowRes] = await Promise.all([
+    pool.query(
+      `SELECT DISTINCT
+         sr.room_id AS "roomId",
+         sr.room_name AS "roomName",
+         sr.capacity,
+         sr.description AS "location",
+         sr.img_url AS "imgUrl"
+       FROM study_room sr
+       WHERE sr.branch_id = $1
+         AND EXISTS (SELECT 1 FROM room_avail ra WHERE ra.room_id = sr.room_id)
+       ORDER BY sr.room_name ASC, sr.room_id ASC`,
+      [branchId]
+    ),
+    pool.query(
+      `SELECT
+         rr.reserve_id AS "reserveId",
+         sr.room_id AS "roomId",
+         TO_CHAR(rr.start_date, 'YYYY-MM-DD') AS "date",
+         ra.start_time AS "startTime",
+         ra.end_time AS "endTime",
+         rr.status,
+         u.username AS "title"
+       FROM reserve_room rr
+       JOIN room_avail ra ON rr.avail_id = ra.avail_id
+       JOIN study_room sr ON ra.room_id = sr.room_id
+       JOIN public.users u ON rr.user_id = u.user_id
+       WHERE sr.branch_id = $1
+         AND rr.start_date BETWEEN $2::date AND $3::date
+         AND rr.start_date >= (${VIETNAM_NOW_SQL})::date
+       ORDER BY rr.start_date ASC, ra.start_time ASC`,
+      [branchId, from, to]
+    ),
+    pool.query(
+      `SELECT
+         MIN(ra.start_time)::text AS "start",
+         MAX(ra.end_time)::text AS "end"
+       FROM room_avail ra
+       JOIN study_room sr ON ra.room_id = sr.room_id
+       WHERE sr.branch_id = $1`,
+      [branchId]
+    ),
+  ]);
+
+  const tw = windowRes.rows[0];
+  return {
+    rooms: roomsRes.rows,
+    events: eventsRes.rows,
+    timeWindow: tw?.start && tw?.end ? { start: tw.start, end: tw.end } : null,
+  };
+};
+
+/**
+ * Fetches a single reservation's full detail (room, user, times, status,
+ * check-in/out) including its branch id so the service can enforce the branch
+ * guard. Returns null when the reservation does not exist.
+ * @param {string} reserveId
+ * @param {number} branchId
+ * @returns {Promise<Object|null>}
+ */
+export const findReservationDetail = async (reserveId, branchId) => {
+  const query = `
+    SELECT
+      rr.reserve_id AS "reserveId",
+      rr.status,
+      rr.start_date AS "date",
+      ra.start_time AS "startTime",
+      ra.end_time AS "endTime",
+      ${UTC_ISO_SQL('rr.checkin_time')} AS "checkinTime",
+      ${UTC_ISO_SQL('rt.checkout_time')} AS "checkoutTime",
+      sr.room_id AS "roomId",
+      sr.room_name AS "roomName",
+      sr.description AS "location",
+      sr.capacity,
+      sr.img_url AS "imgUrl",
+      u.user_id AS "userId",
+      u.username,
+      u.email,
+      u.phone_number AS "phoneNumber",
+      u.avatar,
+      br.branch_id AS "branchId"
+    FROM reserve_room rr
+    JOIN room_avail ra ON rr.avail_id = ra.avail_id
+    JOIN study_room sr ON ra.room_id = sr.room_id
+    JOIN public.users u ON rr.user_id = u.user_id
+    JOIN public.branches br ON sr.branch_id = br.branch_id
+    LEFT JOIN public.return_room rt ON rt.reserve_id = rr.reserve_id
+    WHERE rr.reserve_id = $1
+    LIMIT 1
+  `;
+  const result = await pool.query(query, [reserveId]);
+  const r = result.rows[0];
+  if (!r) return null;
+
+  return {
+    reserveId: r.reserveId,
+    status: r.status,
+    date: r.date,
+    startTime: r.startTime,
+    endTime: r.endTime,
+    checkinTime: r.checkinTime,
+    checkoutTime: r.checkoutTime,
+    room: { roomId: r.roomId, roomName: r.roomName, location: r.location, capacity: r.capacity, imgUrl: r.imgUrl },
+    user: { userId: r.userId, username: r.username, email: r.email, phoneNumber: r.phoneNumber, avatar: r.avatar },
+    branchId: r.branchId,
+  };
+};
 
 export const findStudyGroupFilterOptions = async () => {
   const result = await pool.query(`
@@ -301,6 +557,34 @@ export const findReservationOwnedBy = async (reserveId, userId, client = pool) =
 };
 
 /**
+ * Fetches a reservation's slot timing for check-in PIN eligibility, computing
+ * in the DB whether the Vietnam-local slot has started yet. Returns null if
+ * the reservation does not exist or is not owned by the user.
+ * @param {string} reserveId
+ * @param {string} userId
+ * @param {Object} [client=pool]
+ * @returns {Promise<Object|null>} { reserveId, status, startDate, startTime, endTime, slotStarted }
+ */
+export const findReservationSlotStart = async (reserveId, userId, client = pool) => {
+  const query = `
+    SELECT
+      rr.reserve_id AS "reserveId",
+      rr.user_id AS "userId",
+      rr.status,
+      TO_CHAR(rr.start_date, 'YYYY-MM-DD') AS "startDate",
+      ra.start_time AS "startTime",
+      ra.end_time AS "endTime",
+      (${VIETNAM_NOW_SQL})::date = rr.start_date
+        AND (${VIETNAM_NOW_SQL})::time >= ra.start_time AS "slotStarted"
+    FROM reserve_room rr
+    JOIN room_avail ra ON rr.avail_id = ra.avail_id
+    WHERE rr.reserve_id = $1 AND rr.user_id = $2
+  `;
+  const result = await client.query(query, [reserveId, userId]);
+  return result.rows[0] || null;
+};
+
+/**
  * Fetches an existing return record for a reservation.
  * @param {string} reserveId
  * @param {Object} [client=pool]
@@ -376,9 +660,18 @@ export const backfillDefaultedCheckouts = async () => {
        )`,
       [ids]
     );
+    const branchResult = await pool.query(
+      `SELECT DISTINCT sr.branch_id AS "branchId"
+       FROM reserve_room rr
+       JOIN room_avail ra ON rr.avail_id = ra.avail_id
+       JOIN study_room sr ON ra.room_id = sr.room_id
+       WHERE rr.reserve_id = ANY($1::uuid[])`,
+      [ids]
+    );
+    return { count: backfilled, branchIds: branchResult.rows.map((r) => r.branchId) };
   }
 
-  return backfilled;
+  return { count: 0, branchIds: [] };
 };
 
 /**

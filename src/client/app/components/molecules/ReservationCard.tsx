@@ -11,7 +11,7 @@ export interface Reservation {
   startDate: string;
   startTime: string;
   endTime: string;
-  status: string;
+  status: 'used' | 'pending' | 'reserved';
   roomName: string;
   imgUrl: string | null;
   description: string;
@@ -37,6 +37,7 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [generatingPin, setGeneratingPin] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
+  const [pinErrorFading, setPinErrorFading] = useState(false);
   const [pin, setPin] = useState<string | null>(reservation.pin ?? null);
   const [expiresAt, setExpiresAt] = useState<string | null>(reservation.expiresAt ?? null);
   const [pinModal, setPinModal] = useState<{ open: boolean; pin: string; expiresAt: string }>({ open: false, pin: '', expiresAt: '' });
@@ -48,6 +49,18 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
   useEffect(() => {
     const id = setInterval(() => setNow(new Date().getTime()), 30000);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (!pinError) return;
+    const fadeTimer = setTimeout(() => setPinErrorFading(true), 3000);
+    const clearTimer = setTimeout(() => setPinError(null), 3300);
+    return () => { clearTimeout(fadeTimer); clearTimeout(clearTimer); };
+  }, [pinError]);
+
+  const showPinError = useCallback((message: string) => {
+    setPinError(message);
+    setPinErrorFading(false);
   }, []);
 
   const formatTime = (timeStr: string) => timeStr.slice(0, 5);
@@ -81,10 +94,10 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
         setCheckedOut(true);
         onCancelled?.();
       } else {
-        setPinError(result.message || t('room.checkout_failed'));
+        showPinError(result.message || t('room.checkout_failed'));
       }
     } catch {
-      setPinError(t('room.checkout_failed'));
+      showPinError(t('room.checkout_failed'));
     } finally {
       setCheckingOut(false);
     }
@@ -105,10 +118,10 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
         setExpiresAt(result.data.expiresAt);
         setPinModal({ open: true, pin: result.data.pin, expiresAt: result.data.expiresAt });
       } else {
-        setPinError(result.message || 'Failed to generate PIN');
+        showPinError(result.message || 'Failed to generate PIN');
       }
     } catch {
-      setPinError('Network error. Please try again.');
+      showPinError('Network error. Please try again.');
     } finally {
       setGeneratingPin(false);
     }
@@ -270,7 +283,7 @@ export default function ReservationCard({ reservation, onCancelled }: Props) {
       )}
 
       {pinError && (
-        <p className="px-5 pb-4 text-xs text-[#D93025] dark:text-red-300">{pinError}</p>
+        <p className={`px-5 pb-4 text-xs text-[#D93025] dark:text-red-300 transition-opacity duration-300 ${pinErrorFading ? 'opacity-0' : 'opacity-100'}`}>{pinError}</p>
       )}
 
       {showCheckoutConfirm && (

@@ -480,6 +480,7 @@
   },
   "pin": {
     "title": "PIN lấy sách",
+    "return_title": "PIN trả sách",
     "expires_in": "Hết hạn sau {minutes}:{seconds}",
     "expired": "PIN đã hết hạn",
     "generated": "Đã tạo PIN",
@@ -945,5 +946,51 @@
     ,"view_created_group": "Xem và quản lý nhóm"
     ,"view_joined_group": "Xem nhóm đã tham gia"
     ,"view_your_groups": "Xem các nhóm học của bạn"
+  },
+  "room_dashboard": {
+    "title": "Bảng điều khiển quản lý phòng"
+    ,"view_list": "Danh sách"
+    ,"view_calendar": "Lịch"
+    ,"kpi_total_bookings": "Tổng đặt phòng hôm nay"
+    ,"kpi_occupied": "Đang sử dụng"
+    ,"kpi_pending_checkins": "Chờ check-in"
+    ,"search_placeholder": "Tìm theo tên người dùng, mã, hoặc phòng..."
+    ,"all_statuses": "Tất cả trạng thái"
+    ,"status_confirmed": "Đã xác nhận"
+    ,"status_pending_checkin": "Chờ check-in"
+    ,"status_in_progress": "Đang sử dụng"
+    ,"status_completed": "Hoàn thành"
+    ,"table_room": "Phòng"
+    ,"table_user": "Người dùng"
+    ,"table_date": "Ngày"
+    ,"table_time": "Khung giờ"
+    ,"table_duration": "Thời lượng"
+    ,"table_status": "Trạng thái"
+    ,"table_actions": "Thao tác"
+    ,"loading": "Đang tải..."
+    ,"no_reservations": "Không tìm thấy lượt đặt phòng."
+    ,"no_rooms": "Không có phòng trong chi nhánh này."
+    ,"load_failed": "Không thể tải dữ liệu. Vui lòng thử lại."
+    ,"capacity": "Sức chứa {count}"
+    ,"minutes_short": "phút"
+    ,"view_detail": "Xem chi tiết"
+    ,"calendar_week": "Tuần"
+    ,"calendar_day": "Ngày"
+    ,"day_sun": "CN"
+    ,"day_mon": "T2"
+    ,"day_tue": "T3"
+    ,"day_wed": "T4"
+    ,"day_thu": "T5"
+    ,"day_fri": "T6"
+    ,"day_sat": "T7"
+    ,"detail_title": "Chi tiết đặt phòng"
+    ,"detail_status": "Trạng thái"
+    ,"detail_date": "Ngày"
+    ,"detail_time": "Khung giờ"
+    ,"detail_checkin": "Check-in"
+    ,"detail_checkout": "Check-out"
+    ,"detail_room": "Phòng"
+    ,"detail_user": "Người dùng"
+    ,"close": "Đóng"
   }
 }

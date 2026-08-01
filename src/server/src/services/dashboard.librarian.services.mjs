@@ -1,5 +1,85 @@
 import pool from '../config/postgres.mjs';
 import * as roomModel from '../models/room.models.mjs';
+import { emitRoomDashboardChanged } from '../config/socket.mjs';
+
+/**
+ * Branch-scoped overview statistics for the librarian room dashboard.
+ * @param {number} branchId
+ * @returns {Promise<Object>}
+ */
+export const getRoomsOverview = async (branchId) => {
+  const stats = await roomModel.getRoomsOverviewStats(branchId);
+  return { branchId, ...stats };
+};
+
+/**
+ * Branch-scoped, paginated active reservations list.
+ * @param {number} branchId
+ * @param {{search?: string, status?: string, from?: string, to?: string, page?: number, limit?: number}} [filters={}]
+ * @returns {Promise<{items: Array, pagination: Object}>}
+ */
+export const getActiveReservations = async (branchId, filters = {}) => {
+  return roomModel.findActiveReservations(branchId, filters);
+};
+
+const toDate = (value) => {
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+
+const formatDate = (date) => date.toISOString().slice(0, 10);
+
+const mondayOfWeek = (anchor) => {
+  const day = toDate(anchor);
+  const weekday = day.getUTCDay();
+  const diff = (weekday === 0 ? 7 : weekday) - 1;
+  day.setUTCDate(day.getUTCDate() - diff);
+  return day;
+};
+
+/**
+ * Branch-scoped calendar schedule. For view=week the range is normalized to the
+ * Monday..Sunday week containing `from`; for view=day the range is the single day.
+ * @param {number} branchId
+ * @param {string} from (YYYY-MM-DD)
+ * @param {string} to (YYYY-MM-DD)
+ * @param {'week'|'day'} [view='week']
+ * @returns {Promise<{branchId: number, rooms: Array, events: Array}>}
+ */
+export const getRoomSchedule = async (branchId, from, to, view = 'week') => {
+  let rangeFrom = from;
+  let rangeTo = to;
+
+  if (view === 'week') {
+    const monday = mondayOfWeek(from);
+    const sunday = new Date(monday);
+    sunday.setUTCDate(monday.getUTCDate() + 6);
+    rangeFrom = formatDate(monday);
+    rangeTo = formatDate(sunday);
+  } else {
+    rangeTo = rangeFrom || rangeTo;
+  }
+
+  const result = await roomModel.findRoomSchedule(branchId, rangeFrom, rangeTo);
+  return { branchId, ...result };
+};
+
+/**
+ * Fetches a single reservation's full read-only detail with branch guard.
+ * @param {string} reserveId
+ * @param {number} branchId
+ * @returns {Promise<Object|{error: {code: string}, statusCode: number}>}
+ */
+export const getReservationDetail = async (reserveId, branchId) => {
+  const detail = await roomModel.findReservationDetail(reserveId, branchId);
+  if (!detail) {
+    return { error: { code: 'NOT_FOUND', message: 'Reservation not found.' }, statusCode: 404 };
+  }
+  if (detail.branchId !== branchId) {
+    return { error: { code: 'WRONG_BRANCH', message: 'This reservation belongs to a different branch.' }, statusCode: 403 };
+  }
+  return detail;
+};
 
 
 /**
@@ -109,6 +189,7 @@ export const confirmRoomCheckin = async (reserveId, librarianBranchId) => {
     }
 
     await client.query('COMMIT');
+    emitRoomDashboardChanged(branch.branchId, 'checked_in');
     return { success: true, reserveId, status: 'used' };
   } catch (error) {
     await client.query('ROLLBACK');
