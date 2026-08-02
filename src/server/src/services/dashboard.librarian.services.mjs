@@ -3,8 +3,276 @@ import pool from '../config/postgres.mjs';
 
 /**
  * Find a borrow record by PIN (must not be expired)
+ * @param {string} pin - The 6-digit PIN
+ * @param {string} [status='pending'] - Expected borrow_book status ('pending' for borrow, 'pending_return' for return)
  */
-export const findBorrowRecordByPin = async (pin) => {
+export const verifyReturnPin = async (pin) => {
+  const record = await findBorrowRecordByPin(pin, 'pending_return');
+  if (!record) {
+    return { error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' }, statusCode: 404 };
+  }
+
+  return {
+    borrowId: record.borrow_id,
+    borrower: {
+      username: record.username,
+      gender: record.gender,
+      phone_number: record.phone_number,
+      email: record.email,
+      birth_date: record.birth_date
+    },
+    book: {
+      title: record.book_title,
+      author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
+      publisher: record.book_publisher,
+      genres: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
+      image_url: record.image_url,
+      price: record.book_price
+    },
+    borrowing: {
+      reserve_date: record.reserve_date,
+      borrow_date: record.borrow_date,
+      due_date: record.due_date
+    }
+  };
+};
+
+export const getOutstandingDebts = async (search) => {
+  try {
+    let query = `
+      SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,
+             bp.penalty_amount, bp.record_date, bp.is_paid, u.username, u.avatar,
+             b.title as book_title
+      FROM public.book_penalty bp
+      JOIN public.users u ON bp.user_id = u.user_id
+      LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+      LEFT JOIN public.books b ON bb.book_id = b.book_id
+      WHERE bp.is_paid = false
+    `;
+    const params = [];
+
+    if (search) {
+      query += ` AND u.username ILIKE $1`;
+      params.push(`%${search}%`);
+    }
+
+    query += ` ORDER BY bp.record_date DESC`;
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching outstanding debts:', error);
+    throw error;
+  }
+};
+
+export const getPaidFees = async (search) => {
+  try {
+    let query = `
+      SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,
+             bp.penalty_amount, bp.record_date, bp.paid_at, u.username, u.avatar,
+             b.title as book_title
+      FROM public.book_penalty bp
+      JOIN public.users u ON bp.user_id = u.user_id
+      LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+      LEFT JOIN public.books b ON bb.book_id = b.book_id
+      WHERE bp.is_paid = true
+    `;
+    const params = [];
+
+    if (search) {
+      query += ` AND u.username ILIKE $1`;
+      params.push(`%${search}%`);
+    }
+
+    query += ` ORDER BY bp.paid_at DESC`;
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching paid fees:', error);
+    throw error;
+  }
+};
+
+export const confirmPayment = async (penaltyId) => {
+  try {
+    const check = await pool.query(
+      `SELECT penalty_id, is_paid FROM public.book_penalty WHERE penalty_id = $1`,
+      [penaltyId]
+    );
+
+    if (check.rows.length === 0) {
+      return { error: { code: 'NOT_FOUND', message: 'Penalty record not found' }, statusCode: 404 };
+    }
+
+    if (check.rows[0].is_paid) {
+      return { error: { code: 'ALREADY_PAID', message: 'This penalty has already been paid' }, statusCode: 409 };
+    }
+
+    const result = await pool.query(
+      `UPDATE public.book_penalty SET is_paid = true, paid_at = NOW() WHERE penalty_id = $1 RETURNING paid_at`,
+      [penaltyId]
+    );
+
+    return { penalty_id: penaltyId, is_paid: true, paid_at: result.rows[0].paid_at };
+  } catch (error) {
+    console.error('Error confirming payment:', error);
+    throw error;
+  }
+};
+
+export const confirmReturn = async (borrowId, branchId, conditions, description, isLost) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const recordRes = await client.query(
+      `SELECT bb.user_id, bb.book_id, bb.borrow_date, bb.due_date, b.price
+       FROM public.borrow_book bb
+       JOIN public.books b ON bb.book_id = b.book_id
+       WHERE bb.borrow_id = $1 AND bb.status = 'pending_return'`,
+      [borrowId]
+    );
+
+    if (recordRes.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Borrow record not found or not in pending_return status' }, statusCode: 404 };
+    }
+
+    const { user_id, book_id, due_date, price } = recordRes.rows[0];
+    const returnDate = new Date();
+    const isOverdue = due_date ? returnDate > new Date(due_date) : false;
+    const overdueDays = isOverdue ? Math.ceil((returnDate - new Date(due_date)) / (1000 * 60 * 60 * 24)) : 0;
+
+    let penaltyAmount = 0;
+    let issue = null;
+    let returnId = null;
+
+    if (isLost) {
+      penaltyAmount = price * 2;
+      if (isOverdue) {
+        const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
+        penaltyAmount += overdueCost;
+      }
+      issue = 'lost';
+    } else if (conditions && conditions.length > 0 && !conditions.includes('perfect_condition')) {
+      const damageCoefficients = {
+        'slight_cover_scratches': 0.05,
+        'folded_pages': 0.10,
+        'pencil_marks': 0.15,
+        'ink_marks': 0.40,
+        'torn_pages': 0.50,
+        'water_damage': 0.70,
+        'damaged_binding': 0.30,
+        'missing_mats': 0.30,
+        'missing_pages': 1.00
+      };
+
+      const coefficients = conditions.map(c => damageCoefficients[c] || 0).filter(c => c > 0);
+      const m_max = Math.max(...coefficients, 0);
+      const N_errors = conditions.length;
+      const Fee_admin = 1;
+      const Fee_addon = 0.5;
+
+      let damageCost = (coefficients.length > 0 ? m_max : 0) * price + Fee_admin + (N_errors - 1) * Fee_addon;
+      damageCost = Math.max(0, damageCost);
+      damageCost = Math.min(damageCost, price * 2);
+
+      penaltyAmount = damageCost;
+      issue = 'damaged';
+
+      if (isOverdue) {
+        const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
+        penaltyAmount = damageCost + overdueCost;
+        issue = 'combined';
+      }
+    }
+
+    if (isOverdue && penaltyAmount === 0) {
+      const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
+      penaltyAmount = overdueCost;
+      issue = 'overdue';
+    }
+
+    const isPerfect = conditions && conditions.includes('perfect_condition');
+
+    if (isLost) {
+      if (!issue || !['overdue', 'damaged', 'lost', 'combined'].includes(issue)) {
+        await client.query('ROLLBACK');
+        return { error: { code: 'INVALID_ISSUE', message: 'Invalid penalty issue type for lost book' }, statusCode: 500 };
+      }
+      await client.query(
+        `INSERT INTO public.book_penalty (borrow_id, user_id, issue, description, record_date, penalty_amount)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [borrowId, user_id, issue, description, returnDate, penaltyAmount]
+      );
+    } else {
+      if (penaltyAmount > 0) {
+        if (!issue || !['overdue', 'damaged', 'lost', 'combined'].includes(issue)) {
+          await client.query('ROLLBACK');
+          return { error: { code: 'INVALID_ISSUE', message: 'Invalid penalty issue type' }, statusCode: 500 };
+        }
+        const penaltyRes = await client.query(
+          `WITH new_return AS (
+             INSERT INTO public.return_book (borrow_id, branch_id, return_date, is_overdue)
+             VALUES ($1, $2, $3, $4) RETURNING return_id
+           )
+           INSERT INTO public.book_penalty (borrow_id, return_id, user_id, issue, description, record_date, penalty_amount)
+           SELECT $1, return_id, $5, $6, $7, $3, $8 FROM new_return
+           RETURNING return_id`,
+          [borrowId, branchId, returnDate, isOverdue, user_id, issue, description, penaltyAmount]
+        );
+        returnId = penaltyRes.rows[0].return_id;
+      } else {
+        const returnIdRes = await client.query(
+          `INSERT INTO public.return_book (borrow_id, branch_id, return_date, is_overdue)
+           VALUES ($1, $2, $3, $4) RETURNING return_id`,
+          [borrowId, branchId, returnDate, isOverdue]
+        );
+        returnId = returnIdRes.rows[0].return_id;
+      }
+
+      if (!isLost) {
+        await client.query(
+          `UPDATE public.library SET available_quantity = available_quantity + 1 WHERE book_id = $1 AND branch_id = $2`,
+          [book_id, branchId]
+        );
+      }
+    }
+
+    await client.query(
+      `UPDATE public.users SET borrow_num = GREATEST(borrow_num - 1, 0) WHERE user_id = $1`,
+      [user_id]
+    );
+
+    await client.query(
+      `UPDATE public.borrow_book SET pin = NULL, expired_at = NULL WHERE borrow_id = $1`,
+      [borrowId]
+    );
+
+    await client.query('COMMIT');
+
+    return {
+      success: true,
+      data: {
+        returnId: isLost ? null : returnId,
+        penaltyId: null,
+        penaltyAmount,
+        issue,
+        inventoryUpdated: !isLost
+      }
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error confirming return:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const findBorrowRecordByPin = async (pin, status = 'pending') => {
 
 
   const query = `
@@ -15,23 +283,29 @@ export const findBorrowRecordByPin = async (pin) => {
       bb.book_id,
       bb.status,
       bb.reserve_date,
+      bb.borrow_date,
+      bb.due_date,
       u.username,
       u.gender,
       u.phone_number,
       u.email,
+      u.birth_date,
       b.title as book_title,
       b.author as book_author,
       b.publisher as book_publisher,
       b.genres as book_genres,
+      b.image_url,
       b.price as book_price
     FROM public.borrow_book bb
     JOIN public.users u ON bb.user_id = u.user_id
     JOIN public.books b ON bb.book_id = b.book_id
-    WHERE bb.pin = $1 AND bb.expired_at > NOW()
+    WHERE bb.pin = $1 AND bb.expired_at > NOW() AND bb.status = $2
   `;
 
+  const params = [pin, status];
 
-  const result = await pool.query(query, [pin]);
+
+  const result = await pool.query(query, params);
 
 
   if (result.rows.length > 0) {
@@ -162,7 +436,7 @@ export const confirmBorrowing = async (borrowId) => {
 
     const updateQuery = `
       UPDATE public.borrow_book
-      SET status = 'borrowed', due_date = NOW() + INTERVAL '14 days', pin = NULL, expired_at = NULL
+      SET status = 'borrowed', borrow_date = NOW(), due_date = NOW() + INTERVAL '14 days', pin = NULL, expired_at = NULL
       WHERE borrow_id = $1
       RETURNING due_date
     `;
@@ -255,12 +529,134 @@ export const cancelBorrowing = async (borrowId) => {
 
     return { borrowId, status: 'cancelled' };
   } catch (error) {
-
-
     await client.query('ROLLBACK');
     throw error;
   } finally {
     client.release();
   }
+};
+
+/**
+ * Fetch all borrow/pickup records from public.borrow_book joined with books, users, branches
+ */
+export const getPickupsService = async () => {
+  const [pickupsRes, redeemedRes] = await Promise.all([
+    pool.query(`
+      SELECT 
+        bb.borrow_id,
+        bb.user_id,
+        bb.book_id,
+        bb.branch_id,
+        bb.reserve_date,
+        bb.borrow_date,
+        bb.due_date,
+        bb.pin,
+        bb.expired_at,
+        bb.status,
+        b.title as book_title,
+        b.isbn as book_isbn,
+        b.image_url as book_image_url,
+        u.username,
+        u.email,
+        u.avatar,
+        br.name as branch_name,
+        br.name_short
+      FROM public.borrow_book bb
+      JOIN public.books b ON bb.book_id = b.book_id
+      JOIN public.users u ON bb.user_id = u.user_id
+      JOIN public.branches br ON bb.branch_id = br.branch_id
+      WHERE bb.status = 'reserved'
+      ORDER BY bb.reserve_date DESC, bb.expired_at ASC
+    `),
+    pool.query(`
+      SELECT COUNT(*) as count
+      FROM public.borrow_book
+      WHERE status = 'borrowed' AND borrow_date::date = CURRENT_DATE
+    `),
+  ]);
+
+  const pickups = pickupsRes.rows.map((r) => ({
+    borrow_id: r.borrow_id,
+    user_id: r.user_id,
+    book_id: r.book_id,
+    branch_id: r.branch_id,
+    reserve_date: r.reserve_date,
+    borrow_date: r.borrow_date,
+    due_date: r.due_date,
+    pin: r.pin,
+    expired_at: r.expired_at,
+    status: r.status,
+    book_title: r.book_title || 'Untitled',
+    book_isbn: r.book_isbn || 'N/A',
+    book_image_url: r.book_image_url || '/BookCover.png',
+    username: r.username || 'User',
+    email: r.email || '',
+    avatar: r.avatar || null,
+    branch_name: r.branch_name,
+    name_short: r.name_short || `CS${r.branch_id}`
+  }));
+
+  return {
+    pickups,
+    redeemedToday: parseInt(redeemedRes.rows[0].count, 10),
+  };
+};
+
+export const getActiveBorrowings = async () => {
+  const query = `
+    SELECT 
+      bb.borrow_id,
+      bb.user_id,
+      bb.book_id,
+      bb.branch_id,
+      bb.reserve_date,
+      bb.borrow_date,
+      bb.due_date,
+      bb.pin,
+      bb.expired_at,
+      bb.status,
+      bb.extend_num,
+      b.title as book_title,
+      b.isbn as book_isbn,
+      b.image_url as book_image_url,
+      b.author as book_author,
+      u.username,
+      u.email,
+      u.avatar,
+      br.name as branch_name,
+      br.name_short
+    FROM public.borrow_book bb
+    JOIN public.books b ON bb.book_id = b.book_id
+    JOIN public.users u ON bb.user_id = u.user_id
+    JOIN public.branches br ON bb.branch_id = br.branch_id
+    WHERE bb.status = 'borrowed'
+      AND NOT EXISTS (SELECT 1 FROM public.return_book rb WHERE rb.borrow_id = bb.borrow_id)
+      AND NOT EXISTS (SELECT 1 FROM public.book_penalty bp WHERE bp.borrow_id = bb.borrow_id)
+    ORDER BY bb.due_date ASC
+  `;
+
+  const res = await pool.query(query);
+  return res.rows.map((r) => ({
+    borrow_id: r.borrow_id,
+    user_id: r.user_id,
+    book_id: r.book_id,
+    branch_id: r.branch_id,
+    reserve_date: r.reserve_date,
+    borrow_date: r.borrow_date,
+    due_date: r.due_date,
+    pin: r.pin,
+    expired_at: r.expired_at,
+    status: r.status,
+    extend_num: r.extend_num || 0,
+    book_title: r.book_title || 'Untitled',
+    book_isbn: r.book_isbn || 'N/A',
+    book_image_url: r.book_image_url || '/BookCover.png',
+    book_author: Array.isArray(r.book_author) ? r.book_author.join(', ') : (r.book_author || 'Unknown Author'),
+    username: r.username || 'User',
+    email: r.email || '',
+    avatar: r.avatar || null,
+    branch_name: r.branch_name,
+    name_short: r.name_short || `CS${r.branch_id}`
+  }));
 };
 

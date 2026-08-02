@@ -1,21 +1,19 @@
 // hooks/useSocket.js
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { getSocket, disconnectSocket } from '../config/socket';
 
-export const useSocket = (token) => {
-  const socketRef = useRef(null);
+export const useSocket = (token: string | null) => {
+  const socket = token ? getSocket(token) : null;
 
   useEffect(() => {
     if (!token) {
       disconnectSocket();
-      socketRef.current = null;
       return;
     }
 
     const socket = getSocket(token);
-    socketRef.current = socket;
 
     if (!socket.connected) {
       socket.connect();
@@ -37,5 +35,5 @@ export const useSocket = (token) => {
     };
   }, [token]);
 
-  return socketRef.current;
+  return socket;
 };

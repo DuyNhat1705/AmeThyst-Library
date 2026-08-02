@@ -39,12 +39,16 @@ export default function FeeRow({ fee }: FeeRowProps) {
         <p className="font-manrope text-sm font-bold text-black dark:text-neutral-100 truncate">
           {t(feeTypeKey[fee.type])}
         </p>
-        <p className="text-[#75777D] dark:text-neutral-400 font-inter text-xs mt-0.5 truncate">
-          {fee.bookTitle}
-        </p>
-        <p className="text-[#75777D] dark:text-neutral-500 font-inter text-[10px] mt-0.5 truncate">
-          {fee.description}
-        </p>
+        {fee.bookTitle && (
+          <p className="text-[#75777D] dark:text-neutral-400 font-inter text-xs mt-0.5 truncate">
+            <span className="font-bold">{t('dashboard.loan_fees_header_book')}:</span> {fee.bookTitle}
+          </p>
+        )}
+        {fee.description && (
+          <p className="text-[#75777D] dark:text-neutral-500 font-inter text-[10px] mt-0.5 truncate">
+            <span className="font-bold">{t('dashboard.loan_fees_header_description')}:</span> {fee.description}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col items-end gap-1 shrink-0">
@@ -52,11 +56,11 @@ export default function FeeRow({ fee }: FeeRowProps) {
         <StatusBadge variant={feeStatusVariant[fee.status]} label={fee.status === 'paid' ? t('dashboard.loan_fees_status_paid') : fee.status === 'pending' ? t('dashboard.loan_fees_pending') : 'Waived'} />
       </div>
 
-      {fee.issuedDate && (
-        <span className="text-[#75777D] dark:text-neutral-400 font-inter text-[10px] w-20 text-right shrink-0">
-          {fee.issuedDate}
-        </span>
-      )}
+      <span className="text-[#75777D] dark:text-neutral-400 font-inter text-[10px] w-20 text-right shrink-0">
+        {fee.status === 'paid' && fee.paidDate
+          ? `Paid: ${fee.paidDate}`
+          : fee.issuedDate || ''}
+      </span>
     </div>
   );
 }

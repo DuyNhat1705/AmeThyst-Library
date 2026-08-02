@@ -1,6 +1,15 @@
 export interface StudyGroupLeader {
   name: string;
   initials: string;
+  avatar?: string | null;
+  role?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
+  birthDate?: string | null;
+  gender?: string | null;
+  occupation?: string | null;
+  hometown?: string | null;
+  description?: string | null;
 }
 
 export interface StudyGroup {
@@ -18,7 +27,11 @@ export interface StudyGroup {
   requirements: string[];
   userStatus?: 'upcoming' | 'full' | 'cancelled' | 'inprogress' | 'completed' | 'expired';
   userApplicantStatus?: 'pending' | 'approved' | 'denied' | 'expired';
+  participationRequestId?: string;
   pendingApplicants?: number;
+  canJoin?: boolean;
+  retryAt?: string | null;
+  isCreator?: boolean;
 }
 
 export const mockStudyGroups: StudyGroup[] = [

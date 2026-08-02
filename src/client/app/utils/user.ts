@@ -12,7 +12,7 @@ export function getInitials(name: string): string {
 }
 
 export interface StoredUser {
-  userId?: number;
+  userId?: string;
   username?: string;
   email?: string;
   phone_number?: string;
@@ -138,7 +138,7 @@ export function useRequireAuth(redirectTo: string = '/login'): void {
 export function getRedirectPathForUser(user: StoredUser | null): string {
   if (!user) return '/login';
   if (user.role === 'librarian') return '/dashboard/librarian';
-  if (user.role === 'admin') return '/dashboard';
+  if (user.role === 'admin') return '/dashboard/admin';
   return '/library';
 }
 
@@ -146,7 +146,8 @@ export function getRedirectPathForUser(user: StoredUser | null): string {
  * Returns the dashboard path based on user's role.
  */
 export function getDashboardPath(user: StoredUser | null): string {
-  if (!user) return '/login';
+  if (!user) return '';
   if (user.role === 'librarian') return '/dashboard/librarian';
+  if (user.role === 'admin') return '/dashboard/admin';
   return '/dashboard/user';
 }

@@ -4,7 +4,7 @@ import { useI18n } from '../../providers/I18nProvider';
 import { useState, useEffect } from 'react';
 import BookCover from '../atoms/BookCover';
 
-export type BookStatus = 'borrowed' | 'pending' | 'reserved';
+export type BookStatus = 'borrowed' | 'pending' | 'reserved' | 'pending_return';
 
 export interface BorrowedBook {
   id: string;
@@ -20,6 +20,9 @@ export interface BorrowedBook {
   returnedDate?: string;
   branchName?: string;
   pin?: string | null;
+  extendNum?: number;
+  isOverdue?: boolean;
+  borrowCondition?: 'returned' | 'overdue' | 'damaged' | 'lost' | 'combined';
 }
 
 interface Props {
@@ -28,35 +31,41 @@ interface Props {
   onCancel?: (id: string) => void;
   onViewPin?: (id: string) => void;
   onGeneratePin?: (id: string) => void;
+  onGenerateReturnPin?: (id: string) => void;
+  onExtend?: (id: string) => void;
 }
 
 const statusKey: Record<BookStatus, string> = {
   borrowed: 'dashboard.borrowed_status_borrowed',
   pending: 'dashboard.borrowed_status_pending',
   reserved: 'dashboard.borrowed_status_reserved',
+  pending_return: 'dashboard.borrowed_status_pending_return',
 };
 
 const statusBg: Record<BookStatus, string> = {
   borrowed: 'bg-[#E8F0FE] dark:bg-blue-900/30',
   pending: 'bg-[#FFF3E0] dark:bg-orange-900/30',
   reserved: 'bg-[#E8F5E9] dark:bg-green-900/30',
+  pending_return: 'bg-[#F3E8FF] dark:bg-purple-900/30',
 };
 
 const statusText: Record<BookStatus, string> = {
   borrowed: 'text-[#1A73E8] dark:text-blue-300',
   pending: 'text-[#E37400] dark:text-orange-300',
   reserved: 'text-[#1E8E3E] dark:text-green-300',
+  pending_return: 'text-[#7C3AED] dark:text-purple-300',
 };
 
-export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, onGeneratePin }: Props) {
+export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, onGeneratePin, onGenerateReturnPin, onExtend }: Props) {
   const { t } = useI18n();
   const [, setTick] = useState(0);
 
-  const isPinExpired = book.status === 'pending' && book.expiresAt && new Date(book.expiresAt).getTime() <= Date.now();
-  const effectiveStatus: BookStatus = isPinExpired ? 'reserved' : book.status;
+  const isBorrowPinExpired = book.status === 'pending' && book.expiresAt && new Date(book.expiresAt).getTime() <= Date.now();
+  const isReturnPinExpired = book.status === 'pending_return' && book.expiresAt && new Date(book.expiresAt).getTime() <= Date.now();
+  const effectiveStatus: BookStatus = isBorrowPinExpired ? 'reserved' : isReturnPinExpired ? 'borrowed' : book.status;
 
   useEffect(() => {
-    if (book.status !== 'pending' || !book.expiresAt) return;
+    if ((book.status !== 'pending' && book.status !== 'pending_return') || !book.expiresAt) return;
     const expiresMs = new Date(book.expiresAt).getTime();
     const now = Date.now();
     const delay = expiresMs - now;
@@ -64,12 +73,11 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
     const timer = setTimeout(() => {
       setTick(t => t + 1);
       const token = localStorage.getItem('token');
-      if (token) {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${book.id}/pin/cleanup`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
-        }).catch(() => {});
-      }
+      if (!token) return;
+      const url = book.status === 'pending'
+        ? `${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${book.id}/pin/cleanup`
+        : `${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/borrowed/${book.id}/return-pin/cleanup`;
+      fetch(url, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }).catch(() => {});
     }, delay);
     return () => clearTimeout(timer);
   }, [book.status, book.expiresAt, book.id]);
@@ -130,7 +138,10 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
         </div>
         <div className="flex gap-2 mt-2">
           {effectiveStatus === 'borrowed' && (
-            <button disabled className="w-full py-1.5 text-[11px] font-bold rounded-full border border-dashed border-[#E8E2D5] dark:border-neutral-600 text-[#75777D] dark:text-neutral-500 cursor-not-allowed opacity-60">{t('dashboard.borrowed_renew')}</button>
+            <>
+              <button onClick={() => onGenerateReturnPin?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full bg-[#1A73E8] text-white dark:bg-blue-600 dark:text-white hover:opacity-80 transition-opacity">{t('dashboard.borrowed_generate_return_pin')}</button>
+              <button onClick={() => onExtend?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full border border-[#E8E2D5] dark:border-neutral-600 text-[#1A73E8] dark:text-blue-300 hover:bg-[#E8F0FE] dark:hover:bg-blue-900/30 transition-colors">{t('dashboard.borrowed_extend')}</button>
+            </>
           )}
           {effectiveStatus === 'reserved' && (
             <>
@@ -143,6 +154,9 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
               <button onClick={() => onViewPin?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full bg-[#1A73E8] text-white dark:bg-blue-600 dark:text-white hover:opacity-80 transition-opacity">{t('dashboard.borrowed_view_pin')}</button>
               <button onClick={() => onCancel?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full border border-[#E8E2D5] dark:border-neutral-600 text-[#D93025] dark:text-red-300 hover:bg-[#FCE8E6] dark:hover:bg-red-900/30 transition-colors">{t('dashboard.borrowed_cancel')}</button>
             </>
+          )}
+          {effectiveStatus === 'pending_return' && (
+            <button onClick={() => onViewPin?.(book.id)} className="flex-1 py-1.5 text-[11px] font-bold rounded-full bg-[#1A73E8] text-white dark:bg-blue-600 dark:text-white hover:opacity-80 transition-opacity">{t('dashboard.borrowed_view_pin')}</button>
           )}
         </div>
       </div>

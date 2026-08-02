@@ -5,7 +5,7 @@ interface CalendarEventBadgeProps {
 
 const typeColors: Record<string, string> = {
   book_return: 'bg-[#061D32]',
-  room_reservation: 'bg-[#009484]',
+  room_reservation: 'bg-[#2F6FA3]',
   study_group: 'bg-[#6E5191]',
   pin_expiry: 'bg-[#BA1A1A]',
   reservation_expiry: 'bg-[#E37400]',

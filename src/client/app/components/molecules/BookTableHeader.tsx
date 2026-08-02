@@ -9,14 +9,12 @@ export interface ColumnDef {
 }
 
 const DEFAULT_COLUMNS: ColumnDef[] = [
-  { key: 'cover', width: 'w-[84px]', align: 'items-start' },
-  { key: 'title', width: 'w-[147px]', align: 'items-start' },
-  { key: 'author', width: 'w-[103px]', align: 'items-start' },
-  { key: 'isbn', width: 'w-[107px]', align: 'items-start' },
-  { key: 'category', width: 'w-[142px]', align: 'items-start' },
-  { key: 'availability', width: 'w-[126px]', align: 'items-center' },
-  { key: 'status', width: 'w-[122px]', align: 'items-start' },
-  { key: 'actions', width: 'w-[136px]', align: 'items-end' },
+  { key: 'title', width: 'w-[220px]', align: 'items-start' },
+  { key: 'author', width: 'w-[160px]', align: 'items-start' },
+  { key: 'isbn', width: 'w-[140px]', align: 'items-start' },
+  { key: 'availability', width: 'w-[200px]', align: 'items-start' },
+  { key: 'location', width: 'w-[160px]', align: 'items-start' },
+  { key: 'actions', width: 'w-[120px]', align: 'items-end' },
 ];
 
 interface BookTableHeaderProps {

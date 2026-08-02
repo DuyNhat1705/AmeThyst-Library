@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyPin, confirmBorrowing, cancelBorrowing } from '../controllers/dashboard.librarian.controllers.mjs';
+import { getPickups, verifyPin, confirmBorrowing, cancelBorrowing, verifyReturnPin, confirmReturn, getOutstandingDebts, getPaidFees, getActiveBorrowings, confirmPayment } from '../controllers/dashboard.librarian.controllers.mjs';
 import {
   createAnnouncementController,
   getAnnouncementsForManagementController,
@@ -13,6 +13,7 @@ import { authorizeRole } from '../middlewares/role.middleware.mjs';
 
 const router = express.Router();
 
+router.get('/pickups', verifyToken, authorizeRole('librarian'), getPickups);
 router.post('/verify-pin', verifyToken, authorizeRole('librarian'), verifyPin);
 router.post('/confirm-borrowing', verifyToken, authorizeRole('librarian'), confirmBorrowing);
 router.post('/cancel-borrowing', verifyToken, authorizeRole('librarian'), cancelBorrowing);
@@ -24,5 +25,11 @@ router.get('/announcements/:id', verifyToken, authorizeRole('librarian', 'admin'
 router.patch('/announcements/:id/status', verifyToken, authorizeRole('librarian', 'admin'), updateAnnouncementStatusController);
 router.put('/announcements/:id', verifyToken, authorizeRole('librarian', 'admin'), editAnnouncementDetailsController);
 router.delete('/announcements/:id', verifyToken, authorizeRole('librarian', 'admin'), deleteAnnouncementController);
+router.post('/verify-return-pin', verifyToken, authorizeRole('librarian'), verifyReturnPin);
+router.post('/confirm-return', verifyToken, authorizeRole('librarian'), confirmReturn);
+router.get('/active-borrowings', verifyToken, authorizeRole('librarian'), getActiveBorrowings);
+router.get('/loan-fees/outstanding', verifyToken, authorizeRole('librarian'), getOutstandingDebts);
+router.get('/loan-fees/history', verifyToken, authorizeRole('librarian'), getPaidFees);
+router.post('/loan-fees/confirm-payment', verifyToken, authorizeRole('librarian'), confirmPayment);
 
 export default router;

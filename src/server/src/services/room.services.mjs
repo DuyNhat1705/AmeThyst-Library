@@ -1,5 +1,15 @@
 import * as roomModel from '../models/room.models.mjs';
 
+export const getStudyGroupFilterOptions = async () => {
+  const rows = await roomModel.findStudyGroupFilterOptions();
+  const branches = new Map();
+  for (const row of rows) {
+    if (!branches.has(row.branchId)) branches.set(row.branchId, { branchId: row.branchId, branchName: row.branchName, rooms: [] });
+    branches.get(row.branchId).rooms.push({ roomId: row.roomId, roomName: row.roomName, capacity: row.capacity });
+  }
+  return [...branches.values()];
+};
+
 /**
  * Service to fetch details of a study room by name and branch.
  * @param {string} name 
@@ -76,4 +86,105 @@ export const getRoomAvailability = async (roomId, date) => {
       reserveId: row.reserveId || null
     };
   });
+};
+
+/**
+ * Creates a room reservation after checking for conflicts.
+ * @param {string} userId UUID
+ * @param {number} availId
+ * @param {string} startDate (YYYY-MM-DD)
+ * @returns {Promise<Object>}
+ */
+export const createReservation = async (userId, availId, startDate) => {
+  if (!userId || !availId || !startDate) {
+    const error = new Error('Missing required fields: userId, availId, startDate');
+    error.status = 400;
+    throw error;
+  }
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(startDate)) {
+    const error = new Error('Invalid date format. Expected YYYY-MM-DD.');
+    error.status = 400;
+    throw error;
+  }
+
+  const existing = await roomModel.findReservationBySlotAndDate(availId, startDate);
+  if (existing) {
+    const error = new Error('This time slot is no longer available.');
+    error.status = 409;
+    throw error;
+  }
+
+  try {
+    return await roomModel.createReservation(userId, availId, startDate);
+  } catch (error) {
+    if (error.code === '23505' && error.constraint === 'uq_reserve_room_active_slot') {
+      const conflict = new Error('This time slot is no longer available.');
+      conflict.status = 409;
+      throw conflict;
+    }
+    if (error.code === '23503' && error.constraint === 'fk_reserve_user') {
+      const staleAccount = new Error('Your account is no longer available. Please sign in again.');
+      staleAccount.status = 401;
+      staleAccount.code = 'AUTH_USER_NOT_FOUND';
+      throw staleAccount;
+    }
+    if (error.code === '23503' && error.constraint === 'fk_reserve_availroom') {
+      const missingSlot = new Error('Room availability slot not found.');
+      missingSlot.status = 404;
+      throw missingSlot;
+    }
+    throw error;
+  }
+};
+
+/**
+ * Retrieves and categorizes reservations for a user.
+ * @param {string} userId UUID
+ * @returns {Promise<{upcoming: Array, past: Array}>}
+ */
+export const getUserReservations = async (userId) => {
+  if (!userId) {
+    const error = new Error('User ID is required');
+    error.status = 400;
+    throw error;
+  }
+
+  const rows = await roomModel.findUserReservations(userId);
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  const toDateStr = (d) => {
+    if (typeof d === 'string') return d;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  const upcoming = rows.filter(r => toDateStr(r.startDate) >= today);
+  const past = rows.filter(r => toDateStr(r.startDate) < today);
+
+  return { upcoming, past };
+};
+
+/**
+ * Cancels a reservation by permanently deleting it and releasing the active slot.
+ * @param {string} reserveId
+ * @param {string} userId
+ * @returns {Promise<boolean>}
+ */
+export const cancelReservation = async (reserveId, userId) => {
+  if (!reserveId || !userId) {
+    const error = new Error('Missing required fields');
+    error.status = 400;
+    throw error;
+  }
+
+  const cancelled = await roomModel.cancelReservation(reserveId, userId);
+  if (!cancelled) {
+    const error = new Error('Reservation not found or no longer cancellable');
+    error.status = 404;
+    throw error;
+  }
+
+  return true;
 };

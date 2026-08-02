@@ -40,4 +40,5 @@ export { default as TrendIndicator } from './TrendIndicator';
 export type { TrendVariant } from './TrendIndicator';
 export { default as ConditionCheckbox } from './ConditionCheckbox';
 export { default as CountdownTimer } from './CountdownTimer';
+export { default as WishlistHeart } from './WishlistHeart';
 

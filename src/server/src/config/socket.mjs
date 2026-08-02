@@ -23,7 +23,8 @@ export const initSocket = (server) => {
       if (!token) return next(new Error('Authentication error: No token provided'));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.userId = decoded.userId; // chỉnh lại field nếu payload token khác
+      if (!decoded?.userId) return next(new Error('Authentication error: Token has no userId'));
+      socket.userId = decoded.userId;
       next();
     } catch (err) {
       next(new Error('Authentication error: Invalid token'));
@@ -53,4 +54,12 @@ export const getIO = () => {
     throw new Error('Socket.io chưa được khởi tạo. Gọi initSocket(server) trước.');
   }
   return io;
+};
+
+export const emitStudyGroupChanged = (groupId, changeType) => {
+  if (io) io.emit('study-group:changed', { groupId, changeType });
+};
+
+export const emitUserNotification = (userId, notification) => {
+  if (io && userId) io.to(`user:${userId}`).emit('notification:new', notification);
 };

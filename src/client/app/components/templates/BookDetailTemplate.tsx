@@ -9,6 +9,8 @@ import NavBar from '../organisms/NavBar';
 import Footer from '../organisms/Footer';
 import { useI18n } from '../../providers/I18nProvider';
 import { PublisherIcon, CalendarIcon, PageIcon, StarIcon, MapPinIcon } from '../atoms/BookIcons';
+import WishlistHeart from '../atoms/WishlistHeart';
+import Toast from '../atoms/Toast';
 
 export interface BookDetails {
   id: string;
@@ -57,6 +59,10 @@ export interface BookDetailTemplateProps {
   error: string | null;
   onReserve: () => void;
   userRole?: string;
+  isWishlisted?: boolean;
+  onWishlistToggle?: () => void;
+  toast?: { message: string; type: 'info' | 'error' | 'warning' | 'success' } | null;
+  onDismissToast?: () => void;
 }
 
 export default function BookDetailTemplate({
@@ -70,6 +76,10 @@ export default function BookDetailTemplate({
   error,
   onReserve,
   userRole = '',
+  isWishlisted = false,
+  onWishlistToggle,
+  toast = null,
+  onDismissToast,
 }: BookDetailTemplateProps) {
   const { t } = useI18n();
 
@@ -93,7 +103,7 @@ export default function BookDetailTemplate({
         <div className="flex flex-col gap-8">
           
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-full md:w-[300px] shrink-0">
+            <div className="w-full md:w-[300px] shrink-0 relative">
               <BookDetailHero
                 title={book.title}
                 author={book.author}
@@ -101,6 +111,13 @@ export default function BookDetailTemplate({
                 coverImage={book.coverImage}
                 compact={true}
               />
+              {onWishlistToggle && (
+                <WishlistHeart
+                  isWishlisted={isWishlisted}
+                  onClick={onWishlistToggle}
+                  className="absolute top-4 right-4 z-10"
+                />
+              )}
             </div>
 
             <div className="flex flex-col gap-6 flex-grow min-w-0">
@@ -206,6 +223,13 @@ export default function BookDetailTemplate({
         </div>
       </main>
       <Footer />
+      {toast && onDismissToast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onDismiss={onDismissToast}
+        />
+      )}
     </div>
   );
 }
