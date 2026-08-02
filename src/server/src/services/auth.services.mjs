@@ -100,8 +100,21 @@ export const loginUser = async ({ email, password }) => {
   const user = await findUserByEmail(email);
   if (!user || !user.password_hash) throw new Error('Invalid email or password');
 
+  if (user.status === 'suspended') {
+    throw new Error('Your account has been suspended.');
+  }
+
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) throw new Error('Invalid email or password');
+
+  // Update last_login_at timestamp asynchronously
+  import('../config/postgres.mjs').then(async ({ default: pool }) => {
+    try {
+      await pool.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE user_id = $1', [user.user_id]);
+    } catch (e) {
+      console.error('Failed to update last login time:', e);
+    }
+  }).catch(e => console.error('Failed to load DB pool for login timestamp:', e));
 
   return {
     token: signToken(user.user_id, user.email, user.role, user.branch_id),

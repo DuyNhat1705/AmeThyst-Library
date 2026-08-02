@@ -20,6 +20,7 @@ import wishlistRoutes from './routes/wishlist.routes.mjs';
 import recommendationRoutes from './routes/recommendation.routes.mjs';
 import { initScheduler } from './services/scheduler.services.mjs';
 import studyGroupRoutes from './routes/study-group.routes.mjs';
+import adminRoutes from './routes/admin.routes.mjs';
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/study-groups', studyGroupRoutes);
 app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/admin', adminRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);

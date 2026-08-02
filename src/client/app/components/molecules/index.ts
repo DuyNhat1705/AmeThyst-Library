@@ -35,3 +35,6 @@ export { default as AnnouncementForm } from './AnnouncementForm';
 
 export { default as KPIStatCard } from './KPIStatCard';
 export { default as FilterDropdown } from './FilterDropdown';
+export { default as UserFilterToolbar } from './UserFilterToolbar';
+export { default as UserTableRow } from './UserTableRow';
+export { default as PaginationControls } from './PaginationControls';

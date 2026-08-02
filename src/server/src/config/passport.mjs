@@ -25,7 +25,12 @@ export const googleVerifyCallback = async (accessToken, refreshToken, profile, d
       }
     }
 
-    return done(null, result.rows[0]);
+    const dbUser = result.rows[0];
+    if (dbUser.status === 'suspended') {
+      return done(null, false, { message: 'USER_SUSPENDED' });
+    }
+
+    return done(null, dbUser);
   } catch (err) {
     return done(err, null);
   }

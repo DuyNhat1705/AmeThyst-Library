@@ -15,7 +15,7 @@ const authenticate = async (token) => {
     throw error;
   }
   const result = await pool.query(
-    'SELECT user_id, email, role, branch_id FROM public.users WHERE user_id = $1',
+    'SELECT user_id, email, role, branch_id, status FROM public.users WHERE user_id = $1',
     [userId],
   );
   if (!result.rows[0]) {
@@ -24,7 +24,12 @@ const authenticate = async (token) => {
     throw error;
   }
   const user = result.rows[0];
-  return { ...decoded, userId: user.user_id, email: user.email, role: user.role, branch_id: user.branch_id ?? null };
+  if (user.status === 'suspended') {
+    const error = new Error('Your account has been suspended.');
+    error.code = 'USER_SUSPENDED';
+    throw error;
+  }
+  return { ...decoded, userId: user.user_id, email: user.email, role: user.role, branch_id: user.branch_id ?? null, status: user.status };
 };
 
 export const verifyToken = async (req, res, next) => {
@@ -36,6 +41,7 @@ export const verifyToken = async (req, res, next) => {
     req.user = await authenticate(token);
     next();
   } catch (err) {
+    if (err.code === 'USER_SUSPENDED') return authError(res, 401, err.code, err.message);
     if (err.code === 'AUTH_USER_NOT_FOUND') return authError(res, 401, err.code, err.message);
     if (['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError'].includes(err.name) || err.code === 'INVALID_TOKEN_USER') return authError(res, 401, 'INVALID_TOKEN', 'Invalid token.');
     return authError(res, 503, 'AUTH_DATABASE_UNAVAILABLE', 'Authentication service is temporarily unavailable.');
@@ -59,6 +65,7 @@ export const optionalAuth = async (req, res, next) => {
     req.user = await authenticate(token);
     next();
   } catch (err) {
+    if (err.code === 'USER_SUSPENDED') return authError(res, 401, err.code, err.message);
     if (err.code === 'AUTH_USER_NOT_FOUND') return authError(res, 401, err.code, err.message);
     if (['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError'].includes(err.name) || err.code === 'INVALID_TOKEN_USER') {
       req.user = null;
