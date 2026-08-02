@@ -50,13 +50,51 @@ const formatExpiredDate = (expiredDate) => {
     : expiredDate;
 };
 
-const getToday = () => {
+const getTodayString = () => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const date = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${date}`;
 };
 
-const validateExpiredDate = (expiredDate, isActive, errorMessage) => {
+const formatDateOnlyString = (dateInput) => {
+  if (!dateInput) return null;
+  if (dateInput instanceof Date) {
+    if (isNaN(dateInput.getTime())) return null;
+    const year = dateInput.getFullYear();
+    const month = String(dateInput.getMonth() + 1).padStart(2, '0');
+    const date = String(dateInput.getDate()).padStart(2, '0');
+    return `${year}-${month}-${date}`;
+  }
+  if (typeof dateInput === 'string') {
+    const match = dateInput.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return null;
+    if (dateInput.includes('T') || dateInput.includes(' ') || dateInput.includes(':')) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const date = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${date}`;
+    } else {
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const date = String(d.getUTCDate()).padStart(2, '0');
+      return `${year}-${month}-${date}`;
+    }
+  }
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return null;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const date = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${date}`;
+};
+
+const validateExpiredDate = (expiredDate, errorMessage) => {
   if (expiredDate === null) return;
 
   if (!isValidDate(expiredDate)) {
@@ -65,10 +103,16 @@ const validateExpiredDate = (expiredDate, isActive, errorMessage) => {
     throw error;
   }
 
-  const today = getToday();
-  const expiry = new Date(expiredDate);
+  const todayStr = getTodayString();
+  const expiryStr = formatDateOnlyString(expiredDate);
 
-  if (isActive && expiry < today) {
+  if (!expiryStr) {
+    const error = new Error('Invalid expired date format.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (expiryStr < todayStr) {
     const error = new Error(errorMessage);
     error.status = 400;
     throw error;
@@ -91,8 +135,7 @@ export const createAnnouncementService = async ({ title, content, expiredDate, s
 
   validateExpiredDate(
     formattedExpiredDate,
-    status === 'active',
-    'Cannot set status to active with an expiration date in the past.'
+    'Cannot set expiration date in the past.'
   );
 
   const result = await announcementModel.insertAnnouncement({
@@ -102,7 +145,8 @@ export const createAnnouncementService = async ({ title, content, expiredDate, s
     status
   });
 
-  emitAnnouncementChanged('created', result);
+  const action = status === 'active' ? 'published' : 'created';
+  emitAnnouncementChanged(action, result);
   return result;
 };
 
@@ -160,20 +204,17 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
   }
 
   const announcement = await getAnnouncementOrThrow(announceId);
+  const previousStatus = announcement.status;
 
-  if (status === 'active' && announcement.expiredDate) {
-    const today = getToday();
-    const expiry = new Date(announcement.expiredDate);
-    if (expiry < today) {
-      const error = new Error('Cannot set status to active with an expiration date in the past.');
-      error.status = 400;
-      throw error;
-    }
+  if (status === 'active') {
+    validateExpiredDate(announcement.expiredDate, 'Cannot set status to active with an expiration date in the past.');
   }
 
   const updated = await announcementModel.updateAnnouncementStatus(announceId, status);
-  if (updated) {
-    emitAnnouncementChanged('status_changed', updated);
+  if (updated && previousStatus !== status) {
+    const becameActive = previousStatus !== 'active' && status === 'active';
+    const action = becameActive ? 'republished' : 'status_changed';
+    emitAnnouncementChanged(action, { ...updated, previousStatus });
   }
   return updated;
 };
@@ -196,8 +237,7 @@ export const editAnnouncementDetailsService = async (announceId, { title, conten
 
   validateExpiredDate(
     formattedExpiredDate,
-    announcement.status === 'active',
-    'Cannot set expiration date in the past for active announcement.'
+    'Cannot set expiration date in the past.'
   );
 
   const updated = await announcementModel.updateAnnouncementDetails(announceId, {
@@ -232,7 +272,8 @@ export const deleteAnnouncementService = async (announceId) => {
  * @returns {Promise<Array>}
  */
 export const getActiveAnnouncementsService = async () => {
-  return await announcementModel.findActiveAnnouncements();
+  const announcements = await announcementModel.findActiveAnnouncements();
+  return announcements.filter(ann => ann.status === 'active');
 };
 
 /**

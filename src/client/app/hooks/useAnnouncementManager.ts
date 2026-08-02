@@ -127,9 +127,12 @@ export function useAnnouncementManager(
 
     if (editExpiryDate) {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const expiry = new Date(editExpiryDate);
-      if (status === 'ACTIVE' && expiry < today) {
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const date = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${date}`;
+
+      if (editExpiryDate < todayStr) {
         setToast({ message: t('announcements.validation_expiry_past'), type: 'error' });
         return;
       }

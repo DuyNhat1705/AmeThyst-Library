@@ -139,6 +139,13 @@ export default function AnnouncementForm({
               value={editExpiryDate}
               onChange={(e) => onExpiryDateChange(e.target.value)}
               disabled={saving}
+              min={(() => {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const date = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${date}`;
+              })()}
               className="w-full p-4 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow disabled:opacity-70"
             />
           </div>
