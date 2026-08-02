@@ -556,7 +556,7 @@ export default function RoomManagementDashboard() {
             </div>
             <div className="text-[#43474D] dark:text-neutral-300 font-manrope text-sm font-bold">
               {weekDays.length === 1
-                ? weekDays[0].toLocaleDateString()
+                ? t(`room_dashboard.day_${DAY_KEYS[weekDays[0].getDay()]}`) + ' - ' + weekDays[0].toLocaleDateString()
                 : `${formatLocalDate(weekDays[0])} – ${formatLocalDate(weekDays[6])}`}
             </div>
           </div>
@@ -578,13 +578,13 @@ export default function RoomManagementDashboard() {
             <div className="overflow-x-auto">
               <div className="min-w-[920px]">
                 <div className="grid" style={{ gridTemplateColumns: `200px 1fr` }}>
-                  <div className="bg-[#F8F3E9] dark:bg-neutral-900 p-3 border-b border-r border-[#E8E2D5] dark:border-neutral-700 font-bold text-[11px] text-[#5A5E63] dark:text-neutral-300 font-hankenGrotesk tracking-wider uppercase">
+                  <div className="bg-[#F8F3E9] dark:bg-neutral-900 p-3 border-b border-[#E8E2D5] dark:border-neutral-700 font-bold text-[11px] text-[#5A5E63] dark:text-neutral-300 font-hankenGrotesk tracking-wider uppercase">
                     {t('room_dashboard.table_room')}
                   </div>
                   <div className="relative bg-[#F8F3E9] dark:bg-neutral-900 border-b border-[#E8E2D5] dark:border-neutral-700" style={{ height: 42 }}>
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-hankenGrotesk font-bold tracking-[0.1em] text-[#8B8E93] dark:text-neutral-500 uppercase">
+                    {/* <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-hankenGrotesk font-bold tracking-[0.1em] text-[#8B8E93] dark:text-neutral-500 uppercase">
                       {t(`room_dashboard.day_${DAY_KEYS[weekDays[0].getDay()]}`)} · {weekDays[0].getDate()}
-                    </span>
+                    </span> */}
                     {Array.from({ length: gridSteps }, (_, i) => i).map((i) => (
                       <span
                         key={i}
@@ -624,9 +624,16 @@ export default function RoomManagementDashboard() {
                           {Array.from({ length: gridSteps }, (_, i) => i).map((i) => (
                             <div key={i} className={`absolute top-0 bottom-0 ${i % 2 === 0 ? 'bg-[#F8F3E9]/50 dark:bg-neutral-900/40' : ''}`} style={{ left: `${(i / gridSteps) * 100}%`, width: `${(1 / gridSteps) * 100}%` }} />
                           ))}
-                          {Array.from({ length: gridSteps + 1 }, (_, i) => i).map((i) => (
-                            <div key={i} className="absolute top-0 bottom-0 border-l border-[#F1EBDD] dark:border-neutral-700" style={{ left: `${(i / gridSteps) * 100}%` }} />
-                          ))}
+                          {Array.from({ length: gridSteps + 1 }, (_, i) => i).map((i) => {
+                            if (i === 0) return null;
+                            return (
+                              <div
+                                key={i}
+                                className="absolute top-0 bottom-0 border-l border-[#F1EBDD] dark:border-neutral-700"
+                                style={{ left: `${(i / gridSteps) * 100}%` }}
+                              />
+                            );
+                          })}
                           {formatLocalDate(weekDays[0]) === todayStr && (
                             <div className="absolute top-0 bottom-0 z-10 pointer-events-none" style={{ left: `${nowLineLeft}%` }}>
                               <div className="absolute top-0 bottom-0 w-px bg-[#D93025]/70" />
