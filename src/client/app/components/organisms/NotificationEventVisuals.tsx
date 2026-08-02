@@ -4,7 +4,7 @@ import React from 'react';
 import { type StudyGroupLifecycleNotification, type StudyGroupNotificationActor } from '../../hooks/useAnnouncementBell';
 import UserAvatar from '../atoms/UserAvatar';
 import { initials } from '../../utils/studyGroup';
-import { displayDate, displayTime } from '../../utils/notificationFormat';
+import { displayDate, displayTimeRange } from '../../utils/notificationFormat';
 import { localizedBranchName, localizedRoomName } from '../../utils/room';
 
 export type NotificationEventType = StudyGroupLifecycleNotification['type'] | 'invitation';
@@ -130,7 +130,7 @@ export function NotificationGroupInfoGrid({ data, t }: NotificationGroupInfoGrid
         <span><b>{t('study_group.members')}</b><br/>{data.currentMembers}/{data.capacity}</span>
       )}
       <span><b>{t('study_group.date')}</b><br/>{displayDate(data.date)}</span>
-      <span><b>{t('study_group.time')}</b><br/>{displayTime(data.startTime, data.endTime)}</span>
+      <span><b>{t('study_group.time')}</b><br/>{displayTimeRange(data.startTime, data.endTime)}</span>
       <span><b>{t('study_group.branch')}</b><br/>{localizedBranchName(t, data.branchId, data.branchName)}</span>
       <span><b>{t('study_group.room')}</b><br/>{localizedRoomName(t, data.roomId, data.roomName)}</span>
     </div>

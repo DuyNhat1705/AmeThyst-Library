@@ -2,6 +2,7 @@ import { apiFetch, type ApiResult } from './apiClient';
 import type { CreateStudyGroupInput, DissolveStudyGroupResult, InviteStudyGroupMemberInput, JoinedStudyGroup, PageMeta, StudyGroupDetail, StudyGroupFilterBranch, StudyGroupInvitation, StudyGroupQuery, StudyGroupSummary, UpdateStudyGroupInput } from '../types/studyGroup';
 import type { StudyGroup } from '../study-together/mockData';
 import { localizedBranchName, localizedRoomName } from './room';
+import { displayDate } from './notificationFormat';
 
 export type PageResult<T> = ApiResult<T[]> & { meta?: PageMeta };
 
@@ -34,11 +35,6 @@ export const acceptStudyGroupInvitation = (groupId: string, requestId: string) =
 export const denyStudyGroupInvitation = (groupId: string, requestId: string) => apiFetch(`/api/study-groups/${groupId}/invitations/${requestId}/deny`, { method: 'POST' });
 
 export const initials = (name: string) => name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase();
-const displayDate = (value: string) => {
-  const datePart = String(value).slice(0, 10);
-  const [year, month, day] = datePart.split('-');
-  return year && month && day ? `${day}/${month}/${year}` : value;
-};
 const displayTime = (value: string) => String(value).slice(0, 5);
 
 export const toLegacyStudyGroup = (group: StudyGroupSummary, participationStatus?: StudyGroup['userApplicantStatus'], translate?: (key: string) => string): StudyGroup => ({

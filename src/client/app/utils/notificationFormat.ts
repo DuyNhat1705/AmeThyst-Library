@@ -3,4 +3,4 @@ export const displayDate = (value: string) => {
   return year && month && day ? `${day}/${month}/${year}` : value;
 };
 
-export const displayTime = (start: string, end: string) => `${String(start).slice(0, 5)} - ${String(end).slice(0, 5)}`;
+export const displayTimeRange = (start: string, end: string) => `${String(start).slice(0, 5)} - ${String(end).slice(0, 5)}`;

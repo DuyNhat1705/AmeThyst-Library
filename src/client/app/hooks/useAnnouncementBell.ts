@@ -9,6 +9,11 @@ import {
   acceptStudyGroupInvitation,
   denyStudyGroupInvitation,
 } from '../utils/studyGroup';
+import type {
+  StudyGroupNotificationActor,
+  StudyGroupInvitation,
+  StudyGroupLifecycleNotification,
+} from '../types/studyGroup';
 
 export interface BellAnnouncement {
   announceId: string;
@@ -18,90 +23,11 @@ export interface BellAnnouncement {
   expiredDate?: string;
 }
 
-export interface StudyGroupNotificationActor {
-  userId: string | null;
-  username: string;
-  email: string | null;
-  avatar: string | null;
-}
-
-export interface StudyGroupInvitation {
-  requestId: string;
-  content: string | null;
-  invitedAt: string;
-  actor?: StudyGroupNotificationActor;
-  group: {
-    groupId: string;
-    subject: string;
-    title: string;
-    description: string;
-    requirements: string[];
-    host: {
-      userId: string;
-      username: string;
-      email?: string | null;
-      avatar?: string | null;
-    };
-    reservation: {
-      reserveId: string;
-      startDate: string;
-      startTime: string;
-      endTime: string;
-      status: string;
-      room: {
-        roomId: number;
-        roomName: string;
-        branchId: number;
-        branchName: string;
-        capacity: number;
-        imageUrl: string | null;
-      };
-    };
-    capacity: number;
-    currentMembers: number;
-    status: string;
-  };
-}
-
-export interface StudyGroupLifecycleNotification {
-  id: string;
-  type:
-    | 'join_request_submitted'
-    | 'join_request_cancelled'
-    | 'join_request_approved'
-    | 'join_request_denied'
-    | 'member_joined'
-    | 'invitation_declined'
-    | 'group_updated'
-    | 'member_removed'
-    | 'member_left'
-    | 'group_dissolved';
-  groupId: string;
-  createdAt: string;
-  read?: boolean;
-  memberName?: string;
-  changedFields?: string[];
-  actor?: StudyGroupNotificationActor;
-  destination?: {
-    mode: 'created' | 'joined' | 'dashboard';
-    groupId?: string;
-  };
-  group: {
-    title: string;
-    subject: string;
-    currentMembers?: number;
-    capacity?: number;
-    date: string;
-    startTime: string;
-    endTime: string;
-    roomName: string;
-    branchName: string;
-    roomId: number;
-    branchId: number;
-  };
-}
-
-// Using imported Study Group API helper functions
+export type {
+  StudyGroupNotificationActor,
+  StudyGroupInvitation,
+  StudyGroupLifecycleNotification,
+} from '../types/studyGroup';
 
 function readSeenIds(userId?: number | string): string[] {
   if (typeof window === 'undefined' || userId === undefined) return [];
