@@ -40,21 +40,17 @@ export default defineConfig({
         },
       },
 
-      // To add another auth sub-feature (e.g. Login), copy the block above,
-      // keep the "test_auth_" prefix so it groups under --project "test_auth*",
-      // then update name + include + tags accordingly:
-      //
-      // {
-      //   test: {
-      //     name: 'test_auth_login',
-      //     globals: true,
-      //     strictTags: false,
-      //     include: ['tests/**/login*.spec.mjs'],
-      //     tags: [
-      //       { name: '@A_L1', description: '...' },
-      //     ],
-      //   },
-      // },
+      {
+        test: {
+          name: 'test_admin_statistics',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/statistics.service.spec.mjs',
+            'tests/services/top_categories.service.spec.mjs',
+          ],
+        },
+      },
     ],
 
     api: {
