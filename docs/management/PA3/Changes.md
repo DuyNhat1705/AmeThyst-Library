@@ -87,3 +87,51 @@ This file tracks all modifications, refinements, and additions made to the proje
 | **Privacy & Data Protection** | Section 6.5 (*Quality Ranges*) | Enforced patron reading history confidentiality, PII masking, and strict data minimization across all API endpoints. |
 | **Accessibility Standards** | Section 6.1 & Section 6.5 | Adopted **WCAG 2.1 Level AA** compliance, full keyboard navigation for core features, screen reader (`aria-label`) support, and contrast ratio validation. |
 | **Backup & Recovery** | Section 6.4 & Section 6.5 | Defined **RPO $\le$ 24 hours** (daily automated PostgreSQL backups) and **RTO $\le$ 2 hours** (automated cloud database recovery procedures). |
+
+---
+
+## Section C: Use Case Diagram & Specification Refinements (PA3 Fixes)
+
+### Summary of Issues Addressed:
+1. **Missing Use Case IDs in Diagrams:** Restored explicit Use Case IDs across all Mermaid use case diagrams for direct traceability with the specification.
+2. **Abstract Use Cases vs. Specification Alignment:** Reconciled abstract parent nodes (e.g. `{abstract} Searching Book`) with concrete specification IDs (`UC-BK-01: Book Searching`).
+3. **Relationship Types & Direction Correction:** Fixed incorrect UML generalization (`-->`) arrows, replacing them with `<<include>>` dependencies for included operational sub-routines (e.g., Authorization and PIN verification).
+4. **Actor Naming Standardization:** Standardized all actor names across diagrams to Title Case in compliance with system Regulation schema.
+5. **Specification Text & Cross-Reference Alignment:** Corrected internal Use Case ID typos and step references within `Use-CaseSpecification.md`.
+
+---
+
+### Detailed List of Refinements
+
+#### 1. Integration of Official Use Case IDs across Diagrams
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md`
+* **Issue:** Diagram nodes lacked official Use Case IDs (e.g. `UC-AUTH-01`, `UC-BK-01`, `UC-FAC-01`).
+* **Modification:** Updated node definitions in all 9 Mermaid diagrams across both files to display explicit IDs (e.g., `UC-AUTH-01: Register`, `UC-BK-01: Book Searching`, `UC-ADM-01: View User Account`).
+
+#### 2. Abstract vs. Concrete Use Case Alignment
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md` (Books Exploration & Librarian sections)
+* **Issue:** Abstract parent node `{abstract} Searching Book` conflicted with `UC-BK-01: Book Searching`, which is defined as a single concrete use case encompassing keyword and semantic search modes.
+* **Modification:** Designated `UC-BK-01: Book Searching` as the primary concrete node, with `Standard Search` and `Semantic Search` as specialized search options generalizing (`-->`) into `UC-BK-01`.
+
+#### 3. Correction of UML Relationship Arrows & Dependency Types
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md` (Admin & Librarian Administration diagrams)
+* **Issue:** 
+  * In Admin Administration, `Role Control` (`UC-ADM-04`) and `Use-case Permission` (`UC-ADM-05`) improperly used solid generalization (`-->`) to point to `Authorization` (`UC-ADM-03`).
+  * In Librarian Administration, `Confirming Book Borrowed` (`UC-LIB-05`) and `Confirming Room Checkin` (`UC-LIB-06`) improperly used generalization (`-->`) pointing to `{abstract} Verifying Pin`.
+* **Modification:**
+  * Converted Admin arrows to `<<include>>` dependencies (`-. "<<include>>" .->`) pointing from `UC-ADM-04` and `UC-ADM-05` to `UC-ADM-03 (Authorization)`.
+  * Converted Librarian arrows to `<<include>>` dependencies pointing from `UC-LIB-05` and `UC-LIB-06` to `{abstract} Verifying Pin`.
+  * Verified `UC-LIB-04: Recording Loan` correctly extends (`-. "<<extend>>" .->`) `UC-LIB-03: Confirming Book Return`.
+
+#### 4. Actor Naming and Capitalization Standardization
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md` (All Diagram Sections)
+* **Issue:** Inconsistent lowercase actor labels (e.g. `logged user`, `general user`, `user`, `study group creator`, `other user`).
+* **Modification:** Standardized all actor labels to Title Case (`Logged User`, `General User`, `User`, `Study Group Creator`, `Other User`) aligning strictly with the Regulation definition.
+
+#### 5. Specification Text and Cross-Reference Corrections
+* **Document:** `management/PA3/Use-CaseSpecification.md`
+* **Issue:** Discrepancies and typos in cross-referenced Use Case IDs within specification tables.
+* **Modification:**
+  * Fixed `UC-LIB-03` Step 5 alt flow reference from `UC-LIB-05` to `UC-LIB-04 (Recording Loan)`.
+  * Corrected `UC-ADM-03` brief description to reference `UC-ADM-04` and `UC-ADM-05` (was mislabeled `UC-ADM-05` & `UC-ADM-06`).
+  * Corrected `UC-ADM-04` and `UC-ADM-05` brief descriptions, event flows, and exception flows to reference `UC-ADM-03 Authorization` (were mislabeled `UC-ADM-07`).
