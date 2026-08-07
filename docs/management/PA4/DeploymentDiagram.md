@@ -8,6 +8,17 @@
 
 Performed by: Vũ Duy Nhất | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
+## Table of Contents
+
+- [Deployment Diagram](#deployment-diagram)
+  - [Table of Contents](#table-of-contents)
+  - [1. Deployment Diagram](#1-deployment-diagram)
+  - [2. Node Description](#2-node-description)
+  - [3. Communication Protocol Summary](#3-communication-protocol-summary)
+  - [4. AI Usage Note](#4-ai-usage-note)
+    - [AI Tool 1](#ai-tool-1)
+    - [AI Tool 2](#ai-tool-2)
+
 ## 1. Deployment Diagram
 ```mermaid
 flowchart LR
