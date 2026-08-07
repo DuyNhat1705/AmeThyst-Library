@@ -127,7 +127,7 @@ flowchart LR
         %% Central System Boundary Subgraph
     subgraph Authentication [Authentication]
         UC_Reg(["<center>UC-AUTH-01:<br>Register</center>"])
-        UC_OAuth(["<center>UC-AUTH-03:<br>Google OAuth</center>"])
+        UC_OAuth(["<center> UC-AUTH-03:<br>Google OAuth</center>"])
         UC_Login(["<center>UC-AUTH-04:<br>Login</center>"])
         UC_Forget(["<center>UC-AUTH-05:<br>Forget Password</center>"])
         UC_Change(["<center>UC-AUTH-07:<br>Change Password</center>"])
@@ -868,8 +868,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     %% Actors
-    ActorLeft(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
-    ActorRight(["<center>&lt;&lt; service &gt;&gt;<br>fa:fa-images Cloudinary</center>"]) 
+    ActorLeft(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
+    ActorRight(["<center>&lt;&lt; service &gt;&gt; <br>fa:fa-images Cloudinary</center>"]) 
 
     %% System Boundary
     subgraph ProfileManagement [Profile Management]
@@ -1317,7 +1317,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     %% Actors 
-    Actor1(["<center>{abstract}<br>fa:fa-user General User</center>"])
+    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
     Actor2(["<center>fa:fa-user User</center>"])
 
     %% System Boundary Subgraph
@@ -1339,39 +1339,31 @@ flowchart TD
         
         %% Column 3: Reservation Management
         subgraph ReserveBlock [Reservation Management]
-            UC_AbsManageReserve(["<center>{abstract}<br>Managing Reserved Book</center>"])
             UC_CreateReserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
             UC_CancelReserve(["<center>UC-BK-06:<br>Canceling Book Reservation</center>"])
             UC_GenPin(["<center>UC-BK-07:<br>Generating Pin</center>"])
         end
     end
 
-    %% -------------------------------------------------------------
     %% Actor Associations
-    %% -------------------------------------------------------------
     Actor1 --- UC_AbsSearching
     Actor1 --- UC_Filter
     Actor1 --- UC_ViewDetail
     Actor2 --- UC_AddFav
     Actor2 --- UC_Reserve
-    Actor1 ~~~ Actor2
+    Actor2 --- UC_CancelReserve
 
-    %% -------------------------------------------------------------
-    %% Generalization Relationships
-    %% -------------------------------------------------------------
+    %% Valid Generalization (Standard/Semantic ARE types of Search)
     UC_StdSearch --> UC_AbsSearching
     UC_SemSearch --> UC_AbsSearching
-    
-    UC_CreateReserve --> UC_AbsManageReserve
-    UC_CancelReserve --> UC_AbsManageReserve
-    UC_GenPin -. "<< include >>" .-> UC_AbsManageReserve
 
-    %% -------------------------------------------------------------
     %% Extend & Include Relationships
-    %% -------------------------------------------------------------
     UC_AddFav -. "<< extend >>" .-> UC_ViewDetail
     UC_Reserve -. "<< extend >>" .-> UC_ViewDetail
-    UC_Reserve -. "<< include >>" .-> UC_AbsManageReserve
+    
+    %% Generating PIN is an INCLUDED step during reservation creation
+    UC_CreateReserve -. "<< include >>" .-> UC_GenPin
+    UC_Reserve -. "<< include >>" .-> UC_CreateReserve
 
     %% Styling
     style BooksSystem fill:#fff,stroke:#333,stroke-width:2px
@@ -2096,7 +2088,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     %% Actors 
-    Actor1(["<center>{abstract}<br>fa:fa-user General User</center>"])
+    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
     Actor2(["<center>fa:fa-user User</center>"])
 
     %% System Boundary Subgraph
@@ -2109,7 +2101,7 @@ flowchart LR
         UC_ReservingFreely(["<center>Reserving Room Freely</center>"])
         UC_ReservingStudyGroup(["<center>Reserving Room<br>for Study Group</center>"])
         
-        UC_AbsManagingRoom(["<center>{abstract}<br>Managing Room</center>"])
+        UC_AbsManagingRoom(["<center>{abstract} <br> Managing Room</center>"])
         UC_CreateReservation(["<center>UC-FAC-03:<br>Creating Room Reservation</center>"])
         UC_CancelReservation(["<center>UC-FAC-04:<br>Canceling Room Reservation</center>"])
         
@@ -2859,7 +2851,7 @@ flowchart TD
         UC12(["<center>UC-SG-09:<br>Canceling Join<br>Request</center>"])
         UC13(["<center>UC-SG-10:<br>Out Study Group</center>"])
   end
-    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user User</center>"])
+    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
     OtherUser(["<center>fa:fa-user Other User</center>"]) --> User
     GeneralUser(["<center>{abstract}<br>fa:fa-user General User</center>"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
@@ -2867,7 +2859,7 @@ flowchart TD
     GeneralUser --- UC1 & UC2 & UC3
     StudyGroupCreator --- UC4 & UC9
     OtherUser --- UC9
-    
+
     %% Generalization (Specific -> Abstract)
     UC5 --> UC4
     UC6 --> UC4
@@ -4078,13 +4070,11 @@ flowchart LR
         UC10(["<center>UC-LIB-07:<br>Announcement</center>"])
   end
     Librarian(["<center>fa:fa-user Librarian</center>"]) ======= LibrarianAdministration
-    Librarian --- UC1 & UC6 & UC7 & UC10
+    Librarian --- UC1 & UC6 & UC10 & UC8 & UC9 & UC4
     
     UC2 --> UC1
     UC3 --> UC1
-    UC4 --> UC1
-    
-    %% Fixed: Changed from generalization (-->) to <<include>>
+
     UC8 -. "<< include >>" .-> UC7
     UC9 -. "<< include >>" .-> UC7
     UC5 -. "<< extend >>" .-> UC4
@@ -4778,8 +4768,6 @@ flowchart TD
   end
     Admin(["<center>fa:fa-user Admin</center>"]) ~~~~ AdminAdministration
     Admin --- UC1 & UC3 & UC6 & UC7
-    
-    %% Fixed: Changed from generalization (-->) to <<include>>
     UC2 -. "<< extend >>" .-> UC1
     UC4 -. "<< include >>" .-> UC3
     UC5 -. "<< include >>" .-> UC3

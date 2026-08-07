@@ -14,7 +14,7 @@ Performed by: Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Tr�
   - [Table of Contents](#table-of-contents)
   - [1. Technology Stack](#1-technology-stack)
   - [2. C4 Model — Level 1: System Context Diagram](#2-c4-model--level-1-system-context-diagram)
-  - [2.2 Diagram Mainflow Explanation](#22-diagram-mainflow-explanation)
+    - [2.2 Diagram Mainflow Explanation](#22-diagram-mainflow-explanation)
     - [2.3 Person Descriptions](#23-person-descriptions)
     - [2.4 External System Descriptions](#24-external-system-descriptions)
   - [3. AI Usage Notes](#3-ai-usage-notes)
@@ -81,7 +81,7 @@ flowchart LR
     class GoogleOAuth,GmailSMTP,Cloudinary,HuggingFace,ExternalImages extSystem;
 ```
 
-## 2.2 Diagram Mainflow Explanation
+### 2.2 Diagram Mainflow Explanation
 A **Visitor** or **Reader** accesses the AmeThyst platform to browse books, manage reservations, and organize study group bookings. **Librarians** and **System Administrators** interact with the platform to manage physical inventory, execute checkouts/returns via PIN verification, and analyze operational metrics.
 
 The core system delegates identity checks to **Google Identity**, sends transactional emails via **Gmail SMTP**, hosts media on **Cloudinary**, and downloads transformer embedding model weights from the **Hugging Face Hub** during initialization when uncached locally.
