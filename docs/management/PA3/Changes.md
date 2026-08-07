@@ -135,3 +135,8 @@ This file tracks all modifications, refinements, and additions made to the proje
   * Fixed `UC-LIB-03` Step 5 alt flow reference from `UC-LIB-05` to `UC-LIB-04 (Recording Loan)`.
   * Corrected `UC-ADM-03` brief description to reference `UC-ADM-04` and `UC-ADM-05` (was mislabeled `UC-ADM-05` & `UC-ADM-06`).
   * Corrected `UC-ADM-04` and `UC-ADM-05` brief descriptions, event flows, and exception flows to reference `UC-ADM-03 Authorization` (were mislabeled `UC-ADM-07`).
+
+#### 6. Refine abstract node labels 
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md`
+* **Issue:** Nodes with abstract name `Semantic Search` causes ambiguity in UC model.
+* **Modification:** Updated node label in Mermaid diagrams to `Search with context and description`.
