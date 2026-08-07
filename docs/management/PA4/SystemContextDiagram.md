@@ -14,7 +14,6 @@ Performed by: Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Tr�
   - [Table of Contents](#table-of-contents)
   - [1. Technology Stack](#1-technology-stack)
   - [2. C4 Model — Level 1: System Context Diagram](#2-c4-model--level-1-system-context-diagram)
-    - [2.1 Mermaid Diagram](#21-mermaid-diagram)
   - [2.2 Diagram Mainflow Explanation](#22-diagram-mainflow-explanation)
     - [2.3 Person Descriptions](#23-person-descriptions)
     - [2.4 External System Descriptions](#24-external-system-descriptions)
@@ -41,7 +40,6 @@ The platform covers all core workflows spanning PA1 through PA4, including catal
 
 ## 2. C4 Model — Level 1: System Context Diagram
 
-### 2.1 Mermaid Diagram
 
 ```mermaid
 flowchart LR
