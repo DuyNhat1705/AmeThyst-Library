@@ -14,7 +14,6 @@ Performed by: Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Tr�
   - [Table of Contents](#table-of-contents)
   - [1. Technology Stack](#1-technology-stack)
   - [2. C4 Model — Level 1: System Context Diagram](#2-c4-model--level-1-system-context-diagram)
-    - [2.1 Mermaid Diagram](#21-mermaid-diagram)
   - [3. AI Usage Notes](#3-ai-usage-notes)
 
 ---
@@ -38,7 +37,6 @@ The platform covers all core workflows spanning PA1 through PA4, including catal
 
 ## 2. C4 Model — Level 1: System Context Diagram
 
-### 2.1 Mermaid Diagram
 
 ```mermaid
 flowchart LR
@@ -79,6 +77,8 @@ flowchart LR
     class CoreSystem coreSystem;
     class GoogleOAuth,GmailSMTP,Cloudinary,HuggingFace,ExternalImages extSystem;
 ```
+
+
 
 
 ## 3. AI Usage Notes
