@@ -15,6 +15,9 @@ Performed by: Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Tr�
   - [1. Technology Stack](#1-technology-stack)
   - [2. C4 Model — Level 1: System Context Diagram](#2-c4-model--level-1-system-context-diagram)
     - [2.1 Mermaid Diagram](#21-mermaid-diagram)
+  - [2.2 Diagram Mainflow Explanation](#22-diagram-mainflow-explanation)
+    - [2.3 Person Descriptions](#23-person-descriptions)
+    - [2.4 External System Descriptions](#24-external-system-descriptions)
   - [3. AI Usage Notes](#3-ai-usage-notes)
 
 ---
@@ -64,11 +67,11 @@ flowchart LR
     Librarian -->|"Processes checkouts, verifies PINs & updates stock [HTTPS]"| CoreSystem
     SysAdmin -->|"Configures policy, manages permissions & views metrics [HTTPS]"| CoreSystem
 
-    CoreSystem -.->|"Authenticates users via [OAuth 2.0 / HTTPS]"| GoogleOAuth
-    CoreSystem -.->|"Sends emails [SMTP / TLS]"| GmailSMTP
-    CoreSystem -.->|"Stores & retrieves media assets [HTTPS]"| Cloudinary
-    CoreSystem -.->|"Downloads model weights when uncached [HTTPS]"| HuggingFace
-    CoreSystem -.->|"Fetches remote covers and avatar images [HTTPS]"| ExternalImages
+    CoreSystem -->|"Authenticates users via [OAuth 2.0 / HTTPS]"| GoogleOAuth
+    CoreSystem -->|"Sends emails [SMTP / TLS]"| GmailSMTP
+    CoreSystem -->|"Stores & retrieves media assets [HTTPS]"| Cloudinary
+    CoreSystem -->|"Downloads model weights when uncached [HTTPS]"| HuggingFace
+    CoreSystem -->|"Fetches remote covers and avatar images [HTTPS]"| ExternalImages
 
     %% Styling
     classDef person fill:#08427b,stroke:#052e56,color:#fff;
@@ -80,6 +83,31 @@ flowchart LR
     class GoogleOAuth,GmailSMTP,Cloudinary,HuggingFace,ExternalImages extSystem;
 ```
 
+## 2.2 Diagram Mainflow Explanation
+A **Visitor** or **Reader** accesses the AmeThyst platform to browse books, manage reservations, and organize study group bookings. **Librarians** and **System Administrators** interact with the platform to manage physical inventory, execute checkouts/returns via PIN verification, and analyze operational metrics.
+
+The core system delegates identity checks to **Google Identity**, sends transactional emails via **Gmail SMTP**, hosts media on **Cloudinary**, and downloads transformer embedding model weights from the **Hugging Face Hub** during initialization when uncached locally.
+
+### 2.3 Person Descriptions
+
+| Person | Description | Key Interactivity |
+| --- | --- | --- |
+| Visitor | Unauthenticated guest user. | Browses public book catalog, views library operating hours, and explores room availability. |
+| Reader (Library Patron) | Registered library user. | Searches catalog, reserves books, retrieves pickup PINs, joins study groups, and receives personalized recommendations. |
+| Librarian | Library staff member. | Verifies reader pickup/return PINs, inspects book conditions, manages physical copy inventory, and handles announcements. |
+| System Administrator | Platform manager. | Manages user account roles, configures borrowing policies/limits, and monitors system analytics dashboards. |
+
+### 2.4 External System Descriptions
+
+| External System | Purpose | Communication Protocol |
+| --- | --- | --- |
+| Google Identity | Authenticates users securely via standard OAuth 2.0 protocols. | OAuth 2.0 over HTTPS |
+| Gmail SMTP Service | Delivers transactional emails including OTPs, account verification links, and study group updates. | SMTP over TLS |
+| Cloudinary CDN | Cloud media storage and delivery network for user profile avatars and custom book cover uploads. | HTTPS Media API / CDN |
+| Hugging Face Hub | Repository supplying local vector embedding transformer model weights used for semantic catalog search. | HTTPS model weight download |
+| External Image Hosts | External CDNs (e.g., `m.media-amazon.com`) serving remote book covers and user-supplied avatar URLs. | HTTPS |
+
+---
 
 ## 3. AI Usage Notes
 

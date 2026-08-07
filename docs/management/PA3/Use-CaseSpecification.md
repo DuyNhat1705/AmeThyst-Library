@@ -97,27 +97,23 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
 
 ```mermaid
 flowchart RL
-    L1(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
+    %% Abstract Parent Actors
+    GeneralUser(["<center>{abstract} <br> fa:fa-user General User</center>"])
+    LoggedUser(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
 
-    L2_1(["<center>fa:fa-user Admin</center>"])
-    L2_2(["<center>fa:fa-user User</center>"])
-    L2_3(["<center>fa:fa-user Librarian</center>"])
+    %% Concrete Actors
+    Guest([fa:fa-user Guest])
+    User([fa:fa-user User])
+    Librarian([fa:fa-user Librarian])
+    Admin([fa:fa-user Admin])
 
-    L3(["<center>{abstract}<br>fa:fa-user General User</center>"])
-
-    L4_1(["<center>fa:fa-user Guest</center>"])
-    L4_2(["<center>fa:fa-user Admin</center>"])
-    L4_3(["<center>fa:fa-user User</center>"])
-    L4_4(["<center>fa:fa-user Librarian</center>"])
-
-    L2_1 --> L1
-    L2_2 --> L1
-    L2_3 --> L1
- 
-    L4_1 --> L3
-    L4_2 --> L3
-    L4_3 --> L3
-    L4_4 --> L3
+    %% Hierarchy (Child --> Parent)
+    Guest --> GeneralUser
+    LoggedUser --> GeneralUser
+    
+    User --> LoggedUser
+    Librarian --> LoggedUser
+    Admin --> LoggedUser
 ```
 
 ## II. Authentication
@@ -1322,14 +1318,14 @@ flowchart LR
 flowchart TD
     %% Actors 
     Actor1(["<center>{abstract}<br>fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user Logged User</center>"])
+    Actor2(["<center>fa:fa-user User</center>"])
 
     %% System Boundary Subgraph
     subgraph BooksSystem [Books]
         %% Column 1: Search & Filter Features
         subgraph SearchBlock [Search Features]
             UC_StdSearch(["<center>Standard Search</center>"])
-            UC_SemSearch(["<center>Search by context<br>and description</center>"])
+            UC_SemSearch(["<center>Search with context<br>and description</center>"])
             UC_AbsSearching(["<center>UC-BK-01:<br>Book Searching</center>"])
             UC_Filter(["<center>UC-BK-02:<br>Filtering Book</center>"])
         end
@@ -1368,7 +1364,7 @@ flowchart TD
     
     UC_CreateReserve --> UC_AbsManageReserve
     UC_CancelReserve --> UC_AbsManageReserve
-    UC_GenPin --> UC_AbsManageReserve
+    UC_GenPin -. "<< include >>" .-> UC_AbsManageReserve
 
     %% -------------------------------------------------------------
     %% Extend & Include Relationships
@@ -2101,7 +2097,7 @@ flowchart TD
 flowchart LR
     %% Actors 
     Actor1(["<center>{abstract}<br>fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user Logged User</center>"])
+    Actor2(["<center>fa:fa-user User</center>"])
 
     %% System Boundary Subgraph
     subgraph LibrarySystem [Library Map & Study Group & Room Reservation]
@@ -2863,20 +2859,26 @@ flowchart TD
         UC12(["<center>UC-SG-09:<br>Canceling Join<br>Request</center>"])
         UC13(["<center>UC-SG-10:<br>Out Study Group</center>"])
   end
-    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
+    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user User</center>"])
+    OtherUser(["<center>fa:fa-user Other User</center>"]) --> User
     GeneralUser(["<center>{abstract}<br>fa:fa-user General User</center>"]) ~~~ StudyGroupCreator
     StudyGroupCreator ~~~ User
     GeneralUser ~~~~~ StudyGroup
     GeneralUser --- UC1 & UC2 & UC3
     StudyGroupCreator --- UC4 & UC9
+    OtherUser --- UC9
+    
+    %% Generalization (Specific -> Abstract)
     UC5 --> UC4
     UC6 --> UC4
-    UC7 --> UC4
-    UC8 --> UC4
-    UC10 --> UC9
-    UC13 --> UC9
     UC11 --> UC10
     UC12 --> UC10
+
+    %% Includes & Extends (Fixed from misuse of generalization)
+    UC5 -. "<< include >>" .-> UC7
+    UC8 -. "<< extend >>" .-> UC4
+    UC10 -. "<< include >>" .-> UC9
+    UC13 -. "<< include >>" .-> UC9
 
     style StudyGroup fill:#fff,stroke:#333,stroke-width:2px
 ```
@@ -3855,7 +3857,7 @@ flowchart LR
         UC2(["<center>UC-AIR-01:<br>View Recommended Book</center>"])
         UC3(["<center>UC-AIR-02:<br>Reset AI Recommend</center>"])
   end
-    ActorUser(["<center>fa:fa-user Logged User</center>"]) ~~~~ AIRecommendation 
+    ActorUser(["<center>fa:fa-user User</center>"]) ~~~~ AIRecommendation 
     ActorUser --- UC2
     UC1 -. "<< extend >>" .-> UC2
     UC3 -. "<< extend >>" .-> UC2
