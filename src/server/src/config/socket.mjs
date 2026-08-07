@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import pool from './postgres.mjs';
 
 let io;
 
@@ -16,15 +17,26 @@ export const initSocket = (server) => {
     }
   });
 
-  // Middleware xác thực bằng JWT
-  io.use((socket, next) => {
+  // Middleware xác thực bằng JWT + kiểm tra token_version
+  io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
       if (!token) return next(new Error('Authentication error: No token provided'));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       if (!decoded?.userId) return next(new Error('Authentication error: Token has no userId'));
+
+      const result = await pool.query(
+        'SELECT token_version FROM public.users WHERE user_id = $1',
+        [decoded.userId]
+      );
+      const stored = result.rows[0];
+      if (!stored || (decoded.token_version ?? 0) !== (stored.token_version ?? 0)) {
+        return next(new Error('Authentication error: Token version mismatch'));
+      }
+
       socket.userId = decoded.userId;
+      socket.role = decoded.role;
       next();
     } catch (err) {
       next(new Error('Authentication error: Invalid token'));
@@ -62,4 +74,8 @@ export const emitStudyGroupChanged = (groupId, changeType) => {
 
 export const emitUserNotification = (userId, notification) => {
   if (io && userId) io.to(`user:${userId}`).emit('notification:new', notification);
+};
+
+export const emitAuthorizationChanged = (entry) => {
+  if (io) io.emit('authorization:changed', entry);
 };

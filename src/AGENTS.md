@@ -12,5 +12,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan at
-`specs/028-librarian-book-management/plan.md`
+`specs/029-authorization-role-management/plan.md`
 <!-- SPECKIT END -->

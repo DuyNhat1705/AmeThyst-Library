@@ -50,7 +50,7 @@ export default function StockTransferModal({ isOpen, onClose, onSuccess, book, b
         destination_shelf_number: destShelfNum
       };
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books/transfer`, {
         method: 'POST',
         headers: {

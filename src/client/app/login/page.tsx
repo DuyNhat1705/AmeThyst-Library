@@ -40,13 +40,17 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
 
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
 
       // Redirect to dashboard
       setTimeout(() => {
+        if (data.user?.must_change_password) {
+          window.location.href = '/profile/security';
+          return;
+        }
         const requestedPath = new URLSearchParams(window.location.search).get('returnTo');
         const safeReturnPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : null;
         window.location.href = safeReturnPath || getRedirectPathForUser(data.user);

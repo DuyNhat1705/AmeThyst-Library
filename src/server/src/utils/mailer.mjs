@@ -326,9 +326,40 @@ const sendStudyGroupDissolvedEmail = async (toEmail, group) => {
   });
 };
 
+const sendAdminInviteEmail = async (toEmail, tempPassword) => {
+  const baseUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+  await transporter.sendMail({
+    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    to: toEmail,
+    subject: 'You are invited as an AmeThyst Library Administrator',
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 480px; margin: auto; padding: 32px; border: 1px solid #E5E7EB; border-radius: 12px;">
+        <h2 style="color: #0B1C30; margin-bottom: 8px;">Welcome to AmeThyst Library!</h2>
+        <p style="color: #45474C; margin-bottom: 24px;">
+          You have been invited to join the library as an <b>administrator</b>.
+          Sign in with the temporary password below and you will be asked to set your own password.
+        </p>
+        <div style="background: #F3F4F6; border: 1px dashed #9CA3AF; border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 24px;">
+          <p style="color: #6B7280; font-size: 12px; margin: 0 0 6px;">Your temporary password</p>
+          <p style="color: #0B1C30; font-family: 'Courier New', monospace; font-size: 18px; font-weight: 700; letter-spacing: 2px; margin: 0;">${escapeHtml(tempPassword)}</p>
+        </div>
+        <p>
+          <a href="${baseUrl}/login" style="display: inline-block; padding: 12px 32px; background-color: #0A3240; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+            Sign In
+          </a>
+        </p>
+        <p style="color: #A1A3A7; font-size: 12px; margin-top: 24px;">
+          For security, change this password immediately after your first sign in.
+        </p>
+      </div>
+    `,
+  });
+};
+
 export {
   sendOTPEmail,
   sendVerificationEmail,
+  sendAdminInviteEmail,
   sendStudyGroupInvitationEmail,
   sendStudyGroupRemovalEmail,
   sendStudyGroupMemberLeftEmail,

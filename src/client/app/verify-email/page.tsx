@@ -53,8 +53,8 @@ function VerifyEmailContent() {
         }
         if (!res.ok) throw new Error(data.error || t('auth.verification_failed'));
 
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('user', JSON.stringify(data.user));
         setState({ status: 'success', error: '' });
         setTimeout(() => router.push(getRedirectPathForUser(data.user)), 2000);
       } catch (err: unknown) {

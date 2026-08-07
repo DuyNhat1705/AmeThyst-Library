@@ -37,7 +37,7 @@ export default function BookManagementTab() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       // 1. Fetch Branches list

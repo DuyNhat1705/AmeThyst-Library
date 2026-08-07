@@ -142,7 +142,7 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
 
       const targetId = book.book_id || book.id;
       if (targetId) {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
         fetch(`${API_BASE}/api/library/books/${targetId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         })
@@ -236,7 +236,7 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
         branch_stocks
       };
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books/${book.book_id || book.id}`, {
         method: 'PUT',
         headers: {

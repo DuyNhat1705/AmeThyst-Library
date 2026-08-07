@@ -13,8 +13,8 @@ function AuthCallbackContent() {
     const user = searchParams.get('user');
 
     if (token && user) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', user);
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('user', user);
       window.location.href = '/library';
     } else {
       window.location.href = '/login';

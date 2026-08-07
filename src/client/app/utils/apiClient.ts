@@ -2,7 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 }
 
 export function getBranchId(): string | null {
@@ -50,8 +50,8 @@ export async function apiFetch<T = unknown>(
   const data = await response.json();
 
   if (response.status === 401 && data.error?.code === 'AUTH_USER_NOT_FOUND' && typeof window !== 'undefined') {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
   }
 

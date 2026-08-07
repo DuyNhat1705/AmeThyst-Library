@@ -59,7 +59,7 @@ export default function ImageUploader({
       const formData = new FormData();
       formData.append('avatar', file);
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books/upload-cover`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},

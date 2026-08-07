@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { FormField } from '../molecules';
 import { Button, SecurityIndicator, ErrorMessage, PasswordInput } from '../atoms';
-import { getAuthToken } from '../../utils/user';
+import { getAuthToken, updateStoredUser } from '../../utils/user';
 import { calculatePasswordStrength, validateNewPassword } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
@@ -50,6 +50,7 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
         throw new Error(err.error || 'Failed to update password');
       }
 
+      updateStoredUser({ must_change_password: false });
       setSuccess(t('profile.password_changed'));
       setPassword("");
       setNewPassword("");

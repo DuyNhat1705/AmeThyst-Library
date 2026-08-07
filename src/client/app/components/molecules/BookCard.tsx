@@ -13,7 +13,7 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
   const handleCardClick = () => {
     if (typeof window !== 'undefined') {
       const searchHistoryId = sessionStorage.getItem('currentSearchHistoryId');
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (token) {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
