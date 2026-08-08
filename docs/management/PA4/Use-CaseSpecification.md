@@ -1,13 +1,12 @@
 # Use-Case Specification
 
-    Project: Modern Library Management System 
-    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Project: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering
     Group ID: 03
-    Group Name: AmeThyst 
+    Group Name: AmeThyst
     Assignment: PA4-2026
     Version: 2.0
 Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Members | Edited by: Phan Lê Anh Minh, Trần Lê Hoàng Gia
-
 
 ## Revision History
 
@@ -20,6 +19,7 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
 | 7-Aug-2026 | 2.0 | Update ImageGUI, fix diagrams | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 
 ## Table of Contents
+
 - [Use-Case Specification](#use-case-specification)
   - [Revision History](#revision-history)
   - [Table of Contents](#table-of-contents)
@@ -92,7 +92,6 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
     - [UC-ADM-06: System Configuration](#uc-adm-06-system-configuration)
     - [UC-ADM-07: View Statistics](#uc-adm-07-view-statistics)
 
-
 ## I. Regulation of Abstract Actors
 
 ```mermaid
@@ -110,7 +109,7 @@ flowchart RL
     %% Hierarchy (Child --> Parent)
     Guest --> GeneralUser
     LoggedUser --> GeneralUser
-    
+
     User --> LoggedUser
     Librarian --> LoggedUser
     Admin --> LoggedUser
@@ -233,7 +232,7 @@ flowchart LR
           <li style="margin-bottom: 8px;">
             <strong>Password Complexity Rejection (Step 3):</strong> If the password complexity requirements are not met:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system rejects the payload payload parameters.</li>
+              <li>The system rejects the payload parameters.</li>
               <li>The system returns a detailed structural validation notice detailing missing criteria (e.g., character length, special symbols).</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The account parameters are unchanged; the interface updates to highlight the non-compliant password fields.</span>
@@ -630,7 +629,7 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user clicks the "Forgot Password?" text link navigation node on the login view panel layout.</li>
           <li><strong>[Actor Action]:</strong> The user inputs their registered account email identifier into the recovery prompt and submits.</li>
-          <li><strong>[System Response]:</strong> The system verifies the user record exists and triggers the mandatory include sub-routine <code> Verify By OTP (UC-AUTH-06)</code> to validate identity.</li>
+          <li><strong>[System Response]:</strong> The system verifies the user record exists and triggers the mandatory include sub-routine <code>Verify By OTP (UC-AUTH-06)</code> to validate identity.</li>
           <li><strong>[System Response]:</strong> Upon catching a successful callback validation status from the OTP routine, the system invokes the mandatory include sub-routine <code>Change Password (UC-AUTH-07)</code>.</li>
           <li><strong>[Display Result]:</strong> The system presents a password reset complete confirmation view layout with a redirection button linking back to the login page.</li>
         </ol>
@@ -891,13 +890,14 @@ flowchart LR
 ---
 
 ## III. Profile Management
+
 ### Use case diagram
 
 ```mermaid
 flowchart LR
     %% Actors
     ActorLeft(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
-    ActorRight(["<center>&lt;&lt; service &gt;&gt; <br>fa:fa-images Cloudinary</center>"]) 
+    ActorRight(["<center>&lt;&lt; service &gt;&gt; <br>fa:fa-images Cloudinary</center>"])
 
     %% System Boundary
     subgraph ProfileManagement [Profile Management]
@@ -906,23 +906,24 @@ flowchart LR
         UC3(["<center>UC-PROF-03:<br>Change Avatar</center>"])
         UC4(["<center>UC-PROF-04:<br>Change Password</center>"])
     end
-    
+
 	ActorLeft ~~~~~ ProfileManagement ~~~ ActorRight
 
     %% Relationships
     ActorLeft --- UC1
     ActorLeft --- UC4
-    
+
     UC2 -. "<< extend >>" .-> UC1
     UC3 -. "<< extend >>" .-> UC1
-    
-    UC3 --- ActorRight 
-   
+
+    UC3 --- ActorRight
+
     %% Styling to make it clean
     style ProfileManagement fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 ---
+
 ### UC-PROF-01: View Self Profile
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
@@ -1006,7 +1007,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
           <li><strong>Edit Profile:</strong> Location inside event flow: Exposing extension interface triggers (Step 5).</li>
-          <li><strong>Change Avatar:</strong> Location inside event flow: Exposing extension interface triggers (Step 5).   ---</li>
+          <li><strong>Change Avatar:</strong> Location inside event flow: Exposing extension interface triggers (Step 5).</li>
         </ul>
       </td>
     </tr>
@@ -1164,7 +1165,7 @@ flowchart LR
           <li><strong>[Data Processing]:</strong> The system validates the asset metadata properties client-side to verify file configuration boundaries match structural rules.</li>
           <li><strong>[Data Processing]:</strong> The system establishes an API communication uplink tunnel to stream the binary image payload object directly out to the external secondary <strong>Storage Service</strong>.</li>
           <li><strong>[Data Processing]:</strong> The <strong>Storage Service</strong> buffers the upload stream, saves the graphic file inside optimized media asset buckets, and passes a unique public reference image URL string parameter back down to the application server.</li>
-          <li><strong>[Data Processing]:</strong> The system updates the user's base record rows inside the database, mapping the <code> avatar_url</code> coordinate pointer value to the fresh link string.</li>
+          <li><strong>[Data Processing]:</strong> The system updates the user's base record rows inside the database, mapping the <code>avatar_url</code> coordinate pointer value to the fresh link string.</li>
           <li><strong>[Display Result]:</strong> The system refreshes image element sources on screen to display the updated profile avatar graphic asset instantly.</li>
         </ol>
       </td>
@@ -1357,11 +1358,12 @@ flowchart LR
 </table>
 
 ## IV. Books Exploration & Interaction
+
 ### Usecase Diagram
 
 ```mermaid
 flowchart TD
-    %% Actors 
+    %% Actors
     Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
     Actor2(["<center>fa:fa-user User</center>"])
 
@@ -1374,14 +1376,14 @@ flowchart TD
             UC_AbsSearching(["<center>UC-BK-01:<br>Book Searching</center>"])
             UC_Filter(["<center>UC-BK-02:<br>Filtering Book</center>"])
         end
-        
+
         %% Column 2: Book Actions
         subgraph ActionBlock [Book Actions]
             UC_ViewDetail(["<center>UC-BK-03:<br>View Book Detail</center>"])
             UC_AddFav(["<center>UC-BK-04:<br>Add Book Favorite</center>"])
             UC_Reserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
         end
-        
+
         %% Column 3: Reservation Management
         subgraph ReserveBlock [Reservation Management]
             UC_CreateReserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
@@ -1405,7 +1407,7 @@ flowchart TD
     %% Extend & Include Relationships
     UC_AddFav -. "<< extend >>" .-> UC_ViewDetail
     UC_Reserve -. "<< extend >>" .-> UC_ViewDetail
-    
+
     %% Generating PIN is an INCLUDED step during reservation creation
     UC_CreateReserve -. "<< include >>" .-> UC_GenPin
     UC_Reserve -. "<< include >>" .-> UC_CreateReserve
@@ -1463,7 +1465,7 @@ flowchart TD
           <li><strong>[Actor Action]:</strong> The user adjusts the toggle switch to their preferred search type (Standard Keyword or Semantic Context).</li>
           <li><strong>[Actor Action]:</strong> *Optional:* The user sets or updates overlapping constraint toggles within the metadata filter panels (e.g., availability status, structural categories, languages, or publication eras).</li>
           <li><strong>[Actor Action]:</strong> The user types their query string into the search input box. (The background typo-tolerance layer dynamically monitors input parameters for character permutations).</li>
-          <li><strong>[Actor Action]:</strong> The user executes the query by pressing the <code> Enter</code> key on their keyboard or clicking the search icon button widget.</li>
+          <li><strong>[Actor Action]:</strong> The user executes the query by pressing the <code>Enter</code> key on their keyboard or clicking the search icon button widget.</li>
           <li><strong>[Data Processing]:</strong> The system intercepts the submission runtime event and immediately creates an asynchronous database logging transaction to write the raw search text string, timestamp, applied filter, and User ID parameters into the historical search database log tables.</li>
           <li><strong>[Data Processing]:</strong> The system processes the query payload text by both keywords and context-aware matching.</li>
           <li><strong>[Data Processing]:</strong> The system applies any active metadata filter constraint parameters to strip disqualified records out of the resulting query dataset match array.</li>
@@ -2150,13 +2152,13 @@ flowchart TD
 
 ---
 
-## V. Study Group Creation & Facility Reservation 
+## V. Study Group Creation & Facility Reservation
 
 ### Use case diagram
 
 ```mermaid
 flowchart LR
-    %% Actors 
+    %% Actors
     Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
     Actor2(["<center>fa:fa-user User</center>"])
 
@@ -2165,15 +2167,15 @@ flowchart LR
         %% Use Cases (using circle style: ([ ]) )
         UC_ViewMap(["<center>UC-FAC-01:<br>View Library Map</center>"])
         UC_ViewFacility(["<center>UC-FAC-02:<br>View Facility Information</center>"])
-        
+
         UC_AbsReserving(["<center>UC-FAC-03:<br>Room Reservation</center>"])
         UC_ReservingFreely(["<center>Reserving Room Freely</center>"])
         UC_ReservingStudyGroup(["<center>Reserving Room<br>for Study Group</center>"])
-        
+
         UC_AbsManagingRoom(["<center>{abstract} <br> Managing Room</center>"])
         UC_CreateReservation(["<center>UC-FAC-03:<br>Creating Room Reservation</center>"])
         UC_CancelReservation(["<center>UC-FAC-04:<br>Canceling Room Reservation</center>"])
-        
+
         UC_AbsManagingStudy(["<center>{abstract}<br>Managing Study Group</center>"])
         UC_CreateStudyGroup(["<center>UC-FAC-05:<br>Creating Study Group</center>"])
         UC_CancelStudyGroup(["<center>UC-FAC-06:<br>Canceling Study Group</center>"])
@@ -2188,7 +2190,7 @@ flowchart LR
     Actor2 --- UC_AbsReserving
 
     %% -------------------------------------------------------------
-    %% Extend & Include Relationships 
+    %% Extend & Include Relationships
     %% -------------------------------------------------------------
     UC_ViewFacility -. "<< extend >>" .-> UC_ViewMap
     UC_AbsReserving -. "<< extend >>" .-> UC_ViewFacility
@@ -2200,10 +2202,10 @@ flowchart LR
     %% -------------------------------------------------------------
     UC_ReservingFreely --> UC_AbsReserving
     UC_ReservingStudyGroup --> UC_AbsReserving
-    
+
     UC_CreateReservation --> UC_AbsManagingRoom
     UC_CancelReservation --> UC_AbsManagingRoom
-    
+
     UC_CreateStudyGroup --> UC_AbsManagingStudy
     UC_CancelStudyGroup --> UC_AbsManagingStudy
     UC_UpdateStudyGroup --> UC_AbsManagingStudy
@@ -2486,7 +2488,7 @@ flowchart LR
               <li>The system cancels the workflow block execution and rolls back any pending staging changes.</li>
               <li>The system surfaces a priority alert header bar onto the screen layout stating: "Timeslot reservation conflict encountered; this room slot has already been claimed."</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The active space booking matrix refreshes its visual structural layout layout immediately to show accurate states; database tables remain fully uncorrupted.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The active space booking matrix refreshes its visual structural layout immediately to show accurate states; database tables remain fully uncorrupted.</span>
           </li>
         </ul>
       </td>
@@ -2617,7 +2619,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-BF01 – Room Reservations (reused for canceling a room reservation)</em></p>
-        <p><em>Figure P-FAC-03-BF02 – Late Room Cancelation</em></p>
+        <p><em>Figure P-FAC-03-BF02 – Late Room Cancellation</em></p>
         <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-04-AF01 – Late Cancellation Warning</em></p>
       </td>
@@ -2966,8 +2968,8 @@ flowchart TD
     style StudyGroup fill:#fff,stroke:#333,stroke-width:2px
 ```
 
-
 ---
+
 ### UC-SG-01: Searching Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
@@ -3946,7 +3948,6 @@ flowchart TD
   </tbody>
 </table>
 
-
 ## VII. AI Recommendation
 
 ### Use case diagram
@@ -3958,7 +3959,7 @@ flowchart LR
         UC2(["<center>UC-AIR-01:<br>View Recommended Book</center>"])
         UC3(["<center>UC-AIR-02:<br>Reset AI Recommend</center>"])
   end
-    ActorUser(["<center>fa:fa-user User</center>"]) ~~~~ AIRecommendation 
+    ActorUser(["<center>fa:fa-user User</center>"]) ~~~~ AIRecommendation
     ActorUser --- UC2
     UC1 -. "<< extend >>" .-> UC2
     UC3 -. "<< extend >>" .-> UC2
@@ -3967,6 +3968,7 @@ flowchart LR
 ```
 
 ---
+
 ### UC-AIR-01: View Recommended Book
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
@@ -4097,7 +4099,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Workspace Context Active:</strong> The user is actively executing workspace visualization tasks within <code> UC-AIR-01</code>.</li>
+          <li><strong>Workspace Context Active:</strong> The user is actively executing workspace visualization tasks within <code>UC-AIR-01</code>.</li>
         </ul>
       </td>
     </tr>
@@ -4106,7 +4108,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> While actively viewing the recommended book collection lists, the user selects the <code>Renew</code> buttons.</li>
-          <li><strong>[System Response]:</strong> The system intercepts the request command payload and systematically invokes the AI Recommend Module .</li>
+          <li><strong>[System Response]:</strong> The system intercepts the request command payload and systematically invokes the AI Recommend Module.</li>
           <li><strong>[Data Processing]:</strong> The included AI Recommend Module processes the user's behaviors and evaluates a clean set of recommendations.</li>
           <li><strong>[Data Processing]:</strong> The system purges historical cache frames and overrides the active recommendation data array rows with the newly received listings.</li>
           <li><strong>[Display Result]:</strong> The system refreshes the client screen dashboard panel to render the fresh, updated recommended book list.</li>
@@ -4184,7 +4186,7 @@ flowchart LR
   end
     Librarian(["<center>fa:fa-user Librarian</center>"]) ======= LibrarianAdministration
     Librarian --- UC1 & UC6 & UC10 & UC8 & UC9 & UC4
-    
+
     UC2 --> UC1
     UC3 --> UC1
 
@@ -4197,6 +4199,7 @@ flowchart LR
 ```
 
 ---
+
 ### UC-LIB-01: Adding Books
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">

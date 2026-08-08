@@ -1,15 +1,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 # Usecase Diagram
-    Project: Modern Library Management System 
-    Course: CS300 – CSC13002 – Introduction to Software Engineering 
+    Project: Modern Library Management System
+    Course: CS300 – CSC13002 – Introduction to Software Engineering
     Group ID: 03
-    Group Name: AmeThyst 
+    Group Name: AmeThyst
     Assignment: PA4-2026
 
 Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Trần Lê Hoàng Gia
 
 ## Table of content
+
 - [Usecase Diagram](#usecase-diagram)
   - [Table of content](#table-of-content)
   - [Regulation](#regulation)
@@ -22,8 +23,8 @@ Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Mem
   - [Librarian Administration](#librarian-administration)
   - [Admin Administration](#admin-administration)
 
-
 ## Regulation
+
 ```mermaid
 flowchart RL
     %% Abstract Parent Actors
@@ -47,8 +48,7 @@ flowchart RL
 
 <div class="page"/>
 
-
-## Authentication 
+## Authentication
 
 ```mermaid
 flowchart LR
@@ -133,8 +133,8 @@ flowchart LR
 
 <div class="page"/>
 
-
 ## Books Exploration \& Interaction
+
 ```mermaid
 flowchart TD
     %% Actors 
@@ -256,8 +256,8 @@ flowchart LR
 
 <div class="page"/>
 
-
 ## Study Group
+
 ```mermaid
 flowchart TD
  subgraph StudyGroup["Study Group"]
@@ -302,6 +302,7 @@ flowchart TD
 <div class="page"/>
 
 ## AI Recommendations
+
 ```mermaid
 flowchart LR
  subgraph AIRecommendation["AI Recommendation"]
@@ -320,6 +321,7 @@ flowchart LR
 <div class="page"/>
 
 ## Librarian Administration
+
 ```mermaid
 flowchart LR
  subgraph LibrarianAdministration["Librarian Administration"]

@@ -40,7 +40,6 @@ The platform covers all core workflows spanning PA1 through PA4, including catal
 
 ## 2. C4 Model — Level 1: System Context Diagram
 
-
 ```mermaid
 flowchart LR
     %% Actors
@@ -82,6 +81,7 @@ flowchart LR
 ```
 
 ### 2.2 Diagram Mainflow Explanation
+
 A **Visitor** or **Reader** accesses the AmeThyst platform to browse books, manage reservations, and organize study group bookings. **Librarians** and **System Administrators** interact with the platform to manage physical inventory, execute checkouts/returns via PIN verification, and analyze operational metrics.
 
 The core system delegates identity checks to **Google Identity**, sends transactional emails via **Gmail SMTP**, hosts media on **Cloudinary**, and downloads transformer embedding model weights from the **Hugging Face Hub** during initialization when uncached locally.
