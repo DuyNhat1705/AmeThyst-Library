@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import pool from '../src/config/postgres.mjs';
 import * as recService from '../src/services/recommendation.services.mjs';
+import * as recController from '../src/controllers/recommendation.controllers.mjs';
 import net from 'net';
 
 // Mock postgres pool
@@ -29,13 +30,13 @@ vi.mock('../src/config/memgraph.config.mjs', () => {
   };
 });
 
-describe('AI Recommendation Services Integration Tests', () => {
+describe('AI Recommendation System - Vitest Test Suite', () => {
   let server;
   const port = 5999;
 
   beforeAll(async () => {
     process.env.RECOMMENDATION_PORT = String(port);
-    
+
     // Set up a dynamic mock TCP inference server that echoes back inputs with scores
     server = net.createServer((socket) => {
       socket.on('data', (data) => {
@@ -46,7 +47,7 @@ describe('AI Recommendation Services Integration Tests', () => {
             id: c.id,
             score: c.gcn_score || (0.9 - i * 0.05)
           })).sort((a, b) => b.score - a.score);
-          
+
           socket.write(JSON.stringify({ success: true, ranked }) + '\n');
         } catch (e) {
           socket.write(JSON.stringify({ success: false, error: e.message }) + '\n');
@@ -62,14 +63,14 @@ describe('AI Recommendation Services Integration Tests', () => {
   });
 
   beforeEach(() => {
-    // Clear mock histories and reset mock implementations to prevent test bleeding
+    vi.clearAllMocks();
     pool.query.mockReset();
     recService.invalidateUserRecommendationCache('test-user-id');
   });
 
-  describe('Cache Management & Invalidation', () => {
-    it('should fetch recommendations from database on cache miss and cache them', async () => {
-      // Mock PG response for active recommendations (at least 15 items)
+  // Test 1: Cache Management - Hit
+  describe('1. Cache Management - Hit', () => {
+    it('should return cached recommendations on subsequent calls without querying database', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
         book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
@@ -77,22 +78,23 @@ describe('AI Recommendation Services Integration Tests', () => {
         author: ['Author Name'],
         image_url: 'http://example.com/cover.jpg'
       }));
-      
+
       pool.query.mockResolvedValueOnce({ rows: mockActiveRecs });
 
-      // First call: cache miss
       const result1 = await recService.getUserRecommendations('test-user-id');
       expect(pool.query).toHaveBeenCalledTimes(1);
       expect(result1).toHaveLength(15);
       expect(result1[0].id).toBe('book-0');
 
-      // Second call: cache hit (should not call pool.query again)
       const result2 = await recService.getUserRecommendations('test-user-id');
-      expect(pool.query).toHaveBeenCalledTimes(1); // Still 1 call
+      expect(pool.query).toHaveBeenCalledTimes(1);
       expect(result2).toEqual(result1);
     });
+  });
 
-    it('should bypass cache and regenerate when cache is invalidated', async () => {
+  // Test 2: Cache Management - Miss & Invalidation
+  describe('2. Cache Management - Miss & Invalidation', () => {
+    it('should query database again after cache invalidation', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
         book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
@@ -100,26 +102,42 @@ describe('AI Recommendation Services Integration Tests', () => {
         author: ['Author Name'],
         image_url: 'http://example.com/cover.jpg'
       }));
-      
+
       pool.query.mockResolvedValue({ rows: mockActiveRecs });
 
-      // First fetch: cache miss
       await recService.getUserRecommendations('test-user-id');
       expect(pool.query).toHaveBeenCalledTimes(1);
 
-      // Invalidate cache
       recService.invalidateUserRecommendationCache('test-user-id');
 
-      // Second fetch: should hit DB again
       await recService.getUserRecommendations('test-user-id');
       expect(pool.query).toHaveBeenCalledTimes(2);
     });
   });
 
-  describe('TCP Socket Client Inference Handler', () => {
-    it('should communicate correctly over TCP socket', async () => {
-      // Mock GCN candidates and trending candidates queries to run generateRecommendations
-      // Memgraph session mock returning 15 GCN candidates
+  // Test 3: Database Fallback
+  describe('3. Database Error Resilience & Fallback', () => {
+    it('should return default fallback catalog books when database operation fails', async () => {
+      pool.query.mockRejectedValueOnce(new Error('PostgreSQL Connection Failed'));
+
+      const fallbackBooks = Array.from({ length: 15 }, (_, i) => ({
+        book_id: `fallback-book-${i}`,
+        title: `Fallback Book ${i}`,
+        author: ['Fallback Author'],
+        image_url: 'http://example.com/fallback.jpg'
+      }));
+      pool.query.mockResolvedValueOnce({ rows: fallbackBooks });
+
+      const recommendations = await recService.getUserRecommendations('test-user-id');
+      expect(recommendations).toHaveLength(15);
+      expect(recommendations[0].id).toBe('fallback-book-0');
+      expect(recommendations[0].score).toBe(0.0);
+    });
+  });
+
+  // Test 4: TCP Socket Inference Handler
+  describe('4. TCP Socket Inference Handler', () => {
+    it('should send payload over TCP socket and parse ranked inference results', async () => {
       const { getSession } = await import('../src/config/memgraph.config.mjs');
       const mockRun = vi.fn().mockResolvedValue({
         records: Array.from({ length: 15 }, (_, i) => ({
@@ -150,20 +168,13 @@ describe('AI Recommendation Services Integration Tests', () => {
         image_url: ''
       }));
 
-      // PG mock queries within generateRecommendations
       pool.query
-        // 1. Trending candidates
         .mockResolvedValueOnce({ rows: mockTrending })
-        // 2. Previously recommended history
         .mockResolvedValueOnce({ rows: [] })
-        // 3. Bulk features compilation
         .mockResolvedValueOnce({ rows: mockFeatures })
-        // 4. Save recommendations insertQuery
         .mockResolvedValueOnce({ rowCount: 15 })
-        // 5. Details query
         .mockResolvedValueOnce({ rows: mockDetails });
 
-      // Call generateRecommendations
       const result = await recService.generateRecommendations('test-user-id');
       expect(result).toHaveLength(15);
       expect(result[0].id).toBe('book-0');
@@ -171,35 +182,243 @@ describe('AI Recommendation Services Integration Tests', () => {
     });
   });
 
-  describe('Click Tracking and Cache Invalidation', () => {
-    it('should update recommendations in PostgreSQL and invalidate user cache on click log', async () => {
-      // Mock active recommendations with at least 15 items to prevent generation fallback
+  // Test 5: Graph Candidate Retrieval - Cold Start Fallback
+  describe('5. Memgraph Graph Candidate Retrieval - Cold Start Fallback', () => {
+    it('should trigger cold-start fallback query when graph candidates are fewer than threshold', async () => {
+      const { getSession } = await import('../src/config/memgraph.config.mjs');
+
+      const primaryRunMock = vi.fn()
+        .mockResolvedValueOnce({
+          records: Array.from({ length: 5 }, (_, i) => ({
+            get: (key) => (key === 'id' ? `interaction-book-${i}` : 0.8)
+          }))
+        })
+        .mockResolvedValueOnce({
+          records: Array.from({ length: 60 }, (_, i) => ({
+            get: (key) => (key === 'id' ? `fallback-book-${i}` : 0.5)
+          }))
+        });
+
+      getSession.mockReturnValue({
+        run: primaryRunMock,
+        close: vi.fn().mockResolvedValue(true)
+      });
+
+      const mockTrending = [{ book_id: 'trending-1', interactions: 20 }];
+      const mockFeatures = Array.from({ length: 65 }, (_, i) => ({
+        book_id: i < 5 ? `interaction-book-${i}` : `fallback-book-${i - 5}`,
+        global_available_copies: 10,
+        is_in_wishlist: false,
+        past_impressions_count: 0
+      }));
+      const mockDetails = Array.from({ length: 15 }, (_, i) => ({
+        book_id: `interaction-book-${i}`,
+        title: `Book ${i}`,
+        author: ['Author'],
+        image_url: ''
+      }));
+
+      pool.query
+        .mockResolvedValueOnce({ rows: mockTrending })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: mockFeatures })
+        .mockResolvedValueOnce({ rowCount: 15 })
+        .mockResolvedValueOnce({ rows: mockDetails });
+
+      await recService.generateRecommendations('test-user-id');
+      expect(primaryRunMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  // Test 6: Hard Guardrail - Out-of-Stock Item Filtering
+  describe('6. Hard Guardrail - Out-of-Stock Item Filtering', () => {
+    it('should exclude candidates with zero available copies from recommendation pool', async () => {
+      const { getSession } = await import('../src/config/memgraph.config.mjs');
+      getSession.mockReturnValue({
+        run: vi.fn().mockResolvedValue({
+          records: Array.from({ length: 15 }, (_, i) => ({
+            get: (key) => (key === 'id' ? `stock-book-${i}` : 0.9 - i * 0.02)
+          }))
+        }),
+        close: vi.fn().mockResolvedValue(true)
+      });
+
+      const mockFeatures = Array.from({ length: 15 }, (_, i) => ({
+        book_id: `stock-book-${i}`,
+        global_available_copies: i === 0 ? 0 : 5,
+        is_in_wishlist: false,
+        past_impressions_count: 0
+      }));
+
+      const mockDetails = Array.from({ length: 15 }, (_, i) => ({
+        book_id: `stock-book-${i}`,
+        title: `Stock Book ${i}`,
+        author: ['Author'],
+        image_url: ''
+      }));
+
+      pool.query
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: mockFeatures })
+        .mockResolvedValueOnce({ rowCount: 14 })
+        .mockResolvedValueOnce({ rows: mockDetails });
+
+      const result = await recService.generateRecommendations('test-user-id');
+      expect(result.some(book => book.id === 'stock-book-0')).toBe(false);
+    });
+  });
+
+  // Test 7: Skip Penalty Scoring Adjustment
+  describe('7. Skip Penalty Scoring Adjustment', () => {
+    it('should discount scores of repeatedly skipped books using penalty factor (0.65^impressions)', async () => {
+      const { getSession } = await import('../src/config/memgraph.config.mjs');
+      getSession.mockReturnValue({
+        run: vi.fn().mockResolvedValue({
+          records: [
+            { get: (key) => (key === 'id' ? 'book-skipped' : 0.9) },
+            { get: (key) => (key === 'id' ? 'book-fresh' : 0.8) }
+          ]
+        }),
+        close: vi.fn().mockResolvedValue(true)
+      });
+
+      const mockFeatures = [
+        { book_id: 'book-skipped', global_available_copies: 5, is_in_wishlist: false, past_impressions_count: 2 },
+        { book_id: 'book-fresh', global_available_copies: 5, is_in_wishlist: false, past_impressions_count: 0 }
+      ];
+
+      const mockDetails = [
+        { book_id: 'book-skipped', title: 'Skipped Book', author: ['Author'], image_url: '' },
+        { book_id: 'book-fresh', title: 'Fresh Book', author: ['Author'], image_url: '' }
+      ];
+
+      pool.query
+        .mockResolvedValueOnce({ rows: [] }) // Trending candidates
+        .mockResolvedValueOnce({ rows: [] }) // Recommendation history
+        .mockResolvedValueOnce({ rows: [] }) // Catalog supplementation (< 15 candidates)
+        .mockResolvedValueOnce({ rows: mockFeatures }) // Features compilation
+        .mockResolvedValueOnce({ rowCount: 2 }) // Recommendations insert
+        .mockResolvedValueOnce({ rows: mockDetails }); // Book details query
+
+      const result = await recService.generateRecommendations('test-user-id');
+      const skippedItem = result.find(item => item.id === 'book-skipped');
+      expect(skippedItem.score).toBeCloseTo(0.9 * Math.pow(0.65, 2), 4);
+    });
+  });
+
+  // Test 8: Candidate Pool Supplementation
+  describe('8. Candidate Pool Supplementation', () => {
+    it('should supplement candidate pool from catalog when initial candidates are fewer than 15', async () => {
+      const { getSession } = await import('../src/config/memgraph.config.mjs');
+      getSession.mockReturnValue({
+        run: vi.fn().mockResolvedValue({
+          records: [{ get: (key) => (key === 'id' ? 'few-book-1' : 0.9) }]
+        }),
+        close: vi.fn().mockResolvedValue(true)
+      });
+
+      const mockSupplementRows = Array.from({ length: 14 }, (_, i) => ({
+        book_id: `supp-book-${i}`
+      }));
+
+      const mockFeatures = [
+        { book_id: 'few-book-1', global_available_copies: 5, is_in_wishlist: false, past_impressions_count: 0 },
+        ...mockSupplementRows.map(r => ({
+          book_id: r.book_id,
+          global_available_copies: 5,
+          is_in_wishlist: false,
+          past_impressions_count: 0
+        }))
+      ];
+
+      const mockDetails = [
+        { book_id: 'few-book-1', title: 'Few Book 1', author: ['Author'], image_url: '' },
+        ...mockSupplementRows.map(r => ({ book_id: r.book_id, title: `Supp Book`, author: ['Author'], image_url: '' }))
+      ];
+
+      pool.query
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: mockSupplementRows })
+        .mockResolvedValueOnce({ rows: mockFeatures })
+        .mockResolvedValueOnce({ rowCount: 15 })
+        .mockResolvedValueOnce({ rows: mockDetails });
+
+      const result = await recService.generateRecommendations('test-user-id');
+      expect(result).toHaveLength(15);
+    });
+  });
+
+  // Test 9: Click Tracking & Sync Integration
+  describe('9. Click Tracking & Sync Integration', () => {
+    it('should update PostgreSQL record, invalidate cache, and invoke Memgraph sync on recommendation click', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
-        book_id: i === 0 ? 'book-1' : `book-other-${i}`,
+        book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
         title: 'Book',
         author: ['Author'],
         image_url: ''
       }));
-      
+
       pool.query.mockResolvedValueOnce({ rows: mockActiveRecs });
-      
-      // Populate cache
+
       await recService.getUserRecommendations('test-user-id');
       expect(pool.query).toHaveBeenCalledTimes(1);
 
-      // Mock update query
       pool.query.mockResolvedValueOnce({ rowCount: 1 });
 
-      // Click the recommendation
-      const logged = await recService.logRecommendationClick('test-user-id', 'book-1');
+      const logged = await recService.logRecommendationClick('test-user-id', 'book-0');
       expect(logged).toBe(true);
       expect(pool.query).toHaveBeenCalledTimes(2);
 
-      // Verify that the cache was cleared (next getUserRecommendations should call database again)
+      const { syncRecommendationClick } = await import('../src/services/memgraphSync.services.mjs');
+      expect(syncRecommendationClick).toHaveBeenCalledWith('test-user-id', 'book-0', expect.any(String));
+
       pool.query.mockResolvedValueOnce({ rows: mockActiveRecs });
       await recService.getUserRecommendations('test-user-id');
-      expect(pool.query).toHaveBeenCalledTimes(3); // 1st fetch + 1st click + 2nd fetch
+      expect(pool.query).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  // Test 10: Controller Endpoint Integration
+  describe('10. Controller Endpoint Integration', () => {
+    it('should handle getRecommendations API request and format historyBased and trending response', async () => {
+      const mockHistoryBased = Array.from({ length: 15 }, (_, i) => ({
+        id: `book-${i}`,
+        title: `History Book ${i}`,
+        author: 'Author',
+        coverImage: null,
+        score: 0.9 - i * 0.05
+      }));
+
+      const mockTrending = Array.from({ length: 6 }, (_, i) => ({
+        id: `trending-${i}`,
+        title: `Trending Book ${i}`,
+        author: 'Author',
+        coverImage: null
+      }));
+
+      pool.query
+        .mockResolvedValueOnce({ rows: mockHistoryBased.map(b => ({ book_id: b.id, score: b.score, title: b.title, author: [b.author], image_url: null })) })
+        .mockResolvedValueOnce({ rows: mockTrending.map(b => ({ book_id: b.id, interactions: 5 })) })
+        .mockResolvedValueOnce({ rows: mockTrending.map(b => ({ book_id: b.id, title: b.title, author: [b.author], image_url: null })) });
+
+      const req = { user: { userId: 'test-user-id' } };
+      const res = {
+        json: vi.fn(),
+        status: vi.fn().mockReturnThis()
+      };
+
+      await recController.getRecommendations(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        data: {
+          historyBased: expect.arrayContaining([expect.objectContaining({ id: 'book-0' })]),
+          trending: expect.arrayContaining([expect.objectContaining({ id: 'trending-0' })])
+        }
+      });
     });
   });
 });

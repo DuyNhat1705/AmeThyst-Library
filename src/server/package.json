@@ -24,6 +24,7 @@
   "test:auth:register:ui": "vitest --ui --project test_auth_register",
 
   "test:auth:tag": "vitest run --project \"test_auth*\" --tags-filter",
+  "test:recommendation": "vitest run --project test_recommendation",
 
   "start": "node src/server.mjs",
   "dev": "nodemon src/server.mjs"
