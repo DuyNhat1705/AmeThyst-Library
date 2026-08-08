@@ -1,6 +1,6 @@
-# Document Changes Log (PA2-2026 Resubmission)
+# Document Changes Log (PA2-2026 Resubmission & PA3/PA4 Refinements)
 
-This file tracks all modifications, refinements, and additions made to the project artifacts following Teaching Assistant (TA) feedback for Project Assignment 2 (PA2-2026).
+This file tracks all modifications, refinements, and additions made to the project artifacts following Teaching Assistant (TA) feedback for Project Assignment 2 (PA2-2026) and subsequent Use Case Diagram & Specification refinements.
 
 ---
 
@@ -52,3 +52,54 @@ This file tracks all modifications, refinements, and additions made to the proje
 3. **Missing Non-Functional Requirements:** Bounded gaps identified in **Privacy**, **Accessibility (a11y)**, and **Backup & Recovery (Disaster Recovery)**.
 
 ---
+
+## Section C: Use Case Diagram & Specification Refinements
+
+### Summary of Issues Addressed:
+1. **Official Use Case ID Integration:** Added explicit Use Case IDs (e.g., `UC-AUTH-01`, `UC-BK-01`, `UC-ADM-01`) directly into every Mermaid diagram node.
+2. **UML Relationship Arrows & Dependency Types:** Converted solid generalization (`-->`) arrows to `<<include>>` and `<<extend>>` dependencies for sub-routines, validation workflows (e.g., PIN verification), and helper utilities.
+3. **Actor Naming Standardization:** Standardized all actor names across all diagrams (`Logged User`, `General User`, `Guest`, `User`, `Librarian`, `Admin`, `Study Group Creator`, `Other User`) in compliance with system Regulation schema.
+4. **Specification Text & Cross-Reference Alignment:** Corrected internal Use Case ID typos and step references within `Use-CaseSpecification.md`.
+5. **Prototype Screen Additions & Standardized Naming for Alternative/Exception Flows:** Added dedicated UI prototype mockup figures for alternative and exception flows across Facility Reservation, Books, Study Group, and Administration use cases (`UC-FAC-01`, `UC-FAC-03`, `UC-FAC-04`, `UC-BK-06`, `UC-FAC-06`, `UC-ADM-07`), standardizing all file names to the `P-[UC-ID]-[BF|AF]0X-[kebab-case-description].[ext]` naming convention.
+6. **Omission of Alternative Flows for UC-FAC-05 & UC-FAC-07:** Removed unnecessary alternative exception flows for `UC-FAC-05 (Creating Study Group)` and `UC-FAC-07 (Updating Study Group Information)`, simplifying them to operate directly within standard validation boundaries.
+
+---
+
+### Detailed List of Refinements
+
+#### 1. Integration of Official Use Case IDs across Diagrams
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md`
+* **Issue:** Diagram nodes lacked official Use Case IDs (e.g. `UC-AUTH-01`, `UC-BK-01`, `UC-FAC-01`).
+* **Modification:** Updated node definitions in all 9 Mermaid diagrams across both files to display explicit IDs with HTML line breaks (`<center>UC-AUTH-01:<br>Register</center>`, `<center>UC-BK-01:<br>Book Searching</center>`, `<center>UC-ADM-01:<br>View User Account</center>`).
+
+#### 2. Actor Label Regularization and Typo Corrections
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md` (All Diagram Sections)
+* **Issue:** Inconsistent actor labels, typos (`logged user`, `user`, `other user`, `study group creator`), and misspelled titles (`AI Recommedation`, `View Recomended Book`).
+* **Modification:** Standardized all actor labels to match the Regulation schema (`Logged User`, `General User`, `Guest`, `User`, `Librarian`, `Admin`, `Study Group Creator`, `Other User`).
+
+#### 3. Correction of UML Relationship Arrows & Dependency Types
+* **Documents:** `management/PA3/Use-CaseDiagram.md` & `management/PA3/Use-CaseSpecification.md`
+* **Issue:** Solid generalization (`-->`) arrows misused for sub-routines, validation steps, and helper tools.
+* **Modification:**
+  * **Librarian Administration:** Converted `Confirming Book Borrowed` (`UC8`) and `Confirming Room Checkin` (`UC9`) to `<<include>>` dependencies pointing to `Verifying Pin` (`UC7`).
+  * **Books Exploration:** Converted `Generating Pin` (`UC_GenPin`) to an `<<include>>` dependency of `Creating Book Reservation` (`UC_CreateReserve`).
+  * **Study Group:** Converted helper actions (`Finding User By Email` to `<<include>>` under `Inviting Others`, `View Other Profile` to `<<extend>>` under `Interacting with Others`, `Managing Join Request` and `Out Study Group` to `<<include>>` under `Interacting with Study Group`).
+  * **Admin Administration:** Converted `Role Control` (`UC4`) and `Use-case Permission` (`UC5`) to `<<include>>` dependencies pointing to `Authorization` (`UC3`).
+
+#### 4. Addition and Standardization of UI Mockup Prototypes for Alternative & Exception Flows
+* **Documents:** `management/PA3/Use-CaseSpecification.md` & `management/PA4/Use-CaseSpecification.md`
+* **Issue:** Specification tables lacked visual prototype figures for alternative/exception flows, and newly added image files were not adhering to the system's strict `P-[UC-ID]-[BF|AF]0X-[kebab-case-description].[ext]` naming convention.
+* **Modification:**
+  * Renamed all newly added prototype images to comply with the project naming schema:
+    * **`UC-FAC-01 (View Library Map)`**: Renamed to `ImageGUI/Facility/P-FAC-01-AF01-library-map-unavailable.jfif` (*Figure P-FAC-01-AF01 – Library Map Unavailable*) illustrating map graphics loading failure.
+    * **`UC-FAC-03 (Room Reservation)`**: Renamed to `ImageGUI/Facility/P-FAC-03-AF01-reservation-limit-reached.jpg` (*Figure P-FAC-03-AF01 – Reservation Limit Reached*) and `ImageGUI/Facility/P-FAC-03-AF02-time-slot-conflict.jfif` (*Figure P-FAC-03-AF02 – Time Slot Conflict*) illustrating max active booking limits and schedule overlap warning popups.
+    * **`UC-FAC-04 (Canceling Room Reservation)`**: Renamed to `ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif` (*Figure P-FAC-04-AF01 – Late Cancellation Warning*) depicting penalty / late cancellation warning dialogs.
+    * **`UC-BK-06 (Canceling Book Reservation)`**: Added and renamed prototype screen `ImageGUI/Books/P-BK-06-AF01-cancellation-failed-network-error.jfif` (*Figure P-BK-06-AF01 – Cancellation Failed (Network Error)*) depicting network transaction error popups when canceling a hold.
+    * **`UC-FAC-06 (Canceling Study Group)`**: Added and renamed prototype screen `ImageGUI/Facility/P-FAC-06-AF01-disband-group-failed.jfif` (*Figure P-FAC-06-AF01 – Disband Study Group Failed*) illustrating failure dialogs when disbanding an active study group.
+    * **`UC-ADM-07 (View Statistics)`**: Renamed to `ImageGUI/Admin/P-ADM-07-AF01-empty-statistics-data.jfif` (*Figure P-ADM-07-AF01 – Empty Statistics Data*) showing empty state charts when no analytical data is available.
+  * Updated all image tag references, `alt` attributes, and figure captions across `Use-CaseSpecification.md` in both PA3 and PA4 to match the standardized file names.
+
+#### 5. Removal / Omission of Alternative Flows for UC-FAC-05 and UC-FAC-07
+* **Documents:** `management/PA3/Use-CaseSpecification.md` & `management/PA4/Use-CaseSpecification.md`
+* **Issue:** `UC-FAC-05 (Creating Study Group)` and `UC-FAC-07 (Updating Study Group Information)` previously listed redundant exception flow branches for form validation that belong within standard inline form handling.
+* **Modification:** Omitted alternative flows for both `UC-FAC-05` and `UC-FAC-07` by setting `Alternative / Exception Flows` to `None`, streamlining their specification tables to focus on core execution logic.

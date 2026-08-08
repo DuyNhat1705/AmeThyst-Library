@@ -18,6 +18,7 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
 | 23-Jul-2026 | 1.3 | Merge file content | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 | 24-Jul-2026 | 1.4 | Update format, fix spellings | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
 | 7-Aug-2026 | 2.0 | Update ImageGUI, fix diagrams | Phan Lê Anh Minh, Trần Lê Hoàng Gia |
+
 ## Table of Contents
 - [Use-Case Specification](#use-case-specification)
   - [Revision History](#revision-history)
@@ -2043,6 +2044,8 @@ flowchart TD
         <p><em>Figure P-BK-06-BF01 – Reservation Dashboard</em></p>
         <img src="ImageGUI/Books/P-BK-06-BF02-cancel-reservation.jfif" alt="UC-BK-06 Basic Flow 02 - Cancel Reservation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-BK-06-BF02 – Cancel Reservation</em></p>
+        <img src="ImageGUI/Books/P-BK-06-AF01-cancellation-failed-network-error.jfif" alt="UC-BK-06 Alternative Flow 01 - Cancellation Failed (Network Error)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-BK-06-AF01 – Cancellation Failed (Network Error)</em></p>
       </td>
     </tr>
   </tbody>
@@ -2296,6 +2299,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-01-BF01-library-map.jfif" alt="UC-FAC-01 Basic Flow 01 - Library Map" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-01-BF01 – Library Map</em></p>
+        <img src="ImageGUI/Facility/P-FAC-01-AF01-library-map-unavailable.jfif" alt="UC-FAC-01 Alternative Flow 01 - Library Map Unavailable" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-01-AF01 – Library Map Unavailable</em></p>
       </td>
     </tr>
   </tbody>
@@ -2514,6 +2519,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-03 Basic Flow 01 - Room Reservations" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-03-BF01 – Room Reservations</em></p>
+        <img src="ImageGUI/Facility/P-FAC-03-AF01-reservation-limit-reached.jpg" alt="UC-FAC-03 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-03-AF01 – Reservation Limit Reached</em></p>
+        <img src="ImageGUI/Facility/P-FAC-03-AF02-time-slot-conflict.jfif" alt="UC-FAC-03 Alternative Flow 02 - Time Slot Conflict" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-03-AF02 – Time Slot Conflict</em></p>
       </td>
     </tr>
   </tbody>
@@ -2608,6 +2617,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-03-BF01 – Room Reservations (reused for canceling a room reservation)</em></p>
+        <p><em>Figure P-FAC-03-BF02 – Late Room Cancelation</em></p>
+        <img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-04-AF01 – Late Cancellation Warning</em></p>
       </td>
     </tr>
   </tbody>
@@ -2804,6 +2816,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-06 Basic Flow - Study Group Management (shared with UC-FAC-07)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-07-BF01 – Study Group Management (reused for canceling a study group)</em></p>
+        <p><em>Figure P-FAC-06-BF02 – Cancellation Denial</em></p>
+        <img src="ImageGUI/Facility/P-FAC-06-AF01-disband-group-failed.jfif" alt="UC-FAC-06 Alternative Flow 01 - Disband Group Failed" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-06-AF01 – Disband Study Group Failed</em></p>
       </td>
     </tr>
   </tbody>
@@ -5600,6 +5615,8 @@ flowchart TD
       <td style="vertical-align: top;">
         <img src="ImageGUI/Admin/P-ADM-07-BF01-statistics-dashboard.png" alt="UC-ADM-07 Basic Flow 01 - Statistics Dashboard" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-ADM-07-BF01 – Statistics Dashboard</em></p>
+        <img src="ImageGUI/Admin/P-ADM-07-AF01-empty-statistics-data.jfif" alt="UC-ADM-07 Alternative Flow 01 - Empty Statistics Data " style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-ADM-07-BF02 – Empty Statistics Data</em></p>
       </td>
     </tr>
   </tbody>

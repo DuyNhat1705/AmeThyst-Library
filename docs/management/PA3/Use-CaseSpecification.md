@@ -2043,6 +2043,8 @@ flowchart TD
         <p><em>Figure P-BK-06-BF01 – Reservation Dashboard</em></p>
         <img src="ImageGUI/Books/P-BK-06-BF02-cancel-reservation.jfif" alt="UC-BK-06 Basic Flow 02 - Cancel Reservation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-BK-06-BF02 – Cancel Reservation</em></p>
+        <img src="ImageGUI/Books/P-BK-06-AF01-cancellation-failed-network-error.jfif" alt="UC-BK-06 Alternative Flow 01 - Cancellation Failed (Network Error)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-BK-06-AF01 – Cancellation Failed (Network Error)</em></p>
       </td>
     </tr>
   </tbody>
@@ -2229,6 +2231,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a user to view the interactive graphical spatial layout floor plan map of the physical library facilities.
+        <br><em>(Includes / Extends: Extended by UC-FAC-02 (View Facility Information).)</em>
       </td>
     </tr>
     <tr>
@@ -2288,7 +2291,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
-        None
+        View Facility Information: Location inside event flow: Selecting a specific room or point-of-interest zone node on visual map (Step 3).
       </td>
     </tr>
     <tr>
@@ -2296,6 +2299,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-01-BF01-library-map.jfif" alt="UC-FAC-01 Basic Flow 01 - Library Map" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-01-BF01 – Library Map</em></p>
+        <img src="ImageGUI/Facility/P-FAC-01-AF01-library-map-unavailable.jfif" alt="UC-FAC-01 Alternative Flow 01 - Library Map Unavailable" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-01-AF01 – Library Map Unavailable</em></p>
       </td>
     </tr>
   </tbody>
@@ -2322,7 +2327,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Extends the active map visualization layout dashboard panel to display specific metadata parameters, operational schedules, capacity thresholds, and equipment summaries for a chosen target room asset.
-        <br><em>(Includes / Extends: <strong>Extends UC-FAC-01 (View Library Map) — extension point: User selects a specific room or point-of-interest zone node anchor element within the visual map array space.</strong>)</em>
+        <br><em>(Includes / Extends: Extends UC-FAC-01 (View Library Map) — extension point: Selecting a specific room or point-of-interest zone node; Extended by UC-FAC-03 (Room Reservation).)</em>
       </td>
     </tr>
     <tr>
@@ -2382,7 +2387,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
-        None
+        Room Reservation: Location inside event flow: Selecting "Reserve Room" action from facility details pane (Step 4).
       </td>
     </tr>
     <tr>
@@ -2416,7 +2421,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Handles the end-to-end process enabling an authenticated user to directly secure a short-term reservation allocation block for an open facility study space. The system dynamically parses target timeline boundaries, enforces duration limits, resolves concurrent race conditions, locks availability grids, and outputs entrance validation credentials.
-        <br><em>(Includes / Extends: <strong>Specialized by Reserve room freely and Reserve room for Study group.</strong>)</em>
+        <br><em>(Includes / Extends: Extends UC-FAC-02 (View Facility Information) — extension point: Selecting "Reserve Room" from facility details; Includes {abstract} Managing Room; Specialized by Reserving Room Freely and Reserving Room for Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -2514,6 +2519,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-03 Basic Flow 01 - Room Reservations" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-03-BF01 – Room Reservations</em></p>
+        <img src="ImageGUI/Facility/P-FAC-03-AF01-reservation-limit-reached.jpg" alt="UC-FAC-03 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-03-AF01 – Reservation Limit Reached</em></p>
+        <img src="ImageGUI/Facility/P-FAC-03-AF02-time-slot-conflict.jfif" alt="UC-FAC-03 Alternative Flow 02 - Time Slot Conflict" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-03-AF02 – Time Slot Conflict</em></p>
       </td>
     </tr>
   </tbody>
@@ -2540,6 +2549,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Processes user request commands to void active outstanding room slot holds, returning spaces into open catalog index pools.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Room.)</em>
       </td>
     </tr>
     <tr>
@@ -2608,6 +2618,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-03-BF01 – Room Reservations (reused for canceling a room reservation)</em></p>
+        <img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-04-AF01 – Late Cancellation Warning</em></p>
       </td>
     </tr>
   </tbody>
@@ -2634,7 +2646,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Establishes a fresh data structure instance profile configuring collaborative team metadata, participant rosters, and organizer roles.
-        <br><em>(Includes / Extends: <strong>Child sub-routine supporting parent operational blocks under abstract parent {abstract} Managing Study Group.<br>Included in Reserve room for Study group workflow parameters.</strong>)</em>
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Study Group; Included in Reserving Room for Study Group workflow.)</em>
       </td>
     </tr>
     <tr>
@@ -2665,16 +2677,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
       <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li style="margin-bottom: 8px;">
-            <strong>Lexical Blocklist Interception (Step 4):</strong> If the chosen Group Name parameter contains words matching active system text blocklist filters:
-            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system blocks database row creation frameworks.</li>
-              <li>The system surfaces explicit text layout warnings and locks submission tools pending correction.</li>
-            </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Group registry tables experience zero modification tasks; the form setup view model remains open.</span>
-          </li>
-        </ul>
+        None
       </td>
     </tr>
     <tr>
@@ -2733,7 +2736,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Completely disbands an active study group team profile structure entity, purging associated participant mapping rows and linked metadata records.
-        <br><em>(Includes / Extends: <strong>Specializes abstract parent {abstract} Managing Study Group.</strong>)</em>
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -2804,6 +2807,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-06 Basic Flow - Study Group Management (shared with UC-FAC-07)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
         <p><em>Figure P-FAC-07-BF01 – Study Group Management (reused for canceling a study group)</em></p>
+        <img src="ImageGUI/Facility/P-FAC-06-AF01-disband-group-failed.jfif" alt="UC-FAC-06 Alternative Flow 01 - Disband Group Failed" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <p><em>Figure P-FAC-06-AF01 – Disband Study Group Failed</em></p>
       </td>
     </tr>
   </tbody>
@@ -2830,7 +2835,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Modifies operational configuration metadata parameters including capacity boundaries, name markers, visibility conditions, or subject categories for an existing active group.
-        <br><em>(Includes / Extends: <strong>Specializes abstract parent {abstract} Managing Study Group.</strong>)</em>
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -2862,16 +2867,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
       <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li style="margin-bottom: 8px;">
-            <strong>Active Capacity Floor Violation (Step 5):</strong> If the user attempts to reduce group maximum capacity limits below the total number of currently active registered members:
-            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system blocks database modification commands.</li>
-              <li>The system flashes validation errors and highlights the capacity text box layout elements in red.</li>
-            </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Data updates abort entirely; previous configuration fields remain unchanged inside database storage rows.</span>
-          </li>
-        </ul>
+        None
       </td>
     </tr>
     <tr>
@@ -2972,6 +2968,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a General User to search for study groups by keyword.
+        <br><em>(Includes / Extends: Standalone search use case under Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3076,6 +3073,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a General User to narrow a study group list using filter criteria such as subject, schedule, or size.
+        <br><em>(Includes / Extends: Standalone filtering use case under Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3178,6 +3176,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a General User to view detailed information about a specific study group.
+        <br><em>(Includes / Extends: Standalone detail view use case under Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3269,6 +3268,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Study Group Creator to invite a user to join a study group they manage.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Interacting with Others.)</em>
       </td>
     </tr>
     <tr>
@@ -3366,6 +3366,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Study Group Creator to remove an existing member from a study group they manage.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Interacting with Others.)</em>
       </td>
     </tr>
     <tr>
@@ -3467,6 +3468,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Study Group Creator to locate a registered user by email address, typically in support of inviting them to a study group.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Interacting with Others.)</em>
       </td>
     </tr>
     <tr>
@@ -3570,6 +3572,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Study Group Creator to view the profile information of another user, such as a study group member or a prospective invitee.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Interacting with Others.)</em>
       </td>
     </tr>
     <tr>
@@ -3661,6 +3664,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a user to submit a request to join a study group.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Join Request under {abstract} Interacting with Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3764,6 +3768,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a user to cancel a previously submitted, still-pending join request for a study group.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Join Request under {abstract} Interacting with Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3824,9 +3829,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px;">
-          <li>--</li>
-        </ul>
+        None
       </td>
     </tr>
     <tr>
@@ -3860,6 +3863,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows a study group member (Study Group Creator or Other User) to voluntarily leave a study group they currently belong to.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Interacting with Study Group.)</em>
       </td>
     </tr>
     <tr>
@@ -3971,6 +3975,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the user to view the list of books recommended by the AI recommendation engine.
+        <br><em>(Includes / Extends: Extended by UC-BK-04 (Add Book Favorite) and UC-AIR-02 (Reset AI Recommend).)</em>
       </td>
     </tr>
     <tr>
@@ -4033,9 +4038,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Reset AI Recommend:</strong> Location inside event flow: Viewing the recommended list grid (Step 4).</li>
-        </ul>
+        Add Book Favorite: Location inside event flow: Exposing favorite controls on recommended items (Step 4).<br>Reset AI Recommend: Location inside event flow: Viewing the recommended list grid (Step 4).
       </td>
     </tr>
     <tr>
@@ -4071,7 +4074,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the user to clear their current recommendation cache and trigger the system's background engine to immediately recalculate and regenerate a fresh book recommendation list.
-        <br><em>(Includes / Extends: <strong>Extends UC-AIR-01 (View Recommended Book) — extension point: Regenerating the displayed recommendation list.</strong>)</em>
+        <br><em>(Includes / Extends: Extends UC-AIR-01 (View Recommended Book) — extension point: Regenerating the displayed recommendation list.)</em>
       </td>
     </tr>
     <tr>
@@ -4201,6 +4204,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to add a new book record to the library catalog.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Book.)</em>
       </td>
     </tr>
     <tr>
@@ -4300,6 +4304,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to remove an existing book record from the library catalog.
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Book.)</em>
       </td>
     </tr>
     <tr>
@@ -4397,7 +4402,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to confirm that a borrowed book has been physically returned, updating the associated loan record.
-        <br><em>(Includes / Extends: <strong>Extended by Recording Loan (at Step 5).</strong>)</em>
+        <br><em>(Includes / Extends: Specializes abstract parent {abstract} Managing Book; Extended by Recording Loan (UC-LIB-04) at Step 5.)</em>
       </td>
     </tr>
     <tr>
@@ -4459,9 +4464,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
-        <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Recording Loan:</strong> Location inside event flow: After the return is confirmed (Step 5).</li>
-        </ul>
+        Recording Loan: Location inside event flow: After the return is confirmed (Step 5).
       </td>
     </tr>
     <tr>
@@ -4497,7 +4500,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Extends Confirming Book Return to let the Librarian record a new loan of a book to a member. It may also be initiated directly, outside the extension point.
-        <br><em>(Includes / Extends: <strong>Extends UC-LIB-03 (Confirming Book Return) at Step 5 when the Librarian chooses to loan the returned book to another member.</strong>)</em>
+        <br><em>(Includes / Extends: Extends UC-LIB-03 (Confirming Book Return) — extension point: Step 5 when the Librarian chooses to loan the returned book to another member.)</em>
       </td>
     </tr>
     <tr>
@@ -4594,6 +4597,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to confirm a book borrowing transaction by verifying the borrowing member's PIN.
+        <br><em>(Includes / Extends: Includes {abstract} Verifying Pin.)</em>
       </td>
     </tr>
     <tr>
@@ -4695,6 +4699,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to confirm a member's check-in to a library room by verifying the member's PIN.
+        <br><em>(Includes / Extends: Includes {abstract} Verifying Pin.)</em>
       </td>
     </tr>
     <tr>
@@ -4790,6 +4795,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Allows the Librarian to create and publish an announcement for library members.
+        <br><em>(Includes / Extends: Standalone announcement use case under Librarian Administration.)</em>
       </td>
     </tr>
     <tr>
