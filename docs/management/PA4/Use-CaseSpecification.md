@@ -266,11 +266,11 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-01-BF01-register-form.jfif" alt="UC-AUTH-01 Basic Flow 01 - Registration Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-01-BF01-register-form.jfif" alt="UC-AUTH-01 Basic Flow 01 - Registration Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-01-BF01 – Registration Form</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-01-AF01-email-already-registered.png" alt="UC-AUTH-01 Alternative Flow 01 - Email Already Registered" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-01-AF01-email-already-registered.png" alt="UC-AUTH-01 Alternative Flow 01 - Email Already Registered" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-01-AF01 – Email Already Registered</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-01-AF02-password-requirements-not-met.png" alt="UC-AUTH-01 Alternative Flow 02 - Password Requirements Not Met" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-01-AF02-password-requirements-not-met.png" alt="UC-AUTH-01 Alternative Flow 02 - Password Requirements Not Met" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-01-AF02 – Password Requirements Not Met</em></p>
       </td>
     </tr>
@@ -365,11 +365,11 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-02-BF01-check-inbox.jfif" alt="UC-AUTH-02 Basic Flow 01 - Check Inbox" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-02-BF01-check-inbox.jfif" alt="UC-AUTH-02 Basic Flow 01 - Check Inbox" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-02-BF01 – Check Inbox</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-02-BF02-verification-success.jfif" alt="UC-AUTH-02 Basic Flow 02 - Verification Success" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-02-BF02-verification-success.jfif" alt="UC-AUTH-02 Basic Flow 02 - Verification Success" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-02-BF02 – Verification Success</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-02-AF01-verification-link-expired.png" alt="UC-AUTH-02 Alternative Flow 01 - Verification Link Expired" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-02-AF01-verification-link-expired.png" alt="UC-AUTH-02 Alternative Flow 01 - Verification Link Expired" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-02-AF01 – Verification Link Expired</em></p>
       </td>
     </tr>
@@ -472,9 +472,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-03-BF01-google-account-selection.jfif" alt="UC-AUTH-03 Basic Flow 01 - Google Account Selection" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-03-BF01-google-account-selection.jfif" alt="UC-AUTH-03 Basic Flow 01 - Google Account Selection" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-03-BF01 – Google Account Selection</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-03-AF01-suspended-account.png" alt="UC-AUTH-03 Alternative Flow 01 - Suspended Account" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-03-AF01-suspended-account.png" alt="UC-AUTH-03 Alternative Flow 01 - Suspended Account" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-03-AF01 – Suspended Account</em></p>
       </td>
     </tr>
@@ -577,11 +577,11 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-04-BF01-login-form.jfif" alt="UC-AUTH-04 Basic Flow 01 - Login Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-04-BF01-login-form.jfif" alt="UC-AUTH-04 Basic Flow 01 - Login Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-04-BF01 – Login Form</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-04-AF01-invalid-credentials.png" alt="UC-AUTH-04 Alternative Flow 01 - Invalid Credentials" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-04-AF01-invalid-credentials.png" alt="UC-AUTH-04 Alternative Flow 01 - Invalid Credentials" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-04-AF01 – Invalid Credentials</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-02-BF01-check-inbox.jfif" alt="UC-AUTH-04 Alternative Flow - Unverified Account Re-verification (shared with UC-AUTH-02)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-02-BF01-check-inbox.jfif" alt="UC-AUTH-04 Alternative Flow - Unverified Account Re-verification (shared with UC-AUTH-02)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-02-BF01 – Check Inbox (reused for the unverified account flow)</em></p>
       </td>
     </tr>
@@ -676,9 +676,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-05-BF01-forgot-password-form.jfif" alt="UC-AUTH-05 Basic Flow 01 - Forgot Password Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-05-BF01-forgot-password-form.jfif" alt="UC-AUTH-05 Basic Flow 01 - Forgot Password Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-05-BF01 – Forgot Password Form</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-05-BF02-password-reset-success.png" alt="UC-AUTH-05 Basic Flow 02 - Password Reset Success" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-05-BF02-password-reset-success.png" alt="UC-AUTH-05 Basic Flow 02 - Password Reset Success" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-05-BF02 – Password Reset Success</em></p>
       </td>
     </tr>
@@ -781,11 +781,11 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-06-BF01-enter-otp.jfif" alt="UC-AUTH-06 Basic Flow 01 - Enter OTP" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-06-BF01-enter-otp.jfif" alt="UC-AUTH-06 Basic Flow 01 - Enter OTP" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-06-BF01 – Enter OTP</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-06-AF01-incorrect-otp.png" alt="UC-AUTH-06 Alternative Flow 01 - Incorrect OTP" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-06-AF01-incorrect-otp.png" alt="UC-AUTH-06 Alternative Flow 01 - Incorrect OTP" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-06-AF01 – Incorrect OTP</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-06-AF02-otp-expired.png" alt="UC-AUTH-06 Alternative Flow 02 - OTP Expired" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-06-AF02-otp-expired.png" alt="UC-AUTH-06 Alternative Flow 02 - OTP Expired" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-06-AF02 – OTP Expired</em></p>
       </td>
     </tr>
@@ -879,9 +879,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Authentication/P-AUTH-07-BF01-reset-password-form.jfif" alt="UC-AUTH-07 Basic Flow 01 - Reset Password Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-07-BF01-reset-password-form.jfif" alt="UC-AUTH-07 Basic Flow 01 - Reset Password Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-07-BF01 – Reset Password Form</em></p>
-        <img src="ImageGUI/Authentication/P-AUTH-07-AF01-passwords-do-not-match.png" alt="UC-AUTH-07 Alternative Flow 01 - Passwords Do Not Match" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Authentication/P-AUTH-07-AF01-passwords-do-not-match.png" alt="UC-AUTH-07 Alternative Flow 01 - Passwords Do Not Match" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AUTH-07-AF01 – Passwords Do Not Match</em></p>
       </td>
     </tr>
@@ -1013,9 +1013,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Profile/P-PROF-01-BF01-view-profile.jfif" alt="UC-PROF-01 Basic Flow 01 - View Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-01-BF01-view-profile.jfif" alt="UC-PROF-01 Basic Flow 01 - View Profile" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-01-BF01 – View Profile</em></p>
-        <img src="ImageGUI/Profile/P-PROF-01-AF01-profile-unavailable.png" alt="UC-PROF-01 Alternative Flow 01 - Profile Unavailable" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-01-AF01-profile-unavailable.png" alt="UC-PROF-01 Alternative Flow 01 - Profile Unavailable" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-01-AF01 – Profile Unavailable</em></p>
       </td>
     </tr>
@@ -1109,9 +1109,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Profile/P-PROF-01-BF01-view-profile.jfif" alt="UC-PROF-02 Basic Flow - Profile Screen (shared with UC-PROF-01)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-01-BF01-view-profile.jfif" alt="UC-PROF-02 Basic Flow - Profile Screen (shared with UC-PROF-01)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-01-BF01 – View Profile (reused as the profile editing entry screen)</em></p>
-        <img src="ImageGUI/Profile/P-PROF-02-AF01-invalid-profile-information.png" alt="UC-PROF-02 Alternative Flow 01 - Invalid Profile Information" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-02-AF01-invalid-profile-information.png" alt="UC-PROF-02 Alternative Flow 01 - Invalid Profile Information" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-02-AF01 – Invalid Profile Information</em></p>
       </td>
     </tr>
@@ -1225,12 +1225,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Profile/P-PROF-03-BF01-crop-avatar.jfif" alt="UC-PROF-03 Basic Flow 01 - Crop Avatar" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-03-BF01-crop-avatar.jfif" alt="UC-PROF-03 Basic Flow 01 - Crop Avatar" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-03-BF01 – Crop Avatar</em></p>
         <br>
-        <img src="ImageGUI/Profile/P-PROF-03-BF02-avatar-updated.jfif" alt="UC-PROF-03 Basic Flow 02 - Avatar Updated" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-03-BF02-avatar-updated.jfif" alt="UC-PROF-03 Basic Flow 02 - Avatar Updated" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-03-BF02 – Avatar Updated</em></p>
-        <img src="ImageGUI/Profile/P-PROF-03-AF01-file-too-large.png" alt="UC-PROF-03 Alternative Flow 01 - File Too Large" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-03-AF01-file-too-large.png" alt="UC-PROF-03 Alternative Flow 01 - File Too Large" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-03-AF01 – File Too Large</em></p>
       </td>
     </tr>
@@ -1343,13 +1343,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Profile/P-PROF-04-BF01-change-password-form.jfif" alt="UC-PROF-04 Basic Flow 01 - Change Password Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-04-BF01-change-password-form.jfif" alt="UC-PROF-04 Basic Flow 01 - Change Password Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-04-BF01 – Change Password Form</em></p>
-        <img src="ImageGUI/Profile/P-PROF-04-AF01-current-password-incorrect.png" alt="UC-PROF-04 Alternative Flow 01 - Current Password Incorrect" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-04-AF01-current-password-incorrect.png" alt="UC-PROF-04 Alternative Flow 01 - Current Password Incorrect" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-04-AF01 – Current Password Incorrect</em></p>
-        <img src="ImageGUI/Profile/P-PROF-04-AF02-password-requirements-not-met.png" alt="UC-PROF-04 Alternative Flow 02 - Password Requirements Not Met" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-04-AF02-password-requirements-not-met.png" alt="UC-PROF-04 Alternative Flow 02 - Password Requirements Not Met" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-04-AF02 – Password Requirements Not Met</em></p>
-        <img src="ImageGUI/Profile/P-PROF-04-AF03-passwords-do-not-match.png" alt="UC-PROF-04 Alternative Flow 03 - Passwords Do Not Match" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Profile/P-PROF-04-AF03-passwords-do-not-match.png" alt="UC-PROF-04 Alternative Flow 03 - Passwords Do Not Match" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-PROF-04-AF03 – Passwords Do Not Match</em></p>
       </td>
     </tr>
@@ -1524,9 +1524,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-01-BF01-search-results.jfif" alt="UC-BK-01 Basic Flow 01 - Search Results" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-01-BF01-search-results.jfif" alt="UC-BK-01 Basic Flow 01 - Search Results" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-01-BF01 – Search Results</em></p>
-        <img src="ImageGUI/Books/P-BK-01-AF01-no-search-results.png" alt="UC-BK-01 Alternative Flow 01 - No Search Results" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-01-AF01-no-search-results.png" alt="UC-BK-01 Alternative Flow 01 - No Search Results" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-01-AF01 – No Search Results</em></p>
       </td>
     </tr>
@@ -1619,9 +1619,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-02-BF01-book-filters.jfif" alt="UC-BK-02 Basic Flow 01 - Book Filters" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-02-BF01-book-filters.jfif" alt="UC-BK-02 Basic Flow 01 - Book Filters" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-02-BF01 – Book Filters</em></p>
-        <img src="ImageGUI/Books/P-BK-02-AF01-no-filter-results.png" alt="UC-BK-02 Alternative Flow 01 - No Filter Results" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-02-AF01-no-filter-results.png" alt="UC-BK-02 Alternative Flow 01 - No Filter Results" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-02-AF01 – No Filter Results</em></p>
       </td>
     </tr>
@@ -1732,7 +1732,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-03-BF01-book-details.jfif" alt="UC-BK-03 Basic Flow 01 - Book Details" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-03-BF01-book-details.jfif" alt="UC-BK-03 Basic Flow 01 - Book Details" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-03-BF01 – Book Details</em></p>
       </td>
     </tr>
@@ -1831,12 +1831,12 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-04-BF01-book-added-to-favorites.jfif" alt="UC-BK-04 Basic Flow 01 - Book Added to Favorites" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-04-BF01-book-added-to-favorites.jfif" alt="UC-BK-04 Basic Flow 01 - Book Added to Favorites" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-04-BF01 – Book Added to Favorites</em></p>
         <br>
-        <img src="ImageGUI/Books/P-BK-04-BF02-wishlist-dashboard.jfif" alt="UC-BK-04 Basic Flow 02 - Wishlist Dashboard" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-04-BF02-wishlist-dashboard.jfif" alt="UC-BK-04 Basic Flow 02 - Wishlist Dashboard" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-04-BF02 – Wishlist Dashboard</em></p>
-        <img src="ImageGUI/Books/P-BK-04-AF01-book-removed-from-favorites.png" alt="UC-BK-04 Alternative Flow 01 - Book Removed from Favorites" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-04-AF01-book-removed-from-favorites.png" alt="UC-BK-04 Alternative Flow 01 - Book Removed from Favorites" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-04-AF01 – Book Removed from Favorites</em></p>
       </td>
     </tr>
@@ -1940,11 +1940,11 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-05-BF01-book-reservation.jfif" alt="UC-BK-05 Basic Flow 01 - Book Reservation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-05-BF01-book-reservation.jfif" alt="UC-BK-05 Basic Flow 01 - Book Reservation" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-05-BF01 – Book Reservation</em></p>
-        <img src="ImageGUI/Books/P-BK-05-AF01-reservation-limit-reached.png" alt="UC-BK-05 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-05-AF01-reservation-limit-reached.png" alt="UC-BK-05 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-05-AF01 – Reservation Limit Reached</em></p>
-        <img src="ImageGUI/Books/P-BK-05-AF02-no-copies-available.png" alt="UC-BK-05 Alternative Flow 02 - No Copies Available" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-05-AF02-no-copies-available.png" alt="UC-BK-05 Alternative Flow 02 - No Copies Available" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-05-AF02 – No Copies Available</em></p>
       </td>
     </tr>
@@ -2040,11 +2040,11 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-06-BF01-reservation-dashboard.jfif" alt="UC-BK-06 Basic Flow 01 - Reservation Dashboard" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-06-BF01-reservation-dashboard.jfif" alt="UC-BK-06 Basic Flow 01 - Reservation Dashboard" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-06-BF01 – Reservation Dashboard</em></p>
-        <img src="ImageGUI/Books/P-BK-06-BF02-cancel-reservation.jfif" alt="UC-BK-06 Basic Flow 02 - Cancel Reservation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-06-BF02-cancel-reservation.jfif" alt="UC-BK-06 Basic Flow 02 - Cancel Reservation" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-06-BF02 – Cancel Reservation</em></p>
-        <img src="ImageGUI/Books/P-BK-06-AF01-cancellation-failed-network-error.jfif" alt="UC-BK-06 Alternative Flow 01 - Cancellation Failed (Network Error)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-06-AF01-cancellation-failed-network-error.jfif" alt="UC-BK-06 Alternative Flow 01 - Cancellation Failed (Network Error)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-06-AF01 – Cancellation Failed (Network Error)</em></p>
       </td>
     </tr>
@@ -2139,9 +2139,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Books/P-BK-07-BF01-generated-pickup-pin.jfif" alt="UC-BK-07 Basic Flow 01 - Generated Pickup PIN" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-07-BF01-generated-pickup-pin.jfif" alt="UC-BK-07 Basic Flow 01 - Generated Pickup PIN" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-07-BF01 – Generated Pickup PIN</em></p>
-        <img src="ImageGUI/Books/P-BK-07-AF01-pickup-pin-expired.png" alt="UC-BK-07 Alternative Flow 01 - Pickup PIN Expired" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Books/P-BK-07-AF01-pickup-pin-expired.png" alt="UC-BK-07 Alternative Flow 01 - Pickup PIN Expired" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-BK-07-AF01 – Pickup PIN Expired</em></p>
       </td>
     </tr>
@@ -2297,9 +2297,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-01-BF01-library-map.jfif" alt="UC-FAC-01 Basic Flow 01 - Library Map" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-01-BF01-library-map.jfif" alt="UC-FAC-01 Basic Flow 01 - Library Map" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-01-BF01 – Library Map</em></p>
-        <img src="ImageGUI/Facility/P-FAC-01-AF01-library-map-unavailable.jfif" alt="UC-FAC-01 Alternative Flow 01 - Library Map Unavailable" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-01-AF01-library-map-unavailable.jfif" alt="UC-FAC-01 Alternative Flow 01 - Library Map Unavailable" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-01-AF01 – Library Map Unavailable</em></p>
       </td>
     </tr>
@@ -2393,7 +2393,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-02-BF01-facility-information.jfif" alt="UC-FAC-02 Basic Flow 01 - Facility Information" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-02-BF01-facility-information.jfif" alt="UC-FAC-02 Basic Flow 01 - Facility Information" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-02-BF01 – Facility Information</em></p>
       </td>
     </tr>
@@ -2517,11 +2517,11 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-03 Basic Flow 01 - Room Reservations" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-03 Basic Flow 01 - Room Reservations" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-BF01 – Room Reservations</em></p>
-        <img src="ImageGUI/Facility/P-FAC-03-AF01-reservation-limit-reached.jpg" alt="UC-FAC-03 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-AF01-reservation-limit-reached.jpg" alt="UC-FAC-03 Alternative Flow 01 - Reservation Limit Reached" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-AF01 – Reservation Limit Reached</em></p>
-        <img src="ImageGUI/Facility/P-FAC-03-AF02-time-slot-conflict.jfif" alt="UC-FAC-03 Alternative Flow 02 - Time Slot Conflict" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-AF02-time-slot-conflict.jfif" alt="UC-FAC-03 Alternative Flow 02 - Time Slot Conflict" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-AF02 – Time Slot Conflict</em></p>
       </td>
     </tr>
@@ -2615,10 +2615,10 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-BF01 – Room Reservations (reused for canceling a room reservation)</em></p>
         <p><em>Figure P-FAC-03-BF02 – Late Room Cancelation</em></p>
-        <img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-04-AF01 – Late Cancellation Warning</em></p>
       </td>
     </tr>
@@ -2712,12 +2712,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-05-BF01-create-study-group-form.jfif" alt="UC-FAC-05 Basic Flow 01 - Create Study Group Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-05-BF01-create-study-group-form.jfif" alt="UC-FAC-05 Basic Flow 01 - Create Study Group Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-05-BF01 – Create Study Group Form</em></p>
         <br>
-        <img src="ImageGUI/Facility/P-FAC-05-BF02-study-group-created.jfif" alt="UC-FAC-05 Basic Flow 02 - Study Group Created" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-05-BF02-study-group-created.jfif" alt="UC-FAC-05 Basic Flow 02 - Study Group Created" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-05-BF02 – Study Group Created</em></p>
-        <img src="ImageGUI/Facility/P-FAC-05-BF03-your-study-groups.jfif" alt="UC-FAC-05 Basic Flow 03 - Your Study Groups" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-05-BF03-your-study-groups.jfif" alt="UC-FAC-05 Basic Flow 03 - Your Study Groups" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-05-BF03 – Your Study Groups</em></p>
       </td>
     </tr>
@@ -2814,10 +2814,10 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-06 Basic Flow - Study Group Management (shared with UC-FAC-07)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-06 Basic Flow - Study Group Management (shared with UC-FAC-07)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-07-BF01 – Study Group Management (reused for canceling a study group)</em></p>
         <p><em>Figure P-FAC-06-BF02 – Cancellation Denial</em></p>
-        <img src="ImageGUI/Facility/P-FAC-06-AF01-disband-group-failed.jfif" alt="UC-FAC-06 Alternative Flow 01 - Disband Group Failed" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-06-AF01-disband-group-failed.jfif" alt="UC-FAC-06 Alternative Flow 01 - Disband Group Failed" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-06-AF01 – Disband Study Group Failed</em></p>
       </td>
     </tr>
@@ -2912,7 +2912,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-07 Basic Flow 01 - Study Group Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-07-BF01-study-group-management.jfif" alt="UC-FAC-07 Basic Flow 01 - Study Group Management" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-07-BF01 – Study Group Management</em></p>
       </td>
     </tr>
@@ -3061,9 +3061,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-01-BF01-search-study-groups.png" alt="UC-SG-01 Basic Flow 01 - Search Study Groups" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-01-BF01-search-study-groups.png" alt="UC-SG-01 Basic Flow 01 - Search Study Groups" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-01-BF01 – Search Study Groups</em></p>
-        <img src="ImageGUI/StudyGroup/P-SG-01-AF02-no-search-results.png" alt="UC-SG-01 Alternative Flow 02 - No Search Results" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-01-AF02-no-search-results.png" alt="UC-SG-01 Alternative Flow 02 - No Search Results" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-01-AF02 – No Search Results</em></p>
       </td>
     </tr>
@@ -3165,7 +3165,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-02-BF01-filter-study-groups.png" alt="UC-SG-02 Basic Flow 01 - Filter Study Groups" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-02-BF01-filter-study-groups.png" alt="UC-SG-02 Basic Flow 01 - Filter Study Groups" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-02-BF01 – Filter Study Groups</em></p>
       </td>
     </tr>
@@ -3256,7 +3256,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-03-BF01-study-group-details.png" alt="UC-SG-03 Basic Flow 01 - Study Group Details" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-03-BF01-study-group-details.png" alt="UC-SG-03 Basic Flow 01 - Study Group Details" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-03-BF01 – Study Group Details</em></p>
       </td>
     </tr>
@@ -3351,9 +3351,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-04-BF01-manage-group-members.png" alt="UC-SG-04 Basic Flow 01 - Manage Group Members" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-04-BF01-manage-group-members.png" alt="UC-SG-04 Basic Flow 01 - Manage Group Members" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-04-BF01 – Manage Group Members</em></p>
-        <img src="ImageGUI/StudyGroup/P-SG-04-AF01-user-already-member.png" alt="UC-SG-04 Alternative Flow 01 - User Already a Member" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-04-AF01-user-already-member.png" alt="UC-SG-04 Alternative Flow 01 - User Already a Member" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-04-AF01 – User Already a Member</em></p>
       </td>
     </tr>
@@ -3454,7 +3454,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-05-BF01-remove-group-member.png" alt="UC-SG-05 Basic Flow 01 - Remove Group Member" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-05-BF01-remove-group-member.png" alt="UC-SG-05 Basic Flow 01 - Remove Group Member" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-05-BF01 – Remove Group Member</em></p>
       </td>
     </tr>
@@ -3553,11 +3553,11 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-07-BF01-view-other-profile.png" alt="UC-SG-06 Basic Flow - Found User Profile (shared with UC-SG-07)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-07-BF01-view-other-profile.png" alt="UC-SG-06 Basic Flow - Found User Profile (shared with UC-SG-07)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-07-BF01 – View Other Profile (reused as the found-user result screen)</em></p>
-        <img src="ImageGUI/StudyGroup/P-SG-06-AF01-invalid-email.png" alt="UC-SG-06 Alternative Flow 01 - Invalid Email" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-06-AF01-invalid-email.png" alt="UC-SG-06 Alternative Flow 01 - Invalid Email" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-06-AF01 – Invalid Email</em></p>
-        <img src="ImageGUI/StudyGroup/P-SG-06-AF02-user-not-found.png" alt="UC-SG-06 Alternative Flow 02 - User Not Found" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-06-AF02-user-not-found.png" alt="UC-SG-06 Alternative Flow 02 - User Not Found" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-06-AF02 – User Not Found</em></p>
       </td>
     </tr>
@@ -3648,7 +3648,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-07-BF01-view-other-profile.png" alt="UC-SG-07 Basic Flow 01 - View Other Profile" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-07-BF01-view-other-profile.png" alt="UC-SG-07 Basic Flow 01 - View Other Profile" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-07-BF01 – View Other Profile</em></p>
       </td>
     </tr>
@@ -3751,7 +3751,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-08-BF01-create-join-request.png" alt="UC-SG-08 Basic Flow 01 - Create Join Request" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-08-BF01-create-join-request.png" alt="UC-SG-08 Basic Flow 01 - Create Join Request" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-08-BF01 – Create Join Request</em></p>
       </td>
     </tr>
@@ -3847,7 +3847,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-09-BF01-cancel-join-request.png" alt="UC-SG-09 Basic Flow 01 - Cancel Join Request" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-09-BF01-cancel-join-request.png" alt="UC-SG-09 Basic Flow 01 - Cancel Join Request" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-09-BF01 – Cancel Join Request</em></p>
       </td>
     </tr>
@@ -3939,7 +3939,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/StudyGroup/P-SG-10-BF01-leave-study-group.png" alt="UC-SG-10 Basic Flow 01 - Leave Study Group" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-10-BF01-leave-study-group.png" alt="UC-SG-10 Basic Flow 01 - Leave Study Group" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-SG-10-BF01 – Leave Study Group</em></p>
       </td>
     </tr>
@@ -4056,9 +4056,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Recommendation/P-AIR-01-BF01-recommended-books.jfif" alt="UC-AIR-01 Basic Flow 01 - Recommended Books" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Recommendation/P-AIR-01-BF01-recommended-books.jfif" alt="UC-AIR-01 Basic Flow 01 - Recommended Books" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AIR-01-BF01 – Recommended Books</em></p>
-        <img src="ImageGUI/Recommendation/P-AIR-01-AF01-recommendation-error.png" alt="UC-AIR-01 Alternative Flow 01 - Recommendation Error" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Recommendation/P-AIR-01-AF01-recommendation-error.png" alt="UC-AIR-01 Alternative Flow 01 - Recommendation Error" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AIR-01-AF01 – Recommendation Error</em></p>
       </td>
     </tr>
@@ -4155,7 +4155,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Recommendation/P-AIR-02-BF01-reset-recommendation-confirmation.png" alt="UC-AIR-02 Basic Flow 01 - Reset Recommendation Confirmation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Recommendation/P-AIR-02-BF01-reset-recommendation-confirmation.png" alt="UC-AIR-02 Basic Flow 01 - Reset Recommendation Confirmation" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-AIR-02-BF01 – Reset Recommendation Confirmation</em></p>
       </td>
     </tr>
@@ -4285,9 +4285,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-01-BF01-book-management.png" alt="UC-LIB-01 Basic Flow 01 - Book Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-01-BF01-book-management.png" alt="UC-LIB-01 Basic Flow 01 - Book Management" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-01-BF01 – Book Management</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-01-BF02-add-book-form.png" alt="UC-LIB-01 Basic Flow 02 - Add Book Form" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-01-BF02-add-book-form.png" alt="UC-LIB-01 Basic Flow 02 - Add Book Form" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-01-BF02 – Add Book Form</em></p>
       </td>
     </tr>
@@ -4384,7 +4384,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-02-BF01-remove-book-confirmation.png" alt="UC-LIB-02 Basic Flow 01 - Remove Book Confirmation" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-02-BF01-remove-book-confirmation.png" alt="UC-LIB-02 Basic Flow 01 - Remove Book Confirmation" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-02-BF01 – Remove Book Confirmation</em></p>
       </td>
     </tr>
@@ -4482,9 +4482,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-03-BF01-book-return-inspection.png" alt="UC-LIB-03 Basic Flow 01 - Book Return Inspection" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-03-BF01-book-return-inspection.png" alt="UC-LIB-03 Basic Flow 01 - Book Return Inspection" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-03-BF01 – Book Return Inspection</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-03-BF02-confirm-book-return.png" alt="UC-LIB-03 Basic Flow 02 - Confirm Book Return" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-03-BF02-confirm-book-return.png" alt="UC-LIB-03 Basic Flow 02 - Confirm Book Return" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-03-BF02 – Confirm Book Return</em></p>
       </td>
     </tr>
@@ -4581,7 +4581,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-04-BF01-recording-loan-summary.png" alt="UC-LIB-04 Basic Flow 01 - Recording Loan Summary" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-04-BF01-recording-loan-summary.png" alt="UC-LIB-04 Basic Flow 01 - Recording Loan Summary" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-04-BF01 – Recording Loan Summary</em></p>
       </td>
     </tr>
@@ -4676,13 +4676,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-05-BF01-book-pickup-dashboard.png" alt="UC-LIB-05 Basic Flow 01 - Book Pickup Dashboard" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-05-BF01-book-pickup-dashboard.png" alt="UC-LIB-05 Basic Flow 01 - Book Pickup Dashboard" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-05-BF01 – Book Pickup Dashboard</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-05-BF02-verify-borrowing-pin.png" alt="UC-LIB-05 Basic Flow 02 - Verify Borrowing PIN" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-05-BF02-verify-borrowing-pin.png" alt="UC-LIB-05 Basic Flow 02 - Verify Borrowing PIN" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-05-BF02 – Verify Borrowing PIN</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-05-BF03-borrower-details.png" alt="UC-LIB-05 Basic Flow 03 - Borrower Details" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-05-BF03-borrower-details.png" alt="UC-LIB-05 Basic Flow 03 - Borrower Details" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-05-BF03 – Borrower Details</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-05-AF01-incorrect-pin.png" alt="UC-LIB-05 Alternative Flow 01 - Incorrect PIN" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-05-AF01-incorrect-pin.png" alt="UC-LIB-05 Alternative Flow 01 - Incorrect PIN" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-05-AF01 – Incorrect PIN</em></p>
       </td>
     </tr>
@@ -4777,7 +4777,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-06-BF01-room-reservations.png" alt="UC-LIB-06 Basic Flow 01 - Room Reservations" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-06-BF01-room-reservations.png" alt="UC-LIB-06 Basic Flow 01 - Room Reservations" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-06-BF01 – Room Reservations</em></p>
       </td>
     </tr>
@@ -4872,9 +4872,9 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Librarian/P-LIB-07-BF01-announcement-management.png" alt="UC-LIB-07 Basic Flow 01 - Announcement Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-07-BF01-announcement-management.png" alt="UC-LIB-07 Basic Flow 01 - Announcement Management" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-07-BF01 – Announcement Management</em></p>
-        <img src="ImageGUI/Librarian/P-LIB-07-AF01-invalid-announcement-content.png" alt="UC-LIB-07 Alternative Flow 01 - Invalid Announcement Content" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-07-AF01-invalid-announcement-content.png" alt="UC-LIB-07 Alternative Flow 01 - Invalid Announcement Content" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-LIB-07-AF01 – Invalid Announcement Content</em></p>
       </td>
     </tr>
@@ -5005,7 +5005,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-01-BF01-user-management.png" alt="UC-ADM-01 Basic Flow 01 - User Management" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-01-BF01-user-management.png" alt="UC-ADM-01 Basic Flow 01 - User Management" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-01-BF01 – User Management</em></p>
       </td>
     </tr>
@@ -5108,7 +5108,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-01-BF01-user-management.png" alt="UC-ADM-02 Basic Flow - User Management (shared with UC-ADM-01)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-01-BF01-user-management.png" alt="UC-ADM-02 Basic Flow - User Management (shared with UC-ADM-01)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-01-BF01 – User Management (reused as the CSV report entry screen)</em></p>
       </td>
     </tr>
@@ -5213,7 +5213,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-03 Basic Flow - Roles and Permissions (shared with UC-ADM-04)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-03 Basic Flow - Roles and Permissions (shared with UC-ADM-04)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-04-BF01 – Roles and Permissions (reused for authorization)</em></p>
       </td>
     </tr>
@@ -5317,7 +5317,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-04 Basic Flow 01 - Roles and Permissions" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-04 Basic Flow 01 - Roles and Permissions" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-04-BF01 – Roles and Permissions</em></p>
       </td>
     </tr>
@@ -5421,7 +5421,7 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-05 Basic Flow - Roles and Permissions (shared with UC-ADM-04)" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-05 Basic Flow - Roles and Permissions (shared with UC-ADM-04)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-04-BF01 – Roles and Permissions (reused for use-case permission)</em></p>
       </td>
     </tr>
@@ -5517,9 +5517,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-06-BF01-system-configuration.png" alt="UC-ADM-06 Basic Flow 01 - System Configuration" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-06-BF01-system-configuration.png" alt="UC-ADM-06 Basic Flow 01 - System Configuration" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-06-BF01 – System Configuration</em></p>
-        <img src="ImageGUI/Admin/P-ADM-06-AF01-invalid-configuration-value.jpg" alt="UC-ADM-06 Alternative Flow 01 - Invalid Configuration Value" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-06-AF01-invalid-configuration-value.jpg" alt="UC-ADM-06 Alternative Flow 01 - Invalid Configuration Value" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-06-AF01 – Invalid Configuration Value</em></p>
       </td>
     </tr>
@@ -5613,9 +5613,9 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
-        <img src="ImageGUI/Admin/P-ADM-07-BF01-statistics-dashboard.png" alt="UC-ADM-07 Basic Flow 01 - Statistics Dashboard" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-07-BF01-statistics-dashboard.png" alt="UC-ADM-07 Basic Flow 01 - Statistics Dashboard" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-07-BF01 – Statistics Dashboard</em></p>
-        <img src="ImageGUI/Admin/P-ADM-07-AF01-empty-statistics-data.jfif" alt="UC-ADM-07 Alternative Flow 01 - Empty Statistics Data " style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-07-AF01-empty-statistics-data.jfif" alt="UC-ADM-07 Alternative Flow 01 - Empty Statistics Data " style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-ADM-07-BF02 – Empty Statistics Data</em></p>
       </td>
     </tr>
