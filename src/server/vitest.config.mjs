@@ -40,6 +40,33 @@ export default defineConfig({
         },
       },
 
+      {
+        test: {
+          name: 'test_library_reserve',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/library.reserve.service.spec.mjs',
+            'tests/controllers/library.reserve.controller.spec.mjs',
+            'tests/middlewares/library.reserve.middleware.spec.mjs',
+          ],
+        },
+      },
+
+      {
+        test: {
+          name: 'test_pin_verification',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/dashboard.user.pin.service.spec.mjs',
+            'tests/services/dashboard.librarian.pin.service.spec.mjs',
+            'tests/controllers/dashboard.user.pin.controller.spec.mjs',
+            'tests/controllers/dashboard.librarian.pin.controller.spec.mjs',
+          ],
+        },
+      },
+
       // To add another auth sub-feature (e.g. Login), copy the block above,
       // keep the "test_auth_" prefix so it groups under --project "test_auth*",
       // then update name + include + tags accordingly:
