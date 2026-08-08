@@ -31,7 +31,7 @@ ightarrow$ `General User`) and restructured abstract organizational use cases in
 
 ### 3. Actor Label Regularization and Typo Corrections
 * **Documents:** `management/PA4/Use-CaseDiagram.md` & `management/PA4/Use-CaseSpecification.md` (All Diagram Sections)
-* **Issue:** Inconsistent actor labels, typos (`logged user`, `user`, `other user`, `study group creator`), and misspelled titles (`AI Recommedation`, `View Recomended Book`).
+* **Issue:** Inconsistent actor labels, typos (`logged user`, `user`, `other user`, `study group creator`), and misspelled titles (`AI Recommendation`, `View Recommended Book`).
 * **Modification:** 
   * Regularized all actor labels to match the Regulation schema (`Logged User`, `General User`, `Guest`, `User`, `Librarian`, `Admin`, `Study Group Creator`, `Other User`).
   * Fixed typos in AI Recommendation (`AI Recommendation`, `View Recommended Book`) and Profile Management (`logged user` $

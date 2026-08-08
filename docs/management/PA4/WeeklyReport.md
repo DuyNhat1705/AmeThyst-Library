@@ -70,12 +70,12 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
   - **Vũ Duy Nhất**:
     - Completed task
       - Deployment Diagram (5 points)
-    -  To-do task
-       -  Overview and Merge Code
-       -  AI Usage Report + Weekly Report (5 points)
-    -  Obstacles/Issues
-       -  Editing diagrams using Mermaid script is quite hard.
-       -  Need to review the system overview to describe the components.
+    - To-do task
+       - Overview and Merge Code
+       - AI Usage Report + Weekly Report (5 points)
+    - Obstacles/Issues
+       - Editing diagrams using Mermaid script is quite hard.
+       - Need to review the system overview to describe the components.
   - **Trần Lê Hoàng Gia**
     - Completed task
       - Software Architecture: System Context Diagram (15 points)
@@ -83,8 +83,8 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
       - Write the remain test cases for AI Recommendation
       - Complete preparation of SQL, snapshot and cypherl files
     - Obstacles/Issues
-       -  Editing diagrams using Mermaid script is quite hard.
-       -  Need to review the system overview to describe the components.
+       - Editing diagrams using Mermaid script is quite hard.
+       - Need to review the system overview to describe the components.
   - **Phan Lê Anh Minh**
     - Completed task: None
     - To-do task
@@ -103,12 +103,12 @@ Performed by: Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Vũ D
     - To-do task
       - Fix bugs the implemented features if any
     - Obstacles/Issues
-      -  Editing diagrams using Mermaid script is quite hard.
-      -  Need to review the system overview to describe the components.
+      - Editing diagrams using Mermaid script is quite hard.
+      - Need to review the system overview to describe the components.
 - **Action:**
   - **Vũ Duy Nhất**: Update the physical ERD with the newly added fields and tables in the database.
   - **Trần Lê Hoàng Gia**: Update the Use-Case Diagram based on TA's feedback
-  - **Phan Lê Anh Minh**: Updat the Use-Case Specification based on TA's feedback
+  - **Phan Lê Anh Minh**: Update the Use-Case Specification based on TA's feedback
 - **Summary of the meeting:** Firstly, the team reviewed the overall progress and confirmed that the product was essentially complete, with the project entering the bug-fixing and unit testing refinement phase. The team then conducted a collective overview and evaluation of the C4 architecture diagrams—covering the System Context, Container, and Component diagrams—to deepen the team's shared understanding of the system structure and ensure consistency across documents. Additionally, the team discussed feedback received from the TA regarding the Use-Case Diagram and Use-Case Specification, and proposed concrete revision strategies to address the identified issues. Finally, the team leader summarized the remaining work needed to fully complete Sprint 4 and provided implementation ideas to guide each member's next steps.
 ## III. Task Screenshot on Jira (Week 1: 27/7 - 2/8 & Week 2: 3/8 - 8/8)
 ![Tasks on Jira in Sprint 4](JiraTaskImage/Sprint4_Task.png)
