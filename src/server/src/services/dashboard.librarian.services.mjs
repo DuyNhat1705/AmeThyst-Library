@@ -1,6 +1,87 @@
 import pool from '../config/postgres.mjs';
 import { calculateTotalPenalty } from '../utils/penalty.utils.mjs';
 import { systemConfigurationService } from './system-configuration.services.mjs';
+import * as roomModel from '../models/room.models.mjs';
+import { emitRoomDashboardChanged } from '../config/socket.mjs';
+
+/**
+ * Branch-scoped overview statistics for the librarian room dashboard.
+ * @param {number} branchId
+ * @returns {Promise<Object>}
+ */
+export const getRoomsOverview = async (branchId) => {
+  const stats = await roomModel.getRoomsOverviewStats(branchId);
+  return { branchId, ...stats };
+};
+
+/**
+ * Branch-scoped, paginated active reservations list.
+ * @param {number} branchId
+ * @param {{search?: string, status?: string, from?: string, to?: string, page?: number, limit?: number}} [filters={}]
+ * @returns {Promise<{items: Array, pagination: Object}>}
+ */
+export const getActiveReservations = async (branchId, filters = {}) => {
+  return roomModel.findActiveReservations(branchId, filters);
+};
+
+const toDate = (value) => {
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+
+const formatDate = (date) => date.toISOString().slice(0, 10);
+
+const mondayOfWeek = (anchor) => {
+  const day = toDate(anchor);
+  const weekday = day.getUTCDay();
+  const diff = (weekday === 0 ? 7 : weekday) - 1;
+  day.setUTCDate(day.getUTCDate() - diff);
+  return day;
+};
+
+/**
+ * Branch-scoped calendar schedule. For view=week the range is normalized to the
+ * Monday..Sunday week containing `from`; for view=day the range is the single day.
+ * @param {number} branchId
+ * @param {string} from (YYYY-MM-DD)
+ * @param {string} to (YYYY-MM-DD)
+ * @param {'week'|'day'} [view='week']
+ * @returns {Promise<{branchId: number, rooms: Array, events: Array}>}
+ */
+export const getRoomSchedule = async (branchId, from, to, view = 'week') => {
+  let rangeFrom = from;
+  let rangeTo = to;
+
+  if (view === 'week') {
+    const monday = mondayOfWeek(from);
+    const sunday = new Date(monday);
+    sunday.setUTCDate(monday.getUTCDate() + 6);
+    rangeFrom = formatDate(monday);
+    rangeTo = formatDate(sunday);
+  } else {
+    rangeTo = rangeFrom || rangeTo;
+  }
+
+  const result = await roomModel.findRoomSchedule(branchId, rangeFrom, rangeTo);
+  return { branchId, ...result };
+};
+
+/**
+ * Fetches a single reservation's full read-only detail with branch guard.
+ * @param {string} reserveId
+ * @param {number} branchId
+ * @returns {Promise<Object|{error: {code: string}, statusCode: number}>}
+ */
+export const getReservationDetail = async (reserveId, branchId) => {
+  const detail = await roomModel.findReservationDetail(reserveId, branchId);
+  if (!detail) {
+    return { error: { code: 'NOT_FOUND', message: 'Reservation not found.' }, statusCode: 404 };
+  }
+  if (detail.branchId !== branchId) {
+    return { error: { code: 'WRONG_BRANCH', message: 'This reservation belongs to a different branch.' }, statusCode: 403 };
+  }
+  return detail;
+};
 
 
 /**
@@ -86,7 +167,90 @@ export const previewReturnPenalty = async (borrowId, conditions, isLost, expecte
   return calculateTotalPenalty(normalizedConditions, Number(price), overdueDays, policy);
 };
 
+/**
+ * Verifies a pending room check-in PIN and returns reservation/user/room details.
+ * @param {string} pin
+ * @param {number} librarianBranchId
+ * @returns {Promise<Object>}
+ */
+export const verifyRoomPin = async (pin, librarianBranchId) => {
+  const record = await roomModel.findPendingRoomReservationByPin(pin);
+  if (!record) {
+    return { error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' }, statusCode: 404 };
+  }
+
+  if (record.branchId !== librarianBranchId) {
+    return { error: { code: 'WRONG_BRANCH', message: 'This room reservation belongs to a different branch.' }, statusCode: 403 };
+  }
+
+  return {
+    reserveId: record.reserveId,
+    reservation: {
+      startDate: record.startDate,
+      startTime: record.startTime,
+      endTime: record.endTime
+    },
+    user: {
+      userId: record.userId,
+      username: record.username,
+      gender: record.gender,
+      phoneNumber: record.phoneNumber,
+      email: record.email,
+      avatar: record.avatar
+    },
+    room: {
+      roomName: record.roomName,
+      description: record.description,
+      capacity: record.capacity,
+      imgUrl: record.imgUrl,
+      branchName: record.branchName,
+      branchAddress: record.branchAddress
+    }
+  };
+};
+
+/**
+ * Confirms a room check-in, transitioning the reservation to 'used' and clearing the PIN.
+ * Guards that the reservation's room belongs to the librarian's branch.
+ * @param {string} reserveId
+ * @param {number} librarianBranchId
+ * @returns {Promise<Object>}
+ */
+export const confirmRoomCheckin = async (reserveId, librarianBranchId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const branch = await roomModel.findReservationBranch(reserveId, client);
+    if (!branch) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Reservation not found' }, statusCode: 404 };
+    }
+    if (branch.branchId !== librarianBranchId) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'WRONG_BRANCH', message: 'This room reservation belongs to a different branch.' }, statusCode: 403 };
+    }
+
+    const confirmed = await roomModel.confirmRoomCheckin(reserveId, client);
+    if (!confirmed) {
+      await client.query('ROLLBACK');
+      return { error: { code: 'NOT_FOUND', message: 'Reservation not found or already checked in' }, statusCode: 404 };
+    }
+
+    await client.query('COMMIT');
+    emitRoomDashboardChanged(branch.branchId, 'checked_in');
+    return { success: true, reserveId, status: 'used' };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error confirming room check-in:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 export const getOutstandingDebts = async (search) => {
+
   try {
     let query = `
       SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,

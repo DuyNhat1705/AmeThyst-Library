@@ -382,6 +382,7 @@
     "pin_verification_title": "PIN Verification",
     "pin_verification_borrow_mode": "Confirm Borrowing",
     "pin_verification_return_mode": "Confirm Returning",
+    "pin_verification_room_mode": "Confirm Room Check-in",
     "loan_fees_active": "Active Loans",
     "loan_fees_history": "History",
     "loan_fees_returned": "Returned Loans",
@@ -480,6 +481,7 @@
   },
   "pin": {
     "title": "Pickup PIN",
+    "return_title": "Return PIN",
     "expires_in": "Expires in {minutes}:{seconds}",
     "expired": "PIN Expired",
     "generated": "PIN Generated",
@@ -558,10 +560,27 @@
     "slot_unavailable": "This slot is no longer available",
     "no_slots": "No available slots for this date",
     "create_pin": "Create PIN",
+    "view_pin": "View PIN",
     "cancel": "Cancel",
     "cancel_confirm_title": "Cancel reservation for {roomName}?",
     "cancel_confirm_keep": "Keep",
     "cancel_confirm_cancel": "Cancel",
+    "checkout_confirm": "Checkout Confirm",
+    "checkout_confirm_title": "Confirm check-out for {roomName}?",
+    "checkout_confirm_yes": "Confirm",
+    "checkout_success": "Check-out confirmed.",
+    "checkout_failed": "Failed to confirm check-out.",
+    "checkout_not_eligible": "The reservation slot has not ended yet.",
+    "checkout_available_after": "Checkout available after {time}",
+    "checked_out": "Checked Out",
+    "history_title": "Reservation History",
+    "history_filter_from": "From",
+    "history_filter_to": "To",
+    "history_apply": "Apply",
+    "history_clear": "Clear",
+    "history_checkin": "Check-in",
+    "history_checkout": "Check-out",
+    "history_count": "{count} stays",
     "status_confirmed": "Confirmed",
     "slot_available": "Available",
     "slot_reserved": "Reserved",
@@ -631,12 +650,27 @@
                       "sidebar_rooms":  "Rooms",
                       "sidebar_announcements":  "Announcements",
                       "sidebar_pin_verification":  "PIN Verification",
-                      "subtab_book_management":  "Book Management",
-                      "subtab_book_pickup":  "Book Pickup",
-                      "subtab_book_return":  "Book Return",
-                       "subtab_pin_verification":  "PIN Verification",
-                      "subtab_loan_fees":  "Loan & Fees",
-                      "search_placeholder":  "Search title, author, or ISBN...",
+                       "subtab_book_management":  "Book Management",
+                       "subtab_book_pickup":  "Book Pickup",
+                       "subtab_book_return":  "Book Return",
+                        "subtab_pin_verification":  "PIN Verification",
+                       "subtab_loan_fees":  "Loan & Fees",
+                        "subtab_room_checkin":  "Room Check-in",
+                       "room_checkin_title":  "Confirm Room Check-in",
+                       "room_checkin_enter_code_label":  "ENTER ROOM CHECK-IN CODE",
+                       "room_checkin_details_heading":  "Reservation Details",
+                       "room_checkin_user_heading":  "User Information",
+                       "room_checkin_room_heading":  "Room Information",
+                       "room_checkin_confirm":  "Confirm Check-in",
+                       "room_checkin_confirming":  "Confirming...",
+                       "room_checkin_success":  "Room check-in confirmed successfully",
+                       "room_checkin_verify_another":  "Verify Another PIN",
+                       "room_checkin_confirm_title":  "Confirm Room Check-in",
+                       "room_checkin_confirm_message":  "Confirm check-in for {user} in {room}?",
+                       "room_checkin_go_back":  "Go Back",
+                       "room_checkin_proceed":  "Yes, Proceed",
+                       "room_checkin_error_expired":  "The PIN has expired or does not exist.",
+                       "search_placeholder":  "Search title, author, or ISBN...",
                       "all_categories":  "All Categories",
                       "add_book":  "Add Book",
                       "table_cover":  "Cover",
@@ -1008,5 +1042,51 @@
     ,"view_created_group": "Review group"
     ,"view_joined_group": "View joined group"
     ,"view_your_groups": "View your Study Groups"
+  },
+  "room_dashboard": {
+    "title": "Room Management Dashboard"
+    ,"view_list": "List"
+    ,"view_calendar": "Calendar"
+    ,"kpi_total_bookings": "Total Bookings Today"
+    ,"kpi_occupied": "Currently Occupied"
+    ,"kpi_pending_checkins": "Pending Check-ins"
+    ,"search_placeholder": "Search by user name, ID, or room..."
+    ,"all_statuses": "All Statuses"
+    ,"status_confirmed": "Confirmed"
+    ,"status_pending_checkin": "Pending Check-in"
+    ,"status_in_progress": "In Progress"
+    ,"status_completed": "Completed"
+    ,"table_room": "Room"
+    ,"table_user": "User"
+    ,"table_date": "Date"
+    ,"table_time": "Time Slot"
+    ,"table_duration": "Duration"
+    ,"table_status": "Status"
+    ,"table_actions": "Actions"
+    ,"loading": "Loading..."
+    ,"no_reservations": "No reservations found."
+    ,"no_rooms": "No rooms in this branch."
+    ,"load_failed": "Failed to load data. Please try again."
+    ,"capacity": "Capacity {count}"
+    ,"minutes_short": "min"
+    ,"view_detail": "View detail"
+    ,"calendar_week": "Week"
+    ,"calendar_day": "Day"
+    ,"day_sun": "Sun"
+    ,"day_mon": "Mon"
+    ,"day_tue": "Tue"
+    ,"day_wed": "Wed"
+    ,"day_thu": "Thu"
+    ,"day_fri": "Fri"
+    ,"day_sat": "Sat"
+    ,"detail_title": "Reservation Details"
+    ,"detail_status": "Status"
+    ,"detail_date": "Date"
+    ,"detail_time": "Time Slot"
+    ,"detail_checkin": "Check-in"
+    ,"detail_checkout": "Check-out"
+    ,"detail_room": "Room"
+    ,"detail_user": "User"
+    ,"close": "Close"
   }
 }

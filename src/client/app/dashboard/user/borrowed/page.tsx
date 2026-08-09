@@ -252,6 +252,7 @@ export default function BorrowedBooksPage() {
         expiresAt={pinModal.expiresAt}
         isOpen={pinModal.open}
         onClose={() => { setPinModal({ open: false, pin: '', expiresAt: '' }); setPinError(null); }}
+        title={t('pin.return_title')}
       />
     </>
   );

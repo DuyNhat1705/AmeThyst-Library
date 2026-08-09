@@ -26,6 +26,7 @@ export { default as BorrowingLimitCard } from './BorrowingLimitCard';
 export { default as ReservationCard } from './ReservationCard';
 export type { Reservation } from './ReservationCard';
 export { default as PastBookingsTable } from './PastBookingsTable';
+export { default as RoomHistoryCard, formatDuration } from './RoomHistoryCard';
 export * from './ProfileSectionCard';
 export { default as NotificationBell } from './NotificationBell';
 export { default as NotificationDropdownPanel } from './NotificationDropdownPanel';

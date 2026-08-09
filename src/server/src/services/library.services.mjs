@@ -414,10 +414,32 @@ export const cleanupExpiredPins = async () => {
       WHERE status IN ('pending', 'pending_return') AND expired_at IS NOT NULL AND expired_at <= NOW()
     `;
     const result = await pool.query(query);
-    return result.rowCount;
+
+    const roomQuery = `
+      UPDATE public.reserve_room
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at <= NOW()
+      RETURNING avail_id
+    `;
+    const roomResult = await pool.query(roomQuery);
+
+    const branchIds = [];
+    if (roomResult.rows.length > 0) {
+      const availIds = roomResult.rows.map((r) => r.avail_id);
+      const branchResult = await pool.query(
+        `SELECT DISTINCT sr.branch_id AS "branchId"
+         FROM room_avail ra
+         JOIN study_room sr ON ra.room_id = sr.room_id
+         WHERE ra.avail_id = ANY($1::int[])`,
+        [availIds]
+      );
+      branchIds.push(...branchResult.rows.map((r) => r.branchId));
+    }
+
+    return { count: result.rowCount + roomResult.rowCount, branchIds };
   } catch (error) {
     console.error('Error cleaning up expired PINs:', error);
-    return 0;
+    return { count: 0, branchIds: [] };
   }
 };
 
@@ -437,7 +459,15 @@ export const clearAllPins = async () => {
       WHERE status IN ('pending', 'pending_return')
     `;
     const result = await pool.query(query);
-    return result.rowCount;
+
+    const roomQuery = `
+      UPDATE public.reserve_room
+      SET pin = NULL, expired_at = NULL, status = 'reserved'
+      WHERE status = 'pending'
+    `;
+    const roomResult = await pool.query(roomQuery);
+
+    return result.rowCount + roomResult.rowCount;
   } catch (error) {
     console.error('Error clearing all pending PINs:', error);
     return 0;

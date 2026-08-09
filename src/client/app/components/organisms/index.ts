@@ -29,6 +29,8 @@ export { default as BookManagementTab } from './BookManagementTab';
 export { default as BookPickupTab } from './BookPickupTab';
 export { default as BookReturnTab } from './BookReturnTab';
 export { default as InspectionTab } from './InspectionTab';
+export { default as RoomCheckinTab } from './RoomCheckinTab';
+export { default as RoomManagementDashboard } from './RoomManagementDashboard';
 export { default as SystemConfigurationForm } from './SystemConfigurationForm';
 export { default as UserManagementKpiCards } from './UserManagementKpiCards';
 export { default as UserDirectoryTable } from './UserDirectoryTable';

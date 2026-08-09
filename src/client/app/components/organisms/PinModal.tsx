@@ -10,9 +10,10 @@ interface Props {
   expiresAt: string;
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
 }
 
-export default function PinModal({ pin, expiresAt, isOpen, onClose }: Props) {
+export default function PinModal({ pin, expiresAt, isOpen, onClose, title }: Props) {
   const { t } = useI18n();
   const { minutes, seconds, isExpired } = useCountdownFromDate(expiresAt);
 
@@ -52,7 +53,7 @@ export default function PinModal({ pin, expiresAt, isOpen, onClose }: Props) {
           </div>
 
           <h2 className="font-manrope text-lg font-bold text-black dark:text-neutral-100 mb-2">
-            {t('pin.title')}
+            {title || t('pin.title')}
           </h2>
 
           <div className="my-6">

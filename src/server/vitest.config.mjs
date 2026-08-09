@@ -39,6 +39,18 @@ export default defineConfig({
           ],
         },
       },
+      {
+        test: {
+          name: 'test_room_checkin',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/room.services.spec.mjs',
+            'tests/services/dashboard.librarian.services.spec.mjs',
+            'tests/services/dashboard.librarian.rooms.spec.mjs',
+          ],
+        },
+      },
 
       {
         test: {

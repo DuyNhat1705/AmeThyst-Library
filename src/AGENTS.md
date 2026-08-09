@@ -12,5 +12,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan at
-`specs/029-admin-system-configuration/plan.md`
+`specs/030-room-management-dashboard/plan.md`
 <!-- SPECKIT END -->
