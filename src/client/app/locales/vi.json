@@ -857,8 +857,6 @@
                           "history_title":  "Lịch sử phân quyền",
                           "filter_action":  "Loại",
                           "action_all":  "Tất cả",
-                          "action_promote":  "Nâng cấp",
-                          "action_demote":  "Hạ cấp",
                           "action_admin_invite":  "Mời quản trị viên",
                           "history_col_actor":  "Người thực hiện",
                           "history_col_target":  "Đối tượng",
@@ -921,9 +919,8 @@
                        "status": { "modified": "Có thay đổi chưa lưu", "up_to_date": "Chính sách đã cập nhật" },
                        "feedback": { "saving": "Đang lưu toàn bộ chính sách...", "saved": "Đã lưu chính sách hệ thống.", "discarded": "Đã hủy các thay đổi chưa lưu.", "fix_errors": "Sửa các giá trị được đánh dấu trước khi lưu.", "unsaved": "Kiểm tra và lưu toàn bộ chính sách khi sẵn sàng.", "up_to_date": "Không có thay đổi chưa lưu." },
                        "errors": { "required": "Bắt buộc nhập giá trị.", "non_negative": "Nhập số hữu hạn lớn hơn hoặc bằng 0.", "positive_integer": "Nhập số nguyên dương.", "load": "Không thể tải cấu hình hệ thống hiện hành.", "save": "Không thể lưu chính sách. Dữ liệu bạn đang nhập vẫn được giữ lại.", "conflict": "Một quản trị viên khác đã lưu chính sách mới hơn. Hãy tải bản mới nhất và kiểm tra lại thay đổi." }
-                     }
-                 },
-    "verification":  {
+                     },
+                   "verification": {
                          "modal_title":  "Xác nhận mượn sách",
                          "pin_label":  "Nhập mã PIN do người dùng cung cấp:",
                          "search_button":  "Tìm kiếm / Xác minh",
