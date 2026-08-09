@@ -3,18 +3,22 @@
 import React from 'react';
 import loginPanelImg from '../../assets/login_panel.png';
 import { useI18n } from '../../providers/I18nProvider';
+import { SparkleImageOverlay } from '../effects';
 
 export default function LoginBrandPanel() {
   const { t } = useI18n();
 
   return (
     <div className="hidden lg:flex lg:w-3/5 xl:w-2/3 min-h-screen bg-black overflow-hidden relative">
-      <img
-        src={loginPanelImg.src}
-        className="absolute inset-0 w-full h-full object-cover opacity-80"
-        alt={t('auth.library_branding')}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#D9D9D900] to-[rgba(0,0,0,0.8)]"></div>
+      <div className="absolute inset-0 w-full h-full">
+        <img
+          src={loginPanelImg.src}
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
+          alt={t('auth.library_branding')}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#D9D9D900] to-[rgba(0,0,0,0.8)] z-5"></div>
+        <SparkleImageOverlay />
+      </div>
       
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
         <h1 className="text-[#FFF] font-inder text-9xl tracking-[0.5156em] text-center ml-[0.5156em] select-none">

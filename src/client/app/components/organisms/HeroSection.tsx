@@ -1,14 +1,18 @@
 "use client";
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from '../atoms/Button';
 import searchBarBg from '../../assets/search_bar_bg.png';
 import { useI18n } from '../../providers/I18nProvider';
+import { InteractiveParticleField } from '../effects';
 
 export default function HeroSection() {
   const { t } = useI18n();
+  const sectionRef = useRef<HTMLElement>(null);
+
   return (
     <section 
+      ref={sectionRef}
       className="w-full bg-navy py-20 px-4 relative overflow-hidden"
       style={{ 
         backgroundImage: `url(${searchBarBg.src || searchBarBg})`, 
@@ -17,6 +21,13 @@ export default function HeroSection() {
         backgroundRepeat: 'no-repeat' 
       }}
     >
+      <InteractiveParticleField
+        containerRef={sectionRef}
+        className="pointer-events-none absolute inset-0 z-0 bg-transparent"
+        particleCount={90}
+        interactionRadius={160}
+        maxPush={45}
+      />
 
       {/* Abstract Background Shapes */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-teal/10 skew-x-[-12deg] translate-x-20" />
