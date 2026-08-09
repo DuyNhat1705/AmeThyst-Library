@@ -84,7 +84,7 @@ export default function NavBar({ variant = 'default' }: NavBarProps) {
                 <ThemeToggle />
               </div>
               <div className="border-l border-neutral-800 pl-3 flex items-center gap-3">
-                <NotificationBell enabled={!!user} locale={locale} t={t} userId={user?.userId} />
+                <NotificationBell enabled={!!user} t={t} userId={user?.userId} />
                 <Link
                   href="/profile/security"
                   aria-label={t('profile.settings_aria')}
