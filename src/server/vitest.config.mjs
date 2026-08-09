@@ -44,7 +44,7 @@ export default defineConfig({
           name: 'test_recommendation',
           globals: true,
           strictTags: false,
-          include: ['tests/recommendation.test.mjs'],
+          include: ['tests/services/recommendation.services.spec.mjs'],
         },
       },
     ],
