@@ -38,7 +38,7 @@ describe('Verify Email API Integration', () => {
   });
 
   describe('Test 1 - Successful verification', { tags: ['@A_R1', '@A_R7', '@A_R9', '@A_R10'] }, () => {
-    it('should return 200 OK with token and user payload', async () => {
+    it('[TC-INT-VE-001] should return 200 OK with token and user payload', async () => {
       const mockPendingRow = {
         token: mockToken,
         email: 'verify@example.com',
@@ -92,7 +92,7 @@ describe('Verify Email API Integration', () => {
   });
 
   describe('Test 2 - Duplicate email rejection', { tags: ['@A_R2', '@A_R10'] }, () => {
-    it('should return 400 Bad Request when user email already exists', async () => {
+    it('[TC-INT-VE-002] should return 400 Bad Request when user email already exists', async () => {
       const mockPendingRow = {
         token: mockToken,
         email: 'verify@example.com',
@@ -118,7 +118,7 @@ describe('Verify Email API Integration', () => {
   });
 
   describe('Test 3 - Token lifecycle and error codes', { tags: ['@A_R3', '@A_R10'] }, () => {
-    it('should return 400 Bad Request when token is missing in request', async () => {
+    it('[TC-INT-VE-003] should return 400 Bad Request when token is missing in request', async () => {
       const res = await request(app)
         .post('/auth/verify-email')
         .send({});
@@ -127,7 +127,7 @@ describe('Verify Email API Integration', () => {
       expect(res.body).toEqual({ error: 'Verification token is required' });
     });
 
-    it('should return 400 Bad Request when token is absent from pending_users', async () => {
+    it('[TC-INT-VE-004] should return 400 Bad Request when token is absent from pending_users', async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // getPendingByToken returns empty
 
       const res = await request(app)
@@ -138,7 +138,7 @@ describe('Verify Email API Integration', () => {
       expect(res.body).toEqual({ error: 'Invalid or expired verification link.' });
     });
 
-    it('should return 410 Gone when token has expired', async () => {
+    it('[TC-INT-VE-005] should return 410 Gone when token has expired', async () => {
       const mockPendingRow = {
         token: mockToken,
         email: 'verify@example.com',
@@ -165,7 +165,7 @@ describe('Verify Email API Integration', () => {
   });
 
   describe('Test 4 - Infrastructure failures and rollbacks', { tags: ['@A_R8', '@A_R9', '@A_R10'] }, () => {
-    it('should return 500 and rollback transaction if user insertion fails', async () => {
+    it('[TC-INT-VE-006] should return 500 and rollback transaction if user insertion fails', async () => {
       const mockPendingRow = {
         token: mockToken,
         email: 'verify@example.com',

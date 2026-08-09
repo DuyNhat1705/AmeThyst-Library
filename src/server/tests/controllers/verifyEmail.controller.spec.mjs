@@ -28,7 +28,7 @@ describe('Verify Email Controller', () => {
   });
 
   describe('Test 1 - Correct HTTP response/redirect for every outcome', { tags: '@A_R10' }, () => {
-    it('should return 200 OK with JWT and user payload on success', async () => {
+    it('[TC-CTL-VE-001] should return 200 OK with JWT and user payload on success', async () => {
       const mockResult = {
         token: 'signed-jwt-token',
         user: { userId: 5, email: 'student@example.com', username: 'student' },
@@ -42,7 +42,7 @@ describe('Verify Email Controller', () => {
       expect(res.json).toHaveBeenCalledWith(mockResult);
     });
 
-    it('should return 400 Bad Request if token is missing in body', async () => {
+    it('[TC-CTL-VE-002] should return 400 Bad Request if token is missing in body', async () => {
       req.body.token = undefined;
 
       await verifyEmailHandler(req, res);
@@ -54,7 +54,7 @@ describe('Verify Email Controller', () => {
   });
 
   describe('Test 2 - TTL and token validation lifecycle mappings', { tags: '@A_R3' }, () => {
-    it('should return 410 Gone if verification link has expired', async () => {
+    it('[TC-CTL-VE-003] should return 410 Gone if verification link has expired', async () => {
       verifyEmail.mockRejectedValue(new Error('Verification link has expired. Please register again.'));
 
       await verifyEmailHandler(req, res);
@@ -65,7 +65,7 @@ describe('Verify Email Controller', () => {
       });
     });
 
-    it('should return 400 Bad Request for general invalid token errors', async () => {
+    it('[TC-CTL-VE-004] should return 400 Bad Request for general invalid token errors', async () => {
       verifyEmail.mockRejectedValue(new Error('Invalid or expired verification link.'));
 
       await verifyEmailHandler(req, res);
@@ -78,7 +78,7 @@ describe('Verify Email Controller', () => {
   });
 
   describe('Test 3 - Infrastructure failure mapping', { tags: '@A_R8' }, () => {
-    it('should return 500 Internal Server Error for database check/query exceptions', async () => {
+    it('[TC-CTL-VE-005] should return 500 Internal Server Error for database check/query exceptions', async () => {
       verifyEmail.mockRejectedValue(new Error('Database query failed'));
 
       await verifyEmailHandler(req, res);
@@ -89,7 +89,7 @@ describe('Verify Email Controller', () => {
   });
 
   describe('Test 4 - Reject duplicate email during verification', { tags: '@A_R2' }, () => {
-    it('should return 400 Bad Request if email already exists', async () => {
+    it('[TC-CTL-VE-006] should return 400 Bad Request if email already exists', async () => {
       verifyEmail.mockRejectedValue(new Error('Email already exists.'));
 
       await verifyEmailHandler(req, res);

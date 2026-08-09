@@ -78,7 +78,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 1 - Successful reservation', () => {
-    it('should begin a transaction and return a reservation payload', async () => {
+    it('[TC-SRV-LIB-001] should begin a transaction and return a reservation payload', async () => {
       const result = await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(pool.connect).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ describe('library.services.mjs - createReservation', () => {
       });
     });
 
-    it('should decrement available quantity and insert a borrow_book row with status reserved', async () => {
+    it('[TC-SRV-LIB-002] should decrement available quantity and insert a borrow_book row with status reserved', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(mockClient.query).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('library.services.mjs - createReservation', () => {
       );
     });
 
-    it('should increment the user borrow_num after a successful reservation', async () => {
+    it('[TC-SRV-LIB-003] should increment the user borrow_num after a successful reservation', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(mockClient.query).toHaveBeenCalledWith(
@@ -124,25 +124,25 @@ describe('library.services.mjs - createReservation', () => {
       );
     });
 
-    it('should invalidate the recommendation cache on success', async () => {
+    it('[TC-SRV-LIB-004] should invalidate the recommendation cache on success', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(invalidateUserRecommendationCache).toHaveBeenCalledWith(USER_ID);
     });
 
-    it('should not precompute recommendations when NODE_ENV is test', async () => {
+    it('[TC-SRV-LIB-005] should not precompute recommendations when NODE_ENV is test', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(getUserRecommendations).not.toHaveBeenCalled();
     });
 
-    it('should release the client connection after success', async () => {
+    it('[TC-SRV-LIB-006] should release the client connection after success', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(mockClient.release).toHaveBeenCalledTimes(1);
     });
 
-    it('should use N/A shelf fallback when inventory row has no shelf', async () => {
+    it('[TC-SRV-LIB-007] should use N/A shelf fallback when inventory row has no shelf', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'available_quantity, shelf')) {
           return { rows: [{ available_quantity: 1, shelf: null }] };
@@ -164,7 +164,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 2 - User not found', () => {
-    it('should roll back and return USER_NOT_FOUND with 404', async () => {
+    it('[TC-SRV-LIB-008] should roll back and return USER_NOT_FOUND with 404', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [] };
@@ -184,7 +184,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 3 - Unpaid debt blocks reservation', () => {
-    it('should roll back and return UNPAID_DEBT with 400 when the user has unpaid penalties', async () => {
+    it('[TC-SRV-LIB-009] should roll back and return UNPAID_DEBT with 400 when the user has unpaid penalties', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
@@ -209,7 +209,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 4 - Borrow limit exceeded', () => {
-    it('should roll back and return BORROW_LIMIT_EXCEEDED with 400 when borrow_num reaches the limit', async () => {
+    it('[TC-SRV-LIB-010] should roll back and return BORROW_LIMIT_EXCEEDED with 400 when borrow_num reaches the limit', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
@@ -237,7 +237,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 5 - Book not found at branch', () => {
-    it('should roll back and return BOOK_NOT_FOUND with 404 when inventory has no rows', async () => {
+    it('[TC-SRV-LIB-011] should roll back and return BOOK_NOT_FOUND with 404 when inventory has no rows', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
@@ -265,7 +265,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 6 - Book unavailable', () => {
-    it('should roll back and return BOOK_UNAVAILABLE with 400 when available quantity is zero', async () => {
+    it('[TC-SRV-LIB-012] should roll back and return BOOK_UNAVAILABLE with 400 when available quantity is zero', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
@@ -293,7 +293,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 7 - Duplicate reservation', () => {
-    it('should roll back and return ALREADY_RESERVED with 400 when the user already has an active reservation or borrow', async () => {
+    it('[TC-SRV-LIB-013] should roll back and return ALREADY_RESERVED with 400 when the user already has an active reservation or borrow', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
@@ -327,7 +327,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 8 - Unexpected database failures', () => {
-    it('should roll back and rethrow when a query throws inside the transaction', async () => {
+    it('[TC-SRV-LIB-014] should roll back and rethrow when a query throws inside the transaction', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (isSQL(sql, 'available_quantity, shelf')) {
           throw new Error('DB lock timeout');
@@ -339,7 +339,7 @@ describe('library.services.mjs - createReservation', () => {
       expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
     });
 
-    it('should release the client even when the transaction fails', async () => {
+    it('[TC-SRV-LIB-015] should release the client even when the transaction fails', async () => {
       mockClient.query.mockImplementation(async () => {
         throw new Error('unexpected');
       });
@@ -350,7 +350,7 @@ describe('library.services.mjs - createReservation', () => {
   });
 
   describe('Test 9 - Data-shape invariants', () => {
-    it('should lock inventory rows with FOR UPDATE to prevent overbooking', async () => {
+    it('[TC-SRV-LIB-016] should lock inventory rows with FOR UPDATE to prevent overbooking', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       expect(mockClient.query).toHaveBeenCalledWith(
@@ -363,7 +363,7 @@ describe('library.services.mjs - createReservation', () => {
       expect(inventorySql).toContain('FOR UPDATE');
     });
 
-    it('should check for duplicate active reservations that have no return record and no penalty', async () => {
+    it('[TC-SRV-LIB-017] should check for duplicate active reservations that have no return record and no penalty', async () => {
       await createReservation(USER_ID, BOOK_ID, BRANCH_ID);
 
       const duplicateCall = mockClient.query.mock.calls.find(

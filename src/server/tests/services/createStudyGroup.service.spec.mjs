@@ -87,7 +87,7 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 1 - Metadata normalization helpers', { tags: '@SG_CREATE_NORMALIZATION' }, () => {
-    it('trims metadata and removes empty requirements', () => {
+    it('[TC-SRV-CSG-001] trims metadata and removes empty requirements', () => {
       expect(normalizeMetadata({
         title: '  Algorithms  ',
         description: '  Exam preparation  ',
@@ -101,14 +101,14 @@ describe('Create Study Group Service', () => {
       });
     });
 
-    it('coerces requirement values to strings before trimming', () => {
+    it('[TC-SRV-CSG-002] coerces requirement values to strings before trimming', () => {
       expect(normalizeRequirements([1, true, null, '  notes  ']))
         .toEqual(['1', 'true', 'null', 'notes']);
     });
   });
 
   describe('Test 2 - Authentication and input validation', { tags: '@SG_CREATE_VALIDATION' }, () => {
-    it('rejects an unauthenticated caller before opening a transaction', async () => {
+    it('[TC-SRV-CSG-003] rejects an unauthenticated caller before opening a transaction', async () => {
       await expect(createStudyGroup(null, validInput()))
         .rejects.toMatchObject({ code: 'UNAUTHORIZED', status: 401 });
 
@@ -120,14 +120,14 @@ describe('Create Study Group Service', () => {
       ['title', '12345'],
       ['description', '   '],
       ['subject', '---'],
-    ])('rejects invalid %s metadata before opening a transaction', async (field, value) => {
+    ])('[TC-SRV-CSG-004] rejects invalid %s metadata before opening a transaction', async (field, value) => {
       await expect(createStudyGroup(hostId, validInput({ [field]: value })))
         .rejects.toMatchObject({ code: 'VALIDATION_ERROR', status: 400 });
 
       expect(model.withTransaction).not.toHaveBeenCalled();
     });
 
-    it('rejects more than five normalized requirements before opening a transaction', async () => {
+    it('[TC-SRV-CSG-005] rejects more than five normalized requirements before opening a transaction', async () => {
       await expect(createStudyGroup(hostId, validInput({
         requirements: ['1', '2', '3', '4', '5', '6'],
       }))).rejects.toMatchObject({ code: 'VALIDATION_ERROR', status: 400 });
@@ -137,7 +137,7 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 3 - Authoritative slot validation', { tags: '@SG_CREATE_SLOT' }, () => {
-    it('rejects a missing slot without inserting a reservation or group', async () => {
+    it('[TC-SRV-CSG-006] rejects a missing slot without inserting a reservation or group', async () => {
       model.findSlotForCreation.mockResolvedValue(null);
 
       await expect(createStudyGroup(hostId, validInput()))
@@ -148,7 +148,7 @@ describe('Create Study Group Service', () => {
       expect(model.insertStudyGroup).not.toHaveBeenCalled();
     });
 
-    it('rejects a room with no host capacity without writing data', async () => {
+    it('[TC-SRV-CSG-007] rejects a room with no host capacity without writing data', async () => {
       model.findSlotForCreation.mockResolvedValue({ capacity: 0 });
 
       await expect(createStudyGroup(hostId, validInput()))
@@ -160,7 +160,7 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 4 - Atomic creation orchestration', { tags: '@SG_CREATE_ATOMIC' }, () => {
-    it('creates reservation then group and returns the projected detail in one transaction', async () => {
+    it('[TC-SRV-CSG-008] creates reservation then group and returns the projected detail in one transaction', async () => {
       const result = await createStudyGroup(hostId, validInput({
         title: '  Algorithm Study Group  ',
         description: '  Prepare for the final examination.  ',
@@ -198,14 +198,14 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 5 - Persistence error mapping', { tags: '@SG_CREATE_ERRORS' }, () => {
-    it('maps an active-slot uniqueness race to SLOT_UNAVAILABLE', async () => {
+    it('[TC-SRV-CSG-009] maps an active-slot uniqueness race to SLOT_UNAVAILABLE', async () => {
       model.insertReservation.mockRejectedValue({ code: '23505' });
 
       await expect(createStudyGroup(hostId, validInput()))
         .rejects.toMatchObject({ code: 'SLOT_UNAVAILABLE', status: 409 });
     });
 
-    it('maps a missing authenticated user foreign key to AUTH_USER_NOT_FOUND', async () => {
+    it('[TC-SRV-CSG-010] maps a missing authenticated user foreign key to AUTH_USER_NOT_FOUND', async () => {
       model.insertReservation.mockRejectedValue({
         code: '23503',
         constraint: 'fk_reserve_user',
@@ -215,7 +215,7 @@ describe('Create Study Group Service', () => {
         .rejects.toMatchObject({ code: 'AUTH_USER_NOT_FOUND', status: 401 });
     });
 
-    it('preserves unexpected persistence errors for the controller boundary', async () => {
+    it('[TC-SRV-CSG-011] preserves unexpected persistence errors for the controller boundary', async () => {
       const error = new Error('Connection lost');
       model.insertReservation.mockRejectedValue(error);
 

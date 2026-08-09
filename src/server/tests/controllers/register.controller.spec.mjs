@@ -71,7 +71,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 1 - Successful registration", { tags: '@A_R1' }, () => {
-    it("should register successfully with valid details", async () => {
+    it("[TC-CTL-REG-001] should register successfully with valid details", async () => {
       await register(req, res);
 
       expect(findUserByEmail).toHaveBeenCalledWith('student@example.com');
@@ -84,7 +84,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 2 - Reject duplicate email", { tags: '@A_R2' }, () => {
-    it("should return 409 when email already exists in users table", async () => {
+    it("[TC-CTL-REG-002] should return 409 when email already exists in users table", async () => {
       findUserByEmail.mockResolvedValue({ user_id: 1, email: 'student@example.com' });
 
       await register(req, res);
@@ -97,7 +97,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 3 - Reject active pending registration", { tags: '@A_R3' }, () => {
-    it("should return 409 when an active pending registration already exists", async () => {
+    it("[TC-CTL-REG-003] should return 409 when an active pending registration already exists", async () => {
       getPendingByEmail.mockResolvedValue({
         email: 'student@example.com',
         expired_at: new Date(Date.now() + 60000).toISOString(),
@@ -135,7 +135,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 4 - Allow registration after pending registration expires", { tags: '@A_R3' }, () => {
-    it("should delete expired pending record and proceed with new registration", async () => {
+    it("[TC-CTL-REG-004] should delete expired pending record and proceed with new registration", async () => {
       getPendingByEmail.mockResolvedValue({
         email: 'student@example.com',
         expired_at: new Date(Date.now() - 60000).toISOString(),
@@ -151,7 +151,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 5 - Send verification email", { tags: '@A_R1' }, () => {
-    it("should send verification email with correctly generated token", async () => {
+    it("[TC-CTL-REG-005] should send verification email with correctly generated token", async () => {
       await register(req, res);
 
       expect(sendVerificationEmail).toHaveBeenCalledWith('student@example.com', 'mock-token-xyz');
@@ -159,7 +159,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 6 - Protect password confidentiality", { tags: '@A_R7' }, () => {
-    it("should protect user password confidentiality by hashing before database interaction", async () => {
+    it("[TC-CTL-REG-006] should protect user password confidentiality by hashing before database interaction", async () => {
       await register(req, res);
 
       expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
@@ -173,7 +173,7 @@ describe("Register Controller", () => {
   });
 
   describe("Test 7 - Assign default user role", { tags: '@A_R7' }, () => {
-    it("should delegate pending creation to replacePendingUser which assigns default role", async () => {
+    it("[TC-CTL-REG-007] should delegate pending creation to replacePendingUser which assigns default role", async () => {
       await register(req, res);
 
       expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), {
@@ -185,28 +185,28 @@ describe("Register Controller", () => {
   });
 
   describe("Test 8 - Handle unexpected failures", { tags: '@A_R8' }, () => {
-    it("should handle database check user error safely", async () => {
+    it("[TC-CTL-REG-008] should handle database check user error safely", async () => {
       findUserByEmail.mockRejectedValue(new Error('DB failure checking user'));
       await register(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking user' });
     });
 
-    it("should handle database get pending check error safely", async () => {
+    it("[TC-CTL-REG-009] should handle database get pending check error safely", async () => {
       getPendingByEmail.mockRejectedValue(new Error('DB failure checking pending'));
       await register(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'DB failure checking pending' });
     });
 
-    it("should handle password hashing error safely", async () => {
+    it("[TC-CTL-REG-010] should handle password hashing error safely", async () => {
       bcrypt.hash.mockRejectedValue(new Error('Bcrypt hash failure'));
       await register(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Bcrypt hash failure' });
     });
 
-    it("should handle expired pending cleanup error safely", async () => {
+    it("[TC-CTL-REG-011] should handle expired pending cleanup error safely", async () => {
       getPendingByEmail.mockResolvedValue({
         email: 'student@example.com',
         expired_at: new Date(Date.now() - 60000).toISOString(),
@@ -219,14 +219,14 @@ describe("Register Controller", () => {
   });
 
   describe("Test 9 - Maintain registration state consistency", { tags: '@A_R9' }, () => {
-    it("should not send verification email if database transaction fails", async () => {
+    it("[TC-CTL-REG-012] should not send verification email if database transaction fails", async () => {
       withTransaction.mockRejectedValue(new Error('Transaction rollback/insert failed'));
       await register(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it("should propagate SMTP email delivery failure but complete database write", async () => {
+    it("[TC-CTL-REG-013] should propagate SMTP email delivery failure but complete database write", async () => {
       sendVerificationEmail.mockRejectedValue(new Error('SMTP transmission error'));
       await register(req, res);
       expect(res.status).toHaveBeenCalledWith(500);

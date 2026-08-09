@@ -44,7 +44,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
   });
 
   describe('verifyPin - librarian verifies a pickup PIN', () => {
-    it('should return 400 when the PIN is not exactly 6 digits', async () => {
+    it('[TC-CTL-DASH-001] should return 400 when the PIN is not exactly 6 digits', async () => {
       req.body = { pin: '123' };
 
       await verifyPin(req, res);
@@ -53,7 +53,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(verifyPinService).not.toHaveBeenCalled();
     });
 
-    it('should return 400 when the PIN is missing', async () => {
+    it('[TC-CTL-DASH-002] should return 400 when the PIN is missing', async () => {
       req.body = {};
 
       await verifyPin(req, res);
@@ -61,7 +61,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('should return the borrower and book details on success', async () => {
+    it('[TC-CTL-DASH-003] should return the borrower and book details on success', async () => {
       req.body = { pin: '123456' };
       verifyPinService.mockResolvedValue({
         borrowId: 'bb-001',
@@ -83,7 +83,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should forward service domain errors with their status code', async () => {
+    it('[TC-CTL-DASH-004] should forward service domain errors with their status code', async () => {
       req.body = { pin: '123456' };
       verifyPinService.mockResolvedValue({
         error: { code: 'WRONG_BRANCH', message: 'You have arrived at the wrong book borrowing branch.' },
@@ -100,7 +100,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should return 500 when the service throws', async () => {
+    it('[TC-CTL-DASH-005] should return 500 when the service throws', async () => {
       req.body = { pin: '123456' };
       verifyPinService.mockRejectedValue(new Error('boom'));
 
@@ -111,7 +111,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
   });
 
   describe('confirmBorrowing', () => {
-    it('should return 400 when borrow_id is missing', async () => {
+    it('[TC-CTL-DASH-006] should return 400 when borrow_id is missing', async () => {
       req.body = {};
 
       await confirmBorrowing(req, res);
@@ -120,7 +120,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(confirmBorrowingService).not.toHaveBeenCalled();
     });
 
-    it('should return the confirmed borrowing details on success', async () => {
+    it('[TC-CTL-DASH-007] should return the confirmed borrowing details on success', async () => {
       req.body = { borrow_id: 'bb-001' };
       confirmBorrowingService.mockResolvedValue({
         borrowId: 'bb-001',
@@ -138,7 +138,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should forward USER_INELIGIBLE with 409', async () => {
+    it('[TC-CTL-DASH-008] should forward USER_INELIGIBLE with 409', async () => {
       req.body = { borrow_id: 'bb-001' };
       confirmBorrowingService.mockResolvedValue({
         error: { code: 'USER_INELIGIBLE', message: 'Borrower has overdue books or is suspended. Cannot confirm borrowing.' },
@@ -152,7 +152,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
   });
 
   describe('verifyReturnPin', () => {
-    it('should return 400 when the return PIN is not 6 digits', async () => {
+    it('[TC-CTL-DASH-009] should return 400 when the return PIN is not 6 digits', async () => {
       req.body = { pin: '12' };
 
       await verifyReturnPin(req, res);
@@ -161,7 +161,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(verifyReturnPinService).not.toHaveBeenCalled();
     });
 
-    it('should return the borrowing details on success', async () => {
+    it('[TC-CTL-DASH-010] should return the borrowing details on success', async () => {
       req.body = { pin: '654321' };
       verifyReturnPinService.mockResolvedValue({
         borrowId: 'bb-001',
@@ -185,7 +185,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should forward PIN_NOT_FOUND with 404', async () => {
+    it('[TC-CTL-DASH-011] should forward PIN_NOT_FOUND with 404', async () => {
       req.body = { pin: '654321' };
       verifyReturnPinService.mockResolvedValue({
         error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' },
@@ -199,7 +199,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
   });
 
   describe('confirmReturn', () => {
-    it('should return 400 when borrow_id or branch_id is missing', async () => {
+    it('[TC-CTL-DASH-012] should return 400 when borrow_id or branch_id is missing', async () => {
       req.body = { borrow_id: 'bb-001' };
 
       await confirmReturn(req, res);
@@ -208,7 +208,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(confirmReturnService).not.toHaveBeenCalled();
     });
 
-    it('should pass defaults for missing optional fields and return the result on success', async () => {
+    it('[TC-CTL-DASH-013] should pass defaults for missing optional fields and return the result on success', async () => {
       req.body = { borrow_id: 'bb-001', branch_id: 1 };
       confirmReturnService.mockResolvedValue({
         success: true,
@@ -225,7 +225,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should forward is_lost and conditions to the service', async () => {
+    it('[TC-CTL-DASH-014] should forward is_lost and conditions to the service', async () => {
       req.body = { borrow_id: 'bb-001', branch_id: 2, conditions: ['torn_pages'], description: 'torn', is_lost: true };
 
       await confirmReturn(req, res);
@@ -233,7 +233,7 @@ describe('dashboard.librarian.controllers.mjs - PIN controllers', () => {
       expect(confirmReturnService).toHaveBeenCalledWith('bb-001', 2, ['torn_pages'], 'torn', true);
     });
 
-    it('should forward service domain errors with their status code', async () => {
+    it('[TC-CTL-DASH-015] should forward service domain errors with their status code', async () => {
       req.body = { borrow_id: 'bb-001', branch_id: 1 };
       confirmReturnService.mockResolvedValue({
         error: { code: 'NOT_FOUND', message: 'Borrow record not found or not in pending_return status' },

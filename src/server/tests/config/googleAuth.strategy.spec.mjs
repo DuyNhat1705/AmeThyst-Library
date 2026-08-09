@@ -22,7 +22,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 1 - Google OAuth first-time sign-in (Auto-provisioning)', { tags: ['@A_R5', '@A_R7'] }, () => {
-    it('should query for the email, auto-create the user, and return the user payload', async () => {
+    it('[TC-CFG-GA-001] should query for the email, auto-create the user, and return the user payload', async () => {
       // 1. SELECT query returns 0 rows
       pool.query.mockResolvedValueOnce({ rows: [] });
       // 2. INSERT query returns the new user row
@@ -51,7 +51,7 @@ describe('Google Strategy Verify Callback', () => {
       expect(mockDone).toHaveBeenCalledWith(null, mockCreatedUser);
     });
 
-    it('should set avatar to null if photos array is empty or undefined', async () => {
+    it('[TC-CFG-GA-002] should set avatar to null if photos array is empty or undefined', async () => {
       const profileNoPhoto = {
         emails: [{ value: 'oauth@example.com' }],
         displayName: 'Google User',
@@ -80,7 +80,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 2 - Google OAuth returning user', { tags: '@A_R6' }, () => {
-    it('should find the user, skip user creation, and return the existing user payload', async () => {
+    it('[TC-CFG-GA-003] should find the user, skip user creation, and return the existing user payload', async () => {
       const mockExistingUser = {
         user_id: 88,
         email: 'oauth@example.com',
@@ -102,7 +102,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 3 - Google Sign-In with Pre-existing Password Account (NFR)', { tags: '@A_R2' }, () => {
-    it('should refuse authentication and not leak the existing password-based account', async () => {
+    it('[TC-CFG-GA-004] should refuse authentication and not leak the existing password-based account', async () => {
       const mockPasswordUser = {
         user_id: 99,
         email: 'oauth@example.com',
@@ -122,7 +122,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 4 - Infrastructure failure handling', { tags: '@A_R8' }, () => {
-    it('should propagate database query failures to Passport done callback', async () => {
+    it('[TC-CFG-GA-005] should propagate database query failures to Passport done callback', async () => {
       const dbError = new Error('Database pool query timeout');
       pool.query.mockRejectedValueOnce(dbError);
 
@@ -133,7 +133,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 5 - Transactional consistency (documented absence)', { tags: '@A_R9' }, () => {
-    it('should run direct pool query calls instead of passing transaction clients', async () => {
+    it('[TC-CFG-GA-006] should run direct pool query calls instead of passing transaction clients', async () => {
       pool.query.mockResolvedValueOnce({ rows: [] });
       pool.query.mockResolvedValueOnce({ rows: [{ user_id: 88 }] });
 
@@ -145,7 +145,7 @@ describe('Google Strategy Verify Callback', () => {
   });
 
   describe('Test 6 - Suspended user rejection', () => {
-    it('should reject authentication with USER_SUSPENDED if the user status is suspended', async () => {
+    it('[TC-CFG-GA-007] should reject authentication with USER_SUSPENDED if the user status is suspended', async () => {
       const mockSuspendedUser = {
         user_id: 88,
         email: 'oauth@example.com',

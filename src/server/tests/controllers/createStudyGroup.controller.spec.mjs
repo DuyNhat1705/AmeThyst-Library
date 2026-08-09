@@ -38,7 +38,7 @@ describe('Create Study Group Controller', () => {
   });
 
   describe('Test 1 - Successful creation response', { tags: '@SG_CREATE_CONTROLLER' }, () => {
-    it('delegates the authenticated user and normalized request body to the service', async () => {
+    it('[TC-CTL-CSG-001] delegates the authenticated user and normalized request body to the service', async () => {
       const detail = { groupId: 'group-1', title: 'Algorithm Study Group' };
       createStudyGroup.mockResolvedValue(detail);
 
@@ -50,7 +50,7 @@ describe('Create Study Group Controller', () => {
       expect(res.json).toHaveBeenCalledWith({ success: true, data: detail });
     });
 
-    it('emits the created event only after the service succeeds', async () => {
+    it('[TC-CTL-CSG-002] emits the created event only after the service succeeds', async () => {
       createStudyGroup.mockResolvedValue({ groupId: 'group-1' });
 
       await createStudyGroupController(req, res);
@@ -62,7 +62,7 @@ describe('Create Study Group Controller', () => {
   });
 
   describe('Test 2 - Structured creation errors', { tags: '@SG_CREATE_CONTROLLER' }, () => {
-    it('maps a Study Group error to its status and complete error envelope', async () => {
+    it('[TC-CTL-CSG-003] maps a Study Group error to its status and complete error envelope', async () => {
       createStudyGroup.mockRejectedValue({
         code: 'VALIDATION_ERROR',
         message: 'Invalid Study Group data.',
@@ -86,7 +86,7 @@ describe('Create Study Group Controller', () => {
       expect(emitStudyGroupChanged).not.toHaveBeenCalled();
     });
 
-    it('maps an unexpected failure to a safe 500 response without emitting an event', async () => {
+    it('[TC-CTL-CSG-004] maps an unexpected failure to a safe 500 response without emitting an event', async () => {
       createStudyGroup.mockRejectedValue(new Error('Database unavailable'));
 
       await createStudyGroupController(req, res);

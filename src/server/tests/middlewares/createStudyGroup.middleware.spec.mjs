@@ -24,7 +24,7 @@ describe('Create Study Group Middleware', () => {
   });
 
   describe('Test 1 - Valid request normalization', { tags: '@SG_CREATE_VALIDATION' }, () => {
-    it('normalizes numeric availability and trims metadata before continuing', () => {
+    it('[TC-MID-CSG-001] normalizes numeric availability and trims metadata before continuing', () => {
       validateCreateStudyGroup(req, res, next);
 
       expect(next).toHaveBeenCalledOnce();
@@ -39,7 +39,7 @@ describe('Create Study Group Middleware', () => {
       expect(res.status).not.toHaveBeenCalled();
     });
 
-    it('defaults omitted optional requirements to an empty array', () => {
+    it('[TC-MID-CSG-002] defaults omitted optional requirements to an empty array', () => {
       delete req.body.requirements;
 
       validateCreateStudyGroup(req, res, next);
@@ -50,7 +50,7 @@ describe('Create Study Group Middleware', () => {
   });
 
   describe('Test 2 - Invalid creation requests', { tags: '@SG_CREATE_VALIDATION' }, () => {
-    it('rejects unsupported fields and reports their names', () => {
+    it('[TC-MID-CSG-003] rejects unsupported fields and reports their names', () => {
       req.body.createdBy = 'another-user';
 
       validateCreateStudyGroup(req, res, next);
@@ -67,7 +67,7 @@ describe('Create Study Group Middleware', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it.each([0, -1, 1.5, 'not-a-number'])('rejects invalid availId %s', (availId) => {
+    it.each([0, -1, 1.5, 'not-a-number'])('[TC-MID-CSG-004] rejects invalid availId %s', (availId) => {
       req.body.availId = availId;
 
       validateCreateStudyGroup(req, res, next);
@@ -80,7 +80,7 @@ describe('Create Study Group Middleware', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('rejects a date that does not use YYYY-MM-DD', () => {
+    it('[TC-MID-CSG-005] rejects a date that does not use YYYY-MM-DD', () => {
       req.body.startDate = '01/08/2099';
 
       validateCreateStudyGroup(req, res, next);
@@ -93,7 +93,7 @@ describe('Create Study Group Middleware', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('rejects more than five non-empty requirements after normalization', () => {
+    it('[TC-MID-CSG-006] rejects more than five non-empty requirements after normalization', () => {
       req.body.requirements = ['1', '2', '3', '4', '5', '6'];
 
       validateCreateStudyGroup(req, res, next);

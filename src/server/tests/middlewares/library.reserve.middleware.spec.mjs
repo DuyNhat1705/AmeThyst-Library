@@ -40,7 +40,7 @@ describe('middlewares for POST /api/library/reserve', () => {
   });
 
   describe('verifyToken', () => {
-    it('should return 401 AUTH_REQUIRED when no token is provided', async () => {
+    it('[TC-MID-LIB-001] should return 401 AUTH_REQUIRED when no token is provided', async () => {
       req.headers = {};
 
       await verifyToken(req, res, vi.fn());
@@ -52,7 +52,7 @@ describe('middlewares for POST /api/library/reserve', () => {
       });
     });
 
-    it('should attach the user to req and call next on a valid token', async () => {
+    it('[TC-MID-LIB-002] should attach the user to req and call next on a valid token', async () => {
       jwt.verify.mockReturnValue({ userId: USER_ID, role: 'user' });
       pool.query.mockResolvedValue({
         rows: [
@@ -82,7 +82,7 @@ describe('middlewares for POST /api/library/reserve', () => {
       );
     });
 
-    it('should return 401 INVALID_TOKEN when the JWT is invalid', async () => {
+    it('[TC-MID-LIB-003] should return 401 INVALID_TOKEN when the JWT is invalid', async () => {
       jwt.verify.mockImplementation(() => {
         const err = new Error('jwt malformed');
         err.name = 'JsonWebTokenError';
@@ -98,7 +98,7 @@ describe('middlewares for POST /api/library/reserve', () => {
       });
     });
 
-    it('should return 401 AUTH_USER_NOT_FOUND when the user no longer exists', async () => {
+    it('[TC-MID-LIB-004] should return 401 AUTH_USER_NOT_FOUND when the user no longer exists', async () => {
       jwt.verify.mockReturnValue({ userId: USER_ID });
       pool.query.mockResolvedValue({ rows: [] });
 
@@ -114,7 +114,7 @@ describe('middlewares for POST /api/library/reserve', () => {
       });
     });
 
-    it('should return 503 AUTH_DATABASE_UNAVAILABLE when the user lookup query fails', async () => {
+    it('[TC-MID-LIB-005] should return 503 AUTH_DATABASE_UNAVAILABLE when the user lookup query fails', async () => {
       jwt.verify.mockReturnValue({ userId: USER_ID });
       pool.query.mockRejectedValue(new Error('connection refused'));
 
@@ -132,14 +132,14 @@ describe('middlewares for POST /api/library/reserve', () => {
   });
 
   describe('authorizeRole', () => {
-    it('should return 401 when req.user is missing', async () => {
+    it('[TC-MID-LIB-006] should return 401 when req.user is missing', async () => {
       authorizeRole('user')(req, res, vi.fn());
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
     });
 
-    it('should return 403 when the user role is not allowed', async () => {
+    it('[TC-MID-LIB-007] should return 403 when the user role is not allowed', async () => {
       req.user = { userId: USER_ID, role: 'librarian' };
 
       authorizeRole('user')(req, res, vi.fn());
@@ -148,7 +148,7 @@ describe('middlewares for POST /api/library/reserve', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Forbidden: insufficient permissions' });
     });
 
-    it('should call next when the user has an allowed role', async () => {
+    it('[TC-MID-LIB-008] should call next when the user has an allowed role', async () => {
       req.user = { userId: USER_ID, role: 'user' };
       const next = vi.fn();
 

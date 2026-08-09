@@ -131,7 +131,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 1 - Atomic group creation', { tags: '@SG_1' }, () => {
-    it('creates the reservation before the group and links the generated reserveId', async () => {
+    it('[TC-SRV-SG-001] creates the reservation before the group and links the generated reserveId', async () => {
       model.findSlotForCreation.mockResolvedValue({ capacity: 4 });
       model.insertReservation.mockResolvedValue({ reserveId: 'reserve-1' });
       model.insertStudyGroup.mockResolvedValue({ groupId });
@@ -164,7 +164,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 2 - Elapsed or unavailable slot rejection', { tags: '@SG_2' }, () => {
-    it('rejects a slot omitted by the authoritative availability lookup without writing data', async () => {
+    it('[TC-SRV-SG-002] rejects a slot omitted by the authoritative availability lookup without writing data', async () => {
       model.findSlotForCreation.mockResolvedValue(null);
 
       await expect(createStudyGroup(hostId, {
@@ -181,7 +181,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 3 - Join retry after denial cooldown', { tags: '@SG_3' }, () => {
-    it('removes the expired denial and creates exactly one new pending request', async () => {
+    it('[TC-SRV-SG-003] removes the expired denial and creates exactly one new pending request', async () => {
       model.findLatestParticipation.mockResolvedValue({
         type: 'request',
         status: 'denied',
@@ -207,7 +207,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 4 - Duplicate active participation', { tags: '@SG_4' }, () => {
-    it('rejects an existing pending or approved relationship before inserting another request', async () => {
+    it('[TC-SRV-SG-004] rejects an existing pending or approved relationship before inserting another request', async () => {
       for (const status of ['pending', 'approved']) {
         model.findLatestParticipation.mockResolvedValueOnce({ type: 'request', status });
         await expect(submitJoinRequest(groupId, memberId, 'Duplicate request'))
@@ -220,7 +220,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 5 - Request approval and capacity reconciliation', { tags: '@SG_5' }, () => {
-    it('approves only a pending request, increments capacity once, and returns both notifications', async () => {
+    it('[TC-SRV-SG-005] approves only a pending request, increments capacity once, and returns both notifications', async () => {
       model.lockRequest.mockResolvedValue({
         request_id: requestId,
         group_id: groupId,
@@ -251,7 +251,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 6 - Request actions cannot mutate invitations', { tags: '@SG_6' }, () => {
-    it('rejects approve and cancel request operations when the target is an invitation', async () => {
+    it('[TC-SRV-SG-006] rejects approve and cancel request operations when the target is an invitation', async () => {
       model.lockRequest.mockResolvedValue({
         request_id: requestId,
         group_id: groupId,
@@ -275,7 +275,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 7 - Invitee role restriction', { tags: '@SG_7' }, () => {
-    it('rejects librarian and admin accounts without creating or emailing an invitation', async () => {
+    it('[TC-SRV-SG-007] rejects librarian and admin accounts without creating or emailing an invitation', async () => {
       for (const role of ['librarian', 'admin']) {
         model.findUserByEmail.mockResolvedValueOnce({
           ...user(`${role}-1`, `${role}@example.com`),
@@ -291,7 +291,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 8 - Invitation email compensation', { tags: '@SG_8' }, () => {
-    it('deletes the pending invitation when SMTP delivery fails', async () => {
+    it('[TC-SRV-SG-008] deletes the pending invitation when SMTP delivery fails', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       model.findUserByEmail.mockResolvedValue(user(memberId, 'member@example.com'));
       model.findLatestParticipation.mockResolvedValue(null);
@@ -314,7 +314,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 9 - Invitation recipient authorization', { tags: '@SG_9' }, () => {
-    it('allows only the intended recipient to accept and increments capacity exactly once', async () => {
+    it('[TC-SRV-SG-009] allows only the intended recipient to accept and increments capacity exactly once', async () => {
       const invitation = {
         request_id: requestId,
         group_id: groupId,
@@ -342,7 +342,7 @@ describe('Study Group Service - critical business rules', () => {
   });
 
   describe('Test 10 - Transactional group dissolution', { tags: '@SG_10' }, () => {
-    it('snapshots recipients, deletes in the transaction, then notifies all recipients', async () => {
+    it('[TC-SRV-SG-010] snapshots recipients, deletes in the transaction, then notifies all recipients', async () => {
       const recipients = [
         user('member-1', 'member1@example.com', 'Member One'),
         user('member-2', 'member2@example.com', 'Member Two'),

@@ -44,7 +44,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
   });
 
   describe('generatePin - generate pickup PIN', () => {
-    it('should return the generated PIN and expiry when the service succeeds', async () => {
+    it('[TC-CTL-DASH-001] should return the generated PIN and expiry when the service succeeds', async () => {
       const expiresAt = new Date(Date.now() + 180000);
       generatePickupPin.mockResolvedValue({ pin: '123456', expiresAt });
 
@@ -55,7 +55,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       expect(res.json).toHaveBeenCalledWith({ success: true, data: { pin: '123456', expiresAt } });
     });
 
-    it('should forward service domain errors with their status code', async () => {
+    it('[TC-CTL-DASH-002] should forward service domain errors with their status code', async () => {
       generatePickupPin.mockResolvedValue({
         error: { code: 'RESERVATION_NOT_FOUND', message: 'Reservation not found or invalid status' },
         statusCode: 404,
@@ -70,7 +70,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should default to 400 when the service error has no statusCode', async () => {
+    it('[TC-CTL-DASH-003] should default to 400 when the service error has no statusCode', async () => {
       generatePickupPin.mockResolvedValue({ error: { code: 'X', message: 'msg' } });
 
       await generatePin(req, res);
@@ -78,7 +78,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('should return 500 INTERNAL_ERROR when the service throws', async () => {
+    it('[TC-CTL-DASH-004] should return 500 INTERNAL_ERROR when the service throws', async () => {
       generatePickupPin.mockRejectedValue(new Error('db down'));
 
       await generatePin(req, res);
@@ -92,7 +92,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
   });
 
   describe('cleanupPin', () => {
-    it('should return cleaned=true when the reservation PIN was reset', async () => {
+    it('[TC-CTL-DASH-005] should return cleaned=true when the reservation PIN was reset', async () => {
       cleanupReservationPin.mockResolvedValue(true);
 
       await cleanupPin(req, res);
@@ -101,7 +101,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       expect(res.json).toHaveBeenCalledWith({ success: true, cleaned: true });
     });
 
-    it('should return 500 INTERNAL_ERROR when cleanup throws', async () => {
+    it('[TC-CTL-DASH-006] should return 500 INTERNAL_ERROR when cleanup throws', async () => {
       cleanupReservationPin.mockRejectedValue(new Error('boom'));
 
       await cleanupPin(req, res);
@@ -111,7 +111,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
   });
 
   describe('generateReturnPin', () => {
-    it('should return 400 when borrow_id is missing', async () => {
+    it('[TC-CTL-DASH-007] should return 400 when borrow_id is missing', async () => {
       req.body = {};
 
       await generateReturnPinController(req, res);
@@ -120,7 +120,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       expect(generateReturnPin).not.toHaveBeenCalled();
     });
 
-    it('should return the generated return PIN when the service succeeds', async () => {
+    it('[TC-CTL-DASH-008] should return the generated return PIN when the service succeeds', async () => {
       req.body = { borrow_id: 'bb-001' };
       const expiresAt = new Date(Date.now() + 180000);
       generateReturnPin.mockResolvedValue({ pin: '654321', expiresAt });
@@ -135,7 +135,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       });
     });
 
-    it('should forward service domain errors with their status code', async () => {
+    it('[TC-CTL-DASH-009] should forward service domain errors with their status code', async () => {
       req.body = { borrow_id: 'bb-001' };
       generateReturnPin.mockResolvedValue({
         error: { code: 'BORROW_NOT_FOUND', message: 'Borrow record not found or book is not currently borrowed' },
@@ -154,7 +154,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
   });
 
   describe('cleanupReturnPin', () => {
-    it('should call the cleanup service and return cleaned status', async () => {
+    it('[TC-CTL-DASH-010] should call the cleanup service and return cleaned status', async () => {
       req.params = { borrowId: 'bb-001' };
       cleanupReturnPin.mockResolvedValue(true);
 
@@ -164,7 +164,7 @@ describe('dashboard.user.controllers.mjs - PIN controllers', () => {
       expect(res.json).toHaveBeenCalledWith({ success: true, cleaned: true });
     });
 
-    it('should return 500 INTERNAL_ERROR when cleanup throws', async () => {
+    it('[TC-CTL-DASH-011] should return 500 INTERNAL_ERROR when cleanup throws', async () => {
       req.params = { borrowId: 'bb-001' };
       cleanupReturnPin.mockRejectedValue(new Error('boom'));
 

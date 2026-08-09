@@ -45,7 +45,7 @@ describe('Resend Verification API Integration', () => {
   });
 
   describe('Test 1 - Successful resend', { tags: ['@A_R4', '@A_R9', '@A_R10'] }, () => {
-    it('should return 200 OK with success message', async () => {
+    it('[TC-INT-RV-001] should return 200 OK with success message', async () => {
       const mockPendingRow = {
         email: mockEmail,
         password_hash: 'hashed_pwd_abc',
@@ -77,7 +77,7 @@ describe('Resend Verification API Integration', () => {
   });
 
   describe('Test 2 - Validation errors', { tags: ['@A_R4', '@A_R10'] }, () => {
-    it('should return 400 Bad Request when email is missing', async () => {
+    it('[TC-INT-RV-002] should return 400 Bad Request when email is missing', async () => {
       const res = await request(app)
         .post('/auth/resend-verification')
         .send({});
@@ -86,7 +86,7 @@ describe('Resend Verification API Integration', () => {
       expect(res.body).toEqual({ error: 'Email is required' });
     });
 
-    it('should return 400 Bad Request when no pending registration exists', async () => {
+    it('[TC-INT-RV-003] should return 400 Bad Request when no pending registration exists', async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // getPendingByEmail returns empty
 
       const res = await request(app)
@@ -101,7 +101,7 @@ describe('Resend Verification API Integration', () => {
   });
 
   describe('Test 3 - Infrastructure failures mapping to 500', { tags: ['@A_R8', '@A_R9', '@A_R10'] }, () => {
-    it('should return 500 Internal Server Error when database queries fail', async () => {
+    it('[TC-INT-RV-004] should return 500 Internal Server Error when database queries fail', async () => {
       pool.query.mockRejectedValueOnce(new Error('Postgres pool query failure'));
 
       const res = await request(app)
@@ -112,7 +112,7 @@ describe('Resend Verification API Integration', () => {
       expect(res.body).toEqual({ error: 'Postgres pool query failure' });
     });
 
-    it('should return 500 Internal Server Error and commit transaction but fail on mailer throws', async () => {
+    it('[TC-INT-RV-005] should return 500 Internal Server Error and commit transaction but fail on mailer throws', async () => {
       const mockPendingRow = {
         email: mockEmail,
         password_hash: 'hashed_pwd_abc',

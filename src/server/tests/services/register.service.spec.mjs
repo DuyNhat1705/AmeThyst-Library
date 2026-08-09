@@ -63,7 +63,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 1 - Successful registration", { tags: '@A_R1' }, () => {
-    it("should successfully register with valid details", async () => {
+    it("[TC-SRV-REG-001] should successfully register with valid details", async () => {
       const result = await registerUser(mockInput);
 
       expect(findUserByEmail).toHaveBeenCalledWith(mockInput.email);
@@ -75,7 +75,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 2 - Reject duplicate email", { tags: '@A_R2' }, () => {
-    it("should reject registration when the email already exists", async () => {
+    it("[TC-SRV-REG-002] should reject registration when the email already exists", async () => {
       findUserByEmail.mockResolvedValue({ user_id: 1, email: mockInput.email });
 
       await expect(registerUser(mockInput)).rejects.toThrow('Email already exists');
@@ -86,7 +86,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 3 - Reject active pending registration", { tags: '@A_R3' }, () => {
-    it("should reject registration when an active pending registration already exists", async () => {
+    it("[TC-SRV-REG-003] should reject registration when an active pending registration already exists", async () => {
       getPendingByEmail.mockResolvedValue({
         email: mockInput.email,
         expired_at: new Date(Date.now() + 60000).toISOString(), // Active for another 1 minute
@@ -117,7 +117,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 4 - Allow registration after pending registration expires", { tags: '@A_R3' }, () => {
-    it("should allow registration after the previous pending registration expires", async () => {
+    it("[TC-SRV-REG-004] should allow registration after the previous pending registration expires", async () => {
       getPendingByEmail.mockResolvedValue({
         email: mockInput.email,
         expired_at: new Date(Date.now() - 60000).toISOString(), // Expired 1 minute ago
@@ -134,7 +134,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 5 - Send verification email", { tags: '@A_R1' }, () => {
-    it("should send verification email after successful registration", async () => {
+    it("[TC-SRV-REG-005] should send verification email after successful registration", async () => {
       await registerUser(mockInput);
 
       expect(sendVerificationEmail).toHaveBeenCalledWith(mockInput.email, 'mock-uuid-token-12345');
@@ -142,7 +142,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 6 - Protect password confidentiality", { tags: '@A_R7' }, () => {
-    it("should protect user password confidentiality by hashing the plaintext password", async () => {
+    it("[TC-SRV-REG-006] should protect user password confidentiality by hashing the plaintext password", async () => {
       await registerUser(mockInput);
 
       expect(bcrypt.hash).toHaveBeenCalledWith(mockInput.password, SALT_ROUNDS);
@@ -156,7 +156,7 @@ describe("Register Service", () => {
   });
 
   describe("Test 7 - Assign default user role", { tags: '@A_R7' }, () => {
-    it("should assign the default user role during pending creation", async () => {
+    it("[TC-SRV-REG-007] should assign the default user role during pending creation", async () => {
       await registerUser(mockInput);
 
       expect(replacePendingUser).toHaveBeenCalledWith(expect.any(Object), {
@@ -168,22 +168,22 @@ describe("Register Service", () => {
   });
 
   describe("Test 8 - Handle unexpected failures", { tags: '@A_R8' }, () => {
-    it("should handle database check user error safely", async () => {
+    it("[TC-SRV-REG-008] should handle database check user error safely", async () => {
       findUserByEmail.mockRejectedValue(new Error('Database query error on findUser'));
       await expect(registerUser(mockInput)).rejects.toThrow('Database query error on findUser');
     });
 
-    it("should handle database get pending check error safely", async () => {
+    it("[TC-SRV-REG-009] should handle database get pending check error safely", async () => {
       getPendingByEmail.mockRejectedValue(new Error('Database error on getPending'));
       await expect(registerUser(mockInput)).rejects.toThrow('Database error on getPending');
     });
 
-    it("should handle hashing error safely", async () => {
+    it("[TC-SRV-REG-010] should handle hashing error safely", async () => {
       bcrypt.hash.mockRejectedValue(new Error('Bcrypt service unavailable'));
       await expect(registerUser(mockInput)).rejects.toThrow('Bcrypt service unavailable');
     });
 
-    it("should handle expired pending cleanup database delete error safely", async () => {
+    it("[TC-SRV-REG-011] should handle expired pending cleanup database delete error safely", async () => {
       getPendingByEmail.mockResolvedValue({
         email: mockInput.email,
         expired_at: new Date(Date.now() - 60000).toISOString(),
@@ -194,13 +194,13 @@ describe("Register Service", () => {
   });
 
   describe("Test 9 - Maintain registration state consistency", { tags: '@A_R9' }, () => {
-    it("should not send verification email if database transaction fails", async () => {
+    it("[TC-SRV-REG-012] should not send verification email if database transaction fails", async () => {
       withTransaction.mockRejectedValue(new Error('Failed to insert pending user row'));
       await expect(registerUser(mockInput)).rejects.toThrow('Failed to insert pending user row');
       expect(sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it("should propagate email delivery failure but complete database write", async () => {
+    it("[TC-SRV-REG-013] should propagate email delivery failure but complete database write", async () => {
       sendVerificationEmail.mockRejectedValue(new Error('SMTP connection timed out'));
       await expect(registerUser(mockInput)).rejects.toThrow('SMTP connection timed out');
       expect(replacePendingUser).toHaveBeenCalled();

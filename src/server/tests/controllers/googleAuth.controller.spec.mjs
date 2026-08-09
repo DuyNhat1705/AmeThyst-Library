@@ -33,7 +33,7 @@ describe('Google OAuth Controller Handler', () => {
   });
 
   describe('Test 1 - Correct HTTP response/redirect for Google callback', { tags: ['@A_R5', '@A_R6', '@A_R10'] }, () => {
-    it('should sign a JWT, construct user payload, and redirect browser (302) with URI-encoded payload', async () => {
+    it('[TC-CTL-GA-001] should sign a JWT, construct user payload, and redirect browser (302) with URI-encoded payload', async () => {
       const handler = googleCallback[1];
       const mockToken = 'mocked-jwt-token-google';
       const mockPayload = {
@@ -60,7 +60,7 @@ describe('Google OAuth Controller Handler', () => {
   });
 
   describe('Test 2 - Security and data-shape invariants (Google Callback)', { tags: '@A_R7' }, () => {
-    it('should never leak password_hash in redirection payload', async () => {
+    it('[TC-CTL-GA-002] should never leak password_hash in redirection payload', async () => {
       const handler = googleCallback[1];
       const mockToken = 'mocked-jwt-token-google';
       const mockPayload = {

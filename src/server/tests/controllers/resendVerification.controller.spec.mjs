@@ -28,7 +28,7 @@ describe('Resend Verification Controller', () => {
   });
 
   describe('Test 1 - Correct HTTP response/redirect for every outcome', { tags: '@A_R10' }, () => {
-    it('should return 200 OK with success message on success', async () => {
+    it('[TC-CTL-RV-001] should return 200 OK with success message on success', async () => {
       const mockResult = { message: 'Verification email resent successfully.' };
       resendVerificationEmailService.mockResolvedValue(mockResult);
 
@@ -39,7 +39,7 @@ describe('Resend Verification Controller', () => {
       expect(res.json).toHaveBeenCalledWith(mockResult);
     });
 
-    it('should return 400 Bad Request if email is missing in request body', async () => {
+    it('[TC-CTL-RV-002] should return 400 Bad Request if email is missing in request body', async () => {
       req.body.email = undefined;
 
       await resendVerification(req, res);
@@ -51,7 +51,7 @@ describe('Resend Verification Controller', () => {
   });
 
   describe('Test 2 - Infrastructure failure mapping (500 vs 400)', { tags: ['@A_R4', '@A_R8'] }, () => {
-    it('should return 400 Bad Request if service throws "No pending..." exception', async () => {
+    it('[TC-CTL-RV-003] should return 400 Bad Request if service throws "No pending..." exception', async () => {
       resendVerificationEmailService.mockRejectedValue(
         new Error('No pending registration found for this email. Please register again.')
       );
@@ -64,7 +64,7 @@ describe('Resend Verification Controller', () => {
       });
     });
 
-    it('should return 500 Internal Server Error for unexpected database or mailer failures', async () => {
+    it('[TC-CTL-RV-004] should return 500 Internal Server Error for unexpected database or mailer failures', async () => {
       resendVerificationEmailService.mockRejectedValue(new Error('PostgreSQL database query failure'));
 
       await resendVerification(req, res);

@@ -72,7 +72,7 @@ describe('Create Study Group API', () => {
   });
 
   describe('Test 1 - Successful API creation', { tags: '@SG_CREATE_API' }, () => {
-    it('returns 201 after the complete route pipeline normalizes and creates a group', async () => {
+    it('[TC-INT-CSG-001] returns 201 after the complete route pipeline normalizes and creates a group', async () => {
       const response = await postCreate();
 
       expect(response.status).toBe(201);
@@ -106,7 +106,7 @@ describe('Create Study Group API', () => {
   });
 
   describe('Test 2 - Authentication and role guards', { tags: '@SG_CREATE_API' }, () => {
-    it('returns 401 when the bearer token is missing', async () => {
+    it('[TC-INT-CSG-002] returns 401 when the bearer token is missing', async () => {
       const response = await postCreate(validPayload(), null);
 
       expect(response.status).toBe(401);
@@ -117,7 +117,7 @@ describe('Create Study Group API', () => {
       expect(createStudyGroup).not.toHaveBeenCalled();
     });
 
-    it('returns 401 when the token is invalid', async () => {
+    it('[TC-INT-CSG-003] returns 401 when the token is invalid', async () => {
       const tokenError = new Error('invalid signature');
       tokenError.name = 'JsonWebTokenError';
       jwt.verify.mockImplementation(() => { throw tokenError; });
@@ -133,7 +133,7 @@ describe('Create Study Group API', () => {
       expect(createStudyGroup).not.toHaveBeenCalled();
     });
 
-    it.each(['admin', 'librarian'])('returns 403 for the non-student role %s', async (role) => {
+    it.each(['admin', 'librarian'])('[TC-INT-CSG-004] returns 403 for the non-student role %s', async (role) => {
       pool.query.mockResolvedValue({ rows: [authenticatedUser({ role })] });
 
       const response = await postCreate();
@@ -145,7 +145,7 @@ describe('Create Study Group API', () => {
   });
 
   describe('Test 3 - Request validation', { tags: '@SG_CREATE_API' }, () => {
-    it('returns a structured 400 response for an unsupported field', async () => {
+    it('[TC-INT-CSG-005] returns a structured 400 response for an unsupported field', async () => {
       const response = await postCreate(validPayload({ createdBy: 'another-user' }));
 
       expect(response.status).toBe(400);
@@ -160,7 +160,7 @@ describe('Create Study Group API', () => {
       expect(createStudyGroup).not.toHaveBeenCalled();
     });
 
-    it('returns a structured 400 response for invalid creation metadata', async () => {
+    it('[TC-INT-CSG-006] returns a structured 400 response for invalid creation metadata', async () => {
       const response = await postCreate(validPayload({ title: '12345' }));
 
       expect(response.status).toBe(400);
@@ -180,7 +180,7 @@ describe('Create Study Group API', () => {
       ['NOT_FOUND', 'Room availability slot not found.', 404],
       ['SLOT_UNAVAILABLE', 'This room slot is no longer available.', 409],
       ['INVALID_CAPACITY', 'The selected room cannot host a Study Group.', 409],
-    ])('returns %s as an HTTP %i response', async (code, message, status) => {
+    ])('[TC-INT-CSG-007] returns %s as an HTTP %i response', async (code, message, status) => {
       createStudyGroup.mockRejectedValue({ code, message, status });
 
       const response = await postCreate();
@@ -193,7 +193,7 @@ describe('Create Study Group API', () => {
       expect(emitStudyGroupChanged).not.toHaveBeenCalled();
     });
 
-    it('returns a safe 500 envelope and emits no event for unexpected failures', async () => {
+    it('[TC-INT-CSG-008] returns a safe 500 envelope and emits no event for unexpected failures', async () => {
       createStudyGroup.mockRejectedValue(new Error('Database unavailable'));
 
       const response = await postCreate();

@@ -50,7 +50,7 @@ describe('Resend Verification Service', () => {
   });
 
   describe('Test 1 - Resend verification email', { tags: '@A_R4' }, () => {
-    it('should fetch the pending record, refresh TTL and token, and send verification email', async () => {
+    it('[TC-SRV-RV-001] should fetch the pending record, refresh TTL and token, and send verification email', async () => {
       arrangeHappyPath();
 
       const result = await resendVerificationEmailService({ email: mockEmail });
@@ -66,7 +66,7 @@ describe('Resend Verification Service', () => {
       expect(result).toEqual({ message: 'Verification email resent successfully.' });
     });
 
-    it('should throw an error if no pending registration exists for this email', async () => {
+    it('[TC-SRV-RV-002] should throw an error if no pending registration exists for this email', async () => {
       arrangeHappyPath();
       getPendingByEmail.mockResolvedValue(null);
 
@@ -80,7 +80,7 @@ describe('Resend Verification Service', () => {
   });
 
   describe('Test 2 - Security and data-shape invariants', { tags: '@A_R7' }, () => {
-    it('should reuse the password hash and role user exactly as-is', async () => {
+    it('[TC-SRV-RV-003] should reuse the password hash and role user exactly as-is', async () => {
       arrangeHappyPath();
 
       await resendVerificationEmailService({ email: mockEmail });
@@ -95,7 +95,7 @@ describe('Resend Verification Service', () => {
   });
 
   describe('Test 3 - Infrastructure failure handling', { tags: '@A_R8' }, () => {
-    it('should propagate database check failures safely', async () => {
+    it('[TC-SRV-RV-004] should propagate database check failures safely', async () => {
       arrangeHappyPath();
       getPendingByEmail.mockRejectedValue(new Error('PostgreSQL database is down'));
 
@@ -105,7 +105,7 @@ describe('Resend Verification Service', () => {
       expect(sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it('should propagate mailer failures if email delivery fails', async () => {
+    it('[TC-SRV-RV-005] should propagate mailer failures if email delivery fails', async () => {
       arrangeHappyPath();
       sendVerificationEmail.mockRejectedValue(new Error('SMTP Connection timed out'));
 
@@ -116,7 +116,7 @@ describe('Resend Verification Service', () => {
   });
 
   describe('Test 4 - Transactional consistency', { tags: '@A_R9' }, () => {
-    it('should roll back and propagate error if replacing pending user fails', async () => {
+    it('[TC-SRV-RV-006] should roll back and propagate error if replacing pending user fails', async () => {
       arrangeHappyPath();
       withTransaction.mockRejectedValue(new Error('Transaction rolled back: Insert pending failed'));
 

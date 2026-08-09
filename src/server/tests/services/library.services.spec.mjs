@@ -17,7 +17,7 @@ describe('library.services.mjs - getRecommendations and getRelatedBooks', () => 
   });
 
   describe('getRecommendations', () => {
-    it('should query random books matching limit and filtering out current book id', async () => {
+    it('[TC-SRV-LIB-001] should query random books matching limit and filtering out current book id', async () => {
       pool.query.mockResolvedValueOnce({
         rows: [
           { book_id: 'b1', title: 'Book One', author: ['Author A'], image_url: 'http://a.com' },
@@ -41,7 +41,7 @@ describe('library.services.mjs - getRecommendations and getRelatedBooks', () => 
   });
 
   describe('getRelatedBooks', () => {
-    it('should query books by genres if current book has genres', async () => {
+    it('[TC-SRV-LIB-002] should query books by genres if current book has genres', async () => {
       // First call fetches current book genres
       pool.query.mockResolvedValueOnce({
         rows: [{ genres: ['Fiction', 'Sci-Fi'] }]
@@ -65,7 +65,7 @@ describe('library.services.mjs - getRecommendations and getRelatedBooks', () => 
       ]);
     });
 
-    it('should fallback to getRecommendations with limit 20 if current book is not found or has no genres', async () => {
+    it('[TC-SRV-LIB-003] should fallback to getRecommendations with limit 20 if current book is not found or has no genres', async () => {
       // First call returns no rows for genres
       pool.query.mockResolvedValueOnce({
         rows: []
@@ -88,7 +88,7 @@ describe('library.services.mjs - getRecommendations and getRelatedBooks', () => 
       ]);
     });
 
-    it('should fallback to getRecommendations with limit 20 if no related books with same genres are found', async () => {
+    it('[TC-SRV-LIB-004] should fallback to getRecommendations with limit 20 if no related books with same genres are found', async () => {
       // First call fetches genres
       pool.query.mockResolvedValueOnce({
         rows: [{ genres: ['Mystery'] }]

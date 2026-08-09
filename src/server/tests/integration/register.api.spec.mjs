@@ -56,7 +56,7 @@ describe("Register API", () => {
   });
 
   describe("Test 1 - Successful registration", { tags: '@A_R1' }, () => {
-    it("should register successfully via the API endpoint", async () => {
+    it("[TC-INT-REG-001] should register successfully via the API endpoint", async () => {
       const res = await request(app)
         .post('/auth/register')
         .send({
@@ -76,7 +76,7 @@ describe("Register API", () => {
   });
 
   describe("Test 2 - Reject duplicate email", { tags: '@A_R2' }, () => {
-    it("should return 409 when email already exists", async () => {
+    it("[TC-INT-REG-002] should return 409 when email already exists", async () => {
       pool.query.mockResolvedValueOnce({ rows: [{ user_id: 1, email: 'dup@example.com' }] }); // findUserByEmail
 
       const res = await request(app)
@@ -95,7 +95,7 @@ describe("Register API", () => {
   });
 
   describe("Test 3 - Reject active pending registration", { tags: '@A_R3' }, () => {
-    it("should return 409 when an active pending registration already exists", async () => {
+    it("[TC-INT-REG-003] should return 409 when an active pending registration already exists", async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
       pool.query.mockResolvedValueOnce({
         rows: [{ email: 'pending@example.com', expired_at: new Date(Date.now() + 60000).toISOString() }],
@@ -146,7 +146,7 @@ describe("Register API", () => {
   });
 
   describe("Test 4 - Allow registration after pending registration expires", { tags: '@A_R3' }, () => {
-    it("should delete expired pending record and proceed with new registration", async () => {
+    it("[TC-INT-REG-004] should delete expired pending record and proceed with new registration", async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
       pool.query.mockResolvedValueOnce({
         rows: [{ email: 'expired@example.com', expired_at: new Date(Date.now() - 60000).toISOString() }],
@@ -170,7 +170,7 @@ describe("Register API", () => {
   });
 
   describe("Test 5 - Send verification email", { tags: '@A_R1' }, () => {
-    it("should send verification email to user after registration", async () => {
+    it("[TC-INT-REG-005] should send verification email to user after registration", async () => {
       const res = await request(app)
         .post('/auth/register')
         .send({
@@ -185,7 +185,7 @@ describe("Register API", () => {
   });
 
   describe("Test 6 - Protect password confidentiality", { tags: '@A_R7' }, () => {
-    it("should protect user password confidentiality by hashing the password", async () => {
+    it("[TC-INT-REG-006] should protect user password confidentiality by hashing the password", async () => {
       await request(app)
         .post('/auth/register')
         .send({
@@ -207,7 +207,7 @@ describe("Register API", () => {
   });
 
   describe("Test 7 - Assign default user role", { tags: '@A_R7' }, () => {
-    it("should assign the default role 'user' when creating pending record", async () => {
+    it("[TC-INT-REG-007] should assign the default role 'user' when creating pending record", async () => {
       await request(app)
         .post('/auth/register')
         .send({
@@ -224,7 +224,7 @@ describe("Register API", () => {
   });
 
   describe("Test 8 - Handle unexpected failures", { tags: '@A_R8' }, () => {
-    it("should return status 500 on database error during user check", async () => {
+    it("[TC-INT-REG-008] should return status 500 on database error during user check", async () => {
       pool.query.mockRejectedValueOnce(new Error('DB error on check user'));
       const res = await request(app)
         .post('/auth/register')
@@ -237,7 +237,7 @@ describe("Register API", () => {
       expect(res.body).toEqual({ error: 'DB error on check user' });
     });
 
-    it("should return status 500 on database error during pending check", async () => {
+    it("[TC-INT-REG-009] should return status 500 on database error during pending check", async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
       pool.query.mockRejectedValueOnce(new Error('DB error on check pending'));
       const res = await request(app)
@@ -251,7 +251,7 @@ describe("Register API", () => {
       expect(res.body).toEqual({ error: 'DB error on check pending' });
     });
 
-    it("should return status 500 on password hashing error", async () => {
+    it("[TC-INT-REG-010] should return status 500 on password hashing error", async () => {
       bcrypt.hash.mockRejectedValueOnce(new Error('Bcrypt hash failure'));
       const res = await request(app)
         .post('/auth/register')
@@ -264,7 +264,7 @@ describe("Register API", () => {
       expect(res.body).toEqual({ error: 'Bcrypt hash failure' });
     });
 
-    it("should return status 500 on database error during expired pending cleanup", async () => {
+    it("[TC-INT-REG-011] should return status 500 on database error during expired pending cleanup", async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
       pool.query.mockResolvedValueOnce({
         rows: [{ email: 'expired@example.com', expired_at: new Date(Date.now() - 60000).toISOString() }],
@@ -283,7 +283,7 @@ describe("Register API", () => {
   });
 
   describe("Test 9 - Maintain registration state consistency", { tags: '@A_R9' }, () => {
-    it("should rollback database transaction and not send verification email when insert fails", async () => {
+    it("[TC-INT-REG-012] should rollback database transaction and not send verification email when insert fails", async () => {
       pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
       pool.query.mockResolvedValueOnce({ rows: [] }); // getPendingByEmail
       mockClient.query.mockImplementation((sql) => {
@@ -307,7 +307,7 @@ describe("Register API", () => {
       expect(sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it("should complete database write but propagate mailing error when SMTP is down", async () => {
+    it("[TC-INT-REG-013] should complete database write but propagate mailing error when SMTP is down", async () => {
       sendVerificationEmail.mockRejectedValueOnce(new Error('SMTP service down'));
 
       const res = await request(app)

@@ -70,7 +70,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 1: Cache Management - Hit
   describe('1. Cache Management - Hit', () => {
-    it('should return cached recommendations on subsequent calls without querying database', async () => {
+    it('[TC-SRV-REC-001] should return cached recommendations on subsequent calls without querying database', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
         book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
@@ -94,7 +94,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 2: Cache Management - Miss & Invalidation
   describe('2. Cache Management - Miss & Invalidation', () => {
-    it('should query database again after cache invalidation', async () => {
+    it('[TC-SRV-REC-002] should query database again after cache invalidation', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
         book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
@@ -117,7 +117,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 3: Database Fallback
   describe('3. Database Error Resilience & Fallback', () => {
-    it('should return default fallback catalog books when database operation fails', async () => {
+    it('[TC-SRV-REC-003] should return default fallback catalog books when database operation fails', async () => {
       pool.query.mockRejectedValueOnce(new Error('PostgreSQL Connection Failed'));
 
       const fallbackBooks = Array.from({ length: 15 }, (_, i) => ({
@@ -137,7 +137,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 4: TCP Socket Inference Handler
   describe('4. TCP Socket Inference Handler', () => {
-    it('should send payload over TCP socket and parse ranked inference results', async () => {
+    it('[TC-SRV-REC-004] should send payload over TCP socket and parse ranked inference results', async () => {
       const { getSession } = await import('../../src/config/memgraph.config.mjs');
       const mockRun = vi.fn().mockResolvedValue({
         records: Array.from({ length: 15 }, (_, i) => ({
@@ -184,7 +184,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 5: Graph Candidate Retrieval - Cold Start Fallback
   describe('5. Memgraph Graph Candidate Retrieval - Cold Start Fallback', () => {
-    it('should trigger cold-start fallback query when graph candidates are fewer than threshold', async () => {
+    it('[TC-SRV-REC-005] should trigger cold-start fallback query when graph candidates are fewer than threshold', async () => {
       const { getSession } = await import('../../src/config/memgraph.config.mjs');
 
       const primaryRunMock = vi.fn()
@@ -232,7 +232,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 6: Hard Guardrail - Out-of-Stock Item Filtering
   describe('6. Hard Guardrail - Out-of-Stock Item Filtering', () => {
-    it('should exclude candidates with zero available copies from recommendation pool', async () => {
+    it('[TC-SRV-REC-006] should exclude candidates with zero available copies from recommendation pool', async () => {
       const { getSession } = await import('../../src/config/memgraph.config.mjs');
       getSession.mockReturnValue({
         run: vi.fn().mockResolvedValue({
@@ -271,7 +271,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 7: Skip Penalty Scoring Adjustment
   describe('7. Skip Penalty Scoring Adjustment', () => {
-    it('should discount scores of repeatedly skipped books using penalty factor (0.65^impressions)', async () => {
+    it('[TC-SRV-REC-007] should discount scores of repeatedly skipped books using penalty factor (0.65^impressions)', async () => {
       const { getSession } = await import('../../src/config/memgraph.config.mjs');
       getSession.mockReturnValue({
         run: vi.fn().mockResolvedValue({
@@ -309,7 +309,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 8: Candidate Pool Supplementation
   describe('8. Candidate Pool Supplementation', () => {
-    it('should supplement candidate pool from catalog when initial candidates are fewer than 15', async () => {
+    it('[TC-SRV-REC-008] should supplement candidate pool from catalog when initial candidates are fewer than 15', async () => {
       const { getSession } = await import('../../src/config/memgraph.config.mjs');
       getSession.mockReturnValue({
         run: vi.fn().mockResolvedValue({
@@ -352,7 +352,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 9: Click Tracking & Sync Integration
   describe('9. Click Tracking & Sync Integration', () => {
-    it('should update PostgreSQL record, invalidate cache, and invoke Memgraph sync on recommendation click', async () => {
+    it('[TC-SRV-REC-009] should update PostgreSQL record, invalidate cache, and invoke Memgraph sync on recommendation click', async () => {
       const mockActiveRecs = Array.from({ length: 15 }, (_, i) => ({
         book_id: `book-${i}`,
         score: 0.9 - i * 0.05,
@@ -383,7 +383,7 @@ describe('AI Recommendation System - Vitest Test Suite', () => {
 
   // Test 10: Controller Endpoint Integration
   describe('10. Controller Endpoint Integration', () => {
-    it('should handle getRecommendations API request and format historyBased and trending response', async () => {
+    it('[TC-SRV-REC-010] should handle getRecommendations API request and format historyBased and trending response', async () => {
       const mockHistoryBased = Array.from({ length: 15 }, (_, i) => ({
         id: `book-${i}`,
         title: `History Book ${i}`,

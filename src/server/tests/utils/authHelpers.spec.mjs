@@ -26,7 +26,7 @@ describe('Auth Helpers - authHelpers', () => {
   });
 
   describe('buildUserPayload', () => {
-    it('should filter user object to build a clean payload and omit password_hash', () => {
+    it('[TC-UTL-AUTH-001] should filter user object to build a clean payload and omit password_hash', () => {
       const user = {
         user_id: 42,
         email: 'test@example.com',
@@ -49,7 +49,7 @@ describe('Auth Helpers - authHelpers', () => {
   });
 
   describe('signToken', () => {
-    it('should generate a JWT token signed with JWT_SECRET expiring in 7d', () => {
+    it('[TC-UTL-AUTH-002] should generate a JWT token signed with JWT_SECRET expiring in 7d', () => {
       const originalSecret = process.env.JWT_SECRET;
       process.env.JWT_SECRET = 'my_super_secret_key';
 
@@ -80,7 +80,7 @@ describe('Auth Helpers - authHelpers', () => {
       pool.connect.mockResolvedValue(clientMock);
     });
 
-    it('should execute BEGIN, callback, COMMIT, and release the client on success', async () => {
+    it('[TC-UTL-AUTH-003] should execute BEGIN, callback, COMMIT, and release the client on success', async () => {
       const callbackMock = vi.fn().mockResolvedValue('callback_result');
 
       const result = await withTransaction(callbackMock);
@@ -93,7 +93,7 @@ describe('Auth Helpers - authHelpers', () => {
       expect(result).toBe('callback_result');
     });
 
-    it('should execute BEGIN, ROLLBACK on error, release client, and rethrow the error', async () => {
+    it('[TC-UTL-AUTH-004] should execute BEGIN, ROLLBACK on error, release client, and rethrow the error', async () => {
       const callbackMock = vi.fn().mockRejectedValue(new Error('Query failed'));
 
       await expect(withTransaction(callbackMock)).rejects.toThrow('Query failed');
@@ -115,7 +115,7 @@ describe('Auth Helpers - authHelpers', () => {
       };
     });
 
-    it('should delete existing pending rows, insert a new row with 5m TTL, and return a UUID token', async () => {
+    it('[TC-UTL-AUTH-005] should delete existing pending rows, insert a new row with 5m TTL, and return a UUID token', async () => {
       const mockNow = new Date('2026-07-03T15:00:00.000Z');
       vi.useFakeTimers();
       vi.setSystemTime(mockNow);

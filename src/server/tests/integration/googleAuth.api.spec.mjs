@@ -50,7 +50,7 @@ describe('Google OAuth API Integration', () => {
   });
 
   describe('Test 1 - Correct HTTP response/redirect for Google Auth Initiator', { tags: '@A_R10' }, () => {
-    it('should redirect the browser (302) to Google OAuth server on GET /auth/google', async () => {
+    it('[TC-INT-GA-001] should redirect the browser (302) to Google OAuth server on GET /auth/google', async () => {
       const res = await request(app).get('/auth/google');
       expect(res.status).toBe(302);
       expect(res.headers.location).toContain('https://accounts.google.com/o/oauth2/v2/auth');
@@ -58,7 +58,7 @@ describe('Google OAuth API Integration', () => {
   });
 
   describe('Test 2 - Successful Google callback redirect', { tags: ['@A_R5', '@A_R6', '@A_R10'] }, () => {
-    it('should authenticate the user, sign JWT, and redirect user to the client dashboard callback url', async () => {
+    it('[TC-INT-GA-002] should authenticate the user, sign JWT, and redirect user to the client dashboard callback url', async () => {
       const mockToken = 'mocked-integration-jwt-token';
       const mockUserPayload = {
         userId: 101,
@@ -85,7 +85,7 @@ describe('Google OAuth API Integration', () => {
   });
 
   describe('Test 3 - Callback failure redirect', { tags: ['@A_R2', '@A_R8', '@A_R10'] }, () => {
-    it('should redirect the user (302) to the login screen on failure', async () => {
+    it('[TC-INT-GA-003] should redirect the user (302) to the login screen on failure', async () => {
       const res = await request(app).get('/auth/google/callback?fail=true');
       expect(res.status).toBe(302);
       expect(res.headers.location).toBe(`${process.env.CLIENT_URL}/login`);

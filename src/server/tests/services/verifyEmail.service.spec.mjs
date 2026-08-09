@@ -71,7 +71,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 1 - Successful end-to-end email verification', { tags: '@A_R1' }, () => {
-    it('should promote the pending user to the users table, delete the pending token, and return JWT + user', async () => {
+    it('[TC-SRV-VE-001] should promote the pending user to the users table, delete the pending token, and return JWT + user', async () => {
       arrangeHappyPath();
 
       const result = await verifyEmail({ token: mockToken });
@@ -104,7 +104,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 2 - Reject duplicate email during verification', { tags: '@A_R2' }, () => {
-    it('should delete the pending token and throw an error if the email was registered in the meantime', async () => {
+    it('[TC-SRV-VE-002] should delete the pending token and throw an error if the email was registered in the meantime', async () => {
       arrangeHappyPath();
       findUserByEmail.mockResolvedValue({ user_id: 101, email: mockPendingRow.email });
 
@@ -116,7 +116,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 3 - TTL and token validation lifecycle', { tags: '@A_R3' }, () => {
-    it('should reject and throw error for non-existent token', async () => {
+    it('[TC-SRV-VE-003] should reject and throw error for non-existent token', async () => {
       arrangeHappyPath();
       getPendingByToken.mockResolvedValue(null);
 
@@ -127,7 +127,7 @@ describe('Verify Email Service', () => {
       expect(insertUserFromPending).not.toHaveBeenCalled();
     });
 
-    it('should delete token and throw error if the token has expired', async () => {
+    it('[TC-SRV-VE-004] should delete token and throw error if the token has expired', async () => {
       arrangeHappyPath();
       getPendingByToken.mockResolvedValue({
         ...mockPendingRow,
@@ -141,7 +141,7 @@ describe('Verify Email Service', () => {
       expect(insertUserFromPending).not.toHaveBeenCalled();
     });
 
-    it('should verify successfully on the exact expiration boundary', async () => {
+    it('[TC-SRV-VE-005] should verify successfully on the exact expiration boundary', async () => {
       const now = new Date();
       vi.useFakeTimers();
       vi.setSystemTime(now);
@@ -165,7 +165,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 4 - Security and data-shape invariants', { tags: '@A_R7' }, () => {
-    it('should strictly return mapped payload without password hash', async () => {
+    it('[TC-SRV-VE-006] should strictly return mapped payload without password hash', async () => {
       arrangeHappyPath();
 
       const result = await verifyEmail({ token: mockToken });
@@ -175,7 +175,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 5 - Infrastructure failure handling', { tags: '@A_R8' }, () => {
-    it('should propagate database check failures safely', async () => {
+    it('[TC-SRV-VE-007] should propagate database check failures safely', async () => {
       arrangeHappyPath();
       getPendingByToken.mockRejectedValue(new Error('Postgres pool connection lost'));
 
@@ -186,7 +186,7 @@ describe('Verify Email Service', () => {
   });
 
   describe('Test 6 - Transactional consistency', { tags: '@A_R9' }, () => {
-    it('should roll back if database transaction fails midway', async () => {
+    it('[TC-SRV-VE-008] should roll back if database transaction fails midway', async () => {
       arrangeHappyPath();
       withTransaction.mockRejectedValue(new Error('Transaction rolled back: Insert user failed'));
 
