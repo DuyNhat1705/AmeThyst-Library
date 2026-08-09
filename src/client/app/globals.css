@@ -8,6 +8,7 @@
   --primary: #091426;
   --secondary: #006F66;
   --accent: #FFB95F;
+  color-scheme: light;
 }
 
 .dark {
@@ -16,6 +17,7 @@
   --primary: #F8EFE6;
   --secondary: #FFB95F;
   --accent: #006F66;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -60,67 +62,82 @@ body {
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* Centralized Custom Scrollbar for Book Form Modals */
-.modal-custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Global Custom Scrollbar for Light and Dark Modes */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
 }
-.modal-custom-scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.modal-custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #CBD5E1; /* Slate 300 for light theme */
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
   border-radius: 9999px;
 }
-.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
-html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
-body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #525252; /* Neutral 600 for dark theme */
+.dark ::-webkit-scrollbar-thumb,
+html.dark ::-webkit-scrollbar-thumb,
+body.dark ::-webkit-scrollbar-thumb {
+  background-color: #525252;
   border-radius: 9999px;
 }
-.modal-custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #94A3B8; /* Slate 400 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
-.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
-html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
-body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #737373; /* Neutral 500 */
-}
-
-/* Firefox support for Book Form Modals */
-.modal-custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 transparent;
-}
-.dark .modal-custom-scrollbar,
-html.dark .modal-custom-scrollbar,
-body.dark .modal-custom-scrollbar {
-  scrollbar-color: #525252 transparent;
+.dark ::-webkit-scrollbar-thumb:hover,
+html.dark ::-webkit-scrollbar-thumb:hover,
+body.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #737373;
 }
 
-/* Standard Custom Scrollbar helper */
+/* Centralized Custom Scrollbar for Book Form Modals & Cards */
+.modal-custom-scrollbar::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+.modal-custom-scrollbar::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+.modal-custom-scrollbar::-webkit-scrollbar-thumb,
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
-  border-radius: 10px;
+  background-color: #CBD5E1;
+  border-radius: 9999px;
 }
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.5);
+.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
+html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
+body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb,
+.dark .custom-scrollbar::-webkit-scrollbar-thumb,
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb,
+body.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #525252;
+  border-radius: 9999px;
 }
+.modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(107, 114, 128, 0.8);
+  background-color: #94A3B8;
 }
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(156, 163, 175, 0.8);
+.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
+body.dark .modal-custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+body.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #737373;
 }
 
-/* Hide the clear and reveal buttons in password inputs for IE/Edge */
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+.dark *,
+html.dark *,
+body.dark * {
+  scrollbar-color: #525252 transparent;
+}
+
+/* Hide clear and reveal buttons in password inputs for IE/Edge */
 input::-ms-reveal,
 input::-ms-clear {
   display: none;

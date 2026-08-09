@@ -23,6 +23,7 @@ import studyGroupRoutes from './routes/study-group.routes.mjs';
 import systemConfigurationRoutes from './routes/system-configuration.routes.mjs';
 import { systemConfigurationService } from './services/system-configuration.services.mjs';
 import adminRoutes from './routes/admin.routes.mjs';
+import statisticsRoutes from './routes/statistics.routes.mjs';
 
 
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/dashboard/admin/system-configuration', systemConfigurationRoutes);
 app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/statistics', statisticsRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);
