@@ -143,4 +143,23 @@ describe('Google Strategy Verify Callback', () => {
       expect(pool.query).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('Test 6 - Suspended user rejection', () => {
+    it('should reject authentication with USER_SUSPENDED if the user status is suspended', async () => {
+      const mockSuspendedUser = {
+        user_id: 88,
+        email: 'oauth@example.com',
+        username: 'Google User',
+        avatar: 'https://avatar-url.com/pic.jpg',
+        password_hash: 'GOOGLE_AUTH',
+        role: 'user',
+        status: 'suspended',
+      };
+      pool.query.mockResolvedValueOnce({ rows: [mockSuspendedUser] });
+
+      await googleVerifyCallback('access', 'refresh', mockProfile, mockDone);
+
+      expect(mockDone).toHaveBeenCalledWith(null, false, { message: 'USER_SUSPENDED' });
+    });
+  });
 });
