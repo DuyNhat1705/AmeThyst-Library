@@ -133,6 +133,14 @@ export default defineConfig({
           ],
         },
       },
+      {
+        test: {
+          name: 'test_recommendation',
+          globals: true,
+          strictTags: false,
+          include: ['tests/services/recommendation.services.spec.mjs'],
+        },
+      },
     ],
 
     api: {
