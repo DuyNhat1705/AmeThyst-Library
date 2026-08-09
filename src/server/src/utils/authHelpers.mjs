@@ -4,9 +4,9 @@ import pool from '../config/postgres.mjs';
 
 export const SALT_ROUNDS = 10;
 
-export const signToken = (userId, email, role, branchId) =>
+export const signToken = (userId, email, role, branchId, tokenVersion = 0) =>
   jwt.sign(
-    { userId, email, role, branch_id: branchId || null },
+    { userId, email, role, branch_id: branchId || null, token_version: tokenVersion || 0 },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -18,6 +18,7 @@ export const buildUserPayload = (user) => ({
   avatar: user.avatar,
   role: user.role,
   branch_id: user.branch_id || null,
+  must_change_password: user.must_change_password ?? false,
 });
 
 export const withTransaction = async (callback) => {

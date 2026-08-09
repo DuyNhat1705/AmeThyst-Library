@@ -15,7 +15,7 @@ const authenticate = async (token) => {
     throw error;
   }
   const result = await pool.query(
-    'SELECT user_id, email, role, branch_id, status FROM public.users WHERE user_id = $1',
+    'SELECT user_id, email, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
     [userId],
   );
   if (!result.rows[0]) {
@@ -29,7 +29,17 @@ const authenticate = async (token) => {
     error.code = 'USER_SUSPENDED';
     throw error;
   }
-  return { ...decoded, userId: user.user_id, email: user.email, role: user.role, branch_id: user.branch_id ?? null, status: user.status };
+  if ((decoded.token_version ?? 0) !== (user.token_version ?? 0)) {
+    const error = new Error('Your session is no longer valid. Please sign in again.');
+    error.code = 'INVALID_TOKEN_VERSION';
+    throw error;
+  }
+  return { ...decoded, userId: user.user_id, email: user.email, role: user.role, branch_id: user.branch_id ?? null, status: user.status, status: user.status, must_change_password: user.must_change_password ?? false };
+};
+
+const isPasswordChangeRequest = (req) => {
+  const path = (req.originalUrl || req.url || '').split('?')[0];
+  return req.method === 'PUT' && path.endsWith('/user/profile/password');
 };
 
 export const verifyToken = async (req, res, next) => {
@@ -39,10 +49,14 @@ export const verifyToken = async (req, res, next) => {
 
   try {
     req.user = await authenticate(token);
+    if (req.user.must_change_password && !isPasswordChangeRequest(req)) {
+      return authError(res, 403, 'MUST_CHANGE_PASSWORD', 'You must set your password before continuing.');
+    }
     next();
   } catch (err) {
     if (err.code === 'USER_SUSPENDED') return authError(res, 401, err.code, err.message);
     if (err.code === 'AUTH_USER_NOT_FOUND') return authError(res, 401, err.code, err.message);
+    if (err.code === 'INVALID_TOKEN_VERSION') return authError(res, 401, 'INVALID_TOKEN', err.message);
     if (['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError'].includes(err.name) || err.code === 'INVALID_TOKEN_USER') return authError(res, 401, 'INVALID_TOKEN', 'Invalid token.');
     return authError(res, 503, 'AUTH_DATABASE_UNAVAILABLE', 'Authentication service is temporarily unavailable.');
   }

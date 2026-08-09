@@ -69,7 +69,7 @@ export const verifyEmail = async ({ token }) => {
   });
 
   return {
-    token: signToken(user.user_id, user.email, user.role, user.branch_id),
+    token: signToken(user.user_id, user.email, user.role, user.branch_id, user.token_version ?? 0),
     user: buildUserPayload(user),
   };
 };

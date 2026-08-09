@@ -24,6 +24,7 @@ import systemConfigurationRoutes from './routes/system-configuration.routes.mjs'
 import { systemConfigurationService } from './services/system-configuration.services.mjs';
 import adminRoutes from './routes/admin.routes.mjs';
 import statisticsRoutes from './routes/statistics.routes.mjs';
+import authorizationRoutes from './routes/authorization.routes.mjs';
 
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/dashboard/librarian', dashboardLibrarianRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/statistics', statisticsRoutes);
+app.use('/api/authorization', authorizationRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);

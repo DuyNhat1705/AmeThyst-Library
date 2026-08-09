@@ -18,11 +18,12 @@ export interface StoredUser {
   phone_number?: string;
   avatar?: string;
   role?: string;
+  must_change_password?: boolean;
 }
 
 export function getLoggedInUser(): StoredUser | null {
   if (typeof window === 'undefined') return null;
-  const userStr = localStorage.getItem('user');
+  const userStr = sessionStorage.getItem('user');
   if (!userStr) return null;
   try {
     return JSON.parse(userStr);
@@ -39,7 +40,7 @@ export function getLoggedInUserInitials(): string {
 
 export function isLoggedIn(): boolean {
   if (typeof window === 'undefined') return false;
-  return !!localStorage.getItem('token') && !!localStorage.getItem('user');
+  return !!sessionStorage.getItem('token') && !!sessionStorage.getItem('user');
 }
 
 /**
@@ -47,7 +48,7 @@ export function isLoggedIn(): boolean {
  */
 export function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 }
 
 /**
@@ -55,8 +56,8 @@ export function getAuthToken(): string | null {
  */
 export function logoutUser(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
   window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
 }
 
@@ -68,7 +69,7 @@ export function updateStoredUser(partial: Partial<StoredUser>): StoredUser | nul
   const current = getLoggedInUser();
   if (!current) return null;
   const updated: StoredUser = { ...current, ...partial };
-  localStorage.setItem('user', JSON.stringify(updated));
+  sessionStorage.setItem('user', JSON.stringify(updated));
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('user-updated', { detail: updated }));
   }

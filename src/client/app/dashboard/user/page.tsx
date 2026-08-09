@@ -38,7 +38,7 @@ export default function UserDashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) return;
 
         const [eventsRes, borrowedRes, reservationsResult, createdResult, joinedResult] = await Promise.all([

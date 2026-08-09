@@ -84,7 +84,7 @@ const updateUser = async (userId, fields) => {
 
 const updatePassword = async (userId, passwordHash) => {
   await pool.query(
-    'UPDATE users SET password_hash = $1 WHERE user_id = $2',
+    'UPDATE users SET password_hash = $1, must_change_password = false WHERE user_id = $2',
     [passwordHash, userId]
   );
 };

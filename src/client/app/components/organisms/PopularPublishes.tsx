@@ -72,8 +72,8 @@ export default function PopularPublishes({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              ...(typeof window !== 'undefined' && localStorage.getItem('token')
-                ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+              ...(typeof window !== 'undefined' && sessionStorage.getItem('token')
+                ? { 'Authorization': `Bearer ${sessionStorage.getItem('token')}` }
                 : {})
             },
             body: JSON.stringify({

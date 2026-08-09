@@ -10,6 +10,7 @@ const pool = new Pool({
   host: 'localhost',
   database: process.env.DB_NAME,
   port: parseInt(process.env.DB_PORT),
+  options: '-c timezone=UTC',
 });
 
 pool.on('error', (err) => {

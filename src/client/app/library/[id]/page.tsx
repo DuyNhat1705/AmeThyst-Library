@@ -37,7 +37,7 @@ export default function BookPage() {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const headers: HeadersInit = {};
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
@@ -80,7 +80,7 @@ export default function BookPage() {
     setIsReserving(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setError('Please sign in to reserve books');
         return;
@@ -126,7 +126,7 @@ export default function BookPage() {
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const method = isWishlisted ? 'DELETE' : 'POST';
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${id}`, {

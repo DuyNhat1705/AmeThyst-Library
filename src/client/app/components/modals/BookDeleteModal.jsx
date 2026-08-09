@@ -31,7 +31,7 @@ export default function BookDeleteModal({ isOpen, onClose, onSuccess, book, targ
         url += `?branch_id=${targetBranchId}`;
       }
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(url, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {}

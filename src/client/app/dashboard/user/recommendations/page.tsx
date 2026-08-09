@@ -24,7 +24,7 @@ export default function RecommendationsPage() {
     if (!isSilent) setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const headers: HeadersInit = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -73,7 +73,7 @@ export default function RecommendationsPage() {
     setRenewing(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const headers: HeadersInit = {
         'Content-Type': 'application/json'
       };

@@ -151,7 +151,7 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
         branch_stocks
       };
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books`, {
         method: 'POST',
         headers: {

@@ -72,7 +72,7 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
     if (delay <= 0) return;
     const timer = setTimeout(() => {
       setTick(t => t + 1);
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) return;
       const url = book.status === 'pending'
         ? `${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${book.id}/pin/cleanup`
