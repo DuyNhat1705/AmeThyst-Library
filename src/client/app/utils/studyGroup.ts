@@ -64,6 +64,7 @@ export const toLegacyStudyGroup = (group: StudyGroupSummary, participationStatus
   requirements: group.requirements,
   userStatus: group.status,
   userApplicantStatus: participationStatus || group.currentUserParticipation?.status,
+  participationType: group.currentUserParticipation?.type,
   participationRequestId: group.currentUserParticipation?.requestId,
   pendingApplicants: group.pendingCount,
   canJoin: group.canJoin,

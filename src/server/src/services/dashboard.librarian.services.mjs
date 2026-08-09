@@ -1,4 +1,6 @@
 import pool from '../config/postgres.mjs';
+import { calculateTotalPenalty } from '../utils/penalty.utils.mjs';
+import { systemConfigurationService } from './system-configuration.services.mjs';
 
 
 /**
@@ -33,8 +35,55 @@ export const verifyReturnPin = async (pin) => {
       reserve_date: record.reserve_date,
       borrow_date: record.borrow_date,
       due_date: record.due_date
-    }
+    },
+    configurationVersion: systemConfigurationService.getState().version
   };
+};
+
+const rejectStaleReturnConfiguration = async (borrowId, expectedVersion) => {
+  const currentVersion = systemConfigurationService.getState().version;
+  if (expectedVersion === currentVersion) return null;
+
+  await pool.query(
+    `UPDATE public.borrow_book
+     SET pin = NULL, expired_at = NULL, status = 'borrowed'
+     WHERE borrow_id = $1 AND status = 'pending_return'`,
+    [borrowId]
+  );
+  return {
+    error: {
+      code: 'CONFIGURATION_CHANGED',
+      message: 'System configuration changed during this return inspection. Generate and enter a new Return PIN.',
+    },
+    statusCode: 409,
+  };
+};
+
+export const previewReturnPenalty = async (borrowId, conditions, isLost, expectedVersion) => {
+  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion);
+  if (staleConfiguration) return staleConfiguration;
+
+  const recordRes = await pool.query(
+    `SELECT bb.due_date, b.price
+     FROM public.borrow_book bb
+     JOIN public.books b ON bb.book_id = b.book_id
+     WHERE bb.borrow_id = $1 AND bb.status = 'pending_return'`,
+    [borrowId]
+  );
+
+  if (recordRes.rows.length === 0) {
+    return { error: { code: 'NOT_FOUND', message: 'Borrow record not found or not in pending_return status' }, statusCode: 404 };
+  }
+
+  const { due_date, price } = recordRes.rows[0];
+  const returnDate = new Date();
+  const overdueDays = due_date && returnDate > new Date(due_date)
+    ? Math.ceil((returnDate - new Date(due_date)) / (1000 * 60 * 60 * 24))
+    : 0;
+  const normalizedConditions = isLost ? ['lost'] : (conditions || []);
+  const policy = systemConfigurationService.getSnapshot();
+
+  return calculateTotalPenalty(normalizedConditions, Number(price), overdueDays, policy);
 };
 
 export const getOutstandingDebts = async (search) => {
@@ -122,7 +171,10 @@ export const confirmPayment = async (penaltyId) => {
   }
 };
 
-export const confirmReturn = async (borrowId, branchId, conditions, description, isLost) => {
+export const confirmReturn = async (borrowId, branchId, conditions, description, isLost, expectedVersion) => {
+  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion);
+  if (staleConfiguration) return staleConfiguration;
+  const policy = systemConfigurationService.getSnapshot();
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -145,55 +197,11 @@ export const confirmReturn = async (borrowId, branchId, conditions, description,
     const isOverdue = due_date ? returnDate > new Date(due_date) : false;
     const overdueDays = isOverdue ? Math.ceil((returnDate - new Date(due_date)) / (1000 * 60 * 60 * 24)) : 0;
 
-    let penaltyAmount = 0;
-    let issue = null;
+    const normalizedConditions = isLost ? ['lost'] : (conditions || []);
+    const calculatedPenalty = calculateTotalPenalty(normalizedConditions, Number(price), overdueDays, policy);
+    let penaltyAmount = calculatedPenalty.amount;
+    let issue = calculatedPenalty.issue?.toLowerCase() || null;
     let returnId = null;
-
-    if (isLost) {
-      penaltyAmount = price * 2;
-      if (isOverdue) {
-        const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
-        penaltyAmount += overdueCost;
-      }
-      issue = 'lost';
-    } else if (conditions && conditions.length > 0 && !conditions.includes('perfect_condition')) {
-      const damageCoefficients = {
-        'slight_cover_scratches': 0.05,
-        'folded_pages': 0.10,
-        'pencil_marks': 0.15,
-        'ink_marks': 0.40,
-        'torn_pages': 0.50,
-        'water_damage': 0.70,
-        'damaged_binding': 0.30,
-        'missing_mats': 0.30,
-        'missing_pages': 1.00
-      };
-
-      const coefficients = conditions.map(c => damageCoefficients[c] || 0).filter(c => c > 0);
-      const m_max = Math.max(...coefficients, 0);
-      const N_errors = conditions.length;
-      const Fee_admin = 1;
-      const Fee_addon = 0.5;
-
-      let damageCost = (coefficients.length > 0 ? m_max : 0) * price + Fee_admin + (N_errors - 1) * Fee_addon;
-      damageCost = Math.max(0, damageCost);
-      damageCost = Math.min(damageCost, price * 2);
-
-      penaltyAmount = damageCost;
-      issue = 'damaged';
-
-      if (isOverdue) {
-        const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
-        penaltyAmount = damageCost + overdueCost;
-        issue = 'combined';
-      }
-    }
-
-    if (isOverdue && penaltyAmount === 0) {
-      const overdueCost = 0.05 * price + Math.max(0, overdueDays - 3) * 0.02 * price;
-      penaltyAmount = overdueCost;
-      issue = 'overdue';
-    }
 
     const isPerfect = conditions && conditions.includes('perfect_condition');
 

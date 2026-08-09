@@ -143,14 +143,13 @@ const listGroups = async ({ where, values, page, pageSize, order }, client = poo
 };
 
 const STATUS_ORDER = `CASE
-  WHEN rr.status = 'cancelled' OR sg.status = 'cancelled' THEN 5
   WHEN sg.status = 'expired' OR (rr.status <> 'used' AND rr.start_date + ra.start_time <= ${VIETNAM_NOW_SQL}) THEN 6
   WHEN sg.status = 'completed' OR (rr.status = 'used' AND rr.start_date + ra.end_time <= ${VIETNAM_NOW_SQL}) THEN 4
   WHEN rr.status = 'used' AND rr.start_date + ra.start_time <= ${VIETNAM_NOW_SQL} THEN 1
   WHEN sg.current_num >= sg.capacity THEN 2 ELSE 3 END`;
 
 export const listCreatedGroups = ({ userId, page, pageSize }, client) => listGroups({
-  where: 'WHERE sg.created_by = $1', values: [userId], page, pageSize,
+  where: "WHERE sg.created_by = $1 AND sg.status <> 'cancelled'", values: [userId], page, pageSize,
   order: `${STATUS_ORDER}, rr.start_date + ra.start_time ASC, sg.group_id ASC`,
 }, client);
 
@@ -194,7 +193,14 @@ export const listDiscoverableGroups = async ({ currentUserId, page, pageSize, se
 
 export const listJoinedGroups = async ({ userId, page, pageSize }, client = pool) => {
   const { limit, offset } = toPagination(page, pageSize);
-  const count = await query(`SELECT count(DISTINCT group_id)::int AS total FROM group_request WHERE user_id = $1`, [userId], client);
+  const count = await query(`
+    SELECT count(DISTINCT gr.group_id)::int AS total
+    FROM group_request gr
+    JOIN study_group sg ON sg.group_id = gr.group_id
+    WHERE gr.user_id = $1
+      AND sg.status <> 'cancelled'
+      AND (gr.type = 'request' OR (gr.type = 'invite' AND gr.status = 'approved'))
+  `, [userId], client);
   const result = await query(`
     SELECT ${SUMMARY_SELECT}, gr.request_id AS "participationRequestId", gr.type AS "participationType", gr.status AS "participationStatus",
       gr.content AS "participationContent", gr.created_at AS "participationCreatedAt",
@@ -204,9 +210,11 @@ export const listJoinedGroups = async ({ userId, page, pageSize }, client = pool
     JOIN LATERAL (
       SELECT x.* FROM group_request x
       WHERE x.group_id = sg.group_id AND x.user_id = $1
+        AND (x.type = 'request' OR (x.type = 'invite' AND x.status = 'approved'))
       ORDER BY x.created_at DESC, x.decided_at DESC NULLS LAST, x.request_id DESC
       LIMIT 1
     ) gr ON true
+    WHERE sg.status <> 'cancelled'
     ORDER BY CASE
         WHEN gr.status IN ('pending', 'approved') AND (
           sg.status IN ('expired', 'completed', 'cancelled') OR rr.status = 'cancelled'
@@ -352,7 +360,7 @@ export const insertJoinRequest = async ({ groupId, userId, content }, client = p
 };
 
 export const findUserByEmail = async (email, client = pool) => {
-  const result = await query('SELECT user_id AS "userId", email, username, avatar FROM users WHERE lower(email) = lower($1)', [email], client);
+  const result = await query('SELECT user_id AS "userId", email, username, avatar, role FROM users WHERE lower(email) = lower($1)', [email], client);
   return result.rows[0] || null;
 };
 
@@ -374,7 +382,11 @@ export const listPendingInvitations = async (userId, client = pool) => {
       u.email AS "actorEmail"
     ${SUMMARY_FROM}
     JOIN group_request gr ON gr.group_id = sg.group_id
-    WHERE gr.user_id = $1 AND gr.type = 'invite' AND gr.status = 'pending'
+    WHERE gr.user_id = $1
+      AND gr.type = 'invite'
+      AND gr.status = 'pending'
+      AND sg.status NOT IN ('cancelled', 'completed', 'expired')
+      AND rr.start_date + ra.start_time > ${VIETNAM_NOW_SQL}
     ORDER BY gr.created_at DESC, gr.request_id DESC
   `, [userId], client);
   return result.rows;

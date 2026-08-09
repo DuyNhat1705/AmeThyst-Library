@@ -34,8 +34,10 @@ interface StudyGroupCardProps {
   viewMode?: 'explore' | 'joined' | 'created';
   userStatus?: string;
   userApplicantStatus?: string;
+  participationType?: 'request' | 'invite';
   pendingApplicants?: number;
   canJoin?: boolean;
+  isJoining?: boolean;
   retryAt?: string | null;
   isCreator?: boolean;
 }
@@ -59,8 +61,10 @@ export default function StudyGroupCard({
   viewMode = 'explore',
   userStatus,
   userApplicantStatus,
+  participationType,
   pendingApplicants = 0,
   canJoin = true,
+  isJoining = false,
   retryAt,
   isCreator
 }: StudyGroupCardProps) {
@@ -76,7 +80,8 @@ export default function StudyGroupCard({
     const timer = window.setInterval(updateCooldown, 30_000);
     return () => window.clearInterval(timer);
   }, [retryAt]);
-  const joinDisabled = isFull || Boolean(isPending) || cooldownMinutes > 0 || Boolean(isCreator) || !canJoin;
+  const joinDisabled = isFull || Boolean(isPending) || isJoining || cooldownMinutes > 0 || Boolean(isCreator) || !canJoin;
+  const isPendingInvitation = participationType === 'invite' && userApplicantStatus === 'pending';
 
   let isDimmed = false;
   let isUnclickable = false;
@@ -146,11 +151,11 @@ export default function StudyGroupCard({
       </div>
 
       {/* Title & Desc */}
-      <div className="flex flex-col gap-1">
-        <h3 className={`font-manrope ${viewMode === 'explore' ? 'text-xl' : 'text-lg line-clamp-1'} font-bold text-[#0B1C30] dark:text-white leading-snug`} title={title}>
+      <div className="flex min-w-0 flex-col gap-1">
+        <h3 className={`block w-full min-w-0 truncate whitespace-nowrap font-manrope ${viewMode === 'explore' ? 'text-xl' : 'text-lg'} font-bold text-[#0B1C30] dark:text-white leading-snug`} title={title}>
           {title}
         </h3>
-        <p className={`font-inter ${viewMode === 'explore' ? 'min-h-10 text-sm leading-5' : 'min-h-8 text-xs leading-4'} text-[#75777D] dark:text-gray-400 line-clamp-2`} title={description}>
+        <p className={`min-w-0 overflow-hidden break-words [overflow-wrap:anywhere] font-inter ${viewMode === 'explore' ? 'min-h-10 text-sm leading-5' : 'min-h-8 text-xs leading-4'} text-[#75777D] dark:text-gray-400 line-clamp-2`} title={description}>
           {description}
         </p>
       </div>
@@ -273,7 +278,11 @@ export default function StudyGroupCard({
                   ? t('study_group.cancel_request')
                   : cooldownMinutes > 0
                     ? t('study_together.cooldown_minutes', { minutes: cooldownMinutes })
-                  : t('study_together.join_group')}
+                  : isJoining
+                    ? t('study_group.processing')
+                    : isPendingInvitation
+                      ? t('study_group.accept_invitation')
+                      : t('study_together.join_group')}
             </Button>
           </div>
           )}

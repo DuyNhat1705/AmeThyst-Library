@@ -6,6 +6,7 @@
   "overrides": {
     "tar": "^7.5.16",
     "protobufjs": "^7.5.6",
+    "sharp": "^0.35.3",
     "onnxruntime-node": "1.19.2",
     "onnxruntime-web": "1.19.2",
     "onnxruntime-common": "1.19.2"
@@ -42,13 +43,13 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.2.0",
     "neo4j-driver": "^6.2.0",
-    "node-cron": "^3.0.3",
+    "node-cron": "^4.6.0",
     "nodemailer": "^9.0.1",
     "nodemon": "^3.1.14",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.21.0",
-    "sharp": "^0.34.4",
+    "sharp": "^0.35.3",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {

@@ -82,6 +82,7 @@
 Run:
 
 ```text
+server Study Group unit tests: npm test -- --project test_study_group
 server: npm test
 client: npx tsc --noEmit
 client: targeted Study Group ESLint
@@ -94,6 +95,12 @@ Also:
 - Run behavioral tests rather than relying only on source-text assertions.
 - If dev servers are active, verify Dashboard and all three Study Group detail route families return HTTP 200.
 - Run the opt-in performance harness only against the approved isolated dataset and record p50, p95, error rate, sample counts, and consistency results here.
+
+### Critical Study Group service checkpoint (2026-07-31)
+
+The dedicated `test_study_group` project contains 10 primary service unit tests covering atomic creation, unavailable-slot rejection, cooldown resubmission, duplicate participation, request approval/capacity reconciliation, request-versus-invitation isolation, invitee role eligibility, invitation SMTP compensation, recipient-authorized invitation acceptance, and transactional dissolution with post-commit notification dispatch.
+
+Targeted result: 1 test file passed, 10 tests passed.
 
 ## Evidence Record
 

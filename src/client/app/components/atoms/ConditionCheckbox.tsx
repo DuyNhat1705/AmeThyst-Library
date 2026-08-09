@@ -3,13 +3,12 @@
 interface ConditionCheckboxProps {
   id: string;
   label: string;
-  fee: number;
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
 }
 
-export default function ConditionCheckbox({ id, label, fee, checked, onChange, disabled }: ConditionCheckboxProps) {
+export default function ConditionCheckbox({ id, label, checked, onChange, disabled }: ConditionCheckboxProps) {
   return (
     <label
       htmlFor={id}

@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { getUserById, getUserWithPassword, updateUser, updatePassword } from '../models/user.models.mjs';
 import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
 import { updateAvatarService } from '../services/user.services.mjs';
-import { MAX_BORROW_LIMIT } from '../services/library.services.mjs';
+import { systemConfigurationService } from '../services/system-configuration.services.mjs';
 import { MAX_AVATAR_SIZE } from '../middlewares/multer.middlewares.mjs';
 
 const getProfile = async (req, res) => {
@@ -13,7 +13,7 @@ const getProfile = async (req, res) => {
     // Expose the maximum borrow limit constant dynamically
     res.status(200).json({
       ...user,
-      maxBorrowLimit: MAX_BORROW_LIMIT
+      maxBorrowLimit: systemConfigurationService.getSnapshot().MAX_BORROW_LIMIT
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

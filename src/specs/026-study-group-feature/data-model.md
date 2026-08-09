@@ -113,6 +113,7 @@ upcoming/full ── invalid/elapsed without normal session lifecycle ──► 
 - Partial unique: `(group_id, user_id)` where status in (`pending`, `approved`).
 - Query indexes: `(group_id, status)`, `(user_id, status)`, `(group_id, user_id, decided_at DESC)`.
 - Multiple Denied rows are allowed as history; a new Pending row is allowed only after 30 full minutes from the most recent `decided_at` and only if no active row exists.
+- A new `type=invite` row may reference only a recipient whose persisted `users.role` is `user`; librarian and admin recipients are rejected before insertion.
 
 ### State transitions
 
@@ -184,8 +185,9 @@ All request and membership rows are permanently deleted on dissolution through `
 ## Data Projections
 
 - **Discovery summary**: group/reservation/room/host fields, effective status, capacity/count, current-user participation, `canJoin`, and cooldown retry time.
-- **Created dashboard summary**: discovery fields plus pending count; ordered In Progress, Full, Upcoming, Completed, Expired, then scheduled start, then group ID. Legacy Cancelled rows, if any, remain historical and read-only.
-- **Joined dashboard summary**: group fields plus request ID/status/timestamps; ordered Approved, Pending, Denied, then scheduled start, then request ID.
+- **Created dashboard summary**: discovery fields plus pending count; excludes Cancelled rows and is ordered In Progress, Full, Upcoming, Completed, Expired, then scheduled start, then group ID.
+- **Joined dashboard summary**: group fields plus relationship ID/type/status/timestamps; includes normal join requests and Approved invitations, excludes non-Approved invitations and groups with Cancelled lifecycle status, and is ordered Approved, Pending, Denied, then scheduled start, then relationship ID.
+- **Invitations dashboard summary**: Pending `type=invite` relationships for the current recipient whose group has not been Cancelled, Completed, or Expired and whose scheduled start is still in the future. These records are actionable through Accept or Deny and are removed from this projection after either decision; Accepted records become visible through the Joined projection.
 - **Detail**: summary plus requirements; host detail additionally exposes pending applicants and approved members. Non-host detail never exposes other applicants’ private request information.
 
 ## Migration/Data Audit Requirements

@@ -127,7 +127,7 @@ Repeat with one group starting exactly three hours from now and another starting
 
 Expected:
 
-- Created: In Progress → Full → Upcoming → Completed → Cancelled fixture → Expired. A real dissolved group disappears instead of becoming Cancelled history.
+- Created: In Progress → Full → Upcoming → Completed → Expired. Cancelled fixtures and real dissolved groups do not appear, and the status filter has no Cancelled option.
 - Joined: Approved → Pending → Denied.
 - Equal statuses: nearest scheduled start first with deterministic ID tie-breaker.
 - Loading, empty, and error states never substitute mock data.
@@ -176,10 +176,10 @@ Expected: mirrored translations, no hard-coded touched strings, readable theme s
 
 1. Open an Upcoming Group I Created popup with available capacity and select the circular Invite icon beside Members. Verify one email field expands inline toward the left, no extra popup or description field opens, and no Invite action is rendered directly on the Study Card.
 2. Enter an existing account email and press Enter; verify the field collapses, a Pending `type=invite` relationship is created, and one email is delivered. Reopen it and press the icon again to verify it clears and collapses without sending.
-3. In the invited account, open the system-wide notification bell and select the item labelled as a Study Group invitation to inspect group details. Verify the detail identifies the creator who performed the invitation by avatar when available, username, and email, while the panel header, subtitle, and empty state remain generic rather than Study Group-specific.
-4. Accept from the popup and from an email link; verify recipient authorization, one capacity increment, realtime host refresh, Joined-tab redirect, and the joined-success notice.
-5. Repeat with Deny; verify the notification disappears, capacity is unchanged, and a later normal Join request has no invitation-denial cooldown.
-6. Verify unknown email, self-invite, duplicate active relationship, Full/stale group, wrong recipient, concurrent final-place acceptance, and mail failure produce no inconsistent Pending/Approved state.
+3. In the invited account, open Your Study Groups and verify a dedicated Invitations tab renders the Pending invitation as an invitation card with Accept and Deny, never Cancel Request, and no status filter. With more than six invitations, verify only six cards (two desktop rows) appear per page and the shared dashboard pagination reaches the remainder. Open Study Together and verify the invited group retains Join Group rather than Cancel Request; activating it accepts the invitation directly. Confirm the same invitation remains available in the system-wide notification bell until resolved; selecting it there opens details identifying the creator by avatar when available, username, and email, while the panel header, subtitle, and empty state remain generic rather than Study Group-specific.
+4. Accept from the Invitations card, the bell popup, and an email link; verify recipient authorization, one capacity increment, realtime host refresh, removal from Invitations, appearance in Joined, Joined-tab selection, and the joined-success notice.
+5. Repeat with Deny; verify the invitation disappears from both Invitations and the bell, capacity is unchanged, no Denied invitation history appears in Joined, and a later normal Join request has no invitation-denial cooldown. Let another invitation pass its scheduled start and verify it is no longer listed in Invitations or Joined.
+6. Verify unknown email, librarian/admin recipient, self-invite, duplicate active relationship, Full/stale group, wrong recipient, concurrent final-place acceptance, and mail failure produce no inconsistent Pending/Approved state. Sign in as a librarian and verify Study Together remains browsable but does not render Join Group or open its join modal.
 
 Automated checkpoint (2026-07-22): full backend suite passed 95 tests with 1 opt-in performance test skipped; invitation/contract regression passed 5 tests; client TypeScript, synchronized EN/VI locales, targeted invitation ESLint with no errors, and Next.js production build passed.
 

@@ -9,11 +9,12 @@ import RequestToJoinModal from '../components/organisms/RequestToJoinModal';
 import StudyGroupInfoModal from '../components/organisms/StudyGroupInfoModal';
 import { StudyGroup } from './mockData';
 import { useI18n } from '../providers/I18nProvider';
-import { cancelJoinRequest, getStudyGroup, listStudyGroupFilterOptions, listStudyGroups, requestToJoin, toLegacyStudyGroup } from '../utils/studyGroup';
+import { acceptStudyGroupInvitation, cancelJoinRequest, getStudyGroup, listStudyGroupFilterOptions, listStudyGroups, requestToJoin, toLegacyStudyGroup } from '../utils/studyGroup';
 import type { StudyGroupFilterBranch } from '../types/studyGroup';
-import { getAuthToken, isLoggedIn } from '../utils/user';
+import { getAuthToken, getLoggedInUser, isLoggedIn, useStoredUser } from '../utils/user';
 import { useSocket } from '../utils/useSocket';
 import { Button } from '../components/atoms/Button';
+import { isStaffRole } from '../utils/roles';
 
 interface StudyTogetherPageProps {
   initialGroupId?: string | null;
@@ -28,10 +29,11 @@ const groupIdFromPath = () => {
 export default function StudyTogetherPage({ initialGroupId = null }: StudyTogetherPageProps) {
   const { t } = useI18n();
   const router = useRouter();
+  const storedUser = useStoredUser();
+  const isStaffViewer = isStaffRole(storedUser?.role);
 
   // Filter & Sort State
   const [searchQuery, setSearchQuery] = useState('');
-  const [subjectFilter, setSubjectFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [startTimeFilter, setStartTimeFilter] = useState('');
   const [endTimeFilter, setEndTimeFilter] = useState('');
@@ -41,23 +43,27 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
   const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [joiningGroups, setJoiningGroups] = useState<string[]>([]);
   const hasLoadedGroups = useRef(false);
   const loadSequence = useRef(0);
 
   const loadGroups = useCallback(async (silent = false) => {
     const sequence = ++loadSequence.current;
     if (!silent && !hasLoadedGroups.current) { setLoading(true); setLoadError(null); }
-    const result = await listStudyGroups({ page: 1, pageSize: 50, search: searchQuery, subject: subjectFilter, date: dateFilter, startTime: startTimeFilter, endTime: endTimeFilter, branchIds: selectedBranchIds.join(','), roomIds: selectedRoomIds.join(',') });
+    const result = await listStudyGroups({ page: 1, pageSize: 50, search: searchQuery, date: dateFilter, startTime: startTimeFilter, endTime: endTimeFilter, branchIds: selectedBranchIds.join(','), roomIds: selectedRoomIds.join(',') });
     if (sequence !== loadSequence.current) return;
     if (result.success && result.data) {
       const authenticated = isLoggedIn();
       const uniqueGroups = [...new Map(result.data.map((group) => [group.groupId, group])).values()];
-      setStudyGroups(uniqueGroups.map((group) => ({ ...toLegacyStudyGroup(group, undefined, t), canJoin: authenticated ? group.canJoin : true })));
+      setStudyGroups(uniqueGroups.map((group) => {
+        const pendingInvitation = group.currentUserParticipation?.type === 'invite' && group.currentUserParticipation.status === 'pending';
+        return { ...toLegacyStudyGroup(group, undefined, t), canJoin: authenticated ? !isStaffViewer && (group.canJoin || pendingInvitation) : true };
+      }));
     }
     else { setStudyGroups([]); setLoadError(result.message || t('study_group.load_error')); }
     hasLoadedGroups.current = true;
     if (!silent) setLoading(false);
-  }, [dateFilter, endTimeFilter, searchQuery, selectedBranchIds, selectedRoomIds, startTimeFilter, subjectFilter, t]);
+  }, [dateFilter, endTimeFilter, isStaffViewer, searchQuery, selectedBranchIds, selectedRoomIds, startTimeFilter, t]);
 
   useEffect(() => {
     const debounce = window.setTimeout(() => void loadGroups(hasLoadedGroups.current), hasLoadedGroups.current ? 250 : 0);
@@ -85,7 +91,7 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
   }, [loadGroups, socket]);
 
   // Modal States
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(() => typeof window !== 'undefined' && isLoggedIn() ? new URLSearchParams(window.location.search).get('join') : null);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(() => typeof window !== 'undefined' && isLoggedIn() && !isStaffRole(getLoggedInUser()?.role) ? new URLSearchParams(window.location.search).get('join') : null);
   const [infoGroupId, setInfoGroupId] = useState<string | null>(initialGroupId);
   const [routedGroup, setRoutedGroup] = useState<StudyGroup | null>(null);
   const [routeGroupLoading, setRouteGroupLoading] = useState(Boolean(initialGroupId));
@@ -93,12 +99,6 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
   const [cancelGroupId, setCancelGroupId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
-  // Derived subjects list
-  const subjects = useMemo(() => {
-    const subs = new Set(studyGroups.map(g => g.subject));
-    return Array.from(subs);
-  }, [studyGroups]);
 
   // Filtered & Sorted Groups
   const displayedGroups = useMemo(() => {
@@ -108,9 +108,26 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
 
   const [pendingRequests, setPendingRequests] = useState<string[]>([]);
 
-  const handleJoinGroup = (id: string) => {
+  const handleJoinGroup = async (id: string) => {
     if (!isLoggedIn()) {
       window.location.href = `/login?returnTo=${encodeURIComponent(`/study-together?join=${id}`)}`;
+      return;
+    }
+    if (isStaffViewer) return;
+    const group = studyGroups.find((item) => item.id === id);
+    if (group?.participationType === 'invite' && group.userApplicantStatus === 'pending' && group.participationRequestId) {
+      if (joiningGroups.includes(id)) return;
+      setJoiningGroups((current) => [...new Set([...current, id])]);
+      const result = await acceptStudyGroupInvitation(id, group.participationRequestId);
+      if (!result.success) {
+        alert(result.message || t('study_group.invitation_action_error'));
+        setJoiningGroups((current) => current.filter((groupId) => groupId !== id));
+        await loadGroups(true);
+        return;
+      }
+      await loadGroups(true);
+      setJoiningGroups((current) => current.filter((groupId) => groupId !== id));
+      router.push(`/dashboard/user/yourstudygroups/joined/${encodeURIComponent(id)}`);
       return;
     }
     setSelectedGroupId(id);
@@ -241,9 +258,6 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
             <StudyGroupFilter 
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
-              subjectFilter={subjectFilter}
-              onSubjectChange={setSubjectFilter}
-              subjects={subjects}
               dateFilter={dateFilter}
               onDateChange={setDateFilter}
               startTimeFilter={startTimeFilter}
@@ -277,6 +291,7 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
             onCardClick={openGroupDetails}
             onCancelRequest={(id) => { setCancelError(null); setCancelGroupId(id); }}
             pendingRequests={pendingRequests}
+            joiningGroups={joiningGroups}
           />}
         </div>
       </main>

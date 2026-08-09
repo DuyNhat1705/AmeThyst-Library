@@ -67,6 +67,49 @@ export default defineConfig({
         },
       },
 
+      {
+        test: {
+          name: 'test_study_group',
+          globals: true,
+          strictTags: false,
+          include: [
+            'tests/services/study-group.services.spec.mjs',
+            'tests/controllers/createStudyGroup.controller.spec.mjs',
+            'tests/integration/createStudyGroup.api.spec.mjs',
+            'tests/middlewares/createStudyGroup.middleware.spec.mjs',
+            'tests/services/createStudyGroup.service.spec.mjs',
+          ],
+          tags: [
+            { name: '@SG_1', description: 'Atomic Study Group and reservation creation' },
+            { name: '@SG_2', description: 'Elapsed or unavailable slot rejection' },
+            { name: '@SG_3', description: 'Join retry after denial cooldown' },
+            { name: '@SG_4', description: 'Duplicate active participation rejection' },
+            { name: '@SG_5', description: 'Request approval and capacity reconciliation' },
+            { name: '@SG_6', description: 'Request and invitation operation separation' },
+            { name: '@SG_7', description: 'Invitee role restriction' },
+            { name: '@SG_8', description: 'Invitation SMTP compensation' },
+            { name: '@SG_9', description: 'Invitation recipient authorization and acceptance' },
+            { name: '@SG_10', description: 'Transactional group dissolution and notifications' },
+            { name: '@SG_CREATE_CONTROLLER', description: 'Create Study Group controller response and realtime mapping' },
+            { name: '@SG_CREATE_API', description: 'Create Study Group HTTP route integration' },
+            { name: '@SG_CREATE_NORMALIZATION', description: 'Create Study Group metadata normalization' },
+            { name: '@SG_CREATE_VALIDATION', description: 'Create Study Group input validation' },
+            { name: '@SG_CREATE_SLOT', description: 'Create Study Group authoritative slot validation' },
+            { name: '@SG_CREATE_ATOMIC', description: 'Create Study Group atomic persistence orchestration' },
+            { name: '@SG_CREATE_ERRORS', description: 'Create Study Group persistence error mapping' },
+          ],
+        },
+      },
+
+      {
+        test: {
+          name: 'test_system_configuration',
+          globals: true,
+          strictTags: false,
+          include: ['tests/integration/system-configuration.api.spec.mjs'],
+        },
+      },
+
       // To add another auth sub-feature (e.g. Login), copy the block above,
       // keep the "test_auth_" prefix so it groups under --project "test_auth*",
       // then update name + include + tags accordingly:

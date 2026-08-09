@@ -208,7 +208,7 @@ const permissions = (summary, userId) => {
     canRemove: host && manageable,
     canDissolve: host && manageable && canDissolveBeforeStart(summary),
     canLeave: !host && manageable && canLeaveBeforeStart(summary) && summary.currentUserParticipation?.status === 'approved',
-    canCancelRequest: !host && manageable && summary.currentUserParticipation?.status === 'pending',
+    canCancelRequest: !host && manageable && summary.currentUserParticipation?.type === 'request' && summary.currentUserParticipation.status === 'pending',
   };
 };
 
@@ -497,6 +497,7 @@ export const inviteMember = async (groupId, hostUserId, input) => {
     if (status !== 'upcoming' || group.current_num >= group.capacity) fail('GROUP_FULL', 'The group has no available capacity.', 409);
     const recipient = await model.findUserByEmail(email, client);
     if (!recipient) fail('USER_NOT_FOUND', 'Please check the email and try again. There is no registered account with this email address.', 404);
+    if (recipient.role !== 'user') fail('INELIGIBLE_INVITEE', 'Only user accounts can be invited to a Study Group.', 403);
     if (recipient.userId === hostUserId) fail('FORBIDDEN', 'Hosts cannot invite themselves.', 403);
     const latest = await model.findLatestParticipation(groupId, recipient.userId, client);
     if (latest && ['pending', 'approved'].includes(latest.status)) fail('DUPLICATE_PARTICIPATION', 'This user already has an active relationship with the group.', 409);

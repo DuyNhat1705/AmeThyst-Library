@@ -221,7 +221,11 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
     setInviteSending(false);
     if (!result.success) {
       setInviteFeedback(null);
-      setActionError(result.error?.code === 'USER_NOT_FOUND' ? t('study_group.invite_user_not_found') : (result.message || t('study_group.invite_error')));
+      setActionError(result.error?.code === 'USER_NOT_FOUND'
+        ? t('study_group.invite_user_not_found')
+        : result.error?.code === 'INELIGIBLE_INVITEE'
+          ? t('study_group.invite_user_ineligible')
+          : (result.message || t('study_group.invite_error')));
       setInviteEmail(submittedEmail); setInviteExpanded(true);
       window.setTimeout(() => inviteInputRef.current?.focus(), 0);
       return;
@@ -294,10 +298,10 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
           
           {/* Header Section */}
           <div className="flex flex-col items-start gap-6 w-full">
-            <div className="flex justify-between items-start w-full">
-              <div className="flex flex-col gap-3 w-full">
-                <div className="flex items-center gap-2 overflow-hidden">
-                  {isEditing ? <input value={editForm.subject} maxLength={30} onChange={(event) => setEditForm({ ...editForm, subject: event.target.value })} className="max-w-[180px] rounded-full border border-neutral-300 bg-transparent px-3 py-1.5 text-xs font-bold dark:border-neutral-700" /> : <span className={`text-xs font-bold px-3 py-1.5 rounded-full truncate max-w-[150px] shrink-0 ${getSubjectColor(group.subject)}`}>{group.subject}</span>}
+            <div className="flex min-w-0 w-full flex-col gap-3">
+                <div className="flex min-w-0 w-full items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                  {isEditing ? <input value={editForm.subject} maxLength={30} onChange={(event) => setEditForm({ ...editForm, subject: event.target.value })} className="max-w-[180px] rounded-full border border-neutral-300 bg-transparent px-3 py-1.5 text-xs font-bold dark:border-neutral-700" /> : <span className={`max-w-full whitespace-normal break-words [overflow-wrap:anywhere] text-xs font-bold px-3 py-1.5 rounded-full ${getSubjectColor(group.subject)}`}>{group.subject}</span>}
                   {viewMode === 'created' && group.userStatus && (
                     <span className={`text-[13px] font-bold px-3 py-1 rounded-full shrink-0 ${
                       group.userStatus === 'upcoming' ? 'bg-[#D8E3FB] text-[#0C447C]' : 
@@ -318,31 +322,31 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                       {group.userApplicantStatus.charAt(0).toUpperCase() + group.userApplicantStatus.slice(1)}
                     </span>
                   )}
+                  </div>
+                  <div className="flex shrink-0 items-center gap-4">
+                    {canEdit && (
+                      <button disabled={saving} onClick={() => isEditing ? void saveChanges() : setIsEditing(true)} className="flex items-center gap-1 whitespace-nowrap text-[#45464D] dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors disabled:opacity-50">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M2 16H3.425L13.2 6.225L11.775 4.8L2 14.575V16ZM0 18V13.75L13.2 0.575C13.4 0.391667 13.6208 0.25 13.8625 0.15C14.1042 0.05 14.3583 0 14.625 0C14.8917 0 15.15 0.05 15.4 0.15C15.65 0.25 15.8667 0.4 16.05 0.6L17.425 2C17.625 2.18333 17.7708 2.4 17.8625 2.65C17.9542 2.9 18 3.15 18 3.4C18 3.66667 17.9542 3.92083 17.8625 4.1625C17.7708 4.40417 17.625 4.625 17.425 4.825L4.25 18H0ZM16 3.4L14.6 2L16 3.4ZM12.475 5.525L11.775 4.8L13.2 6.225L12.475 5.525Z" fill="currentColor"/>
+                        </svg>
+                        <span className="font-inter text-sm font-medium">{isEditing ? 'Save Settings' : 'Edit Settings'}</span>
+                      </button>
+                    )}
+                    <ModalCloseButton onClick={onClose} />
+                  </div>
                 </div>
                 {isEditing ? (
                   <input 
                     type="text" 
                     value={editForm.title} 
                     onChange={e => setEditForm({...editForm, title: e.target.value})}
-                    className="text-[#000] dark:text-white font-inter text-3xl font-semibold leading-tight tracking-tight border-b border-gray-300 dark:border-neutral-700 bg-transparent focus:outline-none"
+                    className="w-full min-w-0 text-[#000] dark:text-white font-inter text-3xl font-semibold leading-tight tracking-tight border-b border-gray-300 dark:border-neutral-700 bg-transparent focus:outline-none"
                   />
                 ) : (
-                  <h2 className="text-[#000] dark:text-white font-inter text-3xl font-semibold leading-tight tracking-tight">
+                  <h2 className="w-full min-w-0 whitespace-normal break-words [overflow-wrap:anywhere] text-[#000] dark:text-white font-inter text-3xl font-semibold leading-tight tracking-tight">
                     {group.title}
                   </h2>
                 )}
-              </div>
-              <div className="flex items-center gap-4 shrink-0">
-                {canEdit && (
-                  <button disabled={saving} onClick={() => isEditing ? void saveChanges() : setIsEditing(true)} className="flex items-center gap-1 text-[#45464D] dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors disabled:opacity-50">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 16H3.425L13.2 6.225L11.775 4.8L2 14.575V16ZM0 18V13.75L13.2 0.575C13.4 0.391667 13.6208 0.25 13.8625 0.15C14.1042 0.05 14.3583 0 14.625 0C14.8917 0 15.15 0.05 15.4 0.15C15.65 0.25 15.8667 0.4 16.05 0.6L17.425 2C17.625 2.18333 17.7708 2.4 17.8625 2.65C17.9542 2.9 18 3.15 18 3.4C18 3.66667 17.9542 3.92083 17.8625 4.1625C17.7708 4.40417 17.625 4.625 17.425 4.825L4.25 18H0ZM16 3.4L14.6 2L16 3.4ZM12.475 5.525L11.775 4.8L13.2 6.225L12.475 5.525Z" fill="currentColor"/>
-                    </svg>
-                    <span className="font-inter text-sm font-medium">{isEditing ? 'Save Settings' : 'Edit Settings'}</span>
-                  </button>
-                )}
-                <ModalCloseButton onClick={onClose} />
-              </div>
             </div>
 
             {/* Time & Location Grid */}
@@ -370,7 +374,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                   className="w-full text-[#0D1C2E] dark:text-gray-200 font-inter text-base leading-relaxed border border-gray-300 dark:border-neutral-700 rounded-md p-2 bg-transparent focus:outline-none min-h-[100px]"
                 />
               ) : (
-                <p className="text-[#0D1C2E] dark:text-gray-200 font-inter text-base leading-relaxed">
+                <p className="min-w-0 break-words [overflow-wrap:anywhere] text-[#0D1C2E] dark:text-gray-200 font-inter text-base leading-relaxed">
                   {group.description}
                 </p>
               )}
@@ -391,7 +395,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
                 group.requirements && group.requirements.length > 0 ? (
                   <ul className="list-disc list-inside text-[#0D1C2E] dark:text-gray-200 font-inter text-sm flex flex-col gap-1.5 mt-1">
                     {group.requirements.map((req, idx) => (
-                      <li key={idx}>{req}</li>
+                      <li key={idx} className="break-words [overflow-wrap:anywhere]">{req}</li>
                     ))}
                   </ul>
                 ) : (
@@ -553,7 +557,7 @@ export default function StudyGroupInfoModal({ isOpen, onClose, group, viewMode =
             )}
 
             {/* Footer Actions for Joined/Explore Modes */}
-            {(viewMode === 'joined' && group.userApplicantStatus === 'pending') && (
+            {(viewMode === 'joined' && group.userApplicantStatus === 'pending' && group.participationType === 'request') && (
               <div className="flex justify-end pt-4 border-t border-[#EAEAEA] dark:border-neutral-800 mt-4">
                 <Button variant="secondary" className="min-w-36 px-6 py-2.5" disabled={saving} onClick={() => { setActionError(null); setShowCancelRequestConfirm(true); }}>
                   Cancel Request

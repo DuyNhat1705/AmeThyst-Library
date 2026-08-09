@@ -1,7 +1,6 @@
 "use client";
 import React from 'react';
 import { Input } from '../atoms/Input';
-import { CustomSelect } from '../atoms/CustomSelect';
 import { useI18n } from '../../providers/I18nProvider';
 import type { StudyGroupFilterBranch } from '../../types/studyGroup';
 import { localizedBranchName, localizedRoomName } from '../../utils/room';
@@ -32,9 +31,6 @@ function FilterCheckbox({ checked, label, onChange }: { checked: boolean; label:
 interface StudyGroupFilterProps {
   searchQuery: string;
   onSearchChange: (val: string) => void;
-  subjectFilter: string;
-  onSubjectChange: (val: string) => void;
-  subjects: string[];
   dateFilter: string;
   onDateChange: (value: string) => void;
   startTimeFilter: string;
@@ -52,9 +48,6 @@ interface StudyGroupFilterProps {
 export default function StudyGroupFilter({
   searchQuery,
   onSearchChange,
-  subjectFilter,
-  onSubjectChange,
-  subjects,
   dateFilter,
   onDateChange,
   startTimeFilter,
@@ -74,7 +67,7 @@ export default function StudyGroupFilter({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="grid w-full gap-4 md:grid-cols-2">
-        <div className="grid min-w-0 grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,0.65fr)]">
+        <div className="min-w-0 self-end">
           {/* Search Input */}
           <div className="relative w-full">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -88,17 +81,6 @@ export default function StudyGroupFilter({
               className="!h-10 w-full bg-white pl-10 shadow-sm dark:bg-neutral-900"
             />
           </div>
-
-          {/* Subject Filter */}
-          <CustomSelect
-            className="w-full"
-            value={subjectFilter}
-            onChange={onSubjectChange}
-            options={[
-              { value: '', label: t('study_together.filter_all_subjects') },
-              ...subjects.map(s => ({ value: s, label: s }))
-            ]}
-          />
         </div>
         <div className="grid min-w-0 grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(150px,1.35fr)_minmax(100px,1fr)_minmax(100px,1fr)]">
           <label className="flex min-w-0 flex-col gap-1 text-xs text-neutral-600 dark:text-neutral-300">

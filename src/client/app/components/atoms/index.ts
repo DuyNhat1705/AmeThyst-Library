@@ -34,6 +34,7 @@ export { default as Divider } from './Divider';
 export { default as OtpExpiredBanner } from './OtpExpiredBanner';
 export { default as BellIcon } from './BellIcon';
 export { default as NotificationDot } from './NotificationDot';
+export { default as ConfigurationNumberInput } from './ConfigurationNumberInput';
 
 export { default as KPIProgressBar } from './KPIProgressBar';
 export { default as TrendIndicator } from './TrendIndicator';

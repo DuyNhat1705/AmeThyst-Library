@@ -27,6 +27,7 @@ export interface StudyGroup {
   requirements: string[];
   userStatus?: 'upcoming' | 'full' | 'cancelled' | 'inprogress' | 'completed' | 'expired';
   userApplicantStatus?: 'pending' | 'approved' | 'denied' | 'expired';
+  participationType?: 'request' | 'invite';
   participationRequestId?: string;
   pendingApplicants?: number;
   canJoin?: boolean;

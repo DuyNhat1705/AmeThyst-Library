@@ -2,11 +2,11 @@ import { NavBar, Footer, AdminDashboardSidebar } from '../../components/organism
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F3E9] dark:bg-neutral-900">
+    <div className="flex min-h-screen flex-col bg-amber-50 dark:bg-neutral-950">
       <NavBar variant="admin" />
-      <div className="flex flex-1">
+      <div className="flex flex-1 flex-col lg:flex-row">
         <AdminDashboardSidebar />
-        <main className="flex-1 p-8 pl-10 flex flex-col gap-8 min-w-0">
+        <main className="flex min-w-0 flex-1 flex-col gap-8 p-4 sm:p-6 lg:p-8 lg:pl-10">
           {children}
         </main>
       </div>
