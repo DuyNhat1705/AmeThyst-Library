@@ -853,14 +853,7 @@
                        "status": { "modified": "Unsaved changes", "up_to_date": "Policy up to date" },
                        "feedback": { "saving": "Saving the complete policy...", "saved": "System policy saved successfully.", "discarded": "Unsaved changes discarded.", "fix_errors": "Correct the highlighted values before saving.", "unsaved": "Review and save the complete policy when ready.", "up_to_date": "No unsaved changes." },
                        "errors": { "required": "A value is required.", "non_negative": "Enter a finite number greater than or equal to zero.", "positive_integer": "Enter a positive whole number.", "load": "The active system configuration could not be loaded.", "save": "The policy could not be saved. Your current input is still available.", "conflict": "Another administrator saved a newer policy. Load the latest values and review your changes." }
-                     }
-                     "dashboard_title":  "ADMIN",
-                     "sidebar_user_management":  "User Management",
-                     "sidebar_roles_permissions":  "Roles & Permissions",
-                     "sidebar_statistics":  "Statistics",
-                     "sidebar_system_configuration":  "System Configuration",
-                     "placeholder_title":  "Coming Soon",
-                     "placeholder_message":  "This section is under construction and will be available soon.",
+                     },
                      "authorization": {
                        "title": "Authorization & Role Management",
                        "subtitle": "Manage administrator, librarian, and user roles. Every change is logged and appears here in real time.",
@@ -928,8 +921,6 @@
                        "history_title": "Authorization History",
                        "filter_action": "Type",
                        "action_all": "All",
-                       "action_promote": "Promotion",
-                       "action_demote": "Demotion",
                        "action_admin_invite": "Admin invite",
                        "history_col_actor": "Actor",
                        "history_col_target": "Target",
