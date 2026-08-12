@@ -10,8 +10,6 @@ import { listCreatedStudyGroups, listJoinedStudyGroups } from '../../utils/study
 import { localizedBranchName, localizedRoomName } from '../../utils/room';
 import type { Reservation } from '../../components/molecules/ReservationCard';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-
 interface EventItem {
   id: number | string;
   title: string;
@@ -38,28 +36,16 @@ export default function UserDashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = sessionStorage.getItem('token');
-        if (!token) return;
-
-        const [eventsRes, borrowedRes, reservationsResult, createdResult, joinedResult] = await Promise.all([
-          fetch(`${API_BASE}/dashboard/events`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE}/dashboard/user/my-borrowed`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        const [borrowedRes, reservationsResult, createdResult, joinedResult] = await Promise.all([
+          apiFetch<{ current: BorrowRecord[] }>('/dashboard/user/my-borrowed'),
           apiFetch<{ upcoming: Reservation[]; past: Reservation[] }>('/api/rooms/user-reservations'),
           listCreatedStudyGroups({ page: 1, pageSize: 50 }),
           listJoinedStudyGroups({ page: 1, pageSize: 50 }),
         ]);
 
-        const eventsData = eventsRes.ok ? await eventsRes.json() : { events: [] };
-        const borrowedJson = borrowedRes.ok ? await borrowedRes.json() : { current: [] };
-        const borrowedData = borrowedJson.data || borrowedJson;
+        const borrowedData = borrowedRes.success ? borrowedRes.data : undefined;
 
-        const events = eventsData.events || [];
-
-        const reservationEvents: EventItem[] = (borrowedData.current || [])
+        const reservationEvents: EventItem[] = (borrowedData?.current || [])
           .filter((record: BorrowRecord) => {
             if (['reserved', 'pending'].includes(record.status)) return !!record.reserveDate;
             if (record.status === 'borrowed') return !!record.dueDate;
@@ -120,7 +106,7 @@ export default function UserDashboardPage() {
             date: String(reservation.startDate).slice(0, 10),
           }));
 
-        setAllEvents([...events, ...reservationEvents, ...studyGroupEvents, ...roomReservationEvents]);
+        setAllEvents([...reservationEvents, ...studyGroupEvents, ...roomReservationEvents]);
       } catch {
         // silently fail; UI shows empty state
       } finally {

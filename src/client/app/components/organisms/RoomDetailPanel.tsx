@@ -63,8 +63,6 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
   const contentScrollRef = useRef<HTMLDivElement>(null);
   const [contentScrollbar, setContentScrollbar] = useState({ visible: false, thumbHeight: 0, thumbTop: 0 });
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
   const updateContentScrollbar = useCallback(() => {
     const element = contentScrollRef.current;
     if (!element) return;
@@ -137,14 +135,10 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${backendUrl}/api/rooms/details?roomId=${roomId}&branchId=${branchId}`);
-        if (!res.ok) {
-          throw new Error('Room details currently unavailable');
-        }
-        const json = await res.json();
-        if (json.success && json.data) {
-          setRoomDetails(json.data);
-          setImgSrc(json.data.imgUrl || `/api/assets/3D/${json.data.roomId}`);
+        const result = await apiFetch<RoomDetails>(`/api/rooms/details?roomId=${roomId}&branchId=${branchId}`);
+        if (result.success && result.data) {
+          setRoomDetails(result.data);
+          setImgSrc(result.data.imgUrl || `/api/assets/3D/${result.data.roomId}`);
         } else {
           throw new Error('Room details currently unavailable');
         }
@@ -157,7 +151,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
     };
 
     fetchDetails();
-  }, [isOpen, roomId, branchId, backendUrl]);
+  }, [isOpen, roomId, branchId]);
 
   // Fetch Availability if capacity > 0 and logged in
   useEffect(() => {
@@ -168,15 +162,11 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
 
     const fetchAvailability = async () => {
       try {
-        const res = await fetch(
-          `${backendUrl}/api/rooms/availability?roomId=${roomDetails.roomId}&date=${selectedDate}`
+        const result = await apiFetch<AvailabilitySlot[]>(
+          `/api/rooms/availability?roomId=${roomDetails.roomId}&date=${selectedDate}`
         );
-        if (!res.ok) {
-          throw new Error('Failed to fetch availability');
-        }
-        const json = await res.json();
-        if (json.success && json.data) {
-          setAvailability(json.data);
+        if (result.success && result.data) {
+          setAvailability(result.data);
         }
       } catch (err) {
         console.error('Availability fetch error:', err);
@@ -184,7 +174,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
     };
 
     fetchAvailability();
-  }, [isOpen, roomDetails, selectedDate, user, backendUrl]);
+  }, [isOpen, roomDetails, selectedDate, user]);
 
   // Handle fallback when 3D image fails to load
   const handleImageError = () => {
