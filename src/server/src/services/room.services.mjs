@@ -118,16 +118,21 @@ export const createReservation = async (userId, availId, startDate) => {
     throw error;
   }
 
-  const existing = await roomModel.findReservationBySlotAndDate(availId, startDate);
-  if (existing) {
-    const error = new Error('This time slot is no longer available.');
-    error.status = 409;
-    throw error;
-  }
-
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+
+    const slot = await roomModel.lockReservationSlot(availId, startDate, client);
+    if (!slot.exists) {
+      const missing = new Error('Room availability slot not found.');
+      missing.status = 404;
+      throw missing;
+    }
+    if (slot.occupied) {
+      const conflict = new Error('This time slot is no longer available.');
+      conflict.status = 409;
+      throw conflict;
+    }
 
     const reserveNum = await roomModel.findUserReserveNum(userId, client);
     if (reserveNum >= MAX_ROOM_RESERVE_LIMIT) {

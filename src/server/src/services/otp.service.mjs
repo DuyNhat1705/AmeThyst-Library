@@ -6,6 +6,7 @@ import {
   getOtpDB,
   markVerifiedDB,
   deleteOtpDB,
+  incrementOtpAttemptsDB,
 } from '../models/auth.models.mjs';
 import { sendOTPEmail } from '../utils/mailer.mjs';
 import {
@@ -14,22 +15,29 @@ import {
   validateVerifiedRecord,
   OTP_VERIFY_TTL,
   OTP_RESET_TTL,
+  hashOtp,
 } from '../utils/otpHelpers.mjs';
 import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
+import { revokeUserSessions } from './auth-session.services.mjs';
 
 
 export const sendOtp = async (email) => {
   const otp = generateOtp();
   const expiredAt = new Date(Date.now() + OTP_VERIFY_TTL);
 
-  await saveOtpDB(email, otp, expiredAt);
+  await saveOtpDB(email, hashOtp(email, otp), expiredAt);
   await sendOTPEmail(email, otp);
   return { message: 'OTP sent to your email' };
 };
 
 export const verifyOtp = async ({ email, otp }) => {
   const row = await getOtpDB(email);
-  validateOtpRecord(row, otp);
+  try {
+    validateOtpRecord(row, email, otp);
+  } catch (error) {
+    if (row && error.message === 'Incorrect OTP') await incrementOtpAttemptsDB(email);
+    throw error;
+  }
 
   const newExpiredAt = new Date(Date.now() + OTP_RESET_TTL);
   await markVerifiedDB(email, newExpiredAt);
@@ -47,18 +55,23 @@ export const clearOtp = async (email) => {
 
 export const forgotPassword = async ({ email }) => {
   const user = await findUserByEmail(email);
-  if (!user) throw new Error('Email does not exist');
-  return await sendOtp(email);
+  if (user) await sendOtp(email);
+  return { message: 'If an account exists for this email, a reset code has been sent.' };
 };
 
 export const resetPassword = async ({ email, newPassword }) => {
   await checkVerified(email);
 
   const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  await pool.query(
-    'UPDATE users SET password_hash = $1 WHERE email = $2',
+  const result = await pool.query(
+    `UPDATE users
+     SET password_hash = $1, token_version = token_version + 1,
+         failed_login_attempts = 0, locked_until = NULL
+     WHERE email = $2 RETURNING user_id`,
     [passwordHash, email]
   );
+
+  if (result.rows[0]) await revokeUserSessions(result.rows[0].user_id, 'password_reset');
 
   await clearOtp(email);
   return { message: 'Password reset successfully' };

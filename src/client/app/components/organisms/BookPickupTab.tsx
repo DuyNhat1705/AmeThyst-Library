@@ -39,9 +39,8 @@ export default function BookPickupTab() {
   const fetchPickups = async () => {
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/dashboard/librarian/pickups`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        credentials: 'include',
       });
       if (res.ok) {
         const json = await res.json();

@@ -7,9 +7,8 @@ import Link from 'next/link';
 import { useI18n } from '../providers/I18nProvider';
 import { Button } from '../components/atoms';
 import { mapServerError } from '../utils/errors';
-import { getRedirectPathForUser } from '../utils/user';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { getRedirectPathForUser, setCurrentUser, type StoredUser } from '../utils/user';
+import { apiFetch } from '../utils/apiClient';
 
 function VerifyEmailContent() {
   const { t } = useI18n();
@@ -38,25 +37,22 @@ function VerifyEmailContent() {
 
     const verify = async () => {
       try {
-        const res = await fetch(`${API_URL}/auth/verify-email`, {
+        const result = await apiFetch<{ user: StoredUser }>('/auth/verify-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ token }),
         });
-        const data = await res.json();
-
-        if (res.status === 410) {
+        if (!result.success && result.message?.toLowerCase().includes('expired')) {
           setState({ status: 'expired', error: '' });
           return;
         }
-        if (!res.ok) throw new Error(data.error || t('auth.verification_failed'));
-
-        sessionStorage.setItem('token', data.token);
-        sessionStorage.setItem('user', JSON.stringify(data.user));
+        if (!result.success || !result.data?.user) throw new Error(result.message || t('auth.verification_failed'));
+        const user = result.data.user;
+        setCurrentUser(user);
         setState({ status: 'success', error: '' });
-        setTimeout(() => router.push(getRedirectPathForUser(data.user)), 2000);
+        setTimeout(() => router.push(getRedirectPathForUser(user)), 2000);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         setState({

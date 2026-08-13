@@ -124,7 +124,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     finalWhereString = `WHERE ${filterSql.replace(/^\s*AND\s*/i, '')}`;
   }
 
-  const isUnlimited = !limit || limit >= 1000;
   const limitParam = `$${paramIndex++}`;
   const offsetParam = `$${paramIndex++}`;
   
@@ -141,7 +140,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     LEFT JOIN public.library l ON b.book_id = l.book_id
     ${finalWhereString}
     ORDER BY b.title ASC
-    ${isUnlimited ? '' : `LIMIT ${limitParam} OFFSET ${offsetParam}`}
+    LIMIT ${limitParam} OFFSET ${offsetParam}
   `;
 
   // 4. Execute Queries concurrently (including public.library branch stocks)
@@ -154,7 +153,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
 
   const [countRes, booksRes, stocksRes] = await Promise.all([
     pool.query(countQuery, queryParams),
-    pool.query(booksQuery, isUnlimited ? queryParams : [...queryParams, limit, offset]),
+    pool.query(booksQuery, [...queryParams, limit, offset]),
     pool.query(stocksQuery)
   ]);
 
@@ -271,7 +270,10 @@ export const createReservation = async (userId, bookId, branchId) => {
   try {
     await client.query('BEGIN');
 
-    const userCheck = await client.query('SELECT user_id FROM public.users WHERE user_id = $1', [userId]);
+    const userCheck = await client.query(
+      'SELECT user_id, borrow_num FROM public.users WHERE user_id = $1 FOR UPDATE',
+      [userId],
+    );
     if (userCheck.rows.length === 0) {
       await client.query('ROLLBACK');
       return { 
@@ -292,10 +294,7 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
-    // 0.5 Check user's borrow_num against limit
-    const userBorrowQuery = 'SELECT borrow_num FROM public.users WHERE user_id = $1';
-    const userBorrowResult = await client.query(userBorrowQuery, [userId]);
-    const currentBorrowNum = userBorrowResult.rows[0].borrow_num || 0;
+    const currentBorrowNum = userCheck.rows[0].borrow_num || 0;
 
     if (currentBorrowNum >= borrowLimit) {
       await client.query('ROLLBACK');

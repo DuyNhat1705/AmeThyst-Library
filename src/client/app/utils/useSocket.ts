@@ -1,39 +1,14 @@
-// hooks/useSocket.js
 'use client';
-
 import { useEffect } from 'react';
-import { getSocket, disconnectSocket } from '../config/socket';
+import { getSocket } from '../config/socket';
 
-export const useSocket = (token: string | null) => {
-  const socket = token ? getSocket(token) : null;
-
+export const useSocket = (_legacyToken?: string | null) => {
+  const socket = getSocket();
   useEffect(() => {
-    if (!token) {
-      disconnectSocket();
-      return;
-    }
-
-    const socket = getSocket(token);
-
-    if (!socket.connected) {
-      socket.connect();
-    }
-
-    socket.on('connect', () => {
-      console.log('Socket connected:', socket.id);
-    });
-
-    socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err.message);
-    });
-
-    return () => {
-      // Không disconnect ngay khi unmount 1 component,
-      // chỉ disconnect khi thực sự rời khỏi app/logout
-      socket.off('connect');
-      socket.off('connect_error');
-    };
-  }, [token]);
-
+    if (!socket.connected) socket.connect();
+    const onError = (error: Error) => console.error('Socket connection error:', error.message);
+    socket.on('connect_error', onError);
+    return () => { socket.off('connect_error', onError); };
+  }, [socket]);
   return socket;
 };

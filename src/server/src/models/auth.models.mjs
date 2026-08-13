@@ -49,15 +49,16 @@ export const insertUserFromPending = async ({ email, passwordHash, username }, c
 // ─── otp_store ────────────────────────────────────────────────────────────────
 
 // UPSERT: nếu email đã có row thì ghi đè (user gửi lại OTP)
-export const saveOtpDB = async (email, otp, expiredAt) => {
+export const saveOtpDB = async (email, otpHash, expiredAt) => {
   await pool.query(
-    `INSERT INTO otp_store (email, otp, expired_at, verified)
-     VALUES ($1, $2, $3, false)
+    `INSERT INTO otp_store (email, otp_hash, expired_at, verified, attempt_count)
+     VALUES ($1, $2, $3, false, 0)
      ON CONFLICT (email) DO UPDATE
-       SET otp        = EXCLUDED.otp,
+       SET otp_hash   = EXCLUDED.otp_hash,
            expired_at = EXCLUDED.expired_at,
-           verified   = false`,
-    [email, otp, expiredAt]
+           verified   = false,
+           attempt_count = 0`,
+    [email, otpHash, expiredAt]
   );
 };
 
@@ -78,6 +79,39 @@ export const markVerifiedDB = async (email, newExpiredAt) => {
   );
 };
 
+export const incrementOtpAttemptsDB = async (email) => {
+  const result = await pool.query(
+    `UPDATE public.otp_store
+     SET attempt_count = attempt_count + 1
+     WHERE email = $1
+     RETURNING attempt_count`,
+    [email],
+  );
+  return result.rows[0]?.attempt_count ?? null;
+};
+
 export const deleteOtpDB = async (email) => {
   await pool.query('DELETE FROM otp_store WHERE email = $1', [email]);
 };
+
+export const recordLoginFailure = async (userId, maxAttempts = 5, lockMinutes = 15) => {
+  const result = await pool.query(
+    `UPDATE public.users
+     SET failed_login_attempts = failed_login_attempts + 1,
+         locked_until = CASE
+           WHEN failed_login_attempts + 1 >= $2 THEN CURRENT_TIMESTAMP + ($3 * INTERVAL '1 minute')
+           ELSE locked_until
+         END
+     WHERE user_id = $1
+     RETURNING failed_login_attempts, locked_until`,
+    [userId, maxAttempts, lockMinutes],
+  );
+  return result.rows[0] || null;
+};
+
+export const recordLoginSuccess = (userId) => pool.query(
+  `UPDATE public.users
+   SET last_login_at = CURRENT_TIMESTAMP, failed_login_attempts = 0, locked_until = NULL
+   WHERE user_id = $1`,
+  [userId],
+);

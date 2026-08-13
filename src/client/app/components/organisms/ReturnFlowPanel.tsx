@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
-import { getToken, apiFetch, getBranchId } from '../../utils/apiClient';
+import { apiFetch } from '../../utils/apiClient';
+import { getLoggedInUser } from '../../utils/user';
 import InspectionPanel from './InspectionPanel';
 
 const SLOT_COUNT = 6;
@@ -106,9 +107,6 @@ export default function ReturnFlowPanel() {
     const pin = digits.join('');
     if (pin.length !== SLOT_COUNT) return;
 
-    const token = getToken();
-    if (!token) { setError('Please sign in'); return; }
-
     setLoading(true);
     setError(null);
     setNotice(null);
@@ -198,7 +196,7 @@ export default function ReturnFlowPanel() {
             borrower={returnData.borrower}
             book={returnData.book}
             borrowing={returnData.borrowing}
-            branchId={getBranchId() || ''}
+            branchId={String(getLoggedInUser()?.branch_id || '')}
             configurationVersion={returnData.configurationVersion}
             onComplete={handleInspectionComplete}
             onCancel={handleReset}

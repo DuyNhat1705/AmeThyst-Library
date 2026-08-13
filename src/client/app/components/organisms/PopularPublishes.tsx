@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import BookCard from '../molecules/BookCard';
 import EmptySearchResults from '../molecules/EmptySearchResults';
 import { useI18n } from '../../providers/I18nProvider';
+import { apiFetch } from '../../utils/apiClient';
 
 interface Book {
   id: string;
@@ -68,13 +69,10 @@ export default function PopularPublishes({
             if (endYear) filterObj.publicationDate.end = endYear;
           }
 
-          const res = await fetch(`${apiUrl}/api/search`, {
+          const result = await apiFetch<any>('/api/search', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              ...(typeof window !== 'undefined' && sessionStorage.getItem('token')
-                ? { 'Authorization': `Bearer ${sessionStorage.getItem('token')}` }
-                : {})
             },
             body: JSON.stringify({
               query: searchQuery,
@@ -83,8 +81,8 @@ export default function PopularPublishes({
             })
           });
 
-          if (res.ok) {
-            const data = await res.json();
+          if (result.success && result.data) {
+            const data = result.data;
             const allSearchBooks = data.books || [];
 
             // Client-side pagination slice

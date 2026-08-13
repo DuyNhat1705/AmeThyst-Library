@@ -41,13 +41,17 @@ export-graph:
 	docker exec -i amethyst_memgraph mgconsole -c "DUMP DATABASE;" > ./amethyst_graph_dump.cypherl
 
 import-data:
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/01_databook.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/02_datalibrary.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/03_datafacility.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/04_datauser.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/05_init_rest.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/06_indexes.sql
-	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/07_mock_data.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/01_databook.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/02_datalibrary.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/03_datafacility.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/04_datauser.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/05_init_rest.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/06_indexes.sql
+	docker exec -i library_postgres psql -U lib_admin -d postgres < ./init_db/postgres/07_mock_data.sql
+	docker exec -i library_postgres psql -v ON_ERROR_STOP=1 -U lib_admin -d postgres < ./init_db/postgres/08_security_hardening.sql
+
+apply-security-hardening:
+	docker exec -i library_postgres psql -v ON_ERROR_STOP=1 -U lib_admin -d postgres < ./init_db/postgres/08_security_hardening.sql
 
 import-memgraph:
 	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 < ./init_db/init_graph.cypherl

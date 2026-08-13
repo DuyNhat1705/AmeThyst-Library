@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
+const activeChildren = new Set();
 const __dirname = path.dirname(__filename);
 
 // Paths configuration
@@ -65,6 +66,7 @@ const runPythonScript = (scriptRelativePath) => {
       cwd: ROOT_DIR,
       env: { ...process.env, PYTHONPATH: ROOT_DIR }
     });
+    activeChildren.add(processInstance);
     
     let output = '';
     let errorOutput = '';
@@ -78,6 +80,7 @@ const runPythonScript = (scriptRelativePath) => {
     });
     
     processInstance.on('close', (code) => {
+      activeChildren.delete(processInstance);
       if (code === 0) {
         writeLog(`Script ${scriptRelativePath} completed successfully.`);
         resolve(output);
@@ -88,6 +91,13 @@ const runPythonScript = (scriptRelativePath) => {
       }
     });
   });
+};
+
+export const stopSchedulerChildren = () => {
+  for (const child of activeChildren) {
+    if (!child.killed) child.kill('SIGTERM');
+  }
+  activeChildren.clear();
 };
 
 export const getRetrainStatus = () => {

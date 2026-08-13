@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isLoggedIn, getLoggedInUser, getRedirectPathForUser } from '../utils/user';
+import { getRedirectPathForUser } from '../utils/user';
 import { Toast } from '../components/atoms';
 import { useI18n } from '../providers/I18nProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { t } = useI18n();
+  const { user, loading } = useAuth();
   const [authState, setAuthState] = useState<'loading' | 'authorized' | 'unauthorized' | 'forbidden'>('loading');
   const [notification, setNotification] = useState<{ message: string; type: 'info' | 'error' } | null>(null);
 
   useEffect(() => {
-    if (!isLoggedIn()) {
+    if (loading) return;
+    if (!user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotification({ message: t('dashboard.auth_required'), type: 'info' });
       setAuthState('unauthorized');
@@ -21,7 +24,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setTimeout(() => router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`), 2000);
       return;
     }
-    const user = getLoggedInUser();
     const role = user?.role || 'user';
     const pathname = window.location.pathname;
     const isAdminSection = pathname.startsWith('/dashboard/admin');
@@ -37,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
     setAuthState('authorized');
-  }, [router, t]);
+  }, [loading, router, t, user]);
 
   if (authState === 'loading') {
     return (

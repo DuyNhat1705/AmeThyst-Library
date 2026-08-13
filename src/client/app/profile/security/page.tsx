@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import ProfileTemplate from '../../components/templates/ProfileTemplate';
 import { SecurityFormCard } from '../../components/organisms';
-import { useRequireAuth, getLoggedInUser, getAuthToken, logoutUser, updateStoredUser } from '../../utils/user';
+import { useRequireAuth, getLoggedInUser, logoutUser, updateStoredUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -24,11 +24,8 @@ export default function SecurityPage() {
     setAvatarUrl(currentUser?.avatar || '');
     setRole(currentUser?.role || 'user');
 
-    const token = getAuthToken();
-    if (!token) return;
-
     fetch(`${API}/user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
     })
       .then((r) => {
         if (r.status === 401) {

@@ -1,25 +1,24 @@
 "use client";
 
 import { Suspense, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../providers/I18nProvider';
+import { apiFetch } from '../../utils/apiClient';
+import { getRedirectPathForUser, setCurrentUser, type StoredUser } from '../../utils/user';
 
 function AuthCallbackContent() {
-  const searchParams = useSearchParams();
   const { t } = useI18n();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const user = searchParams.get('user');
-
-    if (token && user) {
-      sessionStorage.setItem('token', token);
-      sessionStorage.setItem('user', user);
-      window.location.href = '/library';
-    } else {
-      window.location.href = '/login';
-    }
-  }, [searchParams]);
+    void apiFetch<StoredUser>('/auth/me').then((result) => {
+      if (!result.success || !result.data) {
+        window.location.replace('/login');
+        return;
+      }
+      setCurrentUser(result.data);
+      window.history.replaceState({}, '', '/auth/callback');
+      window.location.replace(getRedirectPathForUser(result.data));
+    });
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8EFE6] dark:bg-[#091426]">

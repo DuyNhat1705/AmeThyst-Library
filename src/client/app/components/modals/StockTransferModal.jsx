@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { authHeaders } from '../../utils/apiClient';
 
 export default function StockTransferModal({ isOpen, onClose, onSuccess, book, branches }) {
   const [fromBranchId, setFromBranchId] = useState('');
@@ -50,13 +51,13 @@ export default function StockTransferModal({ isOpen, onClose, onSuccess, book, b
         destination_shelf_number: destShelfNum
       };
 
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books/transfer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          ...authHeaders()
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 

@@ -3,8 +3,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '../../providers/I18nProvider';
-import { getAuthToken, getInitials } from '../../utils/user';
+import { getInitials } from '../../utils/user';
 import { mapServerError } from '../../utils/errors';
+import { authHeaders } from '../../utils/apiClient';
 
 interface AvatarUploaderProps {
   avatarUrl: string;
@@ -252,8 +253,6 @@ export default function AvatarUploader({ avatarUrl, onAvatarUpdate, username }: 
   const handleSave = async () => {
     setIsLoading(true);
     setError('');
-    const token = getAuthToken();
-
     try {
       let response;
       if (imageFile) {
@@ -266,7 +265,8 @@ export default function AvatarUploader({ avatarUrl, onAvatarUpdate, username }: 
 
         response = await fetch(`${API}/user/avatar/crop`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers: authHeaders(),
+          credentials: 'include',
           body: formData,
         });
       } else if (imageSrc) {
@@ -282,8 +282,9 @@ export default function AvatarUploader({ avatarUrl, onAvatarUpdate, username }: 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            ...authHeaders(),
           },
+          credentials: 'include',
           body: JSON.stringify(payload),
         });
       } else {

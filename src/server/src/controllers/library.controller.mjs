@@ -13,8 +13,11 @@ import { uploadToCloudinary } from '../services/user.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 24;
+    const page = req.query.page === undefined ? 1 : Number(req.query.page);
+    const limit = req.query.limit === undefined ? 24 : Number(req.query.limit);
+    if (!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return res.status(400).json({ error: 'page must be >= 1 and limit must be between 1 and 100' });
+    }
     const { genres, branches, availableOnly, startYear, endYear } = req.query;
 
     const filters = {

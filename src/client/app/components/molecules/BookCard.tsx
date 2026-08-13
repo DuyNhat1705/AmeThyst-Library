@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import BookCover from '../atoms/BookCover';
+import { apiFetch } from '../../utils/apiClient';
+import { getLoggedInUser } from '../../utils/user';
 
 interface BookCardProps {
   id: string;
@@ -13,16 +15,10 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
   const handleCardClick = () => {
     if (typeof window !== 'undefined') {
       const searchHistoryId = sessionStorage.getItem('currentSearchHistoryId');
-      const token = sessionStorage.getItem('token');
-      if (token) {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
+      if (getLoggedInUser()) {
         // Async log recommendation click if it exists
-        fetch(`${apiUrl}/api/dashboard/user/recommendations/${id}/click`, {
+        void apiFetch(`/api/dashboard/user/recommendations/${id}/click`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
         }).catch(err => console.error("Failed to log recommendation click:", err));
 
         const query = sessionStorage.getItem('currentSearchQuery') || '';
@@ -31,11 +27,10 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
         const hasFilters = filters && Object.keys(filters).length > 0;
 
         if (searchHistoryId || query || hasFilters) {
-          fetch(`${apiUrl}/api/search/history/click`, {
+          void apiFetch('/api/search/history/click', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
               searchHistoryId,
@@ -44,14 +39,10 @@ export default function BookCard({ id, title, author, image }: BookCardProps) {
               filters
             })
           })
-          .then(res => {
-            if (!res.ok) {
-              throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-          })
-          .then(data => {
-            if (data.searchHistoryId) {
+          .then(result => {
+            if (!result.success) throw new Error(result.message || 'Failed to log search click');
+            const data = result.data as { searchHistoryId?: string } | undefined;
+            if (data?.searchHistoryId) {
               sessionStorage.setItem('currentSearchHistoryId', data.searchHistoryId);
             }
           })

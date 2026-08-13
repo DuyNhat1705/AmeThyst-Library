@@ -31,9 +31,8 @@ export default function BookReturnTab() {
   const fetchBorrowings = async () => {
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/dashboard/librarian/active-borrowings`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        credentials: 'include',
       });
       if (res.ok) {
         const json = await res.json();

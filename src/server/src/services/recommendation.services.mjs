@@ -32,16 +32,18 @@ const startPythonServer = () => {
   pythonServerProcess = spawn(pythonCmd, [PREDICT_SERVER_SCRIPT], {
     cwd: ROOT_DIR,
     env: { ...process.env, PYTHONPATH: ROOT_DIR },
-    detached: true,
     stdio: 'ignore'
   });
-
-  pythonServerProcess.unref();
 
   pythonServerProcess.on('exit', (code) => {
     // console.log(`[Python Manager] Python socket server exited with code ${code}`);
     pythonServerProcess = null;
   });
+};
+
+export const stopPythonServer = () => {
+  if (pythonServerProcess && !pythonServerProcess.killed) pythonServerProcess.kill('SIGTERM');
+  pythonServerProcess = null;
 };
 
 // Proactively spin up the Python persistent inference server on module load
@@ -453,21 +455,21 @@ export const generateRecommendations = async (userId) => {
     }
     
     // Save generated recommendations in PostgreSQL
-    const insertValues = [];
     const showedAt = new Date().toISOString();
-    
-    for (const item of finalSelection) {
-      insertValues.push(`('${userId}', '${item.id}', ${item.score}, '${showedAt}')`);
-    }
-    
-    if (insertValues.length > 0) {
+    if (finalSelection.length > 0) {
+      const params = [];
+      const placeholders = finalSelection.map((item, index) => {
+        const offset = index * 4;
+        params.push(userId, String(item.id), Number(item.score), showedAt);
+        return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4})`;
+      });
       const insertQuery = `
         INSERT INTO public.recommends (user_id, book_id, score, showed_at)
-        VALUES ${insertValues.join(', ')}
+        VALUES ${placeholders.join(', ')}
         ON CONFLICT (user_id, book_id) WHERE (renewed_at IS NULL)
         DO UPDATE SET score = EXCLUDED.score, showed_at = EXCLUDED.showed_at
       `;
-      await pool.query(insertQuery);
+      await pool.query(insertQuery, params);
     }
     
     // Fetch details for returned books

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../../../providers/I18nProvider';
 import { apiFetch } from '../../../utils/apiClient';
-import { isAdminRole } from '../../../utils/roles';
 import StatisticsHeaderFilter from '../../../components/admin/statistics/StatisticsHeaderFilter';
 import KpiSummaryRow from '../../../components/admin/statistics/KpiSummaryRow';
 import TopCategoriesBarChart from '../../../components/admin/statistics/TopCategoriesBarChart';
@@ -67,25 +66,6 @@ export default function AdminStatisticsPage() {
       }>;
     }>;
   }>({});
-
-  // Check admin role from local user session
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          if (user?.role && !isAdminRole(user.role)) {
-            setIsAuthorized(false);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        console.error('Failed to parse user role from storage:', err);
-      }
-    }
-  }, []);
 
   const fetchStatistics = useCallback(async () => {
     if (!isAuthorized) return;

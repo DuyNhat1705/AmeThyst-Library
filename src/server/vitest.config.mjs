@@ -8,6 +8,13 @@ export default defineConfig({
     projects: [
       {
         test: {
+          name: 'test_security_hardening',
+          globals: true,
+          include: ['tests/security/security-hardening.spec.mjs'],
+        },
+      },
+      {
+        test: {
           name: 'test_auth_register',
           globals: true,
           strictTags: false,

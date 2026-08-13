@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import ImageUploader from '../ui/ImageUploader';
+import { authHeaders } from '../../utils/apiClient';
 
 const LANGUAGE_OPTIONS = [
   { value: 'eng', label: 'English (eng)' },
@@ -142,9 +143,8 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
 
       const targetId = book.book_id || book.id;
       if (targetId) {
-        const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
         fetch(`${API_BASE}/api/library/books/${targetId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
+          credentials: 'include',
         })
           .then((res) => (res.ok ? res.json() : null))
           .then((fullData) => {
@@ -236,13 +236,13 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
         branch_stocks
       };
 
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books/${book.book_id || book.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          ...authHeaders()
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 

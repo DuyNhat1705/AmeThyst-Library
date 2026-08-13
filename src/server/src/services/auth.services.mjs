@@ -6,10 +6,12 @@ import {
   deletePendingByToken,
   deletePendingByEmail,
   insertUserFromPending,
+  recordLoginFailure,
+  recordLoginSuccess,
 } from '../models/auth.models.mjs';
+import pool from '../config/postgres.mjs';
 import { sendVerificationEmail } from '../utils/mailer.mjs';
 import {
-  signToken,
   buildUserPayload,
   withTransaction,
   replacePendingUser,
@@ -21,14 +23,14 @@ import {
 
 export const registerUser = async ({ email, password, username }) => {
   const existing = await findUserByEmail(email);
-  if (existing) throw new Error('Email already exists');
+  if (existing) return { message: 'If this email can be registered, a verification message will be sent.' };
 
   const pendingRow = await getPendingByEmail(email);
   if (pendingRow) {
     if (new Date() > new Date(pendingRow.expired_at)) {
       await deletePendingByEmail(email);
     } else {
-      throw new Error('A verification email has already been sent. Please check your inbox.');
+      return { message: 'If this email can be registered, a verification message will be sent.' };
     }
   }
 
@@ -38,7 +40,7 @@ export const registerUser = async ({ email, password, username }) => {
   );
 
   await sendVerificationEmail(email, token);
-  return { message: 'Verification email sent. Please check your inbox.' };
+  return { message: 'If this email can be registered, a verification message will be sent.' };
 };
 
 // ─── Verify Email ─────────────────────────────────────────────────────────────
@@ -68,10 +70,7 @@ export const verifyEmail = async ({ token }) => {
     return userRow;
   });
 
-  return {
-    token: signToken(user.user_id, user.email, user.role, user.branch_id, user.token_version ?? 0),
-    user: buildUserPayload(user),
-  };
+  return { user: buildUserPayload(user), userRow: user };
 };
 
 // ─── Resend Verification ──────────────────────────────────────────────────────
@@ -79,7 +78,7 @@ export const verifyEmail = async ({ token }) => {
 export const resendVerificationEmailService = async ({ email }) => {
   const pendingRow = await getPendingByEmail(email);
   if (!pendingRow) {
-    throw new Error('No pending registration found for this email. Please register again.');
+    return { message: 'If a pending registration exists, a verification message will be sent.' };
   }
 
   const newToken = await withTransaction((client) =>
@@ -91,33 +90,22 @@ export const resendVerificationEmailService = async ({ email }) => {
   );
 
   await sendVerificationEmail(email, newToken);
-  return { message: 'Verification email resent successfully.' };
+  return { message: 'If a pending registration exists, a verification message will be sent.' };
 };
 
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 export const loginUser = async ({ email, password }) => {
   const user = await findUserByEmail(email);
-  if (!user || !user.password_hash) throw new Error('Invalid email or password');
-
-  if (user.status === 'suspended') {
-    throw new Error('Your account has been suspended.');
+  const fallbackHash = '$2b$10$7EqJtq98hPqEX7fNZaFWoO.HkLXrKYuRpfM8caUVbVQyTgT1nYq2K';
+  const isMatch = await bcrypt.compare(password, user?.password_hash || fallbackHash);
+  const locked = user?.locked_until && new Date(user.locked_until) > new Date();
+  if (!user || !isMatch || user.status !== 'active' || locked) {
+    if (user && !locked) await recordLoginFailure(user.user_id);
+    throw new Error('Invalid email or password');
   }
 
-  const isMatch = await bcrypt.compare(password, user.password_hash);
-  if (!isMatch) throw new Error('Invalid email or password');
-
-  // Update last_login_at timestamp asynchronously
-  import('../config/postgres.mjs').then(async ({ default: pool }) => {
-    try {
-      await pool.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE user_id = $1', [user.user_id]);
-    } catch (e) {
-      console.error('Failed to update last login time:', e);
-    }
-  }).catch(e => console.error('Failed to load DB pool for login timestamp:', e));
-
-  return {
-    token: signToken(user.user_id, user.email, user.role, user.branch_id),
-    user: buildUserPayload(user),
-  };
+  await recordLoginSuccess(user.user_id);
+  const refreshed = await pool.query('SELECT * FROM public.users WHERE user_id = $1', [user.user_id]);
+  return refreshed.rows[0] || user;
 };

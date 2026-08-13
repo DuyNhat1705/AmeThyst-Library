@@ -27,7 +27,7 @@ services:
     container_name: amethyst_memgraph
     restart: always
     ports:
-      - "7687:7687"
+      - "127.0.0.1:7687:7687"
     environment:
       MEMGRAPH_USER: ${MEMGRAPH_USER}
       MEMGRAPH_PASSWORD: ${MEMGRAPH_PASSWORD}
@@ -43,7 +43,7 @@ services:
     container_name: amethyst_memgraph_lab
     restart: always
     ports:
-      - "8080:3000"  
+      - "127.0.0.1:8080:3000"
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
       # 🟩 Supply authentication credentials to enable visual lab instant auto-login

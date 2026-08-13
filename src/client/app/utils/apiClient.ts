@@ -1,25 +1,10 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem('token');
-}
-
-export function getBranchId(): string | null {
-  const token = getToken();
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.branch_id || null;
-  } catch {
-    return null;
-  }
-}
-
+export function getToken(): null { return null; }
+export function getBranchId(): string | null { return null; }
 export function authHeaders(): Record<string, string> {
-  const token = getToken();
-  if (!token) return {};
-  return { 'Authorization': `Bearer ${token}` };
+  const csrf = readCookie('amethyst_csrf');
+  return csrf ? { 'X-CSRF-Token': csrf } : {};
 }
 
 export interface ApiResult<T = unknown> {
@@ -30,51 +15,59 @@ export interface ApiResult<T = unknown> {
   error?: { code: string; message: string; details?: Record<string, unknown>; retryAt?: string | null };
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  options: RequestInit = {}
-): Promise<ApiResult<T>> {
-  const token = getToken();
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string> || {}),
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+const readCookie = (name: string) => {
+  if (typeof document === 'undefined') return null;
+  const entry = document.cookie.split('; ').find((item) => item.startsWith(`${name}=`));
+  return entry ? decodeURIComponent(entry.slice(name.length + 1)) : null;
+};
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers,
+const parseResponse = async (response: Response): Promise<any> => {
+  if (response.status === 204) return null;
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    try { return await response.json(); } catch { return null; }
+  }
+  const text = await response.text();
+  return text ? { message: text } : null;
+};
+
+const refreshSession = async () => {
+  const response = await fetch(`${API_URL}/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: readCookie('amethyst_csrf') ? { 'X-CSRF-Token': readCookie('amethyst_csrf')! } : {},
   });
+  if (!response.ok) return false;
+  const data = await parseResponse(response);
+  const user = data?.data?.user;
+  if (typeof window !== 'undefined' && user) window.dispatchEvent(new CustomEvent('user-updated', { detail: user }));
+  return true;
+};
 
-  const data = await response.json();
-
-  if (response.status === 401 && (data.error?.code === 'AUTH_USER_NOT_FOUND' || data.error?.code === 'USER_SUSPENDED') && typeof window !== 'undefined') {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}, retried = false): Promise<ApiResult<T>> {
+  const headers = new Headers(options.headers || {});
+  const method = String(options.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    let csrfToken = readCookie('amethyst_csrf');
+    if (!csrfToken) {
+      await fetch(`${API_URL}/auth/csrf`, { credentials: 'include' });
+      csrfToken = readCookie('amethyst_csrf');
+    }
+    if (csrfToken) headers.set('X-CSRF-Token', csrfToken);
   }
-
-  if (!response.ok) {
-    return {
-      success: false,
-      message: data.error?.message || data.message || (typeof data.error === 'string' ? data.error : 'Request failed'),
-      error: typeof data.error === 'object' ? data.error : undefined,
-    };
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: 'include' });
+  if (response.status === 401 && !retried && !path.startsWith('/auth/')) {
+    if (await refreshSession()) return apiFetch<T>(path, options, true);
   }
-
-  if (data.success === false) {
-    return {
-      success: false,
-      message: data.error?.message || data.message || (typeof data.error === 'string' ? data.error : 'Request failed'),
-      error: typeof data.error === 'object' ? data.error : undefined,
-    };
+  const data = await parseResponse(response);
+  if (!response.ok || data?.success === false) {
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
+      const returnTo = `${window.location.pathname}${window.location.search}`;
+      if (!window.location.pathname.startsWith('/login')) window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+    }
+    const fallback = response.statusText || 'Request failed';
+    return { success: false, message: data?.error?.message || data?.message || (typeof data?.error === 'string' ? data.error : fallback), error: typeof data?.error === 'object' ? data.error : undefined };
   }
-
-  return {
-    success: true,
-    data: (data.success === true ? data.data : data) as T,
-    message: data.message,
-    meta: data.meta,
-  };
+  return { success: true, data: (data?.success === true ? data.data : data) as T, message: data?.message, meta: data?.meta };
 }

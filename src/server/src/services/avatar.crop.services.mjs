@@ -1,9 +1,79 @@
 import pool from '../config/postgres.mjs';
 import sharp from 'sharp';
+import dns from 'dns/promises';
+import net from 'net';
 import { uploadToCloudinary } from './user.services.mjs';
 
 const CROP_DISPLAY_SIZE = 280;
 const CROP_OUTPUT_SIZE = 512;
+const MAX_REMOTE_IMAGE_SIZE = 2 * 1024 * 1024;
+const MAX_REDIRECTS = 3;
+
+const allowedRemoteHosts = () => new Set(
+  (process.env.AVATAR_REMOTE_HOSTS || 'res.cloudinary.com,lh3.googleusercontent.com')
+    .split(',').map((host) => host.trim().toLowerCase()).filter(Boolean),
+);
+
+const isPrivateAddress = (address) => {
+  if (net.isIPv4(address)) {
+    const [a, b] = address.split('.').map(Number);
+    return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254)
+      || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168);
+  }
+  const normalized = address.toLowerCase();
+  return normalized === '::1' || normalized === '::' || normalized.startsWith('fe80:')
+    || normalized.startsWith('fc') || normalized.startsWith('fd') || normalized.startsWith('::ffff:127.')
+    || normalized.startsWith('::ffff:10.') || normalized.startsWith('::ffff:192.168.');
+};
+
+const validateRemoteUrl = async (value) => {
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || url.username || url.password || url.port) throw new Error('Remote avatar URL is not allowed');
+  if (!allowedRemoteHosts().has(url.hostname.toLowerCase())) throw new Error('Remote avatar host is not allowed');
+  const addresses = await dns.lookup(url.hostname, { all: true, verbatim: true });
+  if (!addresses.length || addresses.some(({ address }) => isPrivateAddress(address))) {
+    throw new Error('Remote avatar address is not allowed');
+  }
+  return url;
+};
+
+const fetchRemoteImage = async (initialUrl) => {
+  let current = await validateRemoteUrl(initialUrl);
+  for (let redirect = 0; redirect <= MAX_REDIRECTS; redirect += 1) {
+    const response = await fetch(current, {
+      redirect: 'manual',
+      signal: AbortSignal.timeout(5000),
+      headers: { 'User-Agent': 'AmeThyst-Avatar-Proxy/1.0', Accept: 'image/*' },
+    });
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      if (redirect === MAX_REDIRECTS) throw new Error('Too many avatar redirects');
+      current = await validateRemoteUrl(new URL(response.headers.get('location'), current).toString());
+      continue;
+    }
+    if (!response.ok) throw new Error(`Failed to fetch image from URL: ${response.status}`);
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.startsWith('image/')) throw new Error('The URL does not point to a valid image resource');
+    const declaredSize = Number(response.headers.get('content-length') || 0);
+    if (declaredSize > MAX_REMOTE_IMAGE_SIZE) throw new Error('Remote avatar exceeds 2MB limit');
+    const reader = response.body.getReader();
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_REMOTE_IMAGE_SIZE) {
+        await reader.cancel();
+        throw new Error('Remote avatar exceeds 2MB limit');
+      }
+      chunks.push(Buffer.from(value));
+    }
+    const buffer = Buffer.concat(chunks);
+    await sharp(buffer).metadata();
+    return buffer;
+  }
+  throw new Error('Unable to fetch remote avatar');
+};
 
 // B2a: Validate coordinates and zoom range
 export const validateCropInput = (zoom, offsetX, offsetY) => {
@@ -24,34 +94,17 @@ export const validateCropInput = (zoom, offsetX, offsetY) => {
 // B2b: Get image buffer from file or remote URL (checking content-type header)
 export const getImageBuffer = async (file, imageUrl) => {
   if (file && file.buffer) {
+    if (file.buffer.length > MAX_REMOTE_IMAGE_SIZE) throw new Error('Avatar exceeds 2MB limit');
     return file.buffer;
   }
 
   if (imageUrl) {
-    let url;
     try {
-      url = new URL(imageUrl);
-    } catch (e) {
-      throw new Error('Invalid URL format');
+      return await fetchRemoteImage(imageUrl);
+    } catch (error) {
+      if (error instanceof TypeError) throw new Error('Invalid URL format');
+      throw error;
     }
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'
-      }
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image from URL: ${response.statusText}`);
-    }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.startsWith('image/')) {
-      throw new Error('The URL does not point to a valid image resource');
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    return Buffer.from(arrayBuffer);
   }
 
   throw new Error('No avatar file or URL provided');

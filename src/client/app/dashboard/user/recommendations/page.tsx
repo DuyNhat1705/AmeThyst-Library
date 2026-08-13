@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import RecommendationCarousel from '../../../components/organisms/RecommendationCarousel';
 import { useI18n } from '../../../providers/I18nProvider';
+import { apiFetch } from '../../../utils/apiClient';
 
 interface RecommendedBook {
   id: string;
@@ -20,37 +21,23 @@ export default function RecommendationsPage() {
   const [renewing, setRenewing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecommendations = async (isSilent = false) => {
+  const fetchRecommendations = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem('token');
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const [recRes, wishlistRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/user/recommendations`, { headers }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, { headers })
+      const [recommendationResult, wishlistResult] = await Promise.all([
+        apiFetch<{ historyBased: RecommendedBook[]; trending: RecommendedBook[] }>('/api/dashboard/user/recommendations'),
+        apiFetch<any[]>('/api/wishlist')
       ]);
-
-      if (!recRes.ok) {
-        throw new Error('Failed to fetch recommendations');
-      }
-
-      const responseData = await recRes.json();
-      const wishlistData = wishlistRes.ok ? await wishlistRes.json() : [];
-
-      if (responseData.success && responseData.data) {
-        setHistoryBooks(responseData.data.historyBased || []);
-        setTrendingBooks(responseData.data.trending || []);
+      if (recommendationResult.success && recommendationResult.data) {
+        setHistoryBooks(recommendationResult.data.historyBased || []);
+        setTrendingBooks(recommendationResult.data.trending || []);
       } else {
-        throw new Error(responseData.error?.message || 'Failed to parse response');
+        throw new Error(recommendationResult.message || 'Failed to parse response');
       }
 
       // Map wishlist books to match the RecommendedBook interface keys
-      const mappedWishlist = wishlistData.map((item: any) => ({
+      const mappedWishlist = (wishlistResult.data || []).map((item: any) => ({
         id: item.id,
         title: item.title,
         author: item.author,
@@ -63,38 +50,24 @@ export default function RecommendationsPage() {
     } finally {
       if (!isSilent) setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     fetchRecommendations();
-  }, [t]);
+  }, [fetchRecommendations]);
 
   const handleRenew = async () => {
     setRenewing(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem('token');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json'
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/user/recommendations/renew`, {
+      const result = await apiFetch<{ historyBased: RecommendedBook[] }>('/api/dashboard/user/recommendations/renew', {
         method: 'POST',
-        headers
+        headers: { 'Content-Type': 'application/json' },
       });
-
-      if (!res.ok) {
-        throw new Error('Failed to renew recommendations');
-      }
-
-      const responseData = await res.json();
-      if (responseData.success && responseData.data) {
-        setHistoryBooks(responseData.data.historyBased || []);
+      if (result.success && result.data) {
+        setHistoryBooks(result.data.historyBased || []);
       } else {
-        throw new Error(responseData.error?.message || 'Failed to parse renew response');
+        throw new Error(result.message || 'Failed to parse renew response');
       }
     } catch (err) {
       console.error('Error renewing recommendations:', err);
