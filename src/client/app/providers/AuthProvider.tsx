@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { setCurrentUser, type StoredUser } from '../utils/user';
+import { reportNetworkError, reportNetworkRecovery } from '../utils/apiClient';
 
 interface AuthState { user: StoredUser | null; loading: boolean; refresh: () => Promise<void> }
 const AuthContext = createContext<AuthState>({ user: null, loading: true, refresh: async () => undefined });
@@ -25,7 +26,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const body = response.ok ? await response.json() : null;
       const next = body?.data || null;
       setUser(next); setCurrentUser(next);
-    } catch { setUser(null); setCurrentUser(null); }
+      reportNetworkRecovery();
+    } catch { setUser(null); setCurrentUser(null); reportNetworkError(); }
   }, []);
   useEffect(() => {
     sessionStorage.removeItem('token');

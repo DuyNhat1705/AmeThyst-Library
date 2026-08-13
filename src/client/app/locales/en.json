@@ -23,6 +23,9 @@
     "subtitle": "Your gateway to a world of knowledge. Explore our extensive collection, manage your profile, and join our vibrant community.",
     "explore": "Explore Library"
   },
+  "network": {
+    "error": "Network connection error. Please check your connection and try again."
+  },
   "library": {
     "title": "Library",
     "loading": "Loading library catalog...",
@@ -72,6 +75,7 @@
     "all_books": "All Books",
     "categories": "Categories",
     "new_arrivals": "New Arrivals",
+    "library_map": "Library Map",
     "study_groups": "Study Groups",
     "events": "Events",
     "forums": "Forums",
@@ -1362,6 +1366,130 @@
       "load": "Không thể tải cấu hình hệ thống hiện hành.",
       "save": "Không thể lưu chính sách. Dữ liệu bạn đang nhập vẫn được giữ lại.",
       "conflict": "Một quản trị viên khác đã lưu chính sách mới hơn. Hãy tải bản mới nhất và kiểm tra lại thay đổi."
+    }
+  },
+  "staticPages": {
+    "last_updated": "Last updated: August 2026",
+    "contact_email": "support@amethyst-library.com",
+    "contact_prompt": "Still need help? Contact us at",
+    "back_to_home": "Back to Home",
+    "help": {
+      "title": "Help Center",
+      "subtitle": "Everything you need to know about using the AmeThyst Digital Library, from creating your account to borrowing books and joining study groups.",
+      "sections": [
+        {
+          "heading": "Getting Started",
+          "body": "Create a free account with your email address on the Sign Up page. You will receive a verification email - click the link inside to activate your account before signing in.\nIf you forget your password, use the Forgot Password option on the Sign In page to request a secure reset link."
+        },
+        {
+          "heading": "Browsing & Searching the Library",
+          "body": "Browse the full catalog on the Library page, or search by title, author, publisher, or ISBN with Standard Search. Semantic Search understands concepts and topics, helping you find books even when you do not remember the exact title.\nUse the filter panel to narrow results by genre, branch, availability, and publication year."
+        },
+        {
+          "heading": "Reserving & Borrowing Books",
+          "body": "When you find an available copy at a branch, sign in and choose Reserve for Pickup. Your reservation is confirmed with a 6-digit pickup PIN that you share with the librarian at the circulation desk.\nCollect your book before the PIN expires. Borrowed books are due 14 days after pickup."
+        },
+        {
+          "heading": "Returning Books & Fees",
+          "body": "To return a book, generate a Return PIN from your Borrowed Books dashboard and show it to the librarian. The book condition is inspected during the return.\nOverdue, damaged, or lost books may incur fees according to the library policy. You can review and pay outstanding fees from the Fees page in your dashboard."
+        },
+        {
+          "heading": "Study Groups",
+          "body": "Use Study Together to create or join study groups. Hosts can invite members by email, approve requests, and manage capacity.\nYou can cancel a pending membership request or leave a group at any time from your Study Groups dashboard."
+        },
+        {
+          "heading": "Study Spaces & Rooms",
+          "body": "Reserve study rooms through the room dashboard and check in with your Room PIN when you arrive. Live availability and reservations are also shown on the Library Map."
+        },
+        {
+          "heading": "Account & Profile",
+          "body": "Update your personal details, change your password, and manage your avatar from the Profile page. Keep your contact information up to date so the library can reach you about reservations and fees."
+        },
+        {
+          "heading": "Contact Support",
+          "body": "Still stuck? Contact the library support team at support@amethyst-library.com. We usually respond within one business day."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "subtitle": "How the AmeThyst Digital Library collects, uses, and protects your information.",
+      "sections": [
+        {
+          "heading": "Information We Collect",
+          "body": "We collect the information you provide when creating an account, including your name, email address, phone number, and gender. You may also add a profile picture.\nWhile you use the library, we record your borrowing history, reservations, fees, and study group activity so we can deliver our services."
+        },
+        {
+          "heading": "How We Use Your Information",
+          "body": "Your information is used to run the library: authenticate your account, process reservations and borrowings, calculate fees, send notifications, and personalize recommendations.\nWe use aggregated and anonymized data to improve search results and library operations."
+        },
+        {
+          "heading": "Sharing of Information",
+          "body": "We do not sell your personal information. Limited data is shared with librarians to fulfill services such as pickup verification and returns, and with service providers who help operate the platform under strict confidentiality agreements."
+        },
+        {
+          "heading": "Cookies & Local Storage",
+          "body": "We use browser local storage to remember your language and theme preferences and to keep you signed in during your session. You can clear this data at any time from your browser settings."
+        },
+        {
+          "heading": "Data Retention & Security",
+          "body": "We retain your account and activity records while your account is active and as required by law. We use encryption, access controls, and role-based permissions to protect your data.\nBorrowing and fee records are kept according to library policy."
+        },
+        {
+          "heading": "Your Rights & Choices",
+          "body": "You may access, correct, or update your profile at any time, and you can request account deletion by contacting support.\nYou may opt out of non-essential communications while still receiving important account notices."
+        },
+        {
+          "heading": "Changes & Contact",
+          "body": "We may update this policy from time to time and will announce significant changes on the platform.\nQuestions about privacy? Contact us at support@amethyst-library.com."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "subtitle": "The rules that govern your use of the AmeThyst Digital Library.",
+      "sections": [
+        {
+          "heading": "Acceptance of Terms",
+          "body": "By creating an account or using the AmeThyst Digital Library, you agree to these Terms of Service. If you do not agree, please do not use the platform."
+        },
+        {
+          "heading": "Accounts & Eligibility",
+          "body": "You must provide accurate information when creating an account and keep your credentials secure. You are responsible for all activity under your account.\nThe library serves students and community members of AmeThyst. Accounts may be suspended for misuse."
+        },
+        {
+          "heading": "Acceptable Use",
+          "body": "You agree not to misuse the platform, including attempting to access other users' accounts, disrupting services, or using the library for unlawful purposes.\nPlease follow the instructions of library staff and respect library property."
+        },
+        {
+          "heading": "Library Services & Borrowing",
+          "body": "Reservations and borrowings depend on availability and branch policy. Present your pickup PIN to collect a book and your return PIN to return it.\nBorrowed books must be returned by the due date. Late, damaged, or lost materials may result in fees."
+        },
+        {
+          "heading": "Fees & Payments",
+          "body": "Fees for overdue, damaged, or lost materials are calculated under the library's published policy and must be settled before further borrowing.\nIf you believe a fee is incorrect, raise the issue with library staff promptly."
+        },
+        {
+          "heading": "Study Groups & Community",
+          "body": "Study groups are user-created spaces. Hosts manage their groups, and members must behave respectfully. The library may remove groups that violate these terms."
+        },
+        {
+          "heading": "Intellectual Property",
+          "body": "The AmeThyst Library name, logo, and platform content belong to their respective owners. Book data is provided for personal, non-commercial use."
+        },
+        {
+          "heading": "Liability & Disclaimers",
+          "body": "The platform is provided as-is without warranties of any kind. The library is not liable for indirect damages arising from the use of the service.\nWe aim for high availability but do not guarantee uninterrupted access."
+        },
+        {
+          "heading": "Termination",
+          "body": "We may suspend or terminate accounts that violate these terms. You may close your account at any time by contacting support."
+        },
+        {
+          "heading": "Changes & Governing Law",
+          "body": "We may update these terms as the platform evolves. Continued use after changes constitutes acceptance.\nThese terms are governed by applicable law, and any disputes will be resolved in the relevant courts."
+        }
+      ]
     }
   }
 }

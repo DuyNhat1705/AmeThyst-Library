@@ -80,7 +80,7 @@ describe('Create Study Group Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     model.withTransaction.mockImplementation(async (work) => work(client));
-    model.findSlotForCreation.mockResolvedValue({ capacity: 4 });
+    model.findSlotForCreation.mockResolvedValue({ capacity: 4, occupied: false });
     model.insertReservation.mockResolvedValue({ reserveId: 'reserve-1' });
     model.insertStudyGroup.mockResolvedValue({ groupId });
     model.findGroupDetail.mockResolvedValue(detailRecord());
@@ -143,17 +143,28 @@ describe('Create Study Group Service', () => {
       await expect(createStudyGroup(hostId, validInput()))
         .rejects.toMatchObject({ code: 'NOT_FOUND', status: 404 });
 
-      expect(model.findSlotForCreation).toHaveBeenCalledWith(12, client);
+      expect(model.findSlotForCreation).toHaveBeenCalledWith(12, '2099-08-01', client);
       expect(model.insertReservation).not.toHaveBeenCalled();
       expect(model.insertStudyGroup).not.toHaveBeenCalled();
     });
 
     it('[TC-SRV-CSG-007] rejects a room with no host capacity without writing data', async () => {
-      model.findSlotForCreation.mockResolvedValue({ capacity: 0 });
+      model.findSlotForCreation.mockResolvedValue({ capacity: 0, occupied: false });
 
       await expect(createStudyGroup(hostId, validInput()))
         .rejects.toMatchObject({ code: 'INVALID_CAPACITY', status: 409 });
 
+      expect(model.insertReservation).not.toHaveBeenCalled();
+      expect(model.insertStudyGroup).not.toHaveBeenCalled();
+    });
+
+    it('[TC-SRV-CSG-007b] rejects an already-booked slot before inserting a reservation', async () => {
+      model.findSlotForCreation.mockResolvedValue({ capacity: 4, occupied: true });
+
+      await expect(createStudyGroup(hostId, validInput()))
+        .rejects.toMatchObject({ code: 'SLOT_UNAVAILABLE', status: 409 });
+
+      expect(model.findSlotForCreation).toHaveBeenCalledWith(12, '2099-08-01', client);
       expect(model.insertReservation).not.toHaveBeenCalled();
       expect(model.insertStudyGroup).not.toHaveBeenCalled();
     });

@@ -34,7 +34,7 @@ export function CustomSelect({ options, value, onChange, className = '' }: Custo
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-10 px-4 rounded-lg border border-[#C5C6CD] bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#006A61] transition-all dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:ring-[#FFB95F] shadow-sm flex items-center justify-between gap-2"
+        className="w-full h-10 px-4 rounded-lg border border-[#C5C6CD] bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#006A61] transition-all hover:border-[#006A61] dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:ring-[#FFB95F] dark:hover:border-[#FFB95F] shadow-sm flex items-center justify-between gap-2"
       >
         <span className="truncate">{selectedOption?.label}</span>
         <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

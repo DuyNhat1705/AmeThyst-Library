@@ -28,27 +28,24 @@ export default function Footer() {
           <FooterLinkSection
             title={t('footer.section_library')}
             links={[
-              { label: t('footer.all_books'), href: '#' },
-              { label: t('footer.categories'), href: '#' },
-              { label: t('footer.new_arrivals'), href: '#' },
+              { label: t('footer.all_books'), href: '/library' },
+              { label: t('footer.library_map'), href: '/map' },
             ]}
           />
 
           <FooterLinkSection
             title={t('footer.section_community')}
             links={[
-              { label: t('footer.study_groups'), href: '#' },
-              { label: t('footer.events'), href: '#' },
-              { label: t('footer.forums'), href: '#' },
+              { label: t('footer.study_groups'), href: '/study-together' },
             ]}
           />
 
           <FooterLinkSection
             title={t('footer.section_support')}
             links={[
-              { label: t('footer.help_center'), href: '#' },
-              { label: t('footer.privacy_policy'), href: '#' },
-              { label: t('footer.terms_of_service'), href: '#' },
+              { label: t('footer.help_center'), href: '/help' },
+              { label: t('footer.privacy_policy'), href: '/privacy' },
+              { label: t('footer.terms_of_service'), href: '/terms' },
             ]}
           />
         </div>
@@ -59,11 +56,9 @@ export default function Footer() {
             {t('footer.copyright')}
           </p>
           <div className="flex gap-6">
-            {['Twitter', 'LinkedIn', 'Github'].map(social => (
-              <a key={social} href="#" className="text-[#75777D] hover:text-white transition-colors text-xs font-semibold uppercase tracking-widest">
-                {social}
-              </a>
-            ))}
+            <a href="https://github.com/DuyNhat1705/AmeThyst-Library" target="_blank" rel="noopener noreferrer" className="text-[#75777D] hover:text-white transition-colors text-xs font-semibold uppercase tracking-widest">
+              GitHub
+            </a>
           </div>
         </div>
       </div>

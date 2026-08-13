@@ -23,7 +23,7 @@ export default function StudyGroupInvitationUnavailableModal({
         </div>
         <h2 id="unavailable-invitation-title" className="font-hankenGrotesk text-xl font-bold">{t('study_group.invitation_unavailable_title')}</h2>
         <p id="unavailable-invitation-description" className="mt-2 text-sm leading-6 text-[#65696E] dark:text-neutral-300">{t('study_group.invitation_unavailable')}</p>
-        <button onClick={onClose} className="mt-5 rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white">{t('study_group.back_to_groups')}</button>
+        <button onClick={onClose} className="mt-5 rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#164A59]">{t('study_group.back_to_groups')}</button>
       </div>
     </div>
   );

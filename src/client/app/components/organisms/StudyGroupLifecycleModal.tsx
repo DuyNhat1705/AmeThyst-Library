@@ -53,8 +53,8 @@ export default function StudyGroupLifecycleModal({
         ) : null}
         <NotificationGroupInfoGrid data={gridData} t={t} />
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="rounded-xl border border-[#AEB3B7] px-5 py-2.5 text-sm font-bold">{t('study_group.close')}</button>
-          <button onClick={() => { onClose(); window.location.href = notificationDestinationHref(selectedSystemNotification); }} className="rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white">{selectedSystemNotification.destination?.mode === 'created' ? t('study_group.view_created_group') : selectedSystemNotification.destination?.mode === 'joined' ? t('study_group.view_joined_group') : t('study_group.view_your_groups')}</button>
+          <button onClick={onClose} className="rounded-xl border border-[#AEB3B7] px-5 py-2.5 text-sm font-bold transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700">{t('study_group.close')}</button>
+          <button onClick={() => { onClose(); window.location.href = notificationDestinationHref(selectedSystemNotification); }} className="rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#164A59]">{selectedSystemNotification.destination?.mode === 'created' ? t('study_group.view_created_group') : selectedSystemNotification.destination?.mode === 'joined' ? t('study_group.view_joined_group') : t('study_group.view_your_groups')}</button>
         </div>
       </div>
     </div>

@@ -233,7 +233,7 @@ export default function BookPickupTab() {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40"
+              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-700"
             >
               Prev
             </button>
@@ -243,7 +243,7 @@ export default function BookPickupTab() {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40"
+              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-700"
             >
               Next
             </button>

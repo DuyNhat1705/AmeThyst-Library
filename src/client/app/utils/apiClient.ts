@@ -21,6 +21,25 @@ const readCookie = (name: string) => {
   return entry ? decodeURIComponent(entry.slice(name.length + 1)) : null;
 };
 
+const reportNetworkEvent = (type: 'network-error' | 'network-recovered') => {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(type));
+};
+
+export const reportNetworkError = () => reportNetworkEvent('network-error');
+export const reportNetworkRecovery = () => reportNetworkEvent('network-recovered');
+
+const safeFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response | null> => {
+  try {
+    const response = await fetch(input, init);
+    reportNetworkRecovery();
+    return response;
+  } catch {
+    reportNetworkError();
+    return null;
+  }
+};
+
 const parseResponse = async (response: Response): Promise<any> => {
   if (response.status === 204) return null;
   const contentType = response.headers.get('content-type') || '';
@@ -32,11 +51,12 @@ const parseResponse = async (response: Response): Promise<any> => {
 };
 
 const refreshSession = async () => {
-  const response = await fetch(`${API_URL}/auth/refresh`, {
+  const response = await safeFetch(`${API_URL}/auth/refresh`, {
     method: 'POST',
     credentials: 'include',
     headers: readCookie('amethyst_csrf') ? { 'X-CSRF-Token': readCookie('amethyst_csrf')! } : {},
   });
+  if (!response) return false;
   if (!response.ok) return false;
   const data = await parseResponse(response);
   const user = data?.data?.user;
@@ -50,12 +70,15 @@ export async function apiFetch<T = unknown>(path: string, options: RequestInit =
   if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
     let csrfToken = readCookie('amethyst_csrf');
     if (!csrfToken) {
-      await fetch(`${API_URL}/auth/csrf`, { credentials: 'include' });
+      await safeFetch(`${API_URL}/auth/csrf`, { credentials: 'include' });
       csrfToken = readCookie('amethyst_csrf');
     }
     if (csrfToken) headers.set('X-CSRF-Token', csrfToken);
   }
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: 'include' });
+  const response = await safeFetch(`${API_URL}${path}`, { ...options, headers, credentials: 'include' });
+  if (!response) {
+    return { success: false, message: 'Network connection error. Please check your connection and try again.' };
+  }
   if (response.status === 401 && !retried && !path.startsWith('/auth/')) {
     if (await refreshSession()) return apiFetch<T>(path, options, true);
   }

@@ -200,7 +200,7 @@ export default function StudyGroupCard({
               <UserAvatar avatar={leader.avatar} initials={leader.initials} alt={leader.name} className="relative z-10 h-8 w-8 border-2 border-white dark:border-neutral-900" fallbackClassName="bg-[#4B0082] text-[10px] text-[#BA7EF4]" />
               {currentMembers > 1 && (
                 <div className="-ml-2 flex h-8 w-8 items-center justify-center">
-                  <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#C3DCFE] dark:border-neutral-900">
+                  <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#C3DCFE] dark:border-neutral-900 transition-colors hover:bg-[#A9C9F5]">
                     <p className="text-[#001D36] font-openSans text-[10px] font-bold leading-[15px]">
                       +{currentMembers - 1}
                     </p>

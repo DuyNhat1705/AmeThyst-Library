@@ -310,7 +310,7 @@ function YourStudyGroupsContent({ initialGroupId = null, initialMode = null }: Y
                 })}
               </div>}
               {loading && <p role="status" className="py-12 text-center text-[#595C61] dark:text-gray-300">Loading Study Groups…</p>}
-              {loadError && <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/30 dark:text-red-200">{loadError}<button onClick={() => void loadGroups()} className="ml-3 underline">Retry</button></div>}
+              {loadError && <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/30 dark:text-red-200">{loadError}<button onClick={() => void loadGroups()} className="ml-3 underline transition-opacity hover:opacity-70">Retry</button></div>}
               {activeTab === 'invitations' && invitationError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200">{invitationError}</div>}
               {!loading && !loadError && activeTab === 'invitations' && (
                 invitations.length > 0
