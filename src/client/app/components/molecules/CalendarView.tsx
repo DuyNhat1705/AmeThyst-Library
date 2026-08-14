@@ -3,9 +3,9 @@
 import DashboardCalendar from './DashboardCalendar';
 
 const mockEvents = [
-  { date: new Date().toISOString().split('T')[0], type: 'book_return' as const, title: 'Book Return Due' },
-  { date: new Date(Date.now() + 86400000).toISOString().split('T')[0], type: 'reservation_expiry' as const, title: 'Reservation Expiry' },
-  { date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], type: 'pin_expiry' as const, title: 'PIN Expiry' },
+  { date: new Date().toISOString().split('T')[0], type: 'borrow_due' as const, title: 'Return Due' },
+  { date: new Date(Date.now() + 86400000).toISOString().split('T')[0], type: 'reservation_expiry' as const, title: 'Pickup Due' },
+  { date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], type: 'room_reservation' as const, title: 'Room Reservation' },
 ];
 
 export default function CalendarView() {

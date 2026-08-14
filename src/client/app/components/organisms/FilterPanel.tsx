@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import GenreTag from '../atoms/GenreTag';
 import ToggleSwitch from '../atoms/ToggleSwitch';
 import YearRangeFilter from '../molecules/YearRangeFilter';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -54,6 +55,7 @@ export default function FilterPanel({
   onYearSubmit,
   onReset
 }: FilterPanelProps) {
+  const { t } = useI18n();
 
   useEffect(() => {
     if (isOpen) {
@@ -100,18 +102,18 @@ export default function FilterPanel({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#C5C6CD] dark:border-neutral-800">
-          <h2 className="text-xl font-bold text-[#091426] dark:text-neutral-100 font-manrope">Filters</h2>
+          <h2 className="text-xl font-bold text-[#091426] dark:text-neutral-100 font-manrope">{t('filter.filters')}</h2>
           <div className="flex items-center gap-4">
             <button
               onClick={onReset}
               className="text-sm font-semibold text-[#006F66] dark:text-teal-400 hover:underline transition font-inter cursor-pointer"
             >
-              Reset All
+              {t('filter.reset_all')}
             </button>
             <button
               onClick={onClose}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition text-[#45474C] dark:text-neutral-400 active:scale-95 cursor-pointer"
-              title="Close panel"
+              title={t('filter.close_panel')}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -125,7 +127,7 @@ export default function FilterPanel({
         <div className="flex-grow overflow-y-auto p-6 flex flex-col gap-8">
           {/* Section 1: Genres */}
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Genres</span>
+            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">{t('filter.genres')}</span>
             <div className="flex flex-wrap gap-2">
               {GENRES.map((genre) => (
                 <GenreTag
@@ -140,7 +142,7 @@ export default function FilterPanel({
 
           {/* Section 2: Campus Locations */}
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Campus Location</span>
+            <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">{t('filter.campus_location')}</span>
             <div className="flex flex-col gap-3">
               {BRANCHES.map((branch) => (
                 <label
@@ -171,8 +173,8 @@ export default function FilterPanel({
           {/* Section 4: Availability */}
           <div className="flex items-center justify-between p-4 rounded-xl border border-[#C5C6CD] dark:border-neutral-800 bg-white dark:bg-neutral-800 shadow-xs">
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Available Only</span>
-              <span className="text-xs text-[#75777D] dark:text-neutral-400 font-inter">Hide books currently out of stock</span>
+              <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">{t('filter.available_only')}</span>
+              <span className="text-xs text-[#75777D] dark:text-neutral-400 font-inter">{t('filter.hide_out_of_stock')}</span>
             </div>
             <ToggleSwitch
               checked={availableOnly}

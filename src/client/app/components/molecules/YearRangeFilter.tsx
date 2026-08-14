@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface YearRangeFilterProps {
   startYear: string;
@@ -15,6 +16,7 @@ export default function YearRangeFilter({
   onEndYearChange,
   onYearSubmit
 }: YearRangeFilterProps) {
+  const { t } = useI18n();
   // Helper to intercept the Enter key press
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -24,11 +26,11 @@ export default function YearRangeFilter({
   };
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">Publication Year</span>
+      <span className="text-sm font-semibold text-[#091426] dark:text-neutral-200 font-inter">{t('filter.publication_year')}</span>
       <div className="flex items-center gap-2">
         <input
           type="number"
-          placeholder="Min Year"
+          placeholder={t('filter.min_year')}
           value={startYear}
           onChange={(e) => onStartYearChange(e.target.value)}
           onKeyDown={handleKeyDown} // <--- Triggers on Enter
@@ -40,7 +42,7 @@ export default function YearRangeFilter({
         <span className="text-gray-400 font-inter text-sm">—</span>
         <input
           type="number"
-          placeholder="Max Year"
+          placeholder={t('filter.max_year')}
           value={endYear}
           onChange={(e) => onEndYearChange(e.target.value)}
           onKeyDown={handleKeyDown} // <--- Triggers on Enter

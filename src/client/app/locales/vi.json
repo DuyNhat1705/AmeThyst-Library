@@ -1,5 +1,7 @@
 {
   "navbar": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
     "library": "Thư viện",
     "search": "Tìm kiếm",
     "dashboard": "Bảng điều khiển",
@@ -87,6 +89,18 @@
   "searchbar": {
     "placeholder": "Tìm kiếm...",
     "filter": "Lọc"
+  },
+  "filter": {
+    "filters": "Bộ lọc",
+    "reset_all": "Đặt lại tất cả",
+    "close_panel": "Đóng bảng điều khiển",
+    "genres": "Thể loại",
+    "campus_location": "Địa điểm cơ sở",
+    "publication_year": "Năm xuất bản",
+    "min_year": "Năm tối thiểu",
+    "max_year": "Năm tối đa",
+    "available_only": "Chỉ còn hàng",
+    "hide_out_of_stock": "Ẩn sách hiện hết hàng"
   },
   "auth": {
     "login_title": "Chào mừng trở lại",
@@ -269,6 +283,9 @@
   },
   "dashboard": {
     "welcome": "CHÀO MỪNG TRỞ LẠI, {name}!",
+    "error_title": "Không thể tải trang tổng quan này",
+    "error_message": "Trang đã gặp lỗi không mong muốn. Dữ liệu của bạn không bị thay đổi.",
+    "error_retry": "Thử lại",
     "sidebar_overview": "Lịch & Tổng quan",
     "sidebar_borrowed": "Sách đã mượn",
     "sidebar_study_groups": "Nhóm học tập",
@@ -363,11 +380,9 @@
     "borrowed_condition_lost": "Mất sách",
     "borrowed_condition_combined": "Kết hợp",
     "borrowed_no_books": "Không tìm thấy sách",
-    "legend_book_return": "Trả sách",
+    "legend_pickup_due": "Đến hạn nhận sách",
+    "legend_return_due": "Đến hạn trả sách",
     "legend_room_reservation": "Đặt phòng",
-    "legend_study_group": "Nhóm học",
-    "legend_pin_expiry": "Hết hạn PIN",
-    "legend_reservation_expiry": "Hết hạn đặt chỗ",
     "agenda_title": "LỊCH TRÌNH SẮP TỚI",
     "agenda_today": "Hôm nay",
     "agenda_tomorrow": "Ngày mai",
@@ -1136,6 +1151,10 @@
   },
   "verification": {
     "borrower_section": "Thông tin độc giả",
+    "borrower_gender": "Giới tính",
+    "borrower_phone": "Điện thoại",
+    "borrower_email": "Email",
+    "borrower_birth": "Ngày sinh",
     "books_section": "Sách đã đăng ký",
     "eligibility_eligible": "Đủ điều kiện",
     "eligibility_suspended": "Vi phạm quá hạn / Tạm ngưng",

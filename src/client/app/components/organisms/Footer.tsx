@@ -13,12 +13,10 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="flex flex-col gap-6 col-span-1 md:col-span-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-teal rounded-lg flex items-center justify-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 21L1 12L12 3L23 12L12 21ZM12 18.27L19.53 12L12 5.73L4.47 12L12 18.27Z" fill="white"/>
-                </svg>
-              </div>
-              <span className="text-xl font-manrope font-bold">LIMA</span>
+              <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex flex-col items-start w-fit">
+                <path d="M4 21.3333V12H6.66667V21.3333H4ZM12 21.3333V12H14.6667V21.3333H12ZM0 26.6667V24H26.6667V26.6667H0ZM20 21.3333V12H22.6667V21.3333H20ZM0 9.33333V6.66667L13.3333 0L26.6667 6.66667V9.33333H0Z" fill="white" />
+              </svg>
+              <span className="text-[#FFF] font-inter text-2xl font-bold leading-8 w-fit tracking-[-0.025em]">LIMA</span>
             </div>
             <p className="text-[#A1A3A9] font-inter text-sm leading-relaxed">
               {t('footer.tagline')}
