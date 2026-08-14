@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import BookCard from '../molecules/BookCard';
 import EmptySearchResults from '../molecules/EmptySearchResults';
 import { useI18n } from '../../providers/I18nProvider';
-import { apiFetch } from '../../utils/apiClient';
+import { apiFetch, safeFetch } from '../../utils/apiClient';
 
 interface Book {
   id: string;
@@ -120,8 +120,8 @@ export default function PopularPublishes({
           params.set('page', currentPage.toString());
           params.set('limit', limit.toString());
 
-          const res = await fetch(`${apiUrl}/api/library/books?${params.toString()}`);
-          if (res.ok) {
+          const res = await safeFetch(`${apiUrl}/api/library/books?${params.toString()}`);
+          if (res && res.ok) {
             const data = await res.json();
             setBooks(data.books || []);
             setTotalPages(data.totalPages || 1);

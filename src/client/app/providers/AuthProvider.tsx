@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { setCurrentUser, type StoredUser } from '../utils/user';
-import { reportNetworkError, reportNetworkRecovery } from '../utils/apiClient';
+import { safeFetch } from '../utils/apiClient';
 
 interface AuthState { user: StoredUser | null; loading: boolean; refresh: () => Promise<void> }
 const AuthContext = createContext<AuthState>({ user: null, loading: true, refresh: async () => undefined });
@@ -13,21 +13,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const refresh = useCallback(async () => {
     try {
-      let response = await fetch(`${apiUrl}/auth/me`, { credentials: 'include' });
+      let response = await safeFetch(`${apiUrl}/auth/me`, { credentials: 'include' });
+      if (!response) { setUser(null); setCurrentUser(null); return; }
       if (response.status === 401) {
         const csrf = document.cookie.split('; ').find((item) => item.startsWith('amethyst_csrf='))?.split('=')[1];
-        const refreshed = await fetch(`${apiUrl}/auth/refresh`, {
+        const refreshed = await safeFetch(`${apiUrl}/auth/refresh`, {
           method: 'POST',
           credentials: 'include',
           headers: csrf ? { 'X-CSRF-Token': decodeURIComponent(csrf) } : {},
         });
-        if (refreshed.ok) response = await fetch(`${apiUrl}/auth/me`, { credentials: 'include' });
+        if (refreshed && refreshed.ok) response = await safeFetch(`${apiUrl}/auth/me`, { credentials: 'include' });
       }
       const body = response.ok ? await response.json() : null;
       const next = body?.data || null;
       setUser(next); setCurrentUser(next);
-      reportNetworkRecovery();
-    } catch { setUser(null); setCurrentUser(null); reportNetworkError(); }
+    } catch { setUser(null); setCurrentUser(null); }
   }, []);
   useEffect(() => {
     sessionStorage.removeItem('token');

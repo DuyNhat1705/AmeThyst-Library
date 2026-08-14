@@ -29,7 +29,7 @@ const reportNetworkEvent = (type: 'network-error' | 'network-recovered') => {
 export const reportNetworkError = () => reportNetworkEvent('network-error');
 export const reportNetworkRecovery = () => reportNetworkEvent('network-recovered');
 
-const safeFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response | null> => {
+export const safeFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response | null> => {
   try {
     const response = await fetch(input, init);
     reportNetworkRecovery();

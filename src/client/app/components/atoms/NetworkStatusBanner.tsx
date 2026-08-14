@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const PROBE_TIMEOUT_MS = 8000;
 
 const isLocalhostApi = () => {
   try {
@@ -23,12 +24,32 @@ export default function NetworkStatusBanner() {
   const localApi = isLocalhostApi();
 
   useEffect(() => {
+    let probeController: AbortController | null = null;
+
+    const probeConnection = () => {
+      probeController?.abort();
+      probeController = new AbortController();
+      const timer = setTimeout(() => probeController?.abort(), PROBE_TIMEOUT_MS);
+      fetch(`${API_URL}/auth/csrf`, { credentials: 'include', signal: probeController.signal })
+        .then(() => setApiDown(false))
+        .catch(() => setApiDown(true))
+        .finally(() => clearTimeout(timer));
+    };
+
     const handleOnline = () => {
       setOffline(false);
       setApiDown(false);
     };
     const handleOffline = () => setOffline(true);
-    const handleNetworkError = () => setApiDown(true);
+    const handleNetworkError = () => {
+      // A request failed without an HTTP response. Confirm connectivity with a
+      // direct probe before showing anything, so transient failures don't flash.
+      setApiDown((down) => {
+        if (down) return true;
+        probeConnection();
+        return false;
+      });
+    };
     const handleNetworkRecovered = () => setApiDown(false);
 
     window.addEventListener('online', handleOnline);
@@ -37,6 +58,7 @@ export default function NetworkStatusBanner() {
     window.addEventListener('network-recovered', handleNetworkRecovered);
 
     return () => {
+      probeController?.abort();
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('network-error', handleNetworkError);
