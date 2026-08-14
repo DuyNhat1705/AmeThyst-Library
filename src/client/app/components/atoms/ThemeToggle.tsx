@@ -10,7 +10,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground dark:text-neutral-200 transition-all duration-200 focus:outline-none flex items-center justify-center cursor-pointer"
+      className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground dark:text-neutral-200 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006F66] dark:focus-visible:outline-[#FFB95F] flex items-center justify-center cursor-pointer"
       aria-label={t('navbar.theme_aria_label')}
       title={theme === 'dark' ? t('navbar.theme_tooltip_light') : t('navbar.theme_tooltip_dark')}
     >

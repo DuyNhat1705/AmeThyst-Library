@@ -166,11 +166,9 @@ export default function DashboardCalendar({ events = [], onMonthChange }: Dashbo
           </div>
           <div className="flex items-center gap-6 pt-6 border-t border-[#E8E2D5] dark:border-neutral-700 flex-wrap">
             {[
-              { label: t('dashboard.legend_book_return'), color: 'bg-[#061D32]' },
+              { label: t('dashboard.legend_pickup_due'), color: 'bg-[#E37400]' },
+              { label: t('dashboard.legend_return_due'), color: 'bg-[#061D32]' },
               { label: t('dashboard.legend_room_reservation'), color: 'bg-[#2F6FA3]' },
-              { label: t('dashboard.legend_study_group'), color: 'bg-[#6E5191]' },
-              { label: t('dashboard.legend_pin_expiry'), color: 'bg-[#BA1A1A]' },
-              { label: t('dashboard.legend_reservation_expiry'), color: 'bg-[#E37400]' },
             ].map((item) => (
               <CalendarLegendItem key={item.label} label={item.label} color={item.color} />
             ))}

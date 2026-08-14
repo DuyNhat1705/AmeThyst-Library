@@ -132,7 +132,7 @@ describe('Study Group Service - critical business rules', () => {
 
   describe('Test 1 - Atomic group creation', { tags: '@SG_1' }, () => {
     it('[TC-SRV-SG-001] creates the reservation before the group and links the generated reserveId', async () => {
-      model.findSlotForCreation.mockResolvedValue({ capacity: 4 });
+      model.findSlotForCreation.mockResolvedValue({ capacity: 4, occupied: false });
       model.insertReservation.mockResolvedValue({ reserveId: 'reserve-1' });
       model.insertStudyGroup.mockResolvedValue({ groupId });
 

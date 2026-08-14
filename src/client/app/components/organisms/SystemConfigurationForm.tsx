@@ -183,11 +183,11 @@ export default function SystemConfigurationForm() {
         </p>
         <div className="flex items-center gap-3">
           {status === 'conflict' && (
-            <button type="button" className="font-hankenGrotesk text-xs font-bold tracking-[0.05em] text-slate-700 underline underline-offset-4 dark:text-neutral-200" onClick={() => void loadConfiguration()}>
+            <button type="button" className="font-hankenGrotesk text-xs font-bold tracking-[0.05em] text-slate-700 underline underline-offset-4 transition-colors hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white" onClick={() => void loadConfiguration()}>
               {t('admin.system_configuration.actions.reload')}
             </button>
           )}
-          <button type="button" className="font-hankenGrotesk text-xs font-bold tracking-[0.05em] text-slate-700 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-40 dark:text-neutral-200" disabled={!dirty || status === 'saving'} onClick={discard}>
+          <button type="button" className="font-hankenGrotesk text-xs font-bold tracking-[0.05em] text-slate-700 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-40 transition-colors hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white" disabled={!dirty || status === 'saving'} onClick={discard}>
             {t('admin.system_configuration.actions.discard')}
           </button>
         </div>

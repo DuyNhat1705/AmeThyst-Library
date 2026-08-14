@@ -284,7 +284,7 @@ export default function StudyTogetherPage({ initialGroupId = null }: StudyTogeth
 
           {/* Content */}
           {loading && <p role="status" className="py-20 text-center text-[#75777D] dark:text-gray-400">{t('study_group.loading')}</p>}
-          {loadError && <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/30 dark:text-red-200">{loadError}<button onClick={() => void loadGroups()} className="ml-3 underline">{t('study_group.retry')}</button></div>}
+          {loadError && <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/30 dark:text-red-200">{loadError}<button onClick={() => void loadGroups()} className="ml-3 underline transition-opacity hover:opacity-70">{t('study_group.retry')}</button></div>}
           {!loading && !loadError && <StudyGroupGrid
             groups={displayedGroups} 
             onJoinGroup={handleJoinGroup}

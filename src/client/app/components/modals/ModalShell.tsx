@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 interface ModalShellProps {
   title: string;
@@ -17,13 +17,69 @@ export default function ModalShell({
   footer,
   closeLabel,
 }: ModalShellProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Focus the dialog on open so keyboard users start inside it
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      const focusable = dialog.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      // Trap Tab focus inside the dialog
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
     <div
       className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in"
       role="dialog"
       aria-modal="true"
+      aria-label={title}
     >
-      <div className="bg-white dark:bg-neutral-800 border-2 border-neutral-800 dark:border-neutral-700 rounded-lg max-w-lg w-full overflow-hidden shadow-2xl relative">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
+        className="bg-white dark:bg-neutral-800 border-2 border-neutral-800 dark:border-neutral-700 rounded-lg max-w-lg w-full overflow-hidden shadow-2xl relative focus:outline-none"
+      >
         {/* Header */}
         <div className="bg-[#F8F3E9] dark:bg-neutral-700 border-b border-neutral-300 dark:border-neutral-600 p-4 flex justify-between items-center">
           <h3 className="font-manrope text-sm font-black text-neutral-800 dark:text-neutral-100 uppercase tracking-wider">

@@ -490,7 +490,7 @@ export default function RoomDetailPanel({ isOpen, onClose, roomId, branchId }: R
                                           {groupRequirements.length > 1 && <button type="button" onClick={() => setGroupRequirements((items) => items.filter((_, itemIndex) => itemIndex !== index))} className="rounded-md px-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" aria-label={t('room.remove_requirement')}>×</button>}
                                         </div>
                                       ))}
-                                      {groupRequirements.length < 5 && <button type="button" onClick={() => setGroupRequirements((items) => [...items, ''])} className="text-xs font-semibold text-cyan-700 dark:text-cyan-300">{t('room.add_requirement')}</button>}
+                                      {groupRequirements.length < 5 && <button type="button" onClick={() => setGroupRequirements((items) => [...items, ''])} className="text-xs font-semibold text-cyan-700 dark:text-cyan-300 transition-colors hover:text-cyan-800 dark:hover:text-cyan-200">{t('room.add_requirement')}</button>}
                                     </div>
                                   </fieldset>
                                 )}

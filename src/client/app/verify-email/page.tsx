@@ -131,12 +131,13 @@ function VerifyEmailContent() {
 }
 
 export default function VerifyEmailPage() {
+  const { t } = useI18n();
   return (
     <RegisterTemplate>
       <Suspense fallback={
         <div className="w-full max-w-[380px] flex flex-col gap-6 items-center text-center py-4">
           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent dark:border-blue-400 dark:border-t-transparent rounded-full animate-spin mb-2" />
-          <h2 className="text-2xl font-semibold tracking-[-0.01em]">Verify Email</h2>
+          <h2 className="text-2xl font-semibold tracking-[-0.01em]">{t('auth.verify_email_title')}</h2>
         </div>
       }>
         <VerifyEmailContent />

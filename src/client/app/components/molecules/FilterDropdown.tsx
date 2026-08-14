@@ -41,7 +41,7 @@ export default function FilterDropdown({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex pt-[13px] pr-10 pb-[13px] pl-6 items-center rounded-xl border border-[#E8E2D5] dark:border-neutral-600 bg-white dark:bg-neutral-800 text-[#1D1C16] dark:text-neutral-200 font-manrope text-base cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#091426] dark:focus:ring-white w-full whitespace-nowrap"
+        className="flex pt-[13px] pr-10 pb-[13px] pl-6 items-center rounded-xl border border-[#E8E2D5] dark:border-neutral-600 bg-white dark:bg-neutral-800 text-[#1D1C16] dark:text-neutral-200 font-manrope text-base cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#091426] dark:focus:ring-white w-full whitespace-nowrap transition-colors hover:bg-[#F8F3E9] dark:hover:bg-neutral-700"
       >
         <span className="truncate">{selectedLabel}</span>
       </button>

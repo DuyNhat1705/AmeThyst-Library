@@ -63,14 +63,22 @@ const SUMMARY_FROM = `
   JOIN users u ON u.user_id = sg.created_by
 `;
 
-export const findSlotForCreation = async (availId, client) => {
+export const findSlotForCreation = async (availId, startDate, client) => {
   const result = await query(`
     SELECT ra.avail_id AS "availId", ra.start_time AS "startTime", ra.end_time AS "endTime",
       sr.room_id AS "roomId", sr.capacity, sr.room_name AS "roomName"
     FROM room_avail ra JOIN study_room sr ON sr.room_id = ra.room_id
-    WHERE ra.avail_id = $1 FOR SHARE
+    WHERE ra.avail_id = $1 FOR UPDATE
   `, [availId], client);
-  return result.rows[0] || null;
+  const slot = result.rows[0] || null;
+  if (!slot) return slot;
+  const occupied = await query(`
+    SELECT reserve_id FROM reserve_room
+    WHERE avail_id = $1 AND start_date = $2
+      AND status = ANY($3::text[])
+    LIMIT 1
+  `, [availId, startDate, ACTIVE_RESERVATION_STATUSES], client);
+  return { ...slot, occupied: Boolean(occupied.rows[0]) };
 };
 
 export const insertReservation = async ({ userId, availId, startDate }, client) => {

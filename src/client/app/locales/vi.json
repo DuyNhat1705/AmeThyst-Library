@@ -1,5 +1,7 @@
 {
   "navbar": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
     "library": "Thư viện",
     "search": "Tìm kiếm",
     "dashboard": "Bảng điều khiển",
@@ -18,10 +20,13 @@
     "announcement_published": "Đã đăng",
     "announcement_expires": "Hết hạn"
   },
-  "landing": {
+"landing": {
     "title": "Thư viện AmeThyst",
-    "subtitle": "Cổng kết nối của bạn tới thế giới tri thức. Khám phá bộ sưu tập phong phú của chúng tôi, quản lý hồ sơ cá nhân và tham gia cộng đồng sôi nổi.",
+    "subtitle": "Cổng tri thức của bạn. Khám phá bộ sưu tập phong phú, quản lý hồ sơ của bạn và tham gia cộng đồng sôi động của chúng tôi.",
     "explore": "Khám phá thư viện"
+  },
+  "network": {
+    "error": "Lỗi kết nối mạng. Vui lòng kiểm tra kết nối của bạn và thử lại."
   },
   "library": {
     "title": "Thư viện",
@@ -72,6 +77,7 @@
     "all_books": "Tất cả sách",
     "categories": "Danh mục",
     "new_arrivals": "Sách mới",
+    "library_map": "Bản đồ thư viện",
     "study_groups": "Nhóm học tập",
     "events": "Sự kiện",
     "forums": "Diễn đàn",
@@ -85,6 +91,18 @@
     "filter": "Lọc",
     "recent_searches": "Tìm kiếm gần đây",
     "no_recent_searches": "Không có tìm kiếm nào gần đây"
+  },
+  "filter": {
+    "filters": "Bộ lọc",
+    "reset_all": "Đặt lại tất cả",
+    "close_panel": "Đóng bảng điều khiển",
+    "genres": "Thể loại",
+    "campus_location": "Địa điểm cơ sở",
+    "publication_year": "Năm xuất bản",
+    "min_year": "Năm tối thiểu",
+    "max_year": "Năm tối đa",
+    "available_only": "Chỉ còn hàng",
+    "hide_out_of_stock": "Ẩn sách hiện hết hàng"
   },
   "auth": {
     "login_title": "Chào mừng trở lại",
@@ -267,6 +285,9 @@
   },
   "dashboard": {
     "welcome": "CHÀO MỪNG TRỞ LẠI, {name}!",
+    "error_title": "Không thể tải trang tổng quan này",
+    "error_message": "Trang đã gặp lỗi không mong muốn. Dữ liệu của bạn không bị thay đổi.",
+    "error_retry": "Thử lại",
     "sidebar_overview": "Lịch & Tổng quan",
     "sidebar_borrowed": "Sách đã mượn",
     "sidebar_study_groups": "Nhóm học tập",
@@ -361,11 +382,9 @@
     "borrowed_condition_lost": "Mất sách",
     "borrowed_condition_combined": "Kết hợp",
     "borrowed_no_books": "Không tìm thấy sách",
-    "legend_book_return": "Trả sách",
+    "legend_pickup_due": "Đến hạn nhận sách",
+    "legend_return_due": "Đến hạn trả sách",
     "legend_room_reservation": "Đặt phòng",
-    "legend_study_group": "Nhóm học",
-    "legend_pin_expiry": "Hết hạn PIN",
-    "legend_reservation_expiry": "Hết hạn đặt chỗ",
     "agenda_title": "LỊCH TRÌNH SẮP TỚI",
     "agenda_today": "Hôm nay",
     "agenda_tomorrow": "Ngày mai",
@@ -1145,6 +1164,10 @@
   },
   "verification": {
     "borrower_section": "Thông tin độc giả",
+    "borrower_gender": "Giới tính",
+    "borrower_phone": "Điện thoại",
+    "borrower_email": "Email",
+    "borrower_birth": "Ngày sinh",
     "books_section": "Sách đã đăng ký",
     "eligibility_eligible": "Đủ điều kiện",
     "eligibility_suspended": "Vi phạm quá hạn / Tạm ngưng",
@@ -1376,5 +1399,129 @@
     "detail_room": "Phòng",
     "detail_user": "Người dùng",
     "close": "Đóng"
+  },
+  "staticPages": {
+    "last_updated": "Cập nhật lần cuối: tháng 8 năm 2026",
+    "contact_email": "support@amethyst-library.com",
+    "contact_prompt": "Vẫn cần hỗ trợ? Liên hệ với chúng tôi tại",
+    "back_to_home": "Quay về trang chủ",
+    "help": {
+      "title": "Trung tâm hỗ trợ",
+      "subtitle": "Tất cả những gì bạn cần biết khi sử dụng Thư viện Số AmeThyst, từ việc tạo tài khoản đến mượn sách và tham gia nhóm học tập.",
+      "sections": [
+        {
+          "heading": "Bắt đầu",
+          "body": "Tạo tài khoản miễn phí bằng địa chỉ email của bạn trên trang Đăng ký. Bạn sẽ nhận được email xác minh - hãy nhấp vào liên kết bên trong để kích hoạt tài khoản trước khi đăng nhập.\nNếu quên mật khẩu, bạn có thể dùng tùy chọn Quên mật khẩu trên trang Đăng nhập để yêu cầu liên kết đặt lại an toàn."
+        },
+        {
+          "heading": "Duyệt & Tìm kiếm thư viện",
+          "body": "Duyệt toàn bộ danh mục trên trang Thư viện, hoặc tìm kiếm theo tiêu đề, tác giả, nhà xuất bản, hoặc ISBN bằng Tìm kiếm chuẩn. Tìm kiếm ngữ nghĩa hiểu được khái niệm và chủ đề, giúp bạn tìm sách ngay cả khi không nhớ chính xác tiêu đề.\nDùng bảng lọc để thu hẹp kết quả theo thể loại, chi nhánh, tình trạng sẵn có và năm xuất bản."
+        },
+        {
+          "heading": "Đặt chỗ & Mượn sách",
+          "body": "Khi tìm thấy sách còn bản tại chi nhánh, hãy đăng nhập và chọn Đặt để nhận. Việc đặt chỗ được xác nhận bằng mã PIN 6 chữ số để bạn chia sẻ với thủ thư tại quầy.\nHãy nhận sách trước khi mã PIN hết hạn. Sách mượn có thời hạn trả 14 ngày sau khi nhận."
+        },
+        {
+          "heading": "Trả sách & Phí phạt",
+          "body": "Để trả sách, hãy tạo mã PIN trả sách từ trang Sách đã mượn và đưa cho thủ thư. Tình trạng sách sẽ được kiểm tra khi trả.\nSách trả trễ, hư hỏng hoặc thất lạc có thể phát sinh phí theo chính sách thư viện. Bạn có thể xem và thanh toán phí từ trang Phí trong bảng điều khiển."
+        },
+        {
+          "heading": "Nhóm học tập",
+          "body": "Dùng Học cùng nhau để tạo hoặc tham gia nhóm học tập. Người tổ chức có thể mời thành viên qua email, phê duyệt yêu cầu và quản lý sức chứa.\nBạn có thể hủy yêu cầu tham gia đang chờ hoặc rời nhóm bất cứ lúc nào từ bảng điều khiển Nhóm học."
+        },
+        {
+          "heading": "Không gian & Phòng học",
+          "body": "Đặt phòng học qua bảng điều khiển phòng và check-in bằng mã PIN phòng khi đến. Tình trạng phòng và lượt đặt được hiển thị trực tiếp trên Bản đồ thư viện."
+        },
+        {
+          "heading": "Tài khoản & Hồ sơ",
+          "body": "Cập nhật thông tin cá nhân, đổi mật khẩu và quản lý ảnh đại diện từ trang Hồ sơ. Hãy giữ thông tin liên hệ được cập nhật để thư viện liên hệ bạn về đặt chỗ và phí phạt."
+        },
+        {
+          "heading": "Liên hệ hỗ trợ",
+          "body": "Vẫn gặp khó khăn? Liên hệ đội ngũ hỗ trợ thư viện tại support@amethyst-library.com. Chúng tôi thường phản hồi trong vòng một ngày làm việc."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật",
+      "subtitle": "Cách Thư viện Số AmeThyst thu thập, sử dụng và bảo vệ thông tin của bạn.",
+      "sections": [
+        {
+          "heading": "Thông tin chúng tôi thu thập",
+          "body": "Chúng tôi thu thập thông tin bạn cung cấp khi tạo tài khoản, bao gồm tên, địa chỉ email, số điện thoại và giới tính. Bạn cũng có thể thêm ảnh đại diện.\nTrong quá trình sử dụng thư viện, chúng tôi ghi nhận lịch sử mượn, đặt chỗ, phí phạt và hoạt động nhóm học của bạn để cung cấp dịch vụ."
+        },
+        {
+          "heading": "Cách chúng tôi sử dụng thông tin",
+          "body": "Thông tin của bạn được dùng để vận hành thư viện: xác thực tài khoản, xử lý đặt chỗ và mượn sách, tính phí, gửi thông báo và cá nhân hóa gợi ý.\nChúng tôi dùng dữ liệu tổng hợp và ẩn danh để cải thiện kết quả tìm kiếm và hoạt động thư viện."
+        },
+        {
+          "heading": "Chia sẻ thông tin",
+          "body": "Chúng tôi không bán thông tin cá nhân của bạn. Dữ liệu hạn chế được chia sẻ với thủ thư để thực hiện các dịch vụ như xác minh nhận sách và trả sách, cùng với các nhà cung cấp dịch vụ hỗ trợ vận hành nền tảng theo thỏa thuận bảo mật chặt chẽ."
+        },
+        {
+          "heading": "Cookie & Lưu trữ cục bộ",
+          "body": "Chúng tôi sử dụng bộ nhớ cục bộ của trình duyệt để ghi nhớ tùy chọn ngôn ngữ, giao diện và giữ bạn đăng nhập trong phiên. Bạn có thể xóa dữ liệu này bất cứ lúc nào trong cài đặt trình duyệt."
+        },
+        {
+          "heading": "Lưu giữ & Bảo mật dữ liệu",
+          "body": "Chúng tôi lưu giữ hồ sơ tài khoản và hoạt động khi tài khoản còn hoạt động và theo quy định pháp luật. Chúng tôi dùng mã hóa, kiểm soát truy cập và phân quyền theo vai trò để bảo vệ dữ liệu.\nHồ sơ mượn và phí phạt được lưu giữ theo chính sách thư viện."
+        },
+        {
+          "heading": "Quyền & Lựa chọn của bạn",
+          "body": "Bạn có thể truy cập, chỉnh sửa hoặc cập nhật hồ sơ bất cứ lúc nào và có thể yêu cầu xóa tài khoản bằng cách liên hệ hỗ trợ.\nBạn có thể từ chối các thông báo không thiết yếu trong khi vẫn nhận được các thông báo quan trọng về tài khoản."
+        },
+        {
+          "heading": "Thay đổi & Liên hệ",
+          "body": "Chúng tôi có thể cập nhật chính sách này theo thời gian và sẽ thông báo các thay đổi quan trọng trên nền tảng.\nCó thắc mắc về quyền riêng tư? Liên hệ chúng tôi tại support@amethyst-library.com."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Điều khoản dịch vụ",
+      "subtitle": "Các quy tắc chi phối việc bạn sử dụng Thư viện Số AmeThyst.",
+      "sections": [
+        {
+          "heading": "Chấp nhận điều khoản",
+          "body": "Khi tạo tài khoản hoặc sử dụng Thư viện Số AmeThyst, bạn đồng ý với các Điều khoản dịch vụ này. Nếu không đồng ý, vui lòng không sử dụng nền tảng."
+        },
+        {
+          "heading": "Tài khoản & Điều kiện",
+          "body": "Bạn phải cung cấp thông tin chính xác khi tạo tài khoản và giữ thông tin đăng nhập an toàn. Bạn chịu trách nhiệm cho mọi hoạt động dưới tài khoản của mình.\nThư viện phục vụ sinh viên và thành viên cộng đồng AmeThyst. Tài khoản có thể bị đình chỉ nếu lạm dụng."
+        },
+        {
+          "heading": "Sử dụng hợp lệ",
+          "body": "Bạn đồng ý không lạm dụng nền tảng, bao gồm việc cố truy cập tài khoản của người khác, làm gián đoạn dịch vụ hoặc dùng thư viện cho mục đích bất hợp pháp.\nVui lòng tuân theo hướng dẫn của nhân viên thư viện và tôn trọng tài sản thư viện."
+        },
+        {
+          "heading": "Dịch vụ thư viện & Mượn sách",
+          "body": "Việc đặt chỗ và mượn sách phụ thuộc vào tình trạng sẵn có và chính sách chi nhánh. Bạn cần xuất trình mã PIN nhận sách để lấy sách và mã PIN trả sách để trả sách.\nSách mượn phải được trả đúng hạn. Trả trễ, hư hỏng hoặc thất lạc có thể phát sinh phí phạt."
+        },
+        {
+          "heading": "Phí phạt & Thanh toán",
+          "body": "Phí cho tài liệu trả trễ, hư hỏng hoặc thất lạc được tính theo chính sách công bố của thư viện và phải được thanh toán trước khi mượn tiếp.\nNếu bạn cho rằng phí không chính xác, hãy phản ánh ngay với nhân viên thư viện."
+        },
+        {
+          "heading": "Nhóm học & Cộng đồng",
+          "body": "Nhóm học là không gian do người dùng tạo ra. Người tổ chức quản lý nhóm và thành viên phải ứng xử tôn trọng. Thư viện có thể gỡ các nhóm vi phạm các điều khoản này."
+        },
+        {
+          "heading": "Sở hữu trí tuệ",
+          "body": "Tên, biểu trưng và nội dung nền tảng Thư viện AmeThyst thuộc về chủ sở hữu tương ứng. Dữ liệu sách được cung cấp cho mục đích cá nhân, phi thương mại."
+        },
+        {
+          "heading": "Trách nhiệm & Tuyên bố miễn trừ",
+          "body": "Nền tảng được cung cấp nguyên trạng mà không có bất kỳ bảo hành nào. Thư viện không chịu trách nhiệm cho các thiệt hại gián tiếp phát sinh từ việc sử dụng dịch vụ.\nChúng tôi hướng tới độ khả dụng cao nhưng không đảm bảo truy cập liên tục."
+        },
+        {
+          "heading": "Chấm dứt",
+          "body": "Chúng tôi có thể đình chỉ hoặc chấm dứt tài khoản vi phạm các điều khoản này. Bạn có thể đóng tài khoản bất cứ lúc nào bằng cách liên hệ hỗ trợ."
+        },
+        {
+          "heading": "Thay đổi & Luật áp dụng",
+          "body": "Chúng tôi có thể cập nhật các điều khoản này khi nền tảng phát triển. Việc tiếp tục sử dụng sau khi thay đổi được coi là chấp nhận.\nCác điều khoản này được điều chỉnh bởi luật áp dụng và mọi tranh chấp sẽ được giải quyết tại tòa án có thẩm quyền."
+        }
+      ]
+    }
   }
 }

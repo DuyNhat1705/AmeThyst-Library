@@ -109,7 +109,7 @@ export const verifyReturnPin = async (pin, branchId) => {
       author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
       publisher: record.book_publisher,
       genres: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
-      image_url: record.image_url,
+      image_url: record.book_image_url,
       price: record.book_price
     },
     borrowing: {
@@ -475,11 +475,12 @@ export const findBorrowRecordByPin = async (pin, status = 'pending', branchId = 
       u.phone_number,
       u.email,
       u.birth_date,
+      u.avatar,
       b.title as book_title,
       b.author as book_author,
       b.publisher as book_publisher,
       b.genres as book_genres,
-      b.image_url,
+      b.image_url as book_image_url,
       b.price as book_price
     FROM public.borrow_book bb
     JOIN public.users u ON bb.user_id = u.user_id
@@ -566,14 +567,16 @@ export const verifyPin = async (pin, librarianBranchId) => {
       username: record.username,
       gender: record.gender,
       phone_number: record.phone_number,
-      email: record.email
+      email: record.email,
+      avatar: record.avatar || null
     },
     book: {
       title: record.book_title,
       author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
       publisher: record.book_publisher,
       genre: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
-      price: record.book_price
+      price: record.book_price,
+      image_url: record.book_image_url || null
     }
   };
 };

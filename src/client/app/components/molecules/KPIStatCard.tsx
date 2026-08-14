@@ -34,11 +34,14 @@ export default function KPIStatCard({
         ? 'border-l-emerald-500'
         : 'border-l-[#C4C6CD] dark:border-l-neutral-600';
 
-  return (
-    <div
-      onClick={onClick}
-      className={`flex flex-col gap-3 p-5 rounded-xl border border-[#E8E2D5] dark:border-neutral-700 bg-white dark:bg-neutral-800 border-l-4 ${borderColor} shadow-sm cursor-pointer transition-shadow hover:shadow-md`}
-    >
+  const cardClasses = `flex flex-col gap-3 p-5 rounded-xl border border-[#E8E2D5] dark:border-neutral-700 bg-white dark:bg-neutral-800 border-l-4 ${borderColor} shadow-sm ${
+    onClick
+      ? 'cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006F66] dark:focus-visible:outline-[#FFB95F]'
+      : ''
+  }`;
+
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#F8F3E9] dark:bg-neutral-700">
           {icon}
@@ -60,6 +63,16 @@ export default function KPIStatCard({
           bgColor="bg-[#F2EDE3] dark:bg-neutral-700"
         />
       )}
-    </div>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={`${cardClasses} w-full text-left`}>
+        {content}
+      </button>
+    );
+  }
+
+  return <div className={cardClasses}>{content}</div>;
 }

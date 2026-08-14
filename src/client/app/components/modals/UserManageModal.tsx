@@ -40,7 +40,7 @@ export default function UserManageModal({
       <button
         type="button"
         onClick={onClose}
-        className="px-4 py-2 border border-neutral-300 dark:border-neutral-500 bg-white dark:bg-neutral-800 text-xs font-extrabold rounded-md text-neutral-700 dark:text-neutral-300 cursor-pointer"
+        className="px-4 py-2 border border-neutral-300 dark:border-neutral-500 bg-white dark:bg-neutral-800 text-xs font-extrabold rounded-md text-neutral-700 dark:text-neutral-300 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
       >
         {t("admin.button_cancel")}
       </button>

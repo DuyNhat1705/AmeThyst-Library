@@ -89,7 +89,7 @@ export default function UserDashboardPage() {
           title: group.title,
           time: `${group.reservation.startTime.slice(0, 5)} - ${group.reservation.endTime.slice(0, 5)}`,
           location: `${localizedBranchName(t, group.reservation.room.branchId, group.reservation.room.branchName)} · ${localizedRoomName(t, group.reservation.room.roomId, group.reservation.room.roomName)}`,
-          type: 'study_group',
+          type: 'room_reservation',
           date: String(group.reservation.startDate).slice(0, 10),
         }));
         const roomReservations = reservationsResult.success && reservationsResult.data
