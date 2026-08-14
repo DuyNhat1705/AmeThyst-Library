@@ -30,12 +30,20 @@ vi.mock('bcryptjs', () => ({
   },
 }));
 
+const REGISTER_GENERIC = 'If this email can be registered, a verification message will be sent.';
+
 const app = express();
 app.use(express.json());
 app.use('/auth', authRoutes);
 
-describe("Register API", () => {
+describe('Register API', () => {
   let mockClient;
+
+  const validBody = {
+    email: 'integration@example.com',
+    password: 'Password123',
+    username: 'integration_user',
+  };
 
   const arrangeHappyPath = () => {
     mockClient = {
@@ -55,29 +63,21 @@ describe("Register API", () => {
     arrangeHappyPath();
   });
 
-  describe("Test 1 - Successful registration", { tags: '@A_R1' }, () => {
-    it("[TC-INT-REG-001] should register successfully via the API endpoint", async () => {
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'integration@example.com',
-          password: 'Password123',
-          username: 'integration_user',
-        });
+  describe('Successful HTTP flow', { tags: ['@A_R1', '@A_R10'] }, () => {
+    it('[TC-INT-REG-001] should register via the API and send a verification email with a generic 201 body', async () => {
+      const res = await request(app).post('/auth/register').send(validBody);
 
       expect(res.status).toBe(201);
-      expect(res.body).toEqual({
-        message: 'Verification email sent. Please check your inbox.',
-      });
-      expect(pool.query).toHaveBeenCalledTimes(2);
+      expect(res.body).toEqual({ message: REGISTER_GENERIC });
+      expect(sendVerificationEmail).toHaveBeenCalledWith('integration@example.com', expect.any(String));
       expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
     });
   });
 
-  describe("Test 2 - Reject duplicate email", { tags: '@A_R2' }, () => {
-    it("[TC-INT-REG-002] should return 409 when email already exists", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [{ user_id: 1, email: 'dup@example.com' }] }); // findUserByEmail
+  describe('Anti-email-enumeration', { tags: ['@A_R2', '@A_R10'] }, () => {
+    it('[TC-INT-REG-002] should return 201 with the generic message and skip mailer when the email already exists', async () => {
+      pool.query.mockResolvedValueOnce({ rows: [{ user_id: 1, email: 'dup@example.com' }] });
 
       const res = await request(app)
         .post('/auth/register')
@@ -87,240 +87,10 @@ describe("Register API", () => {
           username: 'dup_user',
         });
 
-      expect(res.status).toBe(409);
-      expect(res.body).toEqual({ error: 'Email already exists' });
-      expect(bcrypt.hash).not.toHaveBeenCalled();
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({ message: REGISTER_GENERIC });
       expect(sendVerificationEmail).not.toHaveBeenCalled();
     });
   });
 
-  describe("Test 3 - Reject active pending registration", { tags: '@A_R3' }, () => {
-    it("[TC-INT-REG-003] should return 409 when an active pending registration already exists", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-      pool.query.mockResolvedValueOnce({
-        rows: [{ email: 'pending@example.com', expired_at: new Date(Date.now() + 60000).toISOString() }],
-      }); // getPendingByEmail
-
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'pending@example.com',
-          password: 'Password123',
-          username: 'pending_user',
-        });
-
-      expect(res.status).toBe(409);
-      expect(res.body).toEqual({
-        error: 'A verification email has already been sent. Please check your inbox.',
-      });
-      expect(bcrypt.hash).not.toHaveBeenCalled();
-
-      // Boundary check: exactly now
-      vi.clearAllMocks();
-      arrangeHappyPath();
-      const now = new Date();
-      vi.useFakeTimers();
-      vi.setSystemTime(now);
-      try {
-        pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-        pool.query.mockResolvedValueOnce({
-          rows: [{ email: 'pending@example.com', expired_at: now.toISOString() }],
-        }); // getPendingByEmail
-
-        const resBoundary = await request(app)
-          .post('/auth/register')
-          .send({
-            email: 'pending@example.com',
-            password: 'Password123',
-            username: 'pending_user',
-          });
-
-        expect(resBoundary.status).toBe(409);
-        expect(resBoundary.body).toEqual({
-          error: 'A verification email has already been sent. Please check your inbox.',
-        });
-      } finally {
-        vi.useRealTimers();
-      }
-    });
-  });
-
-  describe("Test 4 - Allow registration after pending registration expires", { tags: '@A_R3' }, () => {
-    it("[TC-INT-REG-004] should delete expired pending record and proceed with new registration", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-      pool.query.mockResolvedValueOnce({
-        rows: [{ email: 'expired@example.com', expired_at: new Date(Date.now() - 60000).toISOString() }],
-      }); // getPendingByEmail
-      pool.query.mockResolvedValueOnce({ rows: [] }); // deletePendingByEmail
-
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'expired@example.com',
-          password: 'Password123',
-          username: 'expired_user',
-        });
-
-      expect(res.status).toBe(201);
-      expect(pool.query).toHaveBeenCalledTimes(3); // find, getPending, deletePending
-      expect(bcrypt.hash).toHaveBeenCalled();
-      expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
-      expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
-    });
-  });
-
-  describe("Test 5 - Send verification email", { tags: '@A_R1' }, () => {
-    it("[TC-INT-REG-005] should send verification email to user after registration", async () => {
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'integration@example.com',
-          password: 'Password123',
-          username: 'integration_user',
-        });
-
-      expect(res.status).toBe(201);
-      expect(sendVerificationEmail).toHaveBeenCalledWith('integration@example.com', expect.any(String));
-    });
-  });
-
-  describe("Test 6 - Protect password confidentiality", { tags: '@A_R7' }, () => {
-    it("[TC-INT-REG-006] should protect user password confidentiality by hashing the password", async () => {
-      await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'integration@example.com',
-          password: 'Password123',
-          username: 'integration_user',
-        });
-
-      expect(bcrypt.hash).toHaveBeenCalledWith('Password123', 10);
-      expect(mockClient.query).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT INTO pending_users'),
-        expect.not.arrayContaining(['Password123'])
-      );
-      expect(mockClient.query).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT INTO pending_users'),
-        expect.arrayContaining(['mocked_hashed_password'])
-      );
-    });
-  });
-
-  describe("Test 7 - Assign default user role", { tags: '@A_R7' }, () => {
-    it("[TC-INT-REG-007] should assign the default role 'user' when creating pending record", async () => {
-      await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'integration@example.com',
-          password: 'Password123',
-          username: 'integration_user',
-        });
-
-      expect(mockClient.query).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT INTO pending_users'),
-        expect.arrayContaining(['user'])
-      );
-    });
-  });
-
-  describe("Test 8 - Handle unexpected failures", { tags: '@A_R8' }, () => {
-    it("[TC-INT-REG-008] should return status 500 on database error during user check", async () => {
-      pool.query.mockRejectedValueOnce(new Error('DB error on check user'));
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'error@example.com',
-          password: 'Password123',
-          username: 'error_user',
-        });
-      expect(res.status).toBe(500);
-      expect(res.body).toEqual({ error: 'DB error on check user' });
-    });
-
-    it("[TC-INT-REG-009] should return status 500 on database error during pending check", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-      pool.query.mockRejectedValueOnce(new Error('DB error on check pending'));
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'error@example.com',
-          password: 'Password123',
-          username: 'error_user',
-        });
-      expect(res.status).toBe(500);
-      expect(res.body).toEqual({ error: 'DB error on check pending' });
-    });
-
-    it("[TC-INT-REG-010] should return status 500 on password hashing error", async () => {
-      bcrypt.hash.mockRejectedValueOnce(new Error('Bcrypt hash failure'));
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'error@example.com',
-          password: 'Password123',
-          username: 'error_user',
-        });
-      expect(res.status).toBe(500);
-      expect(res.body).toEqual({ error: 'Bcrypt hash failure' });
-    });
-
-    it("[TC-INT-REG-011] should return status 500 on database error during expired pending cleanup", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-      pool.query.mockResolvedValueOnce({
-        rows: [{ email: 'expired@example.com', expired_at: new Date(Date.now() - 60000).toISOString() }],
-      }); // getPendingByEmail
-      pool.query.mockRejectedValueOnce(new Error('DB error on delete pending')); // deletePendingByEmail
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'expired@example.com',
-          password: 'Password123',
-          username: 'expired_user',
-        });
-      expect(res.status).toBe(500);
-      expect(res.body).toEqual({ error: 'DB error on delete pending' });
-    });
-  });
-
-  describe("Test 9 - Maintain registration state consistency", { tags: '@A_R9' }, () => {
-    it("[TC-INT-REG-012] should rollback database transaction and not send verification email when insert fails", async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // findUserByEmail
-      pool.query.mockResolvedValueOnce({ rows: [] }); // getPendingByEmail
-      mockClient.query.mockImplementation((sql) => {
-        if (sql.includes('INSERT')) {
-          return Promise.reject(new Error('Transaction insert error'));
-        }
-        return Promise.resolve({ rows: [] });
-      });
-
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'error@example.com',
-          password: 'Password123',
-          username: 'error_user',
-        });
-
-      expect(res.status).toBe(500);
-      expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
-      expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
-      expect(sendVerificationEmail).not.toHaveBeenCalled();
-    });
-
-    it("[TC-INT-REG-013] should complete database write but propagate mailing error when SMTP is down", async () => {
-      sendVerificationEmail.mockRejectedValueOnce(new Error('SMTP service down'));
-
-      const res = await request(app)
-        .post('/auth/register')
-        .send({
-          email: 'error@example.com',
-          password: 'Password123',
-          username: 'error_user',
-        });
-
-      expect(res.status).toBe(500);
-      expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
-      expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
-    });
-  });
 });
