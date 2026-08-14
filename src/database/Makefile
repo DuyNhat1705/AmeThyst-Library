@@ -54,7 +54,7 @@ apply-security-hardening:
 	docker exec -i library_postgres psql -v ON_ERROR_STOP=1 -U lib_admin -d postgres < ./init_db/postgres/08_security_hardening.sql
 
 import-memgraph:
-	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 < ./init_db/init_graph.cypherl
+	docker exec -i amethyst_memgraph mgconsole --username amethyst_admin --password AmethystMG2026 < ./init_db/memgraph/init_graph.cypherl
 
 mock-export:
 	docker exec -t library_postgres pg_dump -U lib_admin -d postgres -t users -t user_wishlist -t search_history -t borrow_book -t return_book -t recommends --clean --if-exists >> 09_mock_data.sql	

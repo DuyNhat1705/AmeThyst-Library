@@ -110,7 +110,12 @@ const createBook = async (req, res) => {
     res.status(201).json({ success: true, data: createdBook });
   } catch (error) {
     console.error('Error in createBook controller:', error);
-    res.status(500).json({ error: error.message || 'Failed to create book' });
+    const statusCode = error.statusCode || (error.code === '23505' ? 400 : 500);
+    res.status(statusCode).json({
+      success: false,
+      error: error.message || 'Failed to create book',
+      code: error.code || 'CREATE_BOOK_FAILED'
+    });
   }
 };
 
@@ -121,7 +126,12 @@ const updateBook = async (req, res) => {
     res.json({ success: true, data: updatedBook });
   } catch (error) {
     console.error('Error in updateBook controller:', error);
-    res.status(500).json({ error: error.message || 'Failed to update book' });
+    const statusCode = error.statusCode || (error.code === '23505' ? 400 : 500);
+    res.status(statusCode).json({
+      success: false,
+      error: error.message || 'Failed to update book',
+      code: error.code || 'UPDATE_BOOK_FAILED'
+    });
   }
 };
 

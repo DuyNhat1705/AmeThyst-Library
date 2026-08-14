@@ -248,7 +248,8 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to update catalog book.');
+        const errorText = typeof data.error === 'string' ? data.error : (data.error?.message || data.message || 'Failed to update catalog book.');
+        throw new Error(errorText);
       }
 
       onSuccess();

@@ -605,6 +605,16 @@ export const createBookService = async (bookData) => {
     const image_url = bookData.image_url || null;
     const price = bookData.price || 0;
 
+    if (isbn) {
+      const existingRes = await client.query('SELECT book_id, title FROM public.books WHERE isbn = $1', [isbn]);
+      if (existingRes.rows.length > 0) {
+        const dupErr = new Error(`A book with ISBN '${isbn}' already exists in the catalog ("${existingRes.rows[0].title}").`);
+        dupErr.statusCode = 400;
+        dupErr.code = 'DUPLICATE_BOOK';
+        throw dupErr;
+      }
+    }
+
     // 2. Insert into public.books
     const insertBookQuery = `
       INSERT INTO public.books (
@@ -648,6 +658,12 @@ export const createBookService = async (bookData) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error creating book in database:', error);
+    if (error.code === '23505') {
+      const dupErr = new Error(`A book with this ISBN (${bookData.isbn || 'unknown'}) already exists in the catalog.`);
+      dupErr.statusCode = 400;
+      dupErr.code = 'DUPLICATE_BOOK';
+      throw dupErr;
+    }
     throw error;
   } finally {
     client.release();
@@ -675,6 +691,16 @@ export const updateBookService = async (bookId, bookData) => {
     const genres = Array.isArray(bookData.genres) ? bookData.genres : (bookData.genres ? [bookData.genres] : []);
     const image_url = bookData.image_url || null;
     const price = bookData.price || 0;
+
+    if (isbn) {
+      const existingRes = await client.query('SELECT book_id, title FROM public.books WHERE isbn = $1 AND book_id != $2', [isbn, bookId]);
+      if (existingRes.rows.length > 0) {
+        const dupErr = new Error(`A book with ISBN '${isbn}' already exists in the catalog ("${existingRes.rows[0].title}").`);
+        dupErr.statusCode = 400;
+        dupErr.code = 'DUPLICATE_BOOK';
+        throw dupErr;
+      }
+    }
 
     const updateBookQuery = `
       UPDATE public.books
@@ -718,6 +744,12 @@ export const updateBookService = async (bookId, bookData) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating book in database:', error);
+    if (error.code === '23505') {
+      const dupErr = new Error(`Cannot update book: A book with ISBN (${bookData.isbn || 'unknown'}) already exists in the catalog.`);
+      dupErr.statusCode = 400;
+      dupErr.code = 'DUPLICATE_BOOK';
+      throw dupErr;
+    }
     throw error;
   } finally {
     client.release();

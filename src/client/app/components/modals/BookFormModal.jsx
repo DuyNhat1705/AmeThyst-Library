@@ -164,7 +164,8 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to create catalog book.');
+        const errorText = typeof data.error === 'string' ? data.error : (data.error?.message || data.message || 'Failed to create catalog book.');
+        throw new Error(errorText);
       }
 
       onSuccess();
