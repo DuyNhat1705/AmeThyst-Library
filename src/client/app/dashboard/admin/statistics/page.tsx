@@ -110,7 +110,7 @@ export default function AdminStatisticsPage() {
           {t('admin.unauthorized_access')}
         </h2>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-md">
-          This function is restricted to system administrator accounts only.
+          {t('admin.unauthorized_desc')}
         </p>
       </div>
     );
@@ -129,7 +129,7 @@ export default function AdminStatisticsPage() {
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-black/20 dark:border-white/20 border-t-black dark:border-t-white rounded-full animate-spin" />
             <span className="text-sm font-medium text-stone-500 dark:text-neutral-400">
-              Loading statistics...
+              {t('admin.loading_statistics')}
             </span>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function AdminStatisticsPage() {
             onClick={fetchStatistics}
             className="px-4 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition"
           >
-            Retry
+            {t('admin.retry')}
           </button>
         </div>
       ) : (

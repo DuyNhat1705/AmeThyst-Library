@@ -1,4 +1,4 @@
-import { createSearchHistory, addClickedBook, getSearchHistoryByUserId } from '../models/history.models.mjs';
+import { createSearchHistory, addClickedBook, getSearchHistoryByUserId, getTopRecentSearches } from '../models/history.models.mjs';
 
 /**
  * Logs search query and configuration for an authenticated user.
@@ -6,6 +6,7 @@ import { createSearchHistory, addClickedBook, getSearchHistoryByUserId } from '.
  * @param {string} userId - The user ID
  * @param {string} query - The search query string
  * @param {object} filters - The active filters
+ * @param {string|null} bookClicked - Optional clicked book ID
  * @returns {Promise<object|null>} The logged entry or null if skipped
  */
 export const logSearchHistory = async (userId, query, filters, bookClicked = null) => {
@@ -24,6 +25,23 @@ export const logSearchHistory = async (userId, query, filters, bookClicked = nul
   } catch (error) {
     console.error('Error logging search history:', error);
     return null;
+  }
+};
+
+/**
+ * Retrieves top 5 recent search entries for a given user.
+ * 
+ * @param {string} userId - The user ID
+ * @param {number} limit - Maximum number of search terms
+ * @returns {Promise<Array>} List of recent search objects
+ */
+export const getTopRecentSearchesService = async (userId, limit = 5) => {
+  if (!userId) return [];
+  try {
+    return await getTopRecentSearches(userId, limit);
+  } catch (error) {
+    console.error('Error fetching top recent searches:', error);
+    return [];
   }
 };
 
