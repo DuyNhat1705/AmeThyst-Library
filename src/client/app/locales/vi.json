@@ -930,109 +930,109 @@
     "error_internal": "Đã xảy ra lỗi xử lý nội bộ.",
     "field_id": "Mã ID",
     "system_configuration": {
-      "eyebrow": "Administration policy",
-      "title": "System Configuration",
-      "description": "Adjust borrowing and return-penalty rules. Saved changes apply to the next eligible operation without restarting the server.",
-      "form_label": "System configuration policy form",
-      "loading": "Loading the active policy...",
-      "version": "Version {version}",
+      "eyebrow": "Chính sách quản trị",
+      "title": "Cấu Hình Hệ Thống",
+      "description": "Điều chỉnh quy định mượn sách và phạt vi phạm khi trả sách. Các thay đổi được lưu sẽ áp dụng ngay cho giao dịch tiếp theo mà không cần khởi động lại máy chủ.",
+      "form_label": "Biểu mẫu chính sách cấu hình hệ thống",
+      "loading": "Đang tải cấu hình chính sách hiện tại...",
+      "version": "Phiên bản {version}",
       "sections": {
         "borrowing": {
-          "title": "Borrowing policy",
-          "description": "Control how many active books one patron may hold at the same time."
+          "title": "Chính sách mượn sách",
+          "description": "Kiểm soát số lượng sách tối đa một độc giả có thể mượn cùng lúc."
         },
         "fees": {
-          "title": "Penalty fees",
-          "description": "Set the fixed administrative and additional-condition amounts used by damage calculations."
+          "title": "Các khoản phí phạt",
+          "description": "Thiết lập mức phí xử lý cố định và phí cộng thêm khi tính toán đền bù hư hỏng."
         },
         "damage": {
-          "title": "Damage coefficients",
-          "description": "Set the book-price multiplier for each return condition. Perfect condition is fixed at zero."
+          "title": "Hệ số hư hỏng",
+          "description": "Thiết lập hệ số nhân giá sách cho từng tình trạng trả sách. Tình trạng hoàn hảo mặc định bằng 0."
         }
       },
       "fields": {
         "maxBorrowLimit": {
-          "label": "Simultaneous borrowing limit",
-          "description": "Positive whole-number policy for active loans per patron."
+          "label": "Giới hạn mượn song song",
+          "description": "Số lượng sách tối đa được mượn cùng lúc cho mỗi độc giả (số nguyên dương)."
         },
         "feeAdmin": {
-          "label": "Administrative fee",
-          "description": "Base fixed amount added to each chargeable damage condition."
+          "label": "Phí quản lý / xử lý",
+          "description": "Mức phí cố định cơ bản áp dụng cho mỗi tình trạng hư hỏng."
         },
         "feeAddon": {
-          "label": "Additional-condition fee",
-          "description": "Fixed amount added for each applicable condition after the first."
+          "label": "Phí tình trạng bổ sung",
+          "description": "Mức phí cố định cộng thêm cho mỗi tình trạng hư hỏng tiếp theo."
         },
         "perfectCondition": {
-          "label": "Perfect condition",
-          "description": "Always zero and read-only because no damage charge applies."
+          "label": "Tình trạng hoàn hảo",
+          "description": "Mặc định bằng 0 và chỉ đọc (không áp dụng phí hư hỏng)."
         },
         "slightCoverScratches": {
-          "label": "Slight cover scratches",
-          "description": "Multiplier for minor scratches on the book cover."
+          "label": "Bìa trầy xước nhẹ",
+          "description": "Hệ số nhân áp dụng cho vết trầy xước nhẹ trên bìa sách."
         },
         "foldedPages": {
-          "label": "Folded pages",
-          "description": "Multiplier when returned pages are folded."
+          "label": "Trang sách bị gấp nếp",
+          "description": "Hệ số nhân khi các trang sách bị cong hoặc gấp nếp."
         },
         "pencilMarks": {
-          "label": "Pencil marks",
-          "description": "Multiplier for erasable pencil markings."
+          "label": "Vết bút chì",
+          "description": "Hệ số nhân cho các vết ghi chép bằng bút chì có thể tẩy."
         },
         "inkMarks": {
-          "label": "Ink marks",
-          "description": "Multiplier for permanent ink markings."
+          "label": "Vết mực",
+          "description": "Hệ số nhân cho các vết mực cố định không thể tẩy."
         },
         "tornPages": {
-          "label": "Torn pages",
-          "description": "Multiplier for pages with tears."
+          "label": "Trang sách bị rách",
+          "description": "Hệ số nhân cho các trang sách bị rách."
         },
         "waterDamage": {
-          "label": "Water damage",
-          "description": "Multiplier for moisture or liquid damage."
+          "label": "Hư hỏng do nước",
+          "description": "Hệ số nhân khi sách bị ẩm ướt hoặc dính chất lỏng."
         },
         "damagedBinding": {
-          "label": "Damaged binding",
-          "description": "Multiplier for a loose or damaged binding."
+          "label": "Gáy sách bị hư hỏng",
+          "description": "Hệ số nhân khi gáy sách bị bong tróc hoặc hư hỏng."
         },
         "missingMats": {
-          "label": "Missing materials",
-          "description": "Multiplier for missing included materials or supplements."
+          "label": "Thiếu phụ kiện đi kèm",
+          "description": "Hệ số nhân khi thiếu các đĩa/phụ kiện kèm theo sách."
         },
         "missingPages": {
-          "label": "Missing pages",
-          "description": "Multiplier when one or more pages are missing."
+          "label": "Thiếu trang sách",
+          "description": "Hệ số nhân khi sách bị mất một hoặc nhiều trang."
         },
         "lost": {
-          "label": "Lost book",
-          "description": "General replacement multiplier when no item-specific lost amount is supplied."
+          "label": "Làm mất sách",
+          "description": "Hệ số đền bù chung khi độc giả làm mất sách."
         }
       },
       "actions": {
-        "save": "Save Changes",
-        "discard": "Discard changes",
-        "retry": "Try again",
-        "reload": "Load latest"
+        "save": "Lưu Thay Đổi",
+        "discard": "Hủy thay đổi",
+        "retry": "Thử lại",
+        "reload": "Tải bản mới nhất"
       },
       "status": {
-        "modified": "Unsaved changes",
-        "up_to_date": "Policy up to date"
+        "modified": "Có thay đổi chưa lưu",
+        "up_to_date": "Chính sách đã cập nhật mới nhất"
       },
       "feedback": {
-        "saving": "Saving the complete policy...",
-        "saved": "System policy saved successfully.",
-        "discarded": "Unsaved changes discarded.",
-        "fix_errors": "Correct the highlighted values before saving.",
-        "unsaved": "Review and save the complete policy when ready.",
-        "up_to_date": "No unsaved changes."
+        "saving": "Đang lưu cấu hình chính sách...",
+        "saved": "Đã lưu chính sách hệ thống thành công.",
+        "discarded": "Đã hủy các thay đổi chưa lưu.",
+        "fix_errors": "Vui lòng sửa các giá trị bị lỗi trước khi lưu.",
+        "unsaved": "Xem lại và lưu chính sách sau khi hoàn tất.",
+        "up_to_date": "Không có thay đổi nào chưa lưu."
       },
       "errors": {
-        "required": "A value is required.",
-        "non_negative": "Enter a finite number greater than or equal to zero.",
-        "positive_integer": "Enter a positive whole number.",
-        "load": "The active system configuration could not be loaded.",
-        "save": "The policy could not be saved. Your current input is still available.",
-        "conflict": "Another administrator saved a newer policy. Load the latest values and review your changes."
+        "required": "Giá trị này là bắt buộc.",
+        "non_negative": "Nhập một số hợp lệ lớn hơn hoặc bằng 0.",
+        "positive_integer": "Nhập một số nguyên dương.",
+        "load": "Không thể tải cấu hình hệ thống hiện tại.",
+        "save": "Không thể lưu chính sách. Các dữ liệu bạn vừa nhập vẫn được giữ nguyên.",
+        "conflict": "Một quản trị viên khác đã cập nhật bản chính sách mới hơn. Vui lòng tải lại và kiểm tra lại thay đổi."
       }
     }
   },
