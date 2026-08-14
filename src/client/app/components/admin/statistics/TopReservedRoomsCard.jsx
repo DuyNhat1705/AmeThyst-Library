@@ -16,7 +16,7 @@ export default function TopReservedRoomsCard({ rooms = [] }) {
 
       {rooms.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-neutral-400 text-sm">
-          No room reservation turns recorded for this period.
+          {t('admin.no_room_data')}
         </div>
       ) : (
         <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1">

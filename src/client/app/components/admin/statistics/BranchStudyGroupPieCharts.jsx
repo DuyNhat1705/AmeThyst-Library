@@ -38,10 +38,10 @@ export default function BranchStudyGroupPieCharts({ branchData = [] }) {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="font-manrope text-xl font-bold text-black dark:text-white">
-            Study Group Room Reservations by Branch
+            {t('admin.study_group_title')}
           </h2>
           <p className="text-xs text-stone-500 dark:text-neutral-400 mt-1">
-            Top 5 study groups by room reservation hours (remaining grouped as &quot;Other&quot;)
+            {t('admin.study_group_subtitle')}
           </p>
         </div>
       </div>

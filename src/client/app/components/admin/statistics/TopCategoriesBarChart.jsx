@@ -22,7 +22,7 @@ export default function TopCategoriesBarChart({ categories = [] }) {
 
       {categories.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-neutral-400 text-sm">
-          No category borrowing data recorded for this period.
+          {t('admin.no_category_data')}
         </div>
       ) : (
         <div className="flex-1 flex flex-col justify-around gap-2 overflow-y-auto custom-scrollbar pr-1">
