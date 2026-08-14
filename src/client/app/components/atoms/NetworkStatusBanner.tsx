@@ -1,73 +1,63 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const PROBE_TIMEOUT_MS = 8000;
-
-const isLocalhostApi = () => {
-  try {
-    const { hostname } = new URL(API_URL);
-    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '[::1]';
-  } catch {
-    return false;
-  }
-};
+const PROBE_INTERVAL_MS = 15000;
+const FAILURES_BEFORE_SHOW = 2;
 
 export default function NetworkStatusBanner() {
   const { t } = useI18n();
-  const [offline, setOffline] = useState<boolean>(() =>
-    typeof navigator !== 'undefined' ? !navigator.onLine : false,
-  );
   const [apiDown, setApiDown] = useState(false);
-  const localApi = isLocalhostApi();
 
+  // The banner is driven exclusively by a dedicated /health probe. Any HTTP
+  // response — whatever the status — means the API answered, so the banner is
+  // hidden. The banner only appears after consecutive probes fail to receive a
+  // response, and a periodic probe guarantees it recovers on its own.
   useEffect(() => {
-    let probeController: AbortController | null = null;
+    const controllerRef: { current: AbortController | null } = { current: null };
+    const failedRef: { current: number } = { current: 0 };
 
-    const probeConnection = () => {
-      probeController?.abort();
-      probeController = new AbortController();
-      const timer = setTimeout(() => probeController?.abort(), PROBE_TIMEOUT_MS);
-      fetch(`${API_URL}/auth/csrf`, { credentials: 'include', signal: probeController.signal })
-        .then(() => setApiDown(false))
-        .catch(() => setApiDown(true))
+    const runProbe = () => {
+      controllerRef.current?.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
+      const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
+      fetch(`${API_URL}/health`, { signal: controller.signal })
+        .then(() => {
+          failedRef.current = 0;
+          setApiDown(false);
+        })
+        .catch(() => {
+          failedRef.current += 1;
+          if (failedRef.current >= FAILURES_BEFORE_SHOW) setApiDown(true);
+        })
         .finally(() => clearTimeout(timer));
     };
 
-    const handleOnline = () => {
-      setOffline(false);
+    const handleNetworkError = () => runProbe();
+    const handleNetworkRecovered = () => {
+      failedRef.current = 0;
       setApiDown(false);
     };
-    const handleOffline = () => setOffline(true);
-    const handleNetworkError = () => {
-      // A request failed without an HTTP response. Confirm connectivity with a
-      // direct probe before showing anything, so transient failures don't flash.
-      setApiDown((down) => {
-        if (down) return true;
-        probeConnection();
-        return false;
-      });
-    };
-    const handleNetworkRecovered = () => setApiDown(false);
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
     window.addEventListener('network-error', handleNetworkError);
     window.addEventListener('network-recovered', handleNetworkRecovered);
 
+    runProbe();
+    const interval = setInterval(runProbe, PROBE_INTERVAL_MS);
+
     return () => {
-      probeController?.abort();
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      controllerRef.current?.abort();
+      clearInterval(interval);
       window.removeEventListener('network-error', handleNetworkError);
       window.removeEventListener('network-recovered', handleNetworkRecovered);
     };
   }, []);
 
-  const visible = apiDown || (offline && !localApi);
-  if (!visible) return null;
+  if (!apiDown) return null;
 
   return (
     <div

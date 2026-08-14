@@ -49,6 +49,9 @@ app.use(cookieParser());
 app.use(globalApiLimiter);
 app.use(verifyCsrf);
 app.use(passport.initialize());
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard/user', dashboardRoutes);
