@@ -90,7 +90,7 @@ describe('Create Study Group API', () => {
       });
       expect(jwt.verify).toHaveBeenCalledWith('valid-token', process.env.JWT_SECRET);
       expect(pool.query).toHaveBeenCalledWith(
-        'SELECT user_id, email, role, branch_id FROM public.users WHERE user_id = $1',
+        'SELECT user_id, email, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
         ['token-user-id'],
       );
       expect(createStudyGroup).toHaveBeenCalledWith('host-1', {
