@@ -16,12 +16,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       let response = await safeFetch(`${apiUrl}/auth/me`, { credentials: 'include' });
       if (!response) { setUser(null); setCurrentUser(null); return; }
       if (response.status === 401) {
-        const csrf = await getCsrfToken();
-        const refreshed = await safeFetch(`${apiUrl}/auth/refresh`, {
+        let csrf = await getCsrfToken();
+        let refreshed = await safeFetch(`${apiUrl}/auth/refresh`, {
           method: 'POST',
           credentials: 'include',
           headers: csrf ? { 'X-CSRF-Token': csrf } : {},
         });
+        if (refreshed && refreshed.status === 403) {
+          resetCsrfToken();
+          csrf = await getCsrfToken();
+          refreshed = await safeFetch(`${apiUrl}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: csrf ? { 'X-CSRF-Token': csrf } : {},
+          });
+        }
         if (refreshed && refreshed.ok) {
           resetCsrfToken();
           response = await safeFetch(`${apiUrl}/auth/me`, { credentials: 'include' });

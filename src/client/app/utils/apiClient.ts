@@ -77,11 +77,20 @@ const parseResponse = async (response: Response): Promise<any> => {
 
 const refreshSession = async () => {
   const csrf = await getCsrfToken();
-  const response = await safeFetch(`${API_URL}/auth/refresh`, {
+  let response = await safeFetch(`${API_URL}/auth/refresh`, {
     method: 'POST',
     credentials: 'include',
     headers: csrf ? { 'X-CSRF-Token': csrf } : {},
   });
+  if (response && response.status === 403) {
+    resetCsrfToken();
+    const retryCsrf = await getCsrfToken();
+    response = await safeFetch(`${API_URL}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: retryCsrf ? { 'X-CSRF-Token': retryCsrf } : {},
+    });
+  }
   if (!response) return false;
   if (!response.ok) return false;
   const data = await parseResponse(response);

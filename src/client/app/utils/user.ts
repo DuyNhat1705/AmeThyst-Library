@@ -12,6 +12,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export function setCurrentUser(user: StoredUser | null) {
   currentUser = user;
+  resetCsrfToken();
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('user-updated', { detail: user }));
 }
 
