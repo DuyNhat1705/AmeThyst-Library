@@ -4,10 +4,9 @@ import {
   invalidateUserRecommendationCache,
   getUserRecommendations,
 } from '../../src/services/recommendation.services.mjs';
-import {
-  createReservation,
-  MAX_BORROW_LIMIT,
-} from '../../src/services/library.services.mjs';
+import { createReservation } from '../../src/services/library.services.mjs';
+
+const MAX_BORROW_LIMIT = 6;
 
 vi.mock('../../src/config/postgres.mjs', () => ({
   default: {
@@ -22,6 +21,12 @@ vi.mock('../../src/services/recommendation.services.mjs', () => ({
   getUserRecommendations: vi.fn(),
 }));
 
+vi.mock('../../src/services/system-configuration.services.mjs', () => ({
+  systemConfigurationService: {
+    getSnapshot: vi.fn(() => ({ MAX_BORROW_LIMIT })),
+  },
+}));
+
 const BOOK_ID = 'b-001';
 const BRANCH_ID = 1;
 const USER_ID = 'u-001';
@@ -33,13 +38,10 @@ describe('library.services.mjs - createReservation', () => {
 
   const happyPathQuery = async (sql) => {
     if (isSQL(sql, 'BEGIN')) return { rows: [] };
-    if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
-      return { rows: [{ user_id: USER_ID }] };
+    if (isSQL(sql, 'FROM public.users WHERE user_id')) {
+      return { rows: [{ user_id: USER_ID, borrow_num: 0 }] };
     }
     if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) return { rows: [{ unpaid: '0' }] };
-    if (isSQL(sql, 'SELECT borrow_num FROM public.users')) {
-      return { rows: [{ borrow_num: 0 }] };
-    }
     if (isSQL(sql, 'available_quantity, shelf')) {
       return { rows: [{ available_quantity: 2, shelf: 'A101' }] };
     }
@@ -166,7 +168,7 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 2 - User not found', () => {
     it('[TC-SRV-LIB-008] should roll back and return USER_NOT_FOUND with 404', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -186,7 +188,7 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 3 - Unpaid debt blocks reservation', () => {
     it('[TC-SRV-LIB-009] should roll back and return UNPAID_DEBT with 400 when the user has unpaid penalties', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
         }
         if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) {
@@ -211,14 +213,11 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 4 - Borrow limit exceeded', () => {
     it('[TC-SRV-LIB-010] should roll back and return BORROW_LIMIT_EXCEEDED with 400 when borrow_num reaches the limit', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
-          return { rows: [{ user_id: USER_ID }] };
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
+          return { rows: [{ user_id: USER_ID, borrow_num: MAX_BORROW_LIMIT }] };
         }
         if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) {
           return { rows: [{ unpaid: '0' }] };
-        }
-        if (isSQL(sql, 'SELECT borrow_num FROM public.users')) {
-          return { rows: [{ borrow_num: MAX_BORROW_LIMIT }] };
         }
         return { rows: [] };
       });
@@ -239,7 +238,7 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 5 - Book not found at branch', () => {
     it('[TC-SRV-LIB-011] should roll back and return BOOK_NOT_FOUND with 404 when inventory has no rows', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
         }
         if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) {
@@ -267,7 +266,7 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 6 - Book unavailable', () => {
     it('[TC-SRV-LIB-012] should roll back and return BOOK_UNAVAILABLE with 400 when available quantity is zero', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
         }
         if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) {
@@ -295,7 +294,7 @@ describe('library.services.mjs - createReservation', () => {
   describe('Test 7 - Duplicate reservation', () => {
     it('[TC-SRV-LIB-013] should roll back and return ALREADY_RESERVED with 400 when the user already has an active reservation or borrow', async () => {
       mockClient.query.mockImplementation(async (sql) => {
-        if (isSQL(sql, 'SELECT user_id FROM public.users WHERE user_id')) {
+        if (isSQL(sql, 'FROM public.users WHERE user_id')) {
           return { rows: [{ user_id: USER_ID }] };
         }
         if (isSQL(sql, 'SELECT COUNT(*) as unpaid')) {

@@ -77,7 +77,7 @@ describe('middlewares for POST /api/library/reserve', () => {
         branch_id: 1,
       });
       expect(pool.query).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT user_id, email, role, branch_id FROM public.users'),
+        expect.stringContaining('SELECT user_id, email, username, avatar, role, branch_id, status, token_version, must_change_password FROM public.users'),
         [USER_ID]
       );
     });
