@@ -3,6 +3,7 @@
 import { useI18n } from '../../providers/I18nProvider';
 import { useState, useEffect } from 'react';
 import BookCover from '../atoms/BookCover';
+import { apiFetch } from '../../utils/apiClient';
 
 export type BookStatus = 'borrowed' | 'pending' | 'reserved' | 'pending_return';
 
@@ -72,12 +73,10 @@ export default function BorrowedBookCard({ book, onRenew, onCancel, onViewPin, o
     if (delay <= 0) return;
     const timer = setTimeout(() => {
       setTick(t => t + 1);
-      const token = sessionStorage.getItem('token');
-      if (!token) return;
       const url = book.status === 'pending'
-        ? `${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/reserve/${book.id}/pin/cleanup`
-        : `${process.env.NEXT_PUBLIC_API_URL}/dashboard/user/borrowed/${book.id}/return-pin/cleanup`;
-      fetch(url, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }).catch(() => {});
+        ? `/dashboard/user/reserve/${book.id}/pin/cleanup`
+        : `/dashboard/user/borrowed/${book.id}/return-pin/cleanup`;
+      void apiFetch(url, { method: 'POST' }).catch(() => {});
     }, delay);
     return () => clearTimeout(timer);
   }, [book.status, book.expiresAt, book.id]);

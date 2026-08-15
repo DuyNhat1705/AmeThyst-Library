@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ImageUploader from '../ui/ImageUploader';
+import { authHeaders } from '../../utils/apiClient';
 
 const LANGUAGE_OPTIONS = [
   { value: 'eng', label: 'English (eng)' },
@@ -151,19 +152,20 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
         branch_stocks
       };
 
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/api/books`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          ...(await authHeaders())
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to create catalog book.');
+        const errorText = typeof data.error === 'string' ? data.error : (data.error?.message || data.message || 'Failed to create catalog book.');
+        throw new Error(errorText);
       }
 
       onSuccess();

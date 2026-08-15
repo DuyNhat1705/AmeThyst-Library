@@ -93,10 +93,7 @@ export default function SpotlightRevealHero({ children }: SpotlightRevealHeroPro
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden flex flex-col bg-[#0a0704] px-6 md:px-16 select-none isolate flex-grow justify-center
-        [--spotlight-size:270px] [--glow-size:310px]
-        md:[--spotlight-size:310px] md:[--glow-size:350px]
-        lg:[--spotlight-size:380px] lg:[--glow-size:420px]"
+      className="relative w-full overflow-hidden flex flex-col bg-[#0a0704] px-6 md:px-16 select-none isolate flex-grow justify-center [--spotlight-size:270px] [--glow-size:310px] md:[--spotlight-size:310px] md:[--glow-size:350px] lg:[--spotlight-size:380px] lg:[--glow-size:420px]"
       style={{
         minHeight: 'calc(100vh - 4rem)',
       }}

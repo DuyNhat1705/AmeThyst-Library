@@ -4,8 +4,21 @@ import {
 } from '../services/auth.services.mjs';
 import { verifyOtp, forgotPassword, resetPassword } from '../services/otp.service.mjs';
 import passport from '../config/passport.mjs';
-import { signToken, buildUserPayload } from '../utils/authHelpers.mjs';
+import {
+  CSRF_COOKIE,
+  REFRESH_COOKIE,
+  buildUserPayload,
+  clearAuthCookies,
+  csrfCookieOptions,
+  generateCsrfToken,
+  setAuthCookies,
+} from '../utils/authHelpers.mjs';
 import { getUserRecommendations } from '../services/recommendation.services.mjs';
+import {
+  createAuthSession,
+  revokeRefreshToken,
+  rotateAuthSession,
+} from '../services/auth-session.services.mjs';
 
 export const register = async (req, res) => {
   try {
@@ -23,7 +36,9 @@ export const verifyEmailHandler = async (req, res) => {
     const { token } = req.body;
     if (!token) return res.status(400).json({ error: 'Verification token is required' });
     const result = await verifyEmail({ token });
-    res.status(200).json(result);
+    const session = await createAuthSession(result.userRow, req);
+    setAuthCookies(res, session);
+    res.status(200).json({ user: session.user });
 
     // Precompute recommendations in the background on successful email verification
     if (result.user && result.user.role === 'user') {
@@ -48,13 +63,16 @@ export const verifyEmailHandler = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const data = await loginUser({ email, password });
-    res.status(200).json(data);
+    const userRow = await loginUser({ email, password });
+    const session = await createAuthSession(userRow, req);
+    res.status(200);
+    setAuthCookies(res, session);
+    res.json({ user: session.user });
 
     // Precompute recommendations in the background on login
-    if (data.user && data.user.role === 'user') {
-      getUserRecommendations(data.user.userId).catch(err =>
-        console.error(`[Precompute] Failed to precompute recommendations on login for user ${data.user.userId}:`, err)
+    if (session.user.role === 'user') {
+      getUserRecommendations(session.user.userId).catch(err =>
+        console.error(`[Precompute] Failed to precompute recommendations on login for user ${session.user.userId}:`, err)
       );
     }
   } catch (err) {
@@ -68,7 +86,7 @@ export const forgot = async (req, res) => {
     const result = await forgotPassword({ email });
     res.status(200).json(result);
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    res.status(200).json({ message: 'If an account exists for this email, a reset code has been sent.' });
   }
 };
 
@@ -99,8 +117,7 @@ export const resendVerification = async (req, res) => {
     const result = await resendVerificationEmailService({ email });
     res.status(200).json(result);
   } catch (err) {
-    const status = err.message.includes('No pending') ? 400 : 500;
-    res.status(status).json({ error: err.message });
+    res.status(200).json({ message: 'If a pending registration exists, a verification message will be sent.' });
   }
 };
 
@@ -115,11 +132,45 @@ export const googleCallback = [
     failureRedirect: `${process.env.CLIENT_URL}/login`,
     session: false,
   }),
-  (req, res) => {
-    const token = signToken(req.user.user_id, req.user.email, req.user.role, req.user.branch_id, req.user.token_version ?? 0);
-    const user = buildUserPayload(req.user);
-    res.redirect(
-      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`
-    );
+  async (req, res, next) => {
+    try {
+      const session = await createAuthSession(req.user, req);
+      setAuthCookies(res, session);
+      res.redirect(`${process.env.CLIENT_URL}/auth/callback`);
+    } catch (error) {
+      next(error);
+    }
   },
 ];
+
+export const refresh = async (req, res) => {
+  const session = await rotateAuthSession(req.cookies?.[REFRESH_COOKIE], req);
+  if (!session) {
+    clearAuthCookies(res);
+    return res.status(401).json({ success: false, error: { code: 'REFRESH_INVALID', message: 'Session expired.' } });
+  }
+  setAuthCookies(res, session);
+  return res.json({ success: true, data: { user: session.user } });
+};
+
+export const logout = async (req, res) => {
+  await revokeRefreshToken(req.cookies?.[REFRESH_COOKIE], 'logout');
+  clearAuthCookies(res);
+  return res.status(204).end();
+};
+
+export const me = async (req, res) => res.json({ success: true, data: buildUserPayload({
+  user_id: req.user.userId,
+  email: req.user.email,
+  username: req.user.username,
+  avatar: req.user.avatar,
+  role: req.user.role,
+  branch_id: req.user.branch_id,
+  must_change_password: req.user.must_change_password,
+}) });
+
+export const csrf = async (req, res) => {
+  const token = req.cookies?.[CSRF_COOKIE] || generateCsrfToken();
+  res.cookie(CSRF_COOKIE, token, csrfCookieOptions());
+  return res.json({ success: true, data: { csrfToken: token } });
+};

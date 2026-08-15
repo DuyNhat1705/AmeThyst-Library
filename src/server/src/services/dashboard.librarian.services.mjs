@@ -89,8 +89,8 @@ export const getReservationDetail = async (reserveId, branchId) => {
  * @param {string} pin - The 6-digit PIN
  * @param {string} [status='pending'] - Expected borrow_book status ('pending' for borrow, 'pending_return' for return)
  */
-export const verifyReturnPin = async (pin) => {
-  const record = await findBorrowRecordByPin(pin, 'pending_return');
+export const verifyReturnPin = async (pin, branchId) => {
+  const record = await findBorrowRecordByPin(pin, 'pending_return', branchId);
   if (!record) {
     return { error: { code: 'PIN_NOT_FOUND', message: 'The PIN has expired or does not exist.' }, statusCode: 404 };
   }
@@ -109,7 +109,7 @@ export const verifyReturnPin = async (pin) => {
       author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
       publisher: record.book_publisher,
       genres: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
-      image_url: record.image_url,
+      image_url: record.book_image_url,
       price: record.book_price
     },
     borrowing: {
@@ -121,15 +121,15 @@ export const verifyReturnPin = async (pin) => {
   };
 };
 
-const rejectStaleReturnConfiguration = async (borrowId, expectedVersion) => {
+const rejectStaleReturnConfiguration = async (borrowId, expectedVersion, branchId) => {
   const currentVersion = systemConfigurationService.getState().version;
   if (expectedVersion === currentVersion) return null;
 
   await pool.query(
     `UPDATE public.borrow_book
      SET pin = NULL, expired_at = NULL, status = 'borrowed'
-     WHERE borrow_id = $1 AND status = 'pending_return'`,
-    [borrowId]
+     WHERE borrow_id = $1 AND branch_id = $2 AND status = 'pending_return'`,
+    [borrowId, branchId]
   );
   return {
     error: {
@@ -140,16 +140,16 @@ const rejectStaleReturnConfiguration = async (borrowId, expectedVersion) => {
   };
 };
 
-export const previewReturnPenalty = async (borrowId, conditions, isLost, expectedVersion) => {
-  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion);
+export const previewReturnPenalty = async (borrowId, conditions, isLost, expectedVersion, branchId) => {
+  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion, branchId);
   if (staleConfiguration) return staleConfiguration;
 
   const recordRes = await pool.query(
     `SELECT bb.due_date, b.price
      FROM public.borrow_book bb
      JOIN public.books b ON bb.book_id = b.book_id
-     WHERE bb.borrow_id = $1 AND bb.status = 'pending_return'`,
-    [borrowId]
+     WHERE bb.borrow_id = $1 AND bb.branch_id = $2 AND bb.status = 'pending_return'`,
+    [borrowId, branchId]
   );
 
   if (recordRes.rows.length === 0) {
@@ -249,7 +249,7 @@ export const confirmRoomCheckin = async (reserveId, librarianBranchId) => {
   }
 };
 
-export const getOutstandingDebts = async (search) => {
+export const getOutstandingDebts = async (search, branchId) => {
 
   try {
     let query = `
@@ -260,12 +260,13 @@ export const getOutstandingDebts = async (search) => {
       JOIN public.users u ON bp.user_id = u.user_id
       LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
       LEFT JOIN public.books b ON bb.book_id = b.book_id
-      WHERE bp.is_paid = false
+      LEFT JOIN public.return_book rb ON bp.return_id = rb.return_id
+      WHERE bp.is_paid = false AND COALESCE(bb.branch_id, rb.branch_id) = $1
     `;
-    const params = [];
+    const params = [branchId];
 
     if (search) {
-      query += ` AND u.username ILIKE $1`;
+      query += ` AND u.username ILIKE $2`;
       params.push(`%${search}%`);
     }
 
@@ -279,7 +280,7 @@ export const getOutstandingDebts = async (search) => {
   }
 };
 
-export const getPaidFees = async (search) => {
+export const getPaidFees = async (search, branchId) => {
   try {
     let query = `
       SELECT bp.penalty_id, bp.borrow_id, bp.user_id, bp.issue, bp.description,
@@ -289,12 +290,13 @@ export const getPaidFees = async (search) => {
       JOIN public.users u ON bp.user_id = u.user_id
       LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
       LEFT JOIN public.books b ON bb.book_id = b.book_id
-      WHERE bp.is_paid = true
+      LEFT JOIN public.return_book rb ON bp.return_id = rb.return_id
+      WHERE bp.is_paid = true AND COALESCE(bb.branch_id, rb.branch_id) = $1
     `;
-    const params = [];
+    const params = [branchId];
 
     if (search) {
-      query += ` AND u.username ILIKE $1`;
+      query += ` AND u.username ILIKE $2`;
       params.push(`%${search}%`);
     }
 
@@ -308,11 +310,15 @@ export const getPaidFees = async (search) => {
   }
 };
 
-export const confirmPayment = async (penaltyId) => {
+export const confirmPayment = async (penaltyId, branchId) => {
   try {
     const check = await pool.query(
-      `SELECT penalty_id, is_paid FROM public.book_penalty WHERE penalty_id = $1`,
-      [penaltyId]
+      `SELECT bp.penalty_id, bp.is_paid
+       FROM public.book_penalty bp
+       LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+       LEFT JOIN public.return_book rb ON bp.return_id = rb.return_id
+       WHERE bp.penalty_id = $1 AND COALESCE(bb.branch_id, rb.branch_id) = $2`,
+      [penaltyId, branchId]
     );
 
     if (check.rows.length === 0) {
@@ -324,8 +330,14 @@ export const confirmPayment = async (penaltyId) => {
     }
 
     const result = await pool.query(
-      `UPDATE public.book_penalty SET is_paid = true, paid_at = NOW() WHERE penalty_id = $1 RETURNING paid_at`,
-      [penaltyId]
+      `UPDATE public.book_penalty SET is_paid = true, paid_at = NOW()
+       WHERE penalty_id = $1 AND EXISTS (
+         SELECT 1 FROM public.book_penalty bp
+         LEFT JOIN public.borrow_book bb ON bp.borrow_id = bb.borrow_id
+         LEFT JOIN public.return_book rb ON bp.return_id = rb.return_id
+         WHERE bp.penalty_id = $1 AND COALESCE(bb.branch_id, rb.branch_id) = $2
+       ) RETURNING paid_at`,
+      [penaltyId, branchId]
     );
 
     return { penalty_id: penaltyId, is_paid: true, paid_at: result.rows[0].paid_at };
@@ -336,7 +348,7 @@ export const confirmPayment = async (penaltyId) => {
 };
 
 export const confirmReturn = async (borrowId, branchId, conditions, description, isLost, expectedVersion) => {
-  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion);
+  const staleConfiguration = await rejectStaleReturnConfiguration(borrowId, expectedVersion, branchId);
   if (staleConfiguration) return staleConfiguration;
   const policy = systemConfigurationService.getSnapshot();
   const client = await pool.connect();
@@ -347,8 +359,9 @@ export const confirmReturn = async (borrowId, branchId, conditions, description,
       `SELECT bb.user_id, bb.book_id, bb.borrow_date, bb.due_date, b.price
        FROM public.borrow_book bb
        JOIN public.books b ON bb.book_id = b.book_id
-       WHERE bb.borrow_id = $1 AND bb.status = 'pending_return'`,
-      [borrowId]
+       WHERE bb.borrow_id = $1 AND bb.branch_id = $2 AND bb.status = 'pending_return'
+       FOR UPDATE`,
+      [borrowId, branchId]
     );
 
     if (recordRes.rows.length === 0) {
@@ -444,7 +457,7 @@ export const confirmReturn = async (borrowId, branchId, conditions, description,
   }
 };
 
-export const findBorrowRecordByPin = async (pin, status = 'pending') => {
+export const findBorrowRecordByPin = async (pin, status = 'pending', branchId = null) => {
 
 
   const query = `
@@ -462,19 +475,21 @@ export const findBorrowRecordByPin = async (pin, status = 'pending') => {
       u.phone_number,
       u.email,
       u.birth_date,
+      u.avatar,
       b.title as book_title,
       b.author as book_author,
       b.publisher as book_publisher,
       b.genres as book_genres,
-      b.image_url,
+      b.image_url as book_image_url,
       b.price as book_price
     FROM public.borrow_book bb
     JOIN public.users u ON bb.user_id = u.user_id
     JOIN public.books b ON bb.book_id = b.book_id
     WHERE bb.pin = $1 AND bb.expired_at > NOW() AND bb.status = $2
+      AND ($3::integer IS NULL OR bb.branch_id = $3)
   `;
 
-  const params = [pin, status];
+  const params = [pin, status, branchId];
 
 
   const result = await pool.query(query, params);
@@ -552,14 +567,16 @@ export const verifyPin = async (pin, librarianBranchId) => {
       username: record.username,
       gender: record.gender,
       phone_number: record.phone_number,
-      email: record.email
+      email: record.email,
+      avatar: record.avatar || null
     },
     book: {
       title: record.book_title,
       author: Array.isArray(record.book_author) ? record.book_author.join(', ') : record.book_author,
       publisher: record.book_publisher,
       genre: Array.isArray(record.book_genres) ? record.book_genres.join(', ') : record.book_genres,
-      price: record.book_price
+      price: record.book_price,
+      image_url: record.book_image_url || null
     }
   };
 };
@@ -568,7 +585,7 @@ export const verifyPin = async (pin, librarianBranchId) => {
 /**
  * Confirm a borrowing: update status to borrowed, set due_date, create calendar event, nullify expired_reserve
  */
-export const confirmBorrowing = async (borrowId) => {
+export const confirmBorrowing = async (borrowId, librarianBranchId) => {
 
 
 
@@ -578,8 +595,8 @@ export const confirmBorrowing = async (borrowId) => {
 
 
 
-    const recordQuery = 'SELECT user_id, book_id, branch_id FROM public.borrow_book WHERE borrow_id = $1';
-    const recordRes = await client.query(recordQuery, [borrowId]);
+    const recordQuery = 'SELECT user_id, book_id, branch_id FROM public.borrow_book WHERE borrow_id = $1 AND branch_id = $2 FOR UPDATE';
+    const recordRes = await client.query(recordQuery, [borrowId, librarianBranchId]);
 
 
 
@@ -647,7 +664,7 @@ export const confirmBorrowing = async (borrowId) => {
 /**
  * Cancel a borrowing: delete borrow record and increment book quantity
  */
-export const cancelBorrowing = async (borrowId) => {
+export const cancelBorrowing = async (borrowId, librarianBranchId) => {
 
 
 
@@ -657,8 +674,8 @@ export const cancelBorrowing = async (borrowId) => {
 
 
 
-    const recordQuery = 'SELECT book_id, branch_id, user_id FROM public.borrow_book WHERE borrow_id = $1';
-    const recordRes = await client.query(recordQuery, [borrowId]);
+    const recordQuery = 'SELECT book_id, branch_id, user_id FROM public.borrow_book WHERE borrow_id = $1 AND branch_id = $2 FOR UPDATE';
+    const recordRes = await client.query(recordQuery, [borrowId, librarianBranchId]);
 
 
 
@@ -711,7 +728,7 @@ export const cancelBorrowing = async (borrowId) => {
 /**
  * Fetch all borrow/pickup records from public.borrow_book joined with books, users, branches
  */
-export const getPickupsService = async () => {
+export const getPickupsService = async (branchId) => {
   const [pickupsRes, redeemedRes] = await Promise.all([
     pool.query(`
       SELECT 
@@ -737,14 +754,14 @@ export const getPickupsService = async () => {
       JOIN public.books b ON bb.book_id = b.book_id
       JOIN public.users u ON bb.user_id = u.user_id
       JOIN public.branches br ON bb.branch_id = br.branch_id
-      WHERE bb.status = 'reserved'
+      WHERE bb.status = 'reserved' AND bb.branch_id = $1
       ORDER BY bb.reserve_date DESC, bb.expired_at ASC
-    `),
+    `, [branchId]),
     pool.query(`
       SELECT COUNT(*) as count
       FROM public.borrow_book
-      WHERE status = 'borrowed' AND borrow_date::date = CURRENT_DATE
-    `),
+      WHERE status = 'borrowed' AND borrow_date::date = CURRENT_DATE AND branch_id = $1
+    `, [branchId]),
   ]);
 
   const pickups = pickupsRes.rows.map((r) => ({
@@ -774,7 +791,7 @@ export const getPickupsService = async () => {
   };
 };
 
-export const getActiveBorrowings = async () => {
+export const getActiveBorrowings = async (branchId) => {
   const query = `
     SELECT 
       bb.borrow_id,
@@ -801,13 +818,13 @@ export const getActiveBorrowings = async () => {
     JOIN public.books b ON bb.book_id = b.book_id
     JOIN public.users u ON bb.user_id = u.user_id
     JOIN public.branches br ON bb.branch_id = br.branch_id
-    WHERE bb.status = 'borrowed'
+    WHERE bb.status = 'borrowed' AND bb.branch_id = $1
       AND NOT EXISTS (SELECT 1 FROM public.return_book rb WHERE rb.borrow_id = bb.borrow_id)
       AND NOT EXISTS (SELECT 1 FROM public.book_penalty bp WHERE bp.borrow_id = bb.borrow_id)
     ORDER BY bb.due_date ASC
   `;
 
-  const res = await pool.query(query);
+  const res = await pool.query(query, [branchId]);
   return res.rows.map((r) => ({
     borrow_id: r.borrow_id,
     user_id: r.user_id,

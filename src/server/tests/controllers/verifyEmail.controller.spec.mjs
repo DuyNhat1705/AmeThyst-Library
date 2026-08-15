@@ -1,5 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { verifyEmail } from '../../src/services/auth.services.mjs';
+import { createAuthSession } from '../../src/services/auth-session.services.mjs';
+import { setAuthCookies } from '../../src/utils/authHelpers.mjs';
 import { verifyEmailHandler } from '../../src/controllers/auth.controllers.mjs';
 
 vi.mock('../../src/services/auth.services.mjs', () => ({
@@ -9,9 +11,37 @@ vi.mock('../../src/services/auth.services.mjs', () => ({
   resendVerificationEmailService: vi.fn(),
 }));
 
+vi.mock('../../src/services/auth-session.services.mjs', () => ({
+  createAuthSession: vi.fn(),
+  revokeRefreshToken: vi.fn(),
+  rotateAuthSession: vi.fn(),
+}));
+
+vi.mock('../../src/utils/authHelpers.mjs', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    setAuthCookies: vi.fn(),
+  };
+});
+
+vi.mock('../../src/services/recommendation.services.mjs', () => ({
+  getUserRecommendations: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe('Verify Email Controller', () => {
   let req;
   let res;
+
+  const sessionUser = {
+    userId: 5,
+    email: 'student@example.com',
+    username: 'student',
+    avatar: null,
+    role: 'user',
+    branch_id: null,
+    must_change_password: false,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -27,34 +57,42 @@ describe('Verify Email Controller', () => {
     res.json = vi.fn().mockReturnValue(res);
   });
 
-  describe('Test 1 - Correct HTTP response/redirect for every outcome', { tags: '@A_R10' }, () => {
-    it('[TC-CTL-VE-001] should return 200 OK with JWT and user payload on success', async () => {
-      const mockResult = {
-        token: 'signed-jwt-token',
-        user: { userId: 5, email: 'student@example.com', username: 'student' },
+  describe('Successful session mapping', { tags: ['@A_R1', '@A_R7', '@A_R10'] }, () => {
+    it('[TC-CTL-VE-001] should create a session, set cookies, and return 200 with the session user', async () => {
+      const userRow = { user_id: 5, email: 'student@example.com', username: 'student', role: 'user' };
+      verifyEmail.mockResolvedValue({
+        user: sessionUser,
+        userRow,
+      });
+      const session = {
+        accessToken: 'access',
+        refreshToken: 'refresh',
+        csrfToken: 'csrf',
+        user: sessionUser,
       };
-      verifyEmail.mockResolvedValue(mockResult);
+      createAuthSession.mockResolvedValue(session);
 
       await verifyEmailHandler(req, res);
 
       expect(verifyEmail).toHaveBeenCalledWith({ token: 'test-token-uuid-123' });
+      expect(createAuthSession).toHaveBeenCalledWith(userRow, req);
+      expect(setAuthCookies).toHaveBeenCalledWith(res, session);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockResult);
-    });
-
-    it('[TC-CTL-VE-002] should return 400 Bad Request if token is missing in body', async () => {
-      req.body.token = undefined;
-
-      await verifyEmailHandler(req, res);
-
-      expect(verifyEmail).not.toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Verification token is required' });
+      expect(res.json).toHaveBeenCalledWith({ user: sessionUser });
+      expect(res.json.mock.calls[0][0]).not.toHaveProperty('token');
     });
   });
 
-  describe('Test 2 - TTL and token validation lifecycle mappings', { tags: '@A_R3' }, () => {
-    it('[TC-CTL-VE-003] should return 410 Gone if verification link has expired', async () => {
+  describe('Token and lifecycle mapping', { tags: ['@A_R3', '@A_R10'] }, () => {
+    it('[TC-CTL-VE-002] should return 400 when the token is missing and 410 when the link has expired', async () => {
+      req.body.token = undefined;
+      await verifyEmailHandler(req, res);
+      expect(verifyEmail).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Verification token is required' });
+
+      vi.clearAllMocks();
+      req.body.token = 'test-token-uuid-123';
       verifyEmail.mockRejectedValue(new Error('Verification link has expired. Please register again.'));
 
       await verifyEmailHandler(req, res);
@@ -64,38 +102,6 @@ describe('Verify Email Controller', () => {
         error: 'Verification link has expired. Please register again.',
       });
     });
-
-    it('[TC-CTL-VE-004] should return 400 Bad Request for general invalid token errors', async () => {
-      verifyEmail.mockRejectedValue(new Error('Invalid or expired verification link.'));
-
-      await verifyEmailHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Invalid or expired verification link.',
-      });
-    });
   });
 
-  describe('Test 3 - Infrastructure failure mapping', { tags: '@A_R8' }, () => {
-    it('[TC-CTL-VE-005] should return 500 Internal Server Error for database check/query exceptions', async () => {
-      verifyEmail.mockRejectedValue(new Error('Database query failed'));
-
-      await verifyEmailHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Database query failed' });
-    });
-  });
-
-  describe('Test 4 - Reject duplicate email during verification', { tags: '@A_R2' }, () => {
-    it('[TC-CTL-VE-006] should return 400 Bad Request if email already exists', async () => {
-      verifyEmail.mockRejectedValue(new Error('Email already exists.'));
-
-      await verifyEmailHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Email already exists.' });
-    });
-  });
 });

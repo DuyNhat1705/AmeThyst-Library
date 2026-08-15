@@ -2,6 +2,8 @@ import 'sharp';
 import './config/env.mjs';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import http from 'http';
 import passport from './config/passport.mjs';
 import { initSocket } from './config/socket.mjs';
@@ -18,19 +20,38 @@ import announcementRoutes from './routes/announcement.routes.mjs';
 import { runStartupCleanup as runStartupAnnouncementCleanup, startPeriodicCleanup as startPeriodicAnnouncementCleanup } from './utils/announcementScheduler.mjs';
 import wishlistRoutes from './routes/wishlist.routes.mjs';
 import recommendationRoutes from './routes/recommendation.routes.mjs';
-import { initScheduler } from './services/scheduler.services.mjs';
+import { stopPythonServer } from './services/recommendation.services.mjs';
+import { initScheduler, stopSchedulerChildren } from './services/scheduler.services.mjs';
 import studyGroupRoutes from './routes/study-group.routes.mjs';
 import systemConfigurationRoutes from './routes/system-configuration.routes.mjs';
 import { systemConfigurationService } from './services/system-configuration.services.mjs';
 import adminRoutes from './routes/admin.routes.mjs';
 import statisticsRoutes from './routes/statistics.routes.mjs';
 import authorizationRoutes from './routes/authorization.routes.mjs';
+import { getAllowedOrigins, validateEnvironment } from './config/env.mjs';
+import { globalApiLimiter, verifyCsrf } from './middlewares/security.middleware.mjs';
 
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = getAllowedOrigins();
+app.set('trust proxy', 1);
+app.use(helmet());
+app.use(cors({
+  credentials: true,
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS.'));
+  },
+}));
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: false, limit: '100kb' }));
+app.use(cookieParser());
+app.use(globalApiLimiter);
+app.use(verifyCsrf);
 app.use(passport.initialize());
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard/user', dashboardRoutes);
@@ -54,6 +75,7 @@ const server = http.createServer(app);
 
 const startServer = async () => {
   try {
+    validateEnvironment();
     await systemConfigurationService.initialize();
     initSocket(server);
     runStartupPinCleanup();
@@ -70,6 +92,25 @@ const startServer = async () => {
   }
 };
 
+app.use((error, req, res, next) => {
+  if (error?.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body is too large.' } });
+  }
+  if (error?.message === 'Origin is not allowed by CORS.') {
+    return res.status(403).json({ success: false, error: { code: 'CORS_ORIGIN_DENIED', message: error.message } });
+  }
+  return next(error);
+});
+
 startServer();
+
+const shutdown = (signal) => {
+  stopPythonServer();
+  stopSchedulerChildren();
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 5000).unref();
+};
+process.once('SIGINT', () => shutdown('SIGINT'));
+process.once('SIGTERM', () => shutdown('SIGTERM'));
 
 export { app, server, startServer };

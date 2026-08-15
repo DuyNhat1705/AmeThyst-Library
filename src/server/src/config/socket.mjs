@@ -1,75 +1,63 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import pool from './postgres.mjs';
+import { getAllowedOrigins } from './env.mjs';
+import { ACCESS_COOKIE, JWT_AUDIENCE, JWT_ISSUER } from '../utils/authHelpers.mjs';
 
 let io;
 
-/**
- * Khởi tạo Socket.IO, gắn vào HTTP server có sẵn
- * @param {http.Server} server
- * @returns {Server} io instance
- */
+const parseCookies = (header = '') => Object.fromEntries(
+  String(header).split(';').map((part) => {
+    const [key, ...value] = part.trim().split('=');
+    return [key, decodeURIComponent(value.join('='))];
+  }).filter(([key]) => key),
+);
+
 export const initSocket = (server) => {
   io = new Server(server, {
-    cors: {
-      origin: '*', // production nên thay bằng domain frontend cụ thể
-      methods: ['GET', 'POST']
-    }
+    cors: { origin: getAllowedOrigins(), credentials: true, methods: ['GET', 'POST'] },
   });
 
-  // Middleware xác thực bằng JWT + kiểm tra token_version
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth?.token;
+      const cookies = parseCookies(socket.handshake.headers.cookie);
+      const token = cookies[ACCESS_COOKIE] || socket.handshake.auth?.token;
       if (!token) return next(new Error('Authentication error: No token provided'));
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+        algorithms: ['HS256'], issuer: JWT_ISSUER, audience: JWT_AUDIENCE,
+      });
       if (!decoded?.userId) return next(new Error('Authentication error: Token has no userId'));
-
       const result = await pool.query(
-        'SELECT token_version FROM public.users WHERE user_id = $1',
-        [decoded.userId]
+        'SELECT token_version, status, role, branch_id FROM public.users WHERE user_id = $1',
+        [decoded.userId],
       );
       const stored = result.rows[0];
-      if (!stored || (decoded.token_version ?? 0) !== (stored.token_version ?? 0)) {
-        return next(new Error('Authentication error: Token version mismatch'));
+      if (!stored || stored.status !== 'active' || (decoded.token_version ?? 0) !== (stored.token_version ?? 0)) {
+        return next(new Error('Authentication error: Account or token is no longer valid'));
       }
-
       socket.userId = decoded.userId;
-      socket.branchId = decoded.branch_id ?? null;
-      socket.role = decoded.role;
-      next();
-    } catch (err) {
-      next(new Error('Authentication error: Invalid token'));
+      socket.branchId = stored.branch_id ?? null;
+      socket.role = stored.role;
+      return next();
+    } catch {
+      return next(new Error('Authentication error: Invalid token'));
     }
   });
 
-  // Xử lý kết nối
   io.on('connection', (socket) => {
-    console.log(`User ${socket.userId} connected via socket ${socket.id}`);
-
     socket.join(`user:${socket.userId}`);
-    if (socket.branchId != null) {
-      socket.join(`branch:${socket.branchId}`);
-    }
-
-    socket.on('disconnect', () => {
-      console.log(`User ${socket.userId} disconnected`);
-    });
+    if (socket.branchId != null) socket.join(`branch:${socket.branchId}`);
   });
-
   return io;
 };
 
-/**
- * Lấy lại io instance ở bất kỳ đâu (controller, service...)
- * @returns {Server} io instance
- */
 export const getIO = () => {
-  if (!io) {
-    throw new Error('Socket.io chưa được khởi tạo. Gọi initSocket(server) trước.');
-  }
+  if (!io) throw new Error('Socket.io has not been initialized.');
   return io;
+};
+
+export const disconnectUserSockets = (userId) => {
+  if (io && userId) io.in(`user:${userId}`).disconnectSockets(true);
 };
 
 export const emitStudyGroupChanged = (groupId, changeType) => {
@@ -81,9 +69,7 @@ export const emitUserNotification = (userId, notification) => {
 };
 
 export const emitRoomDashboardChanged = (branchId, changeType) => {
-  if (io && branchId != null) {
-    io.to(`branch:${branchId}`).emit('room-dashboard:changed', { changeType, branchId });
-  }
+  if (io && branchId != null) io.to(`branch:${branchId}`).emit('room-dashboard:changed', { changeType, branchId });
 };
 
 export const emitAuthorizationChanged = (entry) => {

@@ -4,6 +4,8 @@ import React from 'react';
 import Image from 'next/image';
 import mapCs1 from '../../assets/MapImages/map_cs1.png';
 import mapCs2 from '../../assets/MapImages/map_cs2.png';
+import { localizedRoomName } from '../../utils/room';
+import { useI18n } from '../../providers/I18nProvider';
 
 interface FloorMapProps {
   activeMap: 'Map1' | 'Map2';
@@ -12,15 +14,32 @@ interface FloorMapProps {
 }
 
 export default function FloorMap({ activeMap, onRoomClick, selectedRoomId }: FloorMapProps) {
+  const { t } = useI18n();
+
   // Styles for interactive rooms
   const getInteractiveClass = (roomId: number) => {
     const isSelected = selectedRoomId === roomId;
-    return `transition-all duration-200 cursor-pointer pointer-events-auto ${
+    return `transition-all duration-200 cursor-pointer pointer-events-auto focus:outline-none ${
       isSelected
         ? 'opacity-100 fill-cyan-500/40 stroke-cyan-500 stroke-[3] filter drop-shadow'
-        : 'opacity-0 hover:opacity-100 fill-cyan-300/10 stroke-cyan-300/30 hover:fill-cyan-500/25 hover:stroke-cyan-500 hover:stroke-[2]'
+        : 'opacity-0 hover:opacity-100 focus:opacity-100 fill-cyan-300/10 stroke-cyan-300/30 hover:fill-cyan-500/25 focus:fill-cyan-500/25 hover:stroke-cyan-500 focus:stroke-cyan-500 hover:stroke-[2] focus:stroke-[2]'
     }`;
   };
+
+  const handleRoomKeyDown = (e: React.KeyboardEvent, roomId: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onRoomClick(roomId);
+    }
+  };
+
+  const interactiveRoomProps = (roomId: number) => ({
+    tabIndex: 0,
+    role: 'button',
+    'aria-label': localizedRoomName(t, roomId, `Room ${roomId}`),
+    onClick: () => onRoomClick(roomId),
+    onKeyDown: (e: React.KeyboardEvent) => handleRoomKeyDown(e, roomId),
+  });
 
   return (
     <div className="relative w-full overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 shadow-lg">
@@ -46,20 +65,20 @@ export default function FloorMap({ activeMap, onRoomClick, selectedRoomId }: Flo
               preserveAspectRatio="xMidYMid meet"
             >
               {/* Interactive Spaces */}
-              <rect id="locker" x="999" y="475" width="178" height="282" rx="4" className={getInteractiveClass(6)} onClick={() => onRoomClick(6)} />
-              <rect id="meetingRoom1" x="430" y="273" width="310" height="194" rx="4" className={getInteractiveClass(1)} onClick={() => onRoomClick(1)} />
-              <rect id="computerArea1" x="126" y="659" width="240" height="79" rx="4" className={getInteractiveClass(7)} onClick={() => onRoomClick(7)} />
-              <rect id="table1" x="70" y="383" width="69" height="107" rx="4" className={getInteractiveClass(11)} onClick={() => onRoomClick(11)} />
-              <rect id="computerArea2" x="36" y="576" width="57" height="126" rx="4" className={getInteractiveClass(8)} onClick={() => onRoomClick(8)} />
-              <rect id="table2" x="756" y="320" width="69" height="107" rx="4" className={getInteractiveClass(12)} onClick={() => onRoomClick(12)} />
-              <rect id="circlebookshelf" x="797" y="519" width="81" height="87" rx="40" className={getInteractiveClass(13)} onClick={() => onRoomClick(13)} />
-              <rect id="reception" x="735" y="646" width="164" height="44" rx="4" className={getInteractiveClass(14)} onClick={() => onRoomClick(14)} />
-              <rect id="lounge1" x="150" y="417" width="221" height="209" rx="4" className={getInteractiveClass(4)} onClick={() => onRoomClick(4)} />
-              <rect id="lounge2" x="934" y="232" width="158" height="185" rx="4" className={getInteractiveClass(5)} onClick={() => onRoomClick(5)} />
-              <rect id="studyZone2" x="284" y="81" width="98" height="276" rx="4" className={getInteractiveClass(10)} onClick={() => onRoomClick(10)} />
-              <rect id="meetingRoom2" x="425" y="626" width="295" height="123" rx="4" className={getInteractiveClass(2)} onClick={() => onRoomClick(2)} />
-              <rect id="meetingRoom3" x="962" y="0" width="215" height="182" rx="4" className={getInteractiveClass(3)} onClick={() => onRoomClick(3)} />
-              <rect id="studyZone1" x="460" y="68" width="440" height="100" rx="4" className={getInteractiveClass(9)} onClick={() => onRoomClick(9)} />
+              <rect id="locker" x="999" y="475" width="178" height="282" rx="4" className={getInteractiveClass(6)} {...interactiveRoomProps(6)} />
+              <rect id="meetingRoom1" x="430" y="273" width="310" height="194" rx="4" className={getInteractiveClass(1)} {...interactiveRoomProps(1)} />
+              <rect id="computerArea1" x="126" y="659" width="240" height="79" rx="4" className={getInteractiveClass(7)} {...interactiveRoomProps(7)} />
+              <rect id="table1" x="70" y="383" width="69" height="107" rx="4" className={getInteractiveClass(11)} {...interactiveRoomProps(11)} />
+              <rect id="computerArea2" x="36" y="576" width="57" height="126" rx="4" className={getInteractiveClass(8)} {...interactiveRoomProps(8)} />
+              <rect id="table2" x="756" y="320" width="69" height="107" rx="4" className={getInteractiveClass(12)} {...interactiveRoomProps(12)} />
+              <rect id="circlebookshelf" x="797" y="519" width="81" height="87" rx="40" className={getInteractiveClass(13)} {...interactiveRoomProps(13)} />
+              <rect id="reception" x="735" y="646" width="164" height="44" rx="4" className={getInteractiveClass(14)} {...interactiveRoomProps(14)} />
+              <rect id="lounge1" x="150" y="417" width="221" height="209" rx="4" className={getInteractiveClass(4)} {...interactiveRoomProps(4)} />
+              <rect id="lounge2" x="934" y="232" width="158" height="185" rx="4" className={getInteractiveClass(5)} {...interactiveRoomProps(5)} />
+              <rect id="studyZone2" x="284" y="81" width="98" height="276" rx="4" className={getInteractiveClass(10)} {...interactiveRoomProps(10)} />
+              <rect id="meetingRoom2" x="425" y="626" width="295" height="123" rx="4" className={getInteractiveClass(2)} {...interactiveRoomProps(2)} />
+              <rect id="meetingRoom3" x="962" y="0" width="215" height="182" rx="4" className={getInteractiveClass(3)} {...interactiveRoomProps(3)} />
+              <rect id="studyZone1" x="460" y="68" width="440" height="100" rx="4" className={getInteractiveClass(9)} {...interactiveRoomProps(9)} />
 
               {/* Bookshelves (Non-Interactive, just visual layout elements) */}
               <g className="opacity-40">
@@ -101,15 +120,15 @@ export default function FloorMap({ activeMap, onRoomClick, selectedRoomId }: Flo
               preserveAspectRatio="xMidYMid meet"
             >
               {/* Interactive Spaces */}
-              <rect id="meetingRoom3" x="542" y="593" width="386" height="204" rx="4" className={getInteractiveClass(17)} onClick={() => onRoomClick(17)} />
-              <rect id="lounge" x="407" y="269" width="276" height="256" rx="4" className={getInteractiveClass(18)} onClick={() => onRoomClick(18)} />
-              <rect id="meetingRoom1" x="0" y="0" width="287" height="216" rx="4" className={getInteractiveClass(15)} onClick={() => onRoomClick(15)} />
-              <rect id="meetingRoom2" x="0" y="400" width="244" height="407" rx="4" className={getInteractiveClass(16)} onClick={() => onRoomClick(16)} />
-              <rect id="locker" x="602" y="18" width="117" height="164" rx="4" className={getInteractiveClass(19)} onClick={() => onRoomClick(19)} />
-              <rect id="reception" x="805" y="60" width="54" height="136" rx="4" className={getInteractiveClass(23)} onClick={() => onRoomClick(23)} />
-              <rect id="studyZone1" x="707" y="296" width="127" height="209" rx="4" className={getInteractiveClass(20)} onClick={() => onRoomClick(20)} />
-              <rect id="studyZone2" x="38" y="269" width="210" height="91" rx="4" className={getInteractiveClass(21)} onClick={() => onRoomClick(21)} />
-              <rect id="computerCenter" x="305" y="287" width="87" height="91" rx="4" className={getInteractiveClass(22)} onClick={() => onRoomClick(22)} />
+              <rect id="meetingRoom3" x="542" y="593" width="386" height="204" rx="4" className={getInteractiveClass(17)} {...interactiveRoomProps(17)} />
+              <rect id="lounge" x="407" y="269" width="276" height="256" rx="4" className={getInteractiveClass(18)} {...interactiveRoomProps(18)} />
+              <rect id="meetingRoom1" x="0" y="0" width="287" height="216" rx="4" className={getInteractiveClass(15)} {...interactiveRoomProps(15)} />
+              <rect id="meetingRoom2" x="0" y="400" width="244" height="407" rx="4" className={getInteractiveClass(16)} {...interactiveRoomProps(16)} />
+              <rect id="locker" x="602" y="18" width="117" height="164" rx="4" className={getInteractiveClass(19)} {...interactiveRoomProps(19)} />
+              <rect id="reception" x="805" y="60" width="54" height="136" rx="4" className={getInteractiveClass(23)} {...interactiveRoomProps(23)} />
+              <rect id="studyZone1" x="707" y="296" width="127" height="209" rx="4" className={getInteractiveClass(20)} {...interactiveRoomProps(20)} />
+              <rect id="studyZone2" x="38" y="269" width="210" height="91" rx="4" className={getInteractiveClass(21)} {...interactiveRoomProps(21)} />
+              <rect id="computerCenter" x="305" y="287" width="87" height="91" rx="4" className={getInteractiveClass(22)} {...interactiveRoomProps(22)} />
 
               {/* Bookshelves (Non-Interactive, just visual layout elements) */}
               <g className="opacity-40">

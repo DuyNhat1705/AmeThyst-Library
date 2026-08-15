@@ -238,9 +238,10 @@ export const createStudyGroup = async (userId, input) => {
   if (!metadata.title || !metadata.description || !metadata.subject || !/\p{L}/u.test(metadata.title) || !/\p{L}/u.test(metadata.subject) || metadata.requirements.length > 5) fail('VALIDATION_ERROR', 'Valid title, description, subject, and up to five optional requirements are required.');
   try {
     return await model.withTransaction(async (client) => {
-      const slot = await model.findSlotForCreation(input.availId, client);
+      const slot = await model.findSlotForCreation(input.availId, input.startDate, client);
       if (!slot) fail('NOT_FOUND', 'Room availability slot not found.', 404);
       if (slot.capacity < 1) fail('INVALID_CAPACITY', 'The selected room cannot host a Study Group.', 409);
+      if (slot.occupied) fail('SLOT_UNAVAILABLE', 'This room slot is no longer available.', 409);
       const reservation = await model.insertReservation({ userId, availId: input.availId, startDate: input.startDate }, client);
       const group = await model.insertStudyGroup({ userId, reserveId: reservation.reserveId, ...metadata, capacity: slot.capacity }, client);
       return getDetail(group.groupId, userId, client);

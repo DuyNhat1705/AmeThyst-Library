@@ -1,12 +1,11 @@
 "use client";
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AuthActions } from '../molecules';
 import { ThemeToggle } from '../atoms/ThemeToggle';
 import { LanguageToggle } from '../atoms/LanguageToggle';
 import { useI18n } from '../../providers/I18nProvider';
-import { getLoggedInUser, getDashboardPath, getLoggedInUserInitials } from '../../utils/user';
+import { getDashboardPath, getLoggedInUserInitials, useStoredUser } from '../../utils/user';
 import NotificationBell from '../molecules/NotificationBell';
 import UserAvatar from '../atoms/UserAvatar';
 
@@ -17,19 +16,12 @@ interface NavBarProps {
 export default function NavBar({ variant = 'default' }: NavBarProps) {
   const pathname = usePathname();
   const { locale, t } = useI18n();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
-  const user = mounted ? getLoggedInUser() : null;
+  const user = useStoredUser();
   const isAdminVariant = variant === 'admin' || user?.role === 'admin';
 
   const navItems = [
     { label: t('navbar.library'), href: '/library' },
-    { label: t('navbar.dashboard'), href: getDashboardPath(user) },
+    { label: t('navbar.dashboard'), href: getDashboardPath(user) || '/login?returnTo=/dashboard/user' },
     { label: t('navbar.study_together'), href: '/study-together' },
     { label: t('navbar.library_map'), href: '/map' }
   ];

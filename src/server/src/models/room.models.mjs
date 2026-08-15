@@ -388,6 +388,22 @@ export const createReservation = async (userId, availId, startDate, client = poo
   return result.rows[0];
 };
 
+export const lockReservationSlot = async (availId, startDate, client = pool) => {
+  const slot = await client.query(
+    'SELECT avail_id FROM public.room_avail WHERE avail_id = $1 FOR UPDATE',
+    [availId],
+  );
+  if (!slot.rows[0]) return { exists: false, occupied: false };
+  const occupied = await client.query(
+    `SELECT reserve_id FROM public.reserve_room
+     WHERE avail_id = $1 AND start_date = $2
+       AND status IN ('pending', 'reserved', 'used')
+     LIMIT 1`,
+    [availId, startDate],
+  );
+  return { exists: true, occupied: Boolean(occupied.rows[0]) };
+};
+
 /**
  * Reads the user's active room reservation counter.
  * @param {string} userId

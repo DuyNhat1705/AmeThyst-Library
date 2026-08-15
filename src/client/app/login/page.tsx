@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import LoginTemplate from '../components/templates/LoginTemplate';
 import { LoginBrandPanel, LoginFormCard } from '../components/organisms';
-import { useRedirectIfLoggedIn, getRedirectPathForUser } from '../utils/user';
+import { useRedirectIfLoggedIn, getRedirectPathForUser, setCurrentUser, type StoredUser } from '../utils/user';
 import { useI18n } from '../providers/I18nProvider';
 import { mapServerError } from '../utils/errors';
+import { apiFetch } from '../utils/apiClient';
 
 export default function LoginPage() {
   const { t } = useI18n();
@@ -28,32 +29,26 @@ export default function LoginPage() {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const result = await apiFetch<{ user: StoredUser }>('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
       });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || t('auth.login_failed'));
-      }
-
-      const data = await res.json();
-      sessionStorage.setItem('token', data.token);
-      sessionStorage.setItem('user', JSON.stringify(data.user));
+      if (!result.success || !result.data?.user) throw new Error(result.message || t('auth.login_failed'));
+      const user = result.data.user;
+      setCurrentUser(user);
 
       setState(prev => ({ ...prev, isLoading: false, isSuccess: true }));
 
       // Redirect to dashboard
       setTimeout(() => {
-        if (data.user?.must_change_password) {
+        if (user.must_change_password) {
           window.location.href = '/profile/security';
           return;
         }
         const requestedPath = new URLSearchParams(window.location.search).get('returnTo');
         const safeReturnPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : null;
-        window.location.href = safeReturnPath || getRedirectPathForUser(data.user);
+        window.location.href = safeReturnPath || getRedirectPathForUser(user);
       }, 500);
     } catch (err: unknown) {
       console.error('Login error:', err);

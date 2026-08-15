@@ -47,8 +47,8 @@ export default function StudyGroupInvitationModal({
         {selected.content && <p className="mb-4 rounded-lg border-l-4 border-[#7798A6] bg-[#EDF3F4] px-4 py-3 text-sm dark:bg-neutral-800">{selected.content}</p>}
         {error && <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-300">{error}</p>}
         <div className="flex justify-end gap-3">
-          <button disabled={acting} onClick={() => void decide(selected, 'deny')} className="rounded-xl border border-[#AEB3B7] px-5 py-2.5 text-sm font-bold">{t('study_group.deny_invitation')}</button>
-          <button disabled={acting} onClick={() => void decide(selected, 'accept')} className="rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60">{acting ? t('study_group.processing') : t('study_group.accept_invitation')}</button>
+          <button disabled={acting} onClick={() => void decide(selected, 'deny')} className="rounded-xl border border-[#AEB3B7] px-5 py-2.5 text-sm font-bold transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700">{t('study_group.deny_invitation')}</button>
+          <button disabled={acting} onClick={() => void decide(selected, 'accept')} className="rounded-xl bg-[#0A3240] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60 transition-colors hover:bg-[#164A59]">{acting ? t('study_group.processing') : t('study_group.accept_invitation')}</button>
         </div>
       </div>
     </div>

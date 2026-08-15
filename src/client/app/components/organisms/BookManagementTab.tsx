@@ -37,12 +37,11 @@ export default function BookManagementTab() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const requestOptions: RequestInit = { credentials: 'include' };
 
       // 1. Fetch Branches list
       try {
-        const branchesRes = await fetch(`${API_BASE}/api/branches`, { headers });
+        const branchesRes = await fetch(`${API_BASE}/api/branches`, requestOptions);
         if (branchesRes.ok) {
           const bData = await branchesRes.json();
           setBranches(Array.isArray(bData) ? bData : bData.branches || bData.data || []);
@@ -55,7 +54,7 @@ export default function BookManagementTab() {
       let fetchedBooks: any[] = [];
 
       try {
-        const booksRes = await fetch(`${API_BASE}/api/library/books?limit=20000`, { headers });
+        const booksRes = await fetch(`${API_BASE}/api/library/books?limit=100`, requestOptions);
         if (booksRes.ok) {
           const booksData = await booksRes.json();
           fetchedBooks = booksData.books || booksData.data || (Array.isArray(booksData) ? booksData : []);
@@ -67,7 +66,7 @@ export default function BookManagementTab() {
       // Fallback: If /api/library/books returned no records, try /api/books
       if (!fetchedBooks || fetchedBooks.length === 0) {
         try {
-          const fallbackRes = await fetch(`${API_BASE}/api/books`, { headers });
+          const fallbackRes = await fetch(`${API_BASE}/api/books?limit=100`, requestOptions);
           if (fallbackRes.ok) {
             const fallbackData = await fallbackRes.json();
             fetchedBooks = fallbackData.data || fallbackData.books || (Array.isArray(fallbackData) ? fallbackData : []);

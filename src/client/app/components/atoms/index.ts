@@ -9,6 +9,7 @@ export * from './PasswordInput';
 export { default as ActionButton } from './ActionButton';
 export { default as Badge } from './Badge';
 export { default as Toast } from './Toast';
+export { default as NetworkStatusBanner } from './NetworkStatusBanner';
 export { default as StatusBadge } from './StatusBadge';
 export { default as Amount } from './Amount';
 export * from './CustomSelect';

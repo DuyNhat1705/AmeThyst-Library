@@ -3,12 +3,11 @@
 import React, { useState, useMemo } from 'react';
 import { FormField } from '../molecules';
 import { Button, SecurityIndicator, ErrorMessage, PasswordInput } from '../atoms';
-import { getAuthToken, updateStoredUser } from '../../utils/user';
+import { setCurrentUser } from '../../utils/user';
 import { calculatePasswordStrength, validateNewPassword } from '../../utils/password';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
-
-const API = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch } from '../../utils/apiClient';
 
 export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogleAccount?: boolean }) {
   const { t } = useI18n();
@@ -35,26 +34,17 @@ export default function SecurityFormCard({ isGoogleAccount = false }: { isGoogle
     setIsLoading(true);
 
     try {
-      const token = getAuthToken();
-      const res = await fetch(`${API}/user/profile/password`, {
+      const result = await apiFetch('/user/profile/password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ currentPassword: password, newPassword }),
       });
+      if (!result.success) throw new Error(result.message || 'Failed to update password');
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to update password');
-      }
-
-      updateStoredUser({ must_change_password: false });
-      setSuccess(t('profile.password_changed'));
-      setPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setCurrentUser(null);
+      window.location.assign('/login?passwordChanged=1');
     } catch (err: unknown) {
       const raw = err instanceof Error ? err.message : undefined;
       setError(mapServerError(raw, t, 'profile.password_update_failed'));

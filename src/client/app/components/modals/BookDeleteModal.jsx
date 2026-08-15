@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { authHeaders } from '../../utils/apiClient';
 
 export default function BookDeleteModal({ isOpen, onClose, onSuccess, book, targetBranchId = null }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -31,10 +32,10 @@ export default function BookDeleteModal({ isOpen, onClose, onSuccess, book, targ
         url += `?branch_id=${targetBranchId}`;
       }
 
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(url, {
         method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        headers: await authHeaders(),
+        credentials: 'include',
       });
 
       const data = await res.json();

@@ -13,8 +13,11 @@ import { uploadToCloudinary } from '../services/user.services.mjs';
 
 const getAllBooks = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 24;
+    const page = req.query.page === undefined ? 1 : Number(req.query.page);
+    const limit = req.query.limit === undefined ? 24 : Number(req.query.limit);
+    if (!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return res.status(400).json({ error: 'page must be >= 1 and limit must be between 1 and 100' });
+    }
     const { genres, branches, availableOnly, startYear, endYear } = req.query;
 
     const filters = {
@@ -107,7 +110,12 @@ const createBook = async (req, res) => {
     res.status(201).json({ success: true, data: createdBook });
   } catch (error) {
     console.error('Error in createBook controller:', error);
-    res.status(500).json({ error: error.message || 'Failed to create book' });
+    const statusCode = error.statusCode || (error.code === '23505' ? 400 : 500);
+    res.status(statusCode).json({
+      success: false,
+      error: error.message || 'Failed to create book',
+      code: error.code || 'CREATE_BOOK_FAILED'
+    });
   }
 };
 
@@ -118,7 +126,12 @@ const updateBook = async (req, res) => {
     res.json({ success: true, data: updatedBook });
   } catch (error) {
     console.error('Error in updateBook controller:', error);
-    res.status(500).json({ error: error.message || 'Failed to update book' });
+    const statusCode = error.statusCode || (error.code === '23505' ? 400 : 500);
+    res.status(statusCode).json({
+      success: false,
+      error: error.message || 'Failed to update book',
+      code: error.code || 'UPDATE_BOOK_FAILED'
+    });
   }
 };
 

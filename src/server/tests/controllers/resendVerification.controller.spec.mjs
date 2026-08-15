@@ -9,6 +9,8 @@ vi.mock('../../src/services/auth.services.mjs', () => ({
   verifyEmail: vi.fn(),
 }));
 
+const RESEND_GENERIC = 'If a pending registration exists, a verification message will be sent.';
+
 describe('Resend Verification Controller', () => {
   let req;
   let res;
@@ -27,21 +29,18 @@ describe('Resend Verification Controller', () => {
     res.json = vi.fn().mockReturnValue(res);
   });
 
-  describe('Test 1 - Correct HTTP response/redirect for every outcome', { tags: '@A_R10' }, () => {
-    it('[TC-CTL-RV-001] should return 200 OK with success message on success', async () => {
-      const mockResult = { message: 'Verification email resent successfully.' };
-      resendVerificationEmailService.mockResolvedValue(mockResult);
+  describe('Successful and validation mapping', { tags: ['@A_R4', '@A_R10'] }, () => {
+    it('[TC-CTL-RV-001] should pass through the generic 200 body and reject a missing email with 400', async () => {
+      resendVerificationEmailService.mockResolvedValue({ message: RESEND_GENERIC });
 
       await resendVerification(req, res);
 
       expect(resendVerificationEmailService).toHaveBeenCalledWith({ email: 'resend@example.com' });
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockResult);
-    });
+      expect(res.json).toHaveBeenCalledWith({ message: RESEND_GENERIC });
 
-    it('[TC-CTL-RV-002] should return 400 Bad Request if email is missing in request body', async () => {
+      vi.clearAllMocks();
       req.body.email = undefined;
-
       await resendVerification(req, res);
 
       expect(resendVerificationEmailService).not.toHaveBeenCalled();
@@ -50,27 +49,14 @@ describe('Resend Verification Controller', () => {
     });
   });
 
-  describe('Test 2 - Infrastructure failure mapping (500 vs 400)', { tags: ['@A_R4', '@A_R8'] }, () => {
-    it('[TC-CTL-RV-003] should return 400 Bad Request if service throws "No pending..." exception', async () => {
-      resendVerificationEmailService.mockRejectedValue(
-        new Error('No pending registration found for this email. Please register again.')
-      );
-
-      await resendVerification(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'No pending registration found for this email. Please register again.',
-      });
-    });
-
-    it('[TC-CTL-RV-004] should return 500 Internal Server Error for unexpected database or mailer failures', async () => {
+  describe('Infrastructure catch mapping', { tags: ['@A_R8', '@A_R10'] }, () => {
+    it('[TC-CTL-RV-002] should return 200 with the generic message when the service throws', async () => {
       resendVerificationEmailService.mockRejectedValue(new Error('PostgreSQL database query failure'));
 
       await resendVerification(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'PostgreSQL database query failure' });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: RESEND_GENERIC });
     });
   });
 });

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../../../providers/I18nProvider';
 import { apiFetch } from '../../../utils/apiClient';
-import { isAdminRole } from '../../../utils/roles';
 import StatisticsHeaderFilter from '../../../components/admin/statistics/StatisticsHeaderFilter';
 import KpiSummaryRow from '../../../components/admin/statistics/KpiSummaryRow';
 import TopCategoriesBarChart from '../../../components/admin/statistics/TopCategoriesBarChart';
@@ -68,25 +67,6 @@ export default function AdminStatisticsPage() {
     }>;
   }>({});
 
-  // Check admin role from local user session
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          if (user?.role && !isAdminRole(user.role)) {
-            setIsAuthorized(false);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        console.error('Failed to parse user role from storage:', err);
-      }
-    }
-  }, []);
-
   const fetchStatistics = useCallback(async () => {
     if (!isAuthorized) return;
     setLoading(true);
@@ -130,7 +110,7 @@ export default function AdminStatisticsPage() {
           {t('admin.unauthorized_access')}
         </h2>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-md">
-          This function is restricted to system administrator accounts only.
+          {t('admin.unauthorized_desc')}
         </p>
       </div>
     );
@@ -149,7 +129,7 @@ export default function AdminStatisticsPage() {
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-black/20 dark:border-white/20 border-t-black dark:border-t-white rounded-full animate-spin" />
             <span className="text-sm font-medium text-stone-500 dark:text-neutral-400">
-              Loading statistics...
+              {t('admin.loading_statistics')}
             </span>
           </div>
         </div>
@@ -161,7 +141,7 @@ export default function AdminStatisticsPage() {
             onClick={fetchStatistics}
             className="px-4 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition"
           >
-            Retry
+            {t('admin.retry')}
           </button>
         </div>
       ) : (

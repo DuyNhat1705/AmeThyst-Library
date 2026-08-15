@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import ProfileTemplate from '../components/templates/ProfileTemplate';
-import { useRequireAuth, getAuthToken, updateStoredUser, logoutUser } from '../utils/user';
+import { useRequireAuth, updateStoredUser, logoutUser } from '../utils/user';
+import { apiFetch } from '../utils/apiClient';
 import { useI18n } from '../providers/I18nProvider';
 import { FormField, ProfileSectionCard } from '../components/molecules';
 import { CustomSelect, Label } from '../components/atoms';
@@ -66,11 +67,8 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = getAuthToken();
-    if (!token) return;
-
     fetch(`${API}/user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
     })
       .then((r) => {
         if (r.status === 401) {
@@ -131,7 +129,6 @@ export default function ProfilePage() {
   };
 
   const handleSaveChanges = async () => {
-    const token = getAuthToken();
     const body: Record<string, any> = {};
 
     // Validate Full Name
@@ -179,27 +176,15 @@ export default function ProfilePage() {
     try {
       setError('');
       setMessage('');
-      const res = await fetch(`${API}/user/profile`, {
+      const result = await apiFetch<Record<string, any>>('/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       });
-
-      if (res.status === 401) {
-        logoutUser();
-        window.location.href = '/login';
-        return;
-      }
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || t('profile.update_failed'));
-      }
-
-      const updated = await res.json();
+      if (!result.success || !result.data) throw new Error(result.message || t('profile.update_failed'));
+      const updated = result.data;
 
       const formatBirthDate = updated.birthDate
         ? new Date(updated.birthDate).toISOString().split('T')[0]

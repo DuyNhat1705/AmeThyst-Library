@@ -6,7 +6,6 @@ import { Button } from '../atoms';
 import FilterDropdown from '../molecules/FilterDropdown';
 import HistoryLogRow from '../molecules/HistoryLogRow';
 import { getHistory, type HistoryEntry, type HistoryResult } from '../../utils/authorizationApi';
-import { getAuthToken } from '../../utils/user';
 import { getSocket } from '../../config/socket';
 
 const LIMIT = 20;
@@ -53,9 +52,7 @@ export default function AuthorizationHistoryPanel() {
   }, [fetchHistory]);
 
   useEffect(() => {
-    const token = getAuthToken();
-    if (!token) return;
-    const socket = getSocket(token);
+    const socket = getSocket();
     if (!socket.connected) socket.connect();
 
     const handleChange = (entry: HistoryEntry) => {

@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import en from '../locales/en.json';
 import vi from '../locales/vi.json';
 
@@ -33,11 +33,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('locale', locale);
   }, [locale, mounted]);
 
-  const toggleLocale = () => {
+  const toggleLocale = useCallback(() => {
     setLocale((prev) => (prev === 'en' ? 'vi' : 'en'));
-  };
+  }, []);
 
-  const t = (key: string, params?: Record<string, string | number>): string => {
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     
     // Attempt lookup in current active dictionary
@@ -83,10 +83,12 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       return result;
     }
     return key;
-  };
+  }, [locale]);
+
+  const contextValue = useMemo(() => ({ locale, t, toggleLocale }), [locale, t, toggleLocale]);
 
   return (
-    <I18nContext.Provider value={{ locale, t, toggleLocale }}>
+    <I18nContext.Provider value={contextValue}>
       {children}
     </I18nContext.Provider>
   );

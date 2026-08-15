@@ -39,9 +39,8 @@ export default function BookPickupTab() {
   const fetchPickups = async () => {
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
       const res = await fetch(`${API_BASE}/dashboard/librarian/pickups`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        credentials: 'include',
       });
       if (res.ok) {
         const json = await res.json();
@@ -234,7 +233,7 @@ export default function BookPickupTab() {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40"
+              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-700"
             >
               Prev
             </button>
@@ -244,7 +243,7 @@ export default function BookPickupTab() {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40"
+              className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 disabled:opacity-40 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-700"
             >
               Next
             </button>

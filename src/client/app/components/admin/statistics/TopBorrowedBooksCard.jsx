@@ -17,7 +17,7 @@ export default function TopBorrowedBooksCard({ books = [] }) {
 
       {books.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-neutral-400 text-sm">
-          No book borrowing records for this period.
+          {t('admin.no_book_data')}
         </div>
       ) : (
         <div className="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-1">

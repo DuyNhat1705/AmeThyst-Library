@@ -1,4 +1,6 @@
 import pool from '../config/postgres.mjs';
+import { revokeUserSessions } from '../models/auth-session.models.mjs';
+import { disconnectUserSockets } from '../config/socket.mjs';
 
 function escapeSearchWildcards(search) {
   if (!search) return null;
@@ -178,7 +180,8 @@ export const updateUserRoleService = async (actorId, targetUserId, newRole) => {
     }
 
     // Perform role update
-    await client.query('UPDATE public.users SET role = $1 WHERE user_id = $2', [newRole, targetUserId]);
+    await client.query('UPDATE public.users SET role = $1, token_version = token_version + 1 WHERE user_id = $2', [newRole, targetUserId]);
+    await revokeUserSessions(targetUserId, 'role_changed', client);
 
     // Record audit log
     await client.query(`
@@ -187,6 +190,7 @@ export const updateUserRoleService = async (actorId, targetUserId, newRole) => {
     `, [actorId, targetUserId, targetUser.role, newRole]);
 
     await client.query('COMMIT');
+    disconnectUserSockets(targetUserId);
     return { userId: targetUserId, role: newRole };
   } catch (err) {
     await client.query('ROLLBACK');
@@ -234,9 +238,10 @@ export const suspendUserService = async (actorId, targetUserId, reason) => {
 
     // Perform suspension
     await client.query(
-      'UPDATE public.users SET status = \'suspended\', suspended_reason = $1 WHERE user_id = $2',
+      'UPDATE public.users SET status = \'suspended\', suspended_reason = $1, token_version = token_version + 1 WHERE user_id = $2',
       [reason, targetUserId]
     );
+    await revokeUserSessions(targetUserId, 'account_suspended', client);
 
     // Record audit log
     await client.query(`
@@ -245,6 +250,7 @@ export const suspendUserService = async (actorId, targetUserId, reason) => {
     `, [actorId, targetUserId, targetUser.status, reason]);
 
     await client.query('COMMIT');
+    disconnectUserSockets(targetUserId);
     return { userId: targetUserId, status: 'suspended', suspendedReason: reason };
   } catch (err) {
     await client.query('ROLLBACK');
@@ -276,9 +282,10 @@ export const unsuspendUserService = async (actorId, targetUserId) => {
 
     // Perform restoration
     await client.query(
-      'UPDATE public.users SET status = \'active\', suspended_reason = NULL WHERE user_id = $1',
+      'UPDATE public.users SET status = \'active\', suspended_reason = NULL, token_version = token_version + 1 WHERE user_id = $1',
       [targetUserId]
     );
+    await revokeUserSessions(targetUserId, 'account_unsuspended', client);
 
     // Record audit log
     await client.query(`
@@ -287,6 +294,7 @@ export const unsuspendUserService = async (actorId, targetUserId) => {
     `, [actorId, targetUserId, targetUser.status]);
 
     await client.query('COMMIT');
+    disconnectUserSockets(targetUserId);
     return { userId: targetUserId, status: 'active' };
   } catch (err) {
     await client.query('ROLLBACK');
@@ -312,6 +320,7 @@ export const getExportUsersListService = async ({ search, role, status }) => {
     FROM public.users
     ${whereClause}
     ORDER BY created_at DESC, user_id DESC
+    LIMIT 1001
   `;
 
   const result = await pool.query(listQuery, params);

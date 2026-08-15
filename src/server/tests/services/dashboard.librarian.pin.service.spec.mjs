@@ -37,7 +37,7 @@ const sampleRecord = {
   book_author: ['Robert C. Martin'],
   book_publisher: 'Prentice Hall',
   book_genres: ['Programming'],
-  image_url: 'http://img.com/code.png',
+  book_image_url: 'http://img.com/code.png',
   book_price: 50,
 };
 
@@ -81,6 +81,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
           gender: 'male',
           phone_number: '0900000000',
           email: 'student@example.com',
+          avatar: null,
         },
         book: {
           title: 'Clean Code',
@@ -88,6 +89,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
           publisher: 'Prentice Hall',
           genre: 'Programming',
           price: 50,
+          image_url: null,
         },
       });
     });

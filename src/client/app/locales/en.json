@@ -1,5 +1,7 @@
 {
   "navbar": {
+    "home": "Home",
+    "about": "About",
     "library": "Library",
     "search": "Search",
     "dashboard": "Dashboard",
@@ -22,6 +24,9 @@
     "title": "AmeThyst Library",
     "subtitle": "Your gateway to a world of knowledge. Explore our extensive collection, manage your profile, and join our vibrant community.",
     "explore": "Explore Library"
+  },
+  "network": {
+    "error": "Network connection error. Please check your connection and try again."
   },
   "library": {
     "title": "Library",
@@ -72,6 +77,7 @@
     "all_books": "All Books",
     "categories": "Categories",
     "new_arrivals": "New Arrivals",
+    "library_map": "Library Map",
     "study_groups": "Study Groups",
     "events": "Events",
     "forums": "Forums",
@@ -82,7 +88,21 @@
   },
   "searchbar": {
     "placeholder": "Search...",
-    "filter": "Filter"
+    "filter": "Filter",
+    "recent_searches": "Recent Searches",
+    "no_recent_searches": "No recent searches"
+  },
+  "filter": {
+    "filters": "Filters",
+    "reset_all": "Reset All",
+    "close_panel": "Close panel",
+    "genres": "Genres",
+    "campus_location": "Campus Location",
+    "publication_year": "Publication Year",
+    "min_year": "Min Year",
+    "max_year": "Max Year",
+    "available_only": "Available Only",
+    "hide_out_of_stock": "Hide books currently out of stock"
   },
   "auth": {
     "login_title": "Welcome Back",
@@ -265,6 +285,9 @@
   },
   "dashboard": {
     "welcome": "WELCOME BACK, {name}!",
+    "error_title": "Unable to load this dashboard",
+    "error_message": "The page encountered an unexpected error. Your data has not been changed.",
+    "error_retry": "Try again",
     "sidebar_overview": "Calendar & Overview",
     "sidebar_borrowed": "Borrowed Books",
     "sidebar_study_groups": "Your Study Groups",
@@ -359,11 +382,9 @@
     "borrowed_condition_lost": "Lost",
     "borrowed_condition_combined": "Combined",
     "borrowed_no_books": "No books found",
-    "legend_book_return": "Book return",
+    "legend_pickup_due": "Pickup due",
+    "legend_return_due": "Return due",
     "legend_room_reservation": "Room reservation",
-    "legend_study_group": "Study group",
-    "legend_pin_expiry": "PIN expiry",
-    "legend_reservation_expiry": "Reservation expiry",
     "agenda_title": "UPCOMING AGENDA",
     "agenda_today": "Today",
     "agenda_tomorrow": "Tomorrow",
@@ -643,342 +664,417 @@
     "name_22": "Computer Centre",
     "name_23": "Reception"
   },
-  "librarian":  {
-                      "dashboard_title":  "LIBRARIAN",
-                      "sidebar_overview":  "Calendar \u0026 Overview",
-                      "sidebar_books":  "Books",
-                      "sidebar_rooms":  "Rooms",
-                      "sidebar_announcements":  "Announcements",
-                      "sidebar_pin_verification":  "PIN Verification",
-                       "subtab_book_management":  "Book Management",
-                       "subtab_book_pickup":  "Book Pickup",
-                       "subtab_book_return":  "Book Return",
-                        "subtab_pin_verification":  "PIN Verification",
-                       "subtab_loan_fees":  "Loan & Fees",
-                        "subtab_room_checkin":  "Room Check-in",
-                       "room_checkin_title":  "Confirm Room Check-in",
-                       "room_checkin_enter_code_label":  "ENTER ROOM CHECK-IN CODE",
-                       "room_checkin_details_heading":  "Reservation Details",
-                       "room_checkin_user_heading":  "User Information",
-                       "room_checkin_room_heading":  "Room Information",
-                       "room_checkin_confirm":  "Confirm Check-in",
-                       "room_checkin_confirming":  "Confirming...",
-                       "room_checkin_success":  "Room check-in confirmed successfully",
-                       "room_checkin_verify_another":  "Verify Another PIN",
-                       "room_checkin_confirm_title":  "Confirm Room Check-in",
-                       "room_checkin_confirm_message":  "Confirm check-in for {user} in {room}?",
-                       "room_checkin_go_back":  "Go Back",
-                       "room_checkin_proceed":  "Yes, Proceed",
-                       "room_checkin_error_expired":  "The PIN has expired or does not exist.",
-                       "search_placeholder":  "Search title, author, or ISBN...",
-                      "all_categories":  "All Categories",
-                      "add_book":  "Add Book",
-                      "table_cover":  "Cover",
-                      "table_title":  "Title",
-                      "table_author":  "Author",
-                      "table_isbn":  "ISBN",
-                      "table_category":  "Category",
-                      "table_publisher":  "Publisher",
-                      "table_availability":  "Availability",
-                      "table_location":  "Location",
-                      "table_status":  "Status",
-                      "table_actions":  "Actions",
-                      "page_of":  "Page {current} of {total}",
-                       "status_active":  "Active",
-                       "status_inactive":  "Inactive",
-                       "edit":  "Edit",
-                       "delete":  "Delete",
-                       "no_books_found":  "No books found",
-                       "clear_all_filters":  "Clear All Filters",
-                        "kpi_total_pickups_pending":  "Total Pickups Pending",
-                        "kpi_overdue_pickups":  "Overdue Pickups",
-                        "kpi_redeemed_today":  "Redeemed Today",
-                        "kpi_active_borrows":  "Active Borrows",
-                        "kpi_overdue_items":  "Overdue Items",
-                        "kpi_expecting_return_today":  "Expecting Return Today",
-                       "pickup_book_details":  "Book Details",
-                       "pickup_user":  "User",
-                       "pickup_reserve_date":  "Reserve Date",
-                       "pickup_branch":  "Branch",
-                       "pickup_pin":  "PIN & Expiry",
-                       "pickup_actions":  "Actions",
-                       "pickup_status_pending":  "Pending",
-                       "pickup_status_urgent":  "Urgent",
-                       "pickup_status_expired":  "Expired",
-                       "pickup_status_redeemed":  "Redeemed",
-                       "extend":  "Extend",
-                       "cancel":  "Cancel",
-                       "advanced_filters":  "Advanced Filters",
-                       "all_statuses":  "All Statuses",
-                       "return_user":  "User",
-                       "return_book_title":  "Book Title",
-                       "return_borrow_date":  "Borrow Date",
-                       "return_due_date":  "Due Date",
-                       "return_status":  "Status",
-                       "return_fees":  "Fees",
-                       "return_actions":  "Actions",
-                       "return_status_active":  "Active",
-                       "return_status_overdue":  "Overdue",
-                       "mark_returned":  "Mark Returned",
-                       "filter_by_date":  "Filter by Date",
-                       "inspection_title":  "Book Return Inspection",
-                       "inspection_condition_heading":  "Verify Book Condition",
-                       "inspection_notes_heading":  "Inspection Notes",
-                       "inspection_borrower_heading":  "Borrower Information",
-                       "inspection_financial_heading":  "Financial Summary",
-                       "condition_perfect":  "Perfect Condition",
-                       "condition_cover_scratches":  "Slight Cover Scratches",
-                       "condition_folded_pages":  "Folded Pages",
-                       "condition_pencil_marks":  "Pencil Marks",
-                       "condition_torn_pages":  "Torn Pages",
-                       "condition_water_damage":  "Water Damage",
-                       "inspection_borrow_date":  "Borrow Date",
-                       "inspection_due_date":  "Due Date",
-                       "inspection_return_date":  "Return Date",
-                       "inspection_loan_duration":  "Loan Duration",
-                       "inspection_notes_placeholder":  "Type any additional notes about the book's condition...",
-                       "inspection_repair_fee":  "Repair Fee (Condition)",
-                       "inspection_late_penalty":  "Late Return Penalty",
-                       "inspection_final_refund":  "Final Refund",
-                       "complete_inspection":  "Complete Inspection",
-                       "cancel_inspection":  "Cancel"
-                   },
-    "admin":  {
-                      "dashboard_title":  "ADMIN",
-                      "sidebar_user_management":  "User Management",
-                      "sidebar_roles_permissions":  "Roles & Permissions",
-                      "sidebar_statistics":  "Statistics",
-                      "sidebar_system_configuration":  "System Configuration",
-                      "placeholder_title":  "Coming Soon",
-                      "placeholder_message":  "This section is under construction and will be available soon.",
-                      "kpi_total_users": "TOTAL USERS",
-                      "kpi_active_borrows": "ACTIVE BORROWS",
-                      "kpi_overdue_books": "OVERDUE BOOKS",
-                      "kpi_total_late_fees": "TOTAL LATE FEES",
-                      "filter_this_week": "This Week",
-                      "filter_this_month": "This Month",
-                      "filter_all_branches": "All Branches",
-                      "top_categories_title": "Top 10 Categories",
-                      "top_borrowed_books_title": "Top Borrowed Books",
-                      "top_reserved_rooms_title": "Top Reserved Rooms by Branch",
-                      "borrow_turns": "turns",
-                      "reservation_turns": "turns",
-                        "unauthorized_access": "Unauthorized Access. Admin privileges required.",
-                      "page_title": "User Management",
-                      "stat_total_users": "TOTAL USERS",
-                      "stat_active_users": "ACTIVE USERS",
-                      "stat_suspended_users": "SUSPENDED USERS",
-                      "stat_librarians_count": "LIBRARIANS COUNT",
-                      "stat_requires_review": "Requires Review",
-                      "stat_staff_directory": "Staff Directory Access",
-                      "search_placeholder": "Search by name or email...",
-                      "filter_all_roles": "All Roles",
-                      "filter_all_statuses": "All Statuses",
-                      "button_export_csv": "Export CSV",
-                      "table_header_user": "USER",
-                      "table_header_contact": "CONTACT",
-                      "table_header_role": "ROLE",
-                      "table_header_status": "STATUS",
-                      "table_header_access": "ACCESS TIMELINE",
-                      "table_no_results": "No users found matching the selected criteria.",
-                      "badge_admin": "Admin",
-                      "badge_librarian": "Librarian",
-                      "badge_user": "User",
-                      "status_active": "Active",
-                      "status_suspended": "Suspended",
-                      "joined_date": "Joined: {date}",
-                      "last_login": "Last Login: {time}",
-                      "tooltip_view_details": "View Details",
-                      "tooltip_manage_user": "Manage User",
-                      "modal_details_title": "User Account Details",
-                      "modal_manage_title": "Manage User Account",
-                      "field_select_role": "Change Account Role",
-                      "field_select_status": "Change Account Status",
-                      "field_reason_label": "Suspension Reason (Required)",
-                      "field_reason_placeholder": "Please provide a valid reason for suspension...",
-                      "error_reason_required": "A suspension reason must be provided to suspend this user.",
-                      "error_self_mutation": "Action blocked: You cannot modify your own role or suspension status.",
-                      "error_final_admin": "Action blocked: The final active administrator cannot be demoted or suspended.",
-                      "toast_role_success": "User role updated successfully.",
-                      "toast_status_success": "User account status updated successfully.",
-                      "button_confirm": "Confirm",
-                      "modal_loading_details": "Loading details...",
-                      "field_email": "Email",
-                      "field_phone": "Phone Number",
-                      "field_role": "System Role",
-                      "field_status": "Status",
-                      "field_joined_date": "Joined Date",
-                      "field_last_login": "Last Login Time",
-                      "button_close": "Close",
-                      "text_no_reason_provided": "No reason provided.",
-                      "toast_status_suspended_success": "User account suspended successfully.",
-                      "toast_status_unsuspended_success": "User account status restored successfully.",
-                      "error_retrieve_users": "Failed to retrieve users directory.",
-                      "error_connection": "A connection error occurred while loading administration panel.",
-                      "error_export_csv": "Failed to compile CSV export file.",
-                      "error_file_compilation": "An error occurred during file compilation.",
-                      "error_unsuspend": "Failed to unsuspend account.",
-                      "error_internal": "An internal processing error occurred.",
-                      "field_id": "ID",
-                      "button_cancel": "Cancel",
-                     "system_configuration": {
-                       "eyebrow": "Administration policy",
-                       "title": "System Configuration",
-                       "description": "Adjust borrowing and return-penalty rules. Saved changes apply to the next eligible operation without restarting the server.",
-                       "form_label": "System configuration policy form",
-                       "loading": "Loading the active policy...",
-                       "version": "Version {version}",
-                       "sections": {
-                         "borrowing": { "title": "Borrowing policy", "description": "Control how many active books one patron may hold at the same time." },
-                         "fees": { "title": "Penalty fees", "description": "Set the fixed administrative and additional-condition amounts used by damage calculations." },
-                         "damage": { "title": "Damage coefficients", "description": "Set the book-price multiplier for each return condition. Perfect condition is fixed at zero." }
-                       },
-                       "fields": {
-                         "maxBorrowLimit": { "label": "Simultaneous borrowing limit", "description": "Positive whole-number policy for active loans per patron." },
-                         "feeAdmin": { "label": "Administrative fee", "description": "Base fixed amount added to each chargeable damage condition." },
-                         "feeAddon": { "label": "Additional-condition fee", "description": "Fixed amount added for each applicable condition after the first." },
-                         "perfectCondition": { "label": "Perfect condition", "description": "Always zero and read-only because no damage charge applies." },
-                         "slightCoverScratches": { "label": "Slight cover scratches", "description": "Multiplier for minor scratches on the book cover." },
-                         "foldedPages": { "label": "Folded pages", "description": "Multiplier when returned pages are folded." },
-                         "pencilMarks": { "label": "Pencil marks", "description": "Multiplier for erasable pencil markings." },
-                         "inkMarks": { "label": "Ink marks", "description": "Multiplier for permanent ink markings." },
-                         "tornPages": { "label": "Torn pages", "description": "Multiplier for pages with tears." },
-                         "waterDamage": { "label": "Water damage", "description": "Multiplier for moisture or liquid damage." },
-                         "damagedBinding": { "label": "Damaged binding", "description": "Multiplier for a loose or damaged binding." },
-                         "missingMats": { "label": "Missing materials", "description": "Multiplier for missing included materials or supplements." },
-                         "missingPages": { "label": "Missing pages", "description": "Multiplier when one or more pages are missing." },
-                         "lost": { "label": "Lost book", "description": "General replacement multiplier when no item-specific lost amount is supplied." }
-                       },
-                       "actions": { "save": "Save Changes", "discard": "Discard changes", "retry": "Try again", "reload": "Load latest" },
-                       "status": { "modified": "Unsaved changes", "up_to_date": "Policy up to date" },
-                       "feedback": { "saving": "Saving the complete policy...", "saved": "System policy saved successfully.", "discarded": "Unsaved changes discarded.", "fix_errors": "Correct the highlighted values before saving.", "unsaved": "Review and save the complete policy when ready.", "up_to_date": "No unsaved changes." },
-                       "errors": { "required": "A value is required.", "non_negative": "Enter a finite number greater than or equal to zero.", "positive_integer": "Enter a positive whole number.", "load": "The active system configuration could not be loaded.", "save": "The policy could not be saved. Your current input is still available.", "conflict": "Another administrator saved a newer policy. Load the latest values and review your changes." }
-                     },
-                     "authorization": {
-                       "title": "Authorization & Role Management",
-                       "subtitle": "Manage administrator, librarian, and user roles. Every change is logged and appears here in real time.",
-                       "panel_title": "Role Management",
-                       "search_placeholder": "Search by username or email...",
-                       "filter_role": "Role",
-                       "filter_status": "Status",
-                       "role_all": "All roles",
-                       "status_all": "All statuses",
-                       "role_user": "User",
-                       "role_librarian": "Librarian",
-                       "role_admin": "Admin",
-                       "status_active": "Active",
-                       "status_suspended": "Suspended",
-                       "col_account": "Account",
-                       "col_role": "Role",
-                       "col_status": "Status",
-                       "col_branch": "Branch",
-                       "col_liabilities": "Liabilities",
-                       "col_actions": "Actions",
-                       "liabilities_unreturned": "{n} unreturned",
-                       "liabilities_unpaid": "{n} unpaid",
-                       "liabilities_clean": "None",
-                       "empty": "No accounts found.",
-                       "loading": "Loading accounts...",
-                       "retry": "Retry",
-                       "page_of": "Page {current} of {total}",
-                       "previous_page": "Previous page",
-                       "next_page": "Next page",
-                       "invite_admin": "Invite Admin",
-                       "action_promote": "Promote",
-                       "action_demote": "Demote",
-                       "you": "(you)",
-                       "last_admin": "Last admin",
-                       "disabled_self_tooltip": "You cannot change the role of your own account.",
-                       "disabled_last_admin_tooltip": "The system must always keep at least one active administrator.",
-                       "disabled_senior_admin_tooltip": "You cannot demote an administrator who was granted the admin role before you.",
-                       "promote_success": "Account promoted successfully.",
-                       "demote_success": "Account demoted successfully.",
-                       "invite_success": "Invitation sent successfully.",
-                       "toast_error": "Something went wrong.",
-                       "role_change_title": "Change role",
-                       "promote_title": "Promote {username}",
-                       "demote_title": "Demote {username}",
-                       "target_role_label": "New role",
-                       "branch_label": "Library branch",
-                       "branch_loading": "Loading branches...",
-                       "branch_unavailable": "No library branches available.",
-                       "branch_required": "Please select a library branch for the librarian account.",
-                       "liability_blocked": "This account cannot be promoted yet: it has unreturned books or unpaid fines.",
-                       "demote_warning": "Demoting will terminate all active sessions immediately.",
-                       "confirm": "Confirm",
-                       "cancel": "Cancel",
-                       "sudo_title": "Verify your password",
-                       "sudo_required_hint": "Enter your current password to authorize this change.",
-                       "sudo_label": "Current password",
-                       "sudo_submit": "Verify",
-                       "sudo_error": "The current password is incorrect.",
-                       "sudo_loading": "Verifying...",
-                       "invite_title": "Invite a new administrator",
-                       "invite_email_label": "Email address",
-                       "invite_email_invalid": "Please enter a valid email address.",
-                       "invite_temp_password_hint": "A temporary password will be sent to this email. The invitee must set their own password on first sign in.",
-                       "invite_submit": "Send invite",
-                       "history_title": "Authorization History",
-                       "filter_action": "Type",
-                       "action_all": "All",
-                       "action_admin_invite": "Admin invite",
-                       "history_col_actor": "Actor",
-                       "history_col_target": "Target",
-                       "history_col_change": "Change",
-                       "history_col_time": "Time",
-                       "history_empty": "No activity yet.",
-                       "history_loading": "Loading history...",
-                       "history_new": "NEW"
-                     }
-                 },
-    "verification":  {
-                         "modal_title":  "Confirm Book Loan",
-                         "pin_label":  "Enter PIN provided by user:",
-                         "search_button":  "Search / Verify",
-                         "cancel_button":  "Cancel",
-                         "confirm_button":  "Confirm Loan",
-                         "borrower_section":  "Borrower Profile",
-                         "books_section":  "Registered Books",
-                         "eligibility_eligible":  "Eligible",
-                         "eligibility_suspended":  "Overdue Violations / Suspended",
-                         "error_invalid_pin":  "Invalid or expired verification PIN code.",
-                         "toast_success":  "Successfully confirmed book loan order for borrower: {name}",
-                         "placeholder_empty":  "Click \u0027Open Confirmation Modal\u0027 to start verifying a book loan.",
-                         "phase_data_header":  "Loan Order Details",
-                         "skeleton_loading":  "Loading borrower information...",
-                         "shortcut_esc":  "Esc: Close",
-                         "shortcut_enter":  "Enter: Verify PIN",
-                         "shortcut_confirm":  "F8: Confirm Loan",
-                         "page_title":  "Verify User PIN",
-                         "enter_code_label":  "ENTER VERIFICATION CODE",
-                         "verify_button":  "VERIFY PIN",
-                         "clear_button":  "CLEAR"
-                     },
-      "announcements":  {
-                          "page_title":  "Announcements",
-                          "all_announcements":  "All Announcements",
-                          "status_new":  "New",
-                          "status_active":  "ACTIVE",
-                          "status_draft":  "DRAFT",
-                          "status_expired":  "EXPIRED",
-                          "editor_title":  "Announcement Editor",
-                          "save_draft":  "Save Draft",
-                          "publish_now":  "Publish Now",
-                          "announcement_title":  "Announcement Title",
-                          "expiry_date":  "Expiry Date",
-                          "content_body":  "Content Body",
-                          "delete":  "Delete",
-                          "unsaved_changes_warning": "You have unsaved changes. Are you sure you want to discard them?",
-                          "validation_title_required": "Title is required.",
-                          "validation_content_required": "Content is required.",
-                          "validation_expiry_past": "Cannot set expiration date in the past for active announcements.",
-                          "loading_announcements": "Loading announcements...",
-                          "no_announcements": "No announcements found.",
-                          "unpublish": "Unpublish",
-                          "save_changes": "Save Changes",
-                          "republish": "Republish",
-                          "confirm_unpublish": "Are you sure you want to unpublish this announcement? It will be removed from the public homepage."
-                      },
+  "librarian": {
+    "dashboard_title": "LIBRARIAN",
+    "sidebar_overview": "Calendar & Overview",
+    "sidebar_books": "Books",
+    "sidebar_rooms": "Rooms",
+    "sidebar_announcements": "Announcements",
+    "sidebar_pin_verification": "PIN Verification",
+    "subtab_book_management": "Book Management",
+    "subtab_book_pickup": "Book Pickup",
+    "subtab_book_return": "Book Return",
+    "subtab_pin_verification": "PIN Verification",
+    "subtab_loan_fees": "Loan & Fees",
+    "subtab_room_checkin": "Room Check-in",
+    "room_checkin_title": "Confirm Room Check-in",
+    "room_checkin_enter_code_label": "ENTER ROOM CHECK-IN CODE",
+    "room_checkin_details_heading": "Reservation Details",
+    "room_checkin_user_heading": "User Information",
+    "room_checkin_room_heading": "Room Information",
+    "room_checkin_confirm": "Confirm Check-in",
+    "room_checkin_confirming": "Confirming...",
+    "room_checkin_success": "Room check-in confirmed successfully",
+    "room_checkin_verify_another": "Verify Another PIN",
+    "room_checkin_confirm_title": "Confirm Room Check-in",
+    "room_checkin_confirm_message": "Confirm check-in for {user} in {room}?",
+    "room_checkin_go_back": "Go Back",
+    "room_checkin_proceed": "Yes, Proceed",
+    "room_checkin_error_expired": "The PIN has expired or does not exist.",
+    "search_placeholder": "Search title, author, or ISBN...",
+    "all_categories": "All Categories",
+    "add_book": "Add Book",
+    "table_cover": "Cover",
+    "table_title": "Title",
+    "table_author": "Author",
+    "table_isbn": "ISBN",
+    "table_category": "Category",
+    "table_publisher": "Publisher",
+    "table_availability": "Availability",
+    "table_location": "Location",
+    "table_status": "Status",
+    "table_actions": "Actions",
+    "page_of": "Page {current} of {total}",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "no_books_found": "No books found",
+    "clear_all_filters": "Clear All Filters",
+    "kpi_total_pickups_pending": "Total Pickups Pending",
+    "kpi_overdue_pickups": "Overdue Pickups",
+    "kpi_redeemed_today": "Redeemed Today",
+    "kpi_active_borrows": "Active Borrows",
+    "kpi_overdue_items": "Overdue Items",
+    "kpi_expecting_return_today": "Expecting Return Today",
+    "pickup_book_details": "Book Details",
+    "pickup_user": "User",
+    "pickup_reserve_date": "Reserve Date",
+    "pickup_branch": "Branch",
+    "pickup_pin": "PIN & Expiry",
+    "pickup_actions": "Actions",
+    "pickup_status_pending": "Pending",
+    "pickup_status_urgent": "Urgent",
+    "pickup_status_expired": "Expired",
+    "pickup_status_redeemed": "Redeemed",
+    "extend": "Extend",
+    "cancel": "Cancel",
+    "advanced_filters": "Advanced Filters",
+    "all_statuses": "All Statuses",
+    "return_user": "User",
+    "return_book_title": "Book Title",
+    "return_borrow_date": "Borrow Date",
+    "return_due_date": "Due Date",
+    "return_status": "Status",
+    "return_fees": "Fees",
+    "return_actions": "Actions",
+    "return_status_active": "Active",
+    "return_status_overdue": "Overdue",
+    "mark_returned": "Mark Returned",
+    "filter_by_date": "Filter by Date",
+    "inspection_title": "Book Return Inspection",
+    "inspection_condition_heading": "Verify Book Condition",
+    "inspection_notes_heading": "Inspection Notes",
+    "inspection_borrower_heading": "Borrower Information",
+    "inspection_financial_heading": "Financial Summary",
+    "condition_perfect": "Perfect Condition",
+    "condition_cover_scratches": "Slight Cover Scratches",
+    "condition_folded_pages": "Folded Pages",
+    "condition_pencil_marks": "Pencil Marks",
+    "condition_torn_pages": "Torn Pages",
+    "condition_water_damage": "Water Damage",
+    "inspection_borrow_date": "Borrow Date",
+    "inspection_due_date": "Due Date",
+    "inspection_return_date": "Return Date",
+    "inspection_loan_duration": "Loan Duration",
+    "inspection_notes_placeholder": "Type any additional notes about the book's condition...",
+    "inspection_repair_fee": "Repair Fee (Condition)",
+    "inspection_late_penalty": "Late Return Penalty",
+    "inspection_final_refund": "Final Refund",
+    "complete_inspection": "Complete Inspection",
+    "cancel_inspection": "Cancel"
+  },
+  "admin": {
+    "dashboard_title": "ADMIN",
+    "sidebar_user_management": "User Management",
+    "sidebar_roles_permissions": "Roles & Permissions",
+    "sidebar_statistics": "Statistics",
+    "sidebar_system_configuration": "System Configuration",
+    "placeholder_title": "Coming Soon",
+    "placeholder_message": "This section is under construction and will be available soon.",
+    "kpi_total_users": "TOTAL USERS",
+    "kpi_active_borrows": "ACTIVE BORROWS",
+    "kpi_overdue_books": "OVERDUE BOOKS",
+    "kpi_total_late_fees": "TOTAL LATE FEES",
+    "kpi_requires_audit": "Requires immediate audit",
+    "filter_this_week": "This Week",
+    "filter_this_month": "This Month",
+    "filter_all_branches": "All Branches",
+    "top_categories_title": "Top 10 Categories",
+    "top_borrowed_books_title": "Top Borrowed Books",
+    "top_reserved_rooms_title": "Top Reserved Rooms by Branch",
+    "study_group_title": "Study Group Room Reservations by Branch",
+    "study_group_subtitle": "Top 5 study groups by room reservation hours",
+    "hrs_total": "{hours} hrs total",
+    "hrs": "{hours} hrs",
+    "borrow_turns": "turns",
+    "reservation_turns": "turns",
+    "unauthorized_access": "Unauthorized Access. Admin privileges required.",
+    "unauthorized_desc": "This function is restricted to system administrator accounts only.",
+    "loading_statistics": "Loading statistics...",
+    "retry": "Retry",
+    "no_category_data": "No category borrowing data recorded for this period.",
+    "no_book_data": "No book borrowing records for this period.",
+    "no_room_data": "No room reservation turns recorded for this period.",
+    "page_title": "User Management",
+    "stat_total_users": "TOTAL USERS",
+    "stat_active_users": "ACTIVE USERS",
+    "stat_suspended_users": "SUSPENDED USERS",
+    "stat_librarians_count": "LIBRARIANS COUNT",
+    "stat_requires_review": "Requires Review",
+    "stat_staff_directory": "Staff Directory Access",
+    "search_placeholder": "Search by name or email...",
+    "filter_all_roles": "All Roles",
+    "filter_all_statuses": "All Statuses",
+    "button_export_csv": "Export CSV",
+    "table_header_user": "USER",
+    "table_header_contact": "CONTACT",
+    "table_header_role": "ROLE",
+    "table_header_status": "STATUS",
+    "table_header_access": "ACCESS TIMELINE",
+    "table_no_results": "No users found matching the selected criteria.",
+    "badge_admin": "Admin",
+    "badge_librarian": "Librarian",
+    "badge_user": "User",
+    "status_active": "Active",
+    "status_suspended": "Suspended",
+    "joined_date": "Joined: {date}",
+    "last_login": "Last Login: {time}",
+    "tooltip_view_details": "View Details",
+    "tooltip_manage_user": "Manage User",
+    "modal_details_title": "User Account Details",
+    "modal_manage_title": "Manage User Account",
+    "field_select_role": "Change Account Role",
+    "field_select_status": "Change Account Status",
+    "field_reason_label": "Suspension Reason (Required)",
+    "field_reason_placeholder": "Please provide a valid reason for suspension...",
+    "error_reason_required": "A suspension reason must be provided to suspend this user.",
+    "error_self_mutation": "Action blocked: You cannot modify your own role or suspension status.",
+    "error_final_admin": "Action blocked: The final active administrator cannot be demoted or suspended.",
+    "toast_role_success": "User role updated successfully.",
+    "toast_status_success": "User account status updated successfully.",
+    "button_confirm": "Confirm",
+    "modal_loading_details": "Loading details...",
+    "field_email": "Email",
+    "field_phone": "Phone Number",
+    "field_role": "System Role",
+    "field_status": "Status",
+    "field_joined_date": "Joined Date",
+    "field_last_login": "Last Login Time",
+    "button_close": "Close",
+    "text_no_reason_provided": "No reason provided.",
+    "toast_status_suspended_success": "User account suspended successfully.",
+    "toast_status_unsuspended_success": "User account status restored successfully.",
+    "error_retrieve_users": "Failed to retrieve users directory.",
+    "error_connection": "A connection error occurred while loading administration panel.",
+    "error_export_csv": "Failed to compile CSV export file.",
+    "error_file_compilation": "An error occurred during file compilation.",
+    "error_unsuspend": "Failed to unsuspend account.",
+    "error_internal": "An internal processing error occurred.",
+    "field_id": "ID",
+    "button_cancel": "Cancel",
+    "system_configuration": {
+      "eyebrow": "Administration policy",
+      "title": "System Configuration",
+      "description": "Adjust borrowing and return-penalty rules. Saved changes apply to the next eligible operation without restarting the server.",
+      "form_label": "System configuration policy form",
+      "loading": "Loading the active policy...",
+      "version": "Version {version}",
+      "sections": {
+        "borrowing": {
+          "title": "Borrowing policy",
+          "description": "Control how many active books one patron may hold at the same time."
+        },
+        "fees": {
+          "title": "Penalty fees",
+          "description": "Set the fixed administrative and additional-condition amounts used by damage calculations."
+        },
+        "damage": {
+          "title": "Damage coefficients",
+          "description": "Set the book-price multiplier for each return condition. Perfect condition is fixed at zero."
+        }
+      },
+      "fields": {
+        "maxBorrowLimit": {
+          "label": "Simultaneous borrowing limit",
+          "description": "Positive whole-number policy for active loans per patron."
+        },
+        "feeAdmin": {
+          "label": "Administrative fee",
+          "description": "Base fixed amount added to each chargeable damage condition."
+        },
+        "feeAddon": {
+          "label": "Additional-condition fee",
+          "description": "Fixed amount added for each applicable condition after the first."
+        },
+        "perfectCondition": {
+          "label": "Perfect condition",
+          "description": "Always zero and read-only because no damage charge applies."
+        },
+        "slightCoverScratches": {
+          "label": "Slight cover scratches",
+          "description": "Multiplier for minor scratches on the book cover."
+        },
+        "foldedPages": {
+          "label": "Folded pages",
+          "description": "Multiplier when returned pages are folded."
+        },
+        "pencilMarks": {
+          "label": "Pencil marks",
+          "description": "Multiplier for erasable pencil markings."
+        },
+        "inkMarks": {
+          "label": "Ink marks",
+          "description": "Multiplier for permanent ink markings."
+        },
+        "tornPages": {
+          "label": "Torn pages",
+          "description": "Multiplier for pages with tears."
+        },
+        "waterDamage": {
+          "label": "Water damage",
+          "description": "Multiplier for moisture or liquid damage."
+        },
+        "damagedBinding": {
+          "label": "Damaged binding",
+          "description": "Multiplier for a loose or damaged binding."
+        },
+        "missingMats": {
+          "label": "Missing materials",
+          "description": "Multiplier for missing included materials or supplements."
+        },
+        "missingPages": {
+          "label": "Missing pages",
+          "description": "Multiplier when one or more pages are missing."
+        },
+        "lost": {
+          "label": "Lost book",
+          "description": "General replacement multiplier when no item-specific lost amount is supplied."
+        }
+      },
+      "actions": {
+        "save": "Save Changes",
+        "discard": "Discard changes",
+        "retry": "Try again",
+        "reload": "Load latest"
+      },
+      "status": {
+        "modified": "Unsaved changes",
+        "up_to_date": "Policy up to date"
+      },
+      "feedback": {
+        "saving": "Saving the complete policy...",
+        "saved": "System policy saved successfully.",
+        "discarded": "Unsaved changes discarded.",
+        "fix_errors": "Correct the highlighted values before saving.",
+        "unsaved": "Review and save the complete policy when ready.",
+        "up_to_date": "No unsaved changes."
+      },
+      "errors": {
+        "required": "A value is required.",
+        "non_negative": "Enter a finite number greater than or equal to zero.",
+        "positive_integer": "Enter a positive whole number.",
+        "load": "The active system configuration could not be loaded.",
+        "save": "The policy could not be saved. Your current input is still available.",
+        "conflict": "Another administrator saved a newer policy. Load the latest values and review your changes."
+      }
+    },
+    "authorization": {
+      "title": "Authorization & Role Management",
+      "subtitle": "Manage administrator, librarian, and user roles. Every change is logged and appears here in real time.",
+      "panel_title": "Role Management",
+      "search_placeholder": "Search by username or email...",
+      "filter_role": "Role",
+      "filter_status": "Status",
+      "role_all": "All roles",
+      "status_all": "All statuses",
+      "role_user": "User",
+      "role_librarian": "Librarian",
+      "role_admin": "Admin",
+      "status_active": "Active",
+      "status_suspended": "Suspended",
+      "col_account": "Account",
+      "col_role": "Role",
+      "col_status": "Status",
+      "col_branch": "Branch",
+      "col_liabilities": "Liabilities",
+      "col_actions": "Actions",
+      "liabilities_unreturned": "{n} unreturned",
+      "liabilities_unpaid": "{n} unpaid",
+      "liabilities_clean": "None",
+      "empty": "No accounts found.",
+      "loading": "Loading accounts...",
+      "retry": "Retry",
+      "page_of": "Page {current} of {total}",
+      "previous_page": "Previous page",
+      "next_page": "Next page",
+      "invite_admin": "Invite Admin",
+      "action_promote": "Promote",
+      "action_demote": "Demote",
+      "you": "(you)",
+      "last_admin": "Last admin",
+      "disabled_self_tooltip": "You cannot change the role of your own account.",
+      "disabled_last_admin_tooltip": "The system must always keep at least one active administrator.",
+      "disabled_senior_admin_tooltip": "You cannot demote an administrator who was granted the admin role before you.",
+      "promote_success": "Account promoted successfully.",
+      "demote_success": "Account demoted successfully.",
+      "invite_success": "Invitation sent successfully.",
+      "toast_error": "Something went wrong.",
+      "role_change_title": "Change role",
+      "promote_title": "Promote {username}",
+      "demote_title": "Demote {username}",
+      "target_role_label": "New role",
+      "branch_label": "Library branch",
+      "branch_loading": "Loading branches...",
+      "branch_unavailable": "No library branches available.",
+      "branch_required": "Please select a library branch for the librarian account.",
+      "liability_blocked": "This account cannot be promoted yet: it has unreturned books or unpaid fines.",
+      "demote_warning": "Demoting will terminate all active sessions immediately.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "sudo_title": "Verify your password",
+      "sudo_required_hint": "Enter your current password to authorize this change.",
+      "sudo_label": "Current password",
+      "sudo_submit": "Verify",
+      "sudo_error": "The current password is incorrect.",
+      "sudo_loading": "Verifying...",
+      "invite_title": "Invite a new administrator",
+      "invite_email_label": "Email address",
+      "invite_email_invalid": "Please enter a valid email address.",
+      "invite_temp_password_hint": "A temporary password will be sent to this email. The invitee must set their own password on first sign in.",
+      "invite_submit": "Send invite",
+      "history_title": "Authorization History",
+      "filter_action": "Type",
+      "action_all": "All",
+      "action_admin_invite": "Admin invite",
+      "history_col_actor": "Actor",
+      "history_col_target": "Target",
+      "history_col_change": "Change",
+      "history_col_time": "Time",
+      "history_empty": "No activity yet.",
+      "history_loading": "Loading history...",
+      "history_new": "NEW"
+    }
+  },
+  "verification": {
+    "borrower_section": "Borrower Profile",
+    "borrower_gender": "Gender",
+    "borrower_phone": "Phone",
+    "borrower_email": "Email",
+    "borrower_birth": "Birth",
+    "books_section": "Registered Books",
+    "eligibility_eligible": "Eligible",
+    "eligibility_suspended": "Overdue Violations / Suspended",
+    "page_title": "Verify User PIN",
+    "enter_code_label": "ENTER VERIFICATION CODE",
+    "verify_button": "VERIFY PIN",
+    "clear_button": "CLEAR"
+  },
+  "announcements": {
+    "page_title": "Announcements",
+    "all_announcements": "All Announcements",
+    "status_new": "New",
+    "status_active": "ACTIVE",
+    "status_draft": "DRAFT",
+    "status_expired": "EXPIRED",
+    "editor_title": "Announcement Editor",
+    "save_draft": "Save Draft",
+    "publish_now": "Publish Now",
+    "announcement_title": "Announcement Title",
+    "expiry_date": "Expiry Date",
+    "content_body": "Content Body",
+    "delete": "Delete",
+    "unsaved_changes_warning": "You have unsaved changes. Are you sure you want to discard them?",
+    "validation_title_required": "Title is required.",
+    "validation_content_required": "Content is required.",
+    "validation_expiry_past": "Cannot set expiration date in the past for active announcements.",
+    "loading_announcements": "Loading announcements...",
+    "no_announcements": "No announcements found.",
+    "unpublish": "Unpublish",
+    "save_changes": "Save Changes",
+    "republish": "Republish",
+    "confirm_unpublish": "Are you sure you want to unpublish this announcement? It will be removed from the public homepage."
+  },
   "study_group": {
     "created_tab": "Groups I created",
     "joined_tab": "Groups I joined",
@@ -1083,99 +1179,349 @@
     "joined_from_invitation": "You have joined the Study Group.",
     "subject": "Subject",
     "no_additional_members": "No additional members yet.",
-    "close_invite_input": "Close email invitation field"
-    ,"performed_by": "Performed by"
-    ,"email_unavailable": "Email unavailable"
-    ,"route_loading": "Loading Study Group details..."
-    ,"route_not_found_title": "Study Group unavailable"
-    ,"route_not_found": "This Study Group could not be found or is no longer available."
-    ,"invitation_unavailable_title": "Invitation is no longer available"
-    ,"invitation_unavailable": "This invitation may have already been accepted, declined, or withdrawn, or its Study Group may no longer exist."
-    ,"route_load_error": "Study Group details could not be loaded. Please try again."
-    ,"back_to_groups": "Back to Study Groups"
-    ,"notification_member_removed": "Removed from Study Group"
-    ,"notification_member_removed_summary": "You were removed from this Study Group."
-    ,"notification_member_removed_description": "The organizer removed you from this Study Group. You are no longer counted as a member."
-    ,"notification_member_left": "Member left your group"
-    ,"notification_member_left_summary": "{name} left your Study Group."
-    ,"notification_member_left_description": "{name} voluntarily left this Study Group. Their place is now available to another student."
-    ,"notification_group_dissolved": "Study Group cancelled"
-    ,"notification_group_dissolved_summary": "This Study Group is no longer available."
-    ,"notification_group_dissolved_description": "The organizer dissolved this Study Group and its linked room reservation was permanently cancelled."
-    ,"notification_join_request_submitted": "New join request"
-    ,"notification_join_request_submitted_summary": "{name} wants to join your group."
-    ,"notification_join_request_submitted_description": "{name} submitted a request for you to review."
-    ,"notification_join_request_cancelled": "Request withdrawn"
-    ,"notification_join_request_cancelled_summary": "{name} cancelled their join request."
-    ,"notification_join_request_cancelled_description": "{name} withdrew their Pending request. It is no longer in your approval queue."
-    ,"notification_join_request_approved": "Request approved"
-    ,"notification_join_request_approved_summary": "You are now a member of this group."
-    ,"notification_join_request_approved_description": "The creator approved your request. You can now view this group under Group I Joined."
-    ,"notification_join_request_denied": "Request declined"
-    ,"notification_join_request_denied_summary": "Your request was declined."
-    ,"notification_join_request_denied_description": "The creator declined your request. You may request again after the 30-minute cooldown."
-    ,"notification_member_joined": "New group member"
-    ,"notification_member_joined_summary": "{name} joined your Study Group."
-    ,"notification_member_joined_description": "{name} is now an Approved member of your Study Group."
-    ,"notification_invitation_declined": "Invitation declined"
-    ,"notification_invitation_declined_summary": "{name} declined your invitation."
-    ,"notification_invitation_declined_description": "{name} chose not to join this Study Group."
-    ,"notification_group_updated": "Study Group updated"
-    ,"notification_group_updated_summary": "The creator updated this Study Group."
-    ,"notification_group_updated_description": "The creator changed information for a Study Group you joined."
-    ,"changed_fields": "Updated fields"
-    ,"field_title": "Title"
-    ,"field_description": "Description"
-    ,"field_subject": "Subject"
-    ,"field_requirements": "Requirements"
-    ,"view_created_group": "Review group"
-    ,"view_joined_group": "View joined group"
-    ,"view_your_groups": "View your Study Groups"
+    "close_invite_input": "Close email invitation field",
+    "performed_by": "Performed by",
+    "email_unavailable": "Email unavailable",
+    "route_loading": "Loading Study Group details...",
+    "route_not_found_title": "Study Group unavailable",
+    "route_not_found": "This Study Group could not be found or is no longer available.",
+    "invitation_unavailable_title": "Invitation is no longer available",
+    "invitation_unavailable": "This invitation may have already been accepted, declined, or withdrawn, or its Study Group may no longer exist.",
+    "route_load_error": "Study Group details could not be loaded. Please try again.",
+    "back_to_groups": "Back to Study Groups",
+    "notification_member_removed": "Removed from Study Group",
+    "notification_member_removed_summary": "You were removed from this Study Group.",
+    "notification_member_removed_description": "The organizer removed you from this Study Group. You are no longer counted as a member.",
+    "notification_member_left": "Member left your group",
+    "notification_member_left_summary": "{name} left your Study Group.",
+    "notification_member_left_description": "{name} voluntarily left this Study Group. Their place is now available to another student.",
+    "notification_group_dissolved": "Study Group cancelled",
+    "notification_group_dissolved_summary": "This Study Group is no longer available.",
+    "notification_group_dissolved_description": "The organizer dissolved this Study Group and its linked room reservation was permanently cancelled.",
+    "notification_join_request_submitted": "New join request",
+    "notification_join_request_submitted_summary": "{name} wants to join your group.",
+    "notification_join_request_submitted_description": "{name} submitted a request for you to review.",
+    "notification_join_request_cancelled": "Request withdrawn",
+    "notification_join_request_cancelled_summary": "{name} cancelled their join request.",
+    "notification_join_request_cancelled_description": "{name} withdrew their Pending request. It is no longer in your approval queue.",
+    "notification_join_request_approved": "Request approved",
+    "notification_join_request_approved_summary": "You are now a member of this group.",
+    "notification_join_request_approved_description": "The creator approved your request. You can now view this group under Group I Joined.",
+    "notification_join_request_denied": "Request declined",
+    "notification_join_request_denied_summary": "Your request was declined.",
+    "notification_join_request_denied_description": "The creator declined your request. You may request again after the 30-minute cooldown.",
+    "notification_member_joined": "New group member",
+    "notification_member_joined_summary": "{name} joined your Study Group.",
+    "notification_member_joined_description": "{name} is now an Approved member of your Study Group.",
+    "notification_invitation_declined": "Invitation declined",
+    "notification_invitation_declined_summary": "{name} declined your invitation.",
+    "notification_invitation_declined_description": "{name} chose not to join this Study Group.",
+    "notification_group_updated": "Study Group updated",
+    "notification_group_updated_summary": "The creator updated this Study Group.",
+    "notification_group_updated_description": "The creator changed information for a Study Group you joined.",
+    "changed_fields": "Updated fields",
+    "field_title": "Title",
+    "field_description": "Description",
+    "field_subject": "Subject",
+    "field_requirements": "Requirements",
+    "view_created_group": "Review group",
+    "view_joined_group": "View joined group",
+    "view_your_groups": "View your Study Groups"
   },
   "room_dashboard": {
-    "title": "Room Management Dashboard"
-    ,"view_list": "List"
-    ,"view_calendar": "Calendar"
-    ,"kpi_total_bookings": "Total Bookings Today"
-    ,"kpi_occupied": "Currently Occupied"
-    ,"kpi_pending_checkins": "Pending Check-ins"
-    ,"search_placeholder": "Search by user name, ID, or room..."
-    ,"all_statuses": "All Statuses"
-    ,"status_confirmed": "Confirmed"
-    ,"status_pending_checkin": "Pending Check-in"
-    ,"status_in_progress": "In Progress"
-    ,"status_completed": "Completed"
-    ,"table_room": "Room"
-    ,"table_user": "User"
-    ,"table_date": "Date"
-    ,"table_time": "Time Slot"
-    ,"table_duration": "Duration"
-    ,"table_status": "Status"
-    ,"table_actions": "Actions"
-    ,"loading": "Loading..."
-    ,"no_reservations": "No reservations found."
-    ,"no_rooms": "No rooms in this branch."
-    ,"load_failed": "Failed to load data. Please try again."
-    ,"capacity": "Capacity {count}"
-    ,"minutes_short": "min"
-    ,"view_detail": "View detail"
-    ,"calendar_week": "Week"
-    ,"calendar_day": "Day"
-    ,"day_sun": "Sun"
-    ,"day_mon": "Mon"
-    ,"day_tue": "Tue"
-    ,"day_wed": "Wed"
-    ,"day_thu": "Thu"
-    ,"day_fri": "Fri"
-    ,"day_sat": "Sat"
-    ,"detail_title": "Reservation Details"
-    ,"detail_status": "Status"
-    ,"detail_date": "Date"
-    ,"detail_time": "Time Slot"
-    ,"detail_checkin": "Check-in"
-    ,"detail_checkout": "Check-out"
-    ,"detail_room": "Room"
-    ,"detail_user": "User"
-    ,"close": "Close"
+    "title": "Room Management Dashboard",
+    "view_list": "List",
+    "view_calendar": "Calendar",
+    "kpi_total_bookings": "Total Bookings Today",
+    "kpi_occupied": "Currently Occupied",
+    "kpi_pending_checkins": "Pending Check-ins",
+    "search_placeholder": "Search by user name, ID, or room...",
+    "all_statuses": "All Statuses",
+    "status_confirmed": "Confirmed",
+    "status_pending_checkin": "Pending Check-in",
+    "status_in_progress": "In Progress",
+    "status_completed": "Completed",
+    "table_room": "Room",
+    "table_user": "User",
+    "table_date": "Date",
+    "table_time": "Time Slot",
+    "table_duration": "Duration",
+    "table_status": "Status",
+    "table_actions": "Actions",
+    "loading": "Loading...",
+    "no_reservations": "No reservations found.",
+    "no_rooms": "No rooms in this branch.",
+    "load_failed": "Failed to load data. Please try again.",
+    "capacity": "Capacity {count}",
+    "minutes_short": "min",
+    "view_detail": "View detail",
+    "calendar_week": "Week",
+    "calendar_day": "Day",
+    "day_sun": "Sun",
+    "day_mon": "Mon",
+    "day_tue": "Tue",
+    "day_wed": "Wed",
+    "day_thu": "Thu",
+    "day_fri": "Fri",
+    "day_sat": "Sat",
+    "detail_title": "Reservation Details",
+    "detail_status": "Status",
+    "detail_date": "Date",
+    "detail_time": "Time Slot",
+    "detail_checkin": "Check-in",
+    "detail_checkout": "Check-out",
+    "detail_room": "Room",
+    "detail_user": "User",
+    "close": "Close"
+  },
+  "placeholder_title": "Sắp ra mắt",
+  "placeholder_message": "Phần này đang được xây dựng và sẽ sớm được hoàn thiện.",
+  "modal_loading_details": "Đang tải thông tin chi tiết...",
+  "field_email": "Email",
+  "field_phone": "Số điện thoại",
+  "field_role": "Vai trò hệ thống",
+  "field_status": "Trạng thái",
+  "field_joined_date": "Ngày tham gia",
+  "field_last_login": "Thời gian đăng nhập cuối",
+  "text_no_reason_provided": "Không có lý do được cung cấp.",
+  "toast_status_suspended_success": "Đình chỉ tài khoản người dùng thành công.",
+  "toast_status_unsuspended_success": "Khôi phục trạng thái tài khoản người dùng thành công.",
+  "error_retrieve_users": "Không thể tải danh sách người dùng.",
+  "error_connection": "Lỗi kết nối xảy ra khi tải bảng điều khiển quản trị.",
+  "error_export_csv": "Không thể biên dịch file xuất CSV.",
+  "error_file_compilation": "Đã xảy ra lỗi trong quá trình biên dịch file.",
+  "error_unsuspend": "Không thể mở khoá tài khoản.",
+  "error_internal": "Đã xảy ra lỗi xử lý nội bộ.",
+  "field_id": "ID",
+  "button_close": "Đóng",
+  "system_configuration": {
+    "eyebrow": "Chính sách quản trị",
+    "title": "Cấu hình hệ thống",
+    "description": "Điều chỉnh quy tắc mượn và phạt khi trả sách. Thay đổi đã lưu áp dụng cho nghiệp vụ phù hợp tiếp theo mà không cần khởi động lại server.",
+    "form_label": "Biểu mẫu chính sách cấu hình hệ thống",
+    "loading": "Đang tải chính sách hiện hành...",
+    "version": "Phiên bản {version}",
+    "sections": {
+      "borrowing": {
+        "title": "Chính sách mượn sách",
+        "description": "Kiểm soát số sách đang mượn đồng thời của mỗi bạn đọc."
+      },
+      "fees": {
+        "title": "Phí phạt",
+        "description": "Thiết lập phí quản trị cố định và phí cho mỗi tình trạng hư hỏng bổ sung."
+      },
+      "damage": {
+        "title": "Hệ số hư hỏng",
+        "description": "Thiết lập hệ số nhân với giá sách cho từng tình trạng trả sách. Tình trạng hoàn hảo luôn bằng 0."
+      }
+    },
+    "fields": {
+      "maxBorrowLimit": {
+        "label": "Giới hạn mượn đồng thời",
+        "description": "Chính sách số nguyên dương cho số lượt mượn đang hoạt động của mỗi bạn đọc."
+      },
+      "feeAdmin": {
+        "label": "Phí quản trị",
+        "description": "Khoản cố định cơ bản được cộng cho từng tình trạng hư hỏng có tính phí."
+      },
+      "feeAddon": {
+        "label": "Phí tình trạng bổ sung",
+        "description": "Khoản cố định cộng cho mỗi tình trạng áp dụng sau tình trạng đầu tiên."
+      },
+      "perfectCondition": {
+        "label": "Tình trạng hoàn hảo",
+        "description": "Luôn bằng 0 và chỉ đọc vì không phát sinh phí hư hỏng."
+      },
+      "slightCoverScratches": {
+        "label": "Bìa trầy nhẹ",
+        "description": "Hệ số cho vết trầy nhẹ trên bìa sách."
+      },
+      "foldedPages": {
+        "label": "Trang bị gấp",
+        "description": "Hệ số khi trang sách bị gấp nếp."
+      },
+      "pencilMarks": {
+        "label": "Vết bút chì",
+        "description": "Hệ số cho các dấu bút chì có thể tẩy."
+      },
+      "inkMarks": {
+        "label": "Vết mực",
+        "description": "Hệ số cho các dấu mực không thể tẩy."
+      },
+      "tornPages": {
+        "label": "Trang bị rách",
+        "description": "Hệ số khi trang sách bị rách."
+      },
+      "waterDamage": {
+        "label": "Hư hỏng do nước",
+        "description": "Hệ số cho hư hỏng do ẩm hoặc chất lỏng."
+      },
+      "damagedBinding": {
+        "label": "Gáy sách hư hỏng",
+        "description": "Hệ số khi gáy sách lỏng hoặc hư hỏng."
+      },
+      "missingMats": {
+        "label": "Thiếu tài liệu kèm theo",
+        "description": "Hệ số khi thiếu tài liệu hoặc phụ kiện đi kèm."
+      },
+      "missingPages": {
+        "label": "Thiếu trang",
+        "description": "Hệ số khi sách thiếu một hoặc nhiều trang."
+      },
+      "lost": {
+        "label": "Mất sách",
+        "description": "Hệ số thay thế chung khi không có khoản phạt mất sách riêng được cung cấp."
+      }
+    },
+    "actions": {
+      "save": "Lưu thay đổi",
+      "discard": "Hủy thay đổi",
+      "retry": "Thử lại",
+      "reload": "Tải bản mới nhất"
+    },
+    "status": {
+      "modified": "Có thay đổi chưa lưu",
+      "up_to_date": "Chính sách đã cập nhật"
+    },
+    "feedback": {
+      "saving": "Đang lưu toàn bộ chính sách...",
+      "saved": "Đã lưu chính sách hệ thống.",
+      "discarded": "Đã hủy các thay đổi chưa lưu.",
+      "fix_errors": "Sửa các giá trị được đánh dấu trước khi lưu.",
+      "unsaved": "Kiểm tra và lưu toàn bộ chính sách khi sẵn sàng.",
+      "up_to_date": "Không có thay đổi chưa lưu."
+    },
+    "errors": {
+      "required": "Bắt buộc nhập giá trị.",
+      "non_negative": "Nhập số hữu hạn lớn hơn hoặc bằng 0.",
+      "positive_integer": "Nhập số nguyên dương.",
+      "load": "Không thể tải cấu hình hệ thống hiện hành.",
+      "save": "Không thể lưu chính sách. Dữ liệu bạn đang nhập vẫn được giữ lại.",
+      "conflict": "Một quản trị viên khác đã lưu chính sách mới hơn. Hãy tải bản mới nhất và kiểm tra lại thay đổi."
+    }
+  },
+  "staticPages": {
+    "last_updated": "Last updated: August 2026",
+    "contact_email": "support@amethyst-library.com",
+    "contact_prompt": "Still need help? Contact us at",
+    "back_to_home": "Back to Home",
+    "help": {
+      "title": "Help Center",
+      "subtitle": "Everything you need to know about using the AmeThyst Digital Library, from creating your account to borrowing books and joining study groups.",
+      "sections": [
+        {
+          "heading": "Getting Started",
+          "body": "Create a free account with your email address on the Sign Up page. You will receive a verification email - click the link inside to activate your account before signing in.\nIf you forget your password, use the Forgot Password option on the Sign In page to request a secure reset link."
+        },
+        {
+          "heading": "Browsing & Searching the Library",
+          "body": "Browse the full catalog on the Library page, or search by title, author, publisher, or ISBN with Standard Search. Semantic Search understands concepts and topics, helping you find books even when you do not remember the exact title.\nUse the filter panel to narrow results by genre, branch, availability, and publication year."
+        },
+        {
+          "heading": "Reserving & Borrowing Books",
+          "body": "When you find an available copy at a branch, sign in and choose Reserve for Pickup. Your reservation is confirmed with a 6-digit pickup PIN that you share with the librarian at the circulation desk.\nCollect your book before the PIN expires. Borrowed books are due 14 days after pickup."
+        },
+        {
+          "heading": "Returning Books & Fees",
+          "body": "To return a book, generate a Return PIN from your Borrowed Books dashboard and show it to the librarian. The book condition is inspected during the return.\nOverdue, damaged, or lost books may incur fees according to the library policy. You can review and pay outstanding fees from the Fees page in your dashboard."
+        },
+        {
+          "heading": "Study Groups",
+          "body": "Use Study Together to create or join study groups. Hosts can invite members by email, approve requests, and manage capacity.\nYou can cancel a pending membership request or leave a group at any time from your Study Groups dashboard."
+        },
+        {
+          "heading": "Study Spaces & Rooms",
+          "body": "Reserve study rooms through the room dashboard and check in with your Room PIN when you arrive. Live availability and reservations are also shown on the Library Map."
+        },
+        {
+          "heading": "Account & Profile",
+          "body": "Update your personal details, change your password, and manage your avatar from the Profile page. Keep your contact information up to date so the library can reach you about reservations and fees."
+        },
+        {
+          "heading": "Contact Support",
+          "body": "Still stuck? Contact the library support team at support@amethyst-library.com. We usually respond within one business day."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "subtitle": "How the AmeThyst Digital Library collects, uses, and protects your information.",
+      "sections": [
+        {
+          "heading": "Information We Collect",
+          "body": "We collect the information you provide when creating an account, including your name, email address, phone number, and gender. You may also add a profile picture.\nWhile you use the library, we record your borrowing history, reservations, fees, and study group activity so we can deliver our services."
+        },
+        {
+          "heading": "How We Use Your Information",
+          "body": "Your information is used to run the library: authenticate your account, process reservations and borrowings, calculate fees, send notifications, and personalize recommendations.\nWe use aggregated and anonymized data to improve search results and library operations."
+        },
+        {
+          "heading": "Sharing of Information",
+          "body": "We do not sell your personal information. Limited data is shared with librarians to fulfill services such as pickup verification and returns, and with service providers who help operate the platform under strict confidentiality agreements."
+        },
+        {
+          "heading": "Cookies & Local Storage",
+          "body": "We use browser local storage to remember your language and theme preferences and to keep you signed in during your session. You can clear this data at any time from your browser settings."
+        },
+        {
+          "heading": "Data Retention & Security",
+          "body": "We retain your account and activity records while your account is active and as required by law. We use encryption, access controls, and role-based permissions to protect your data.\nBorrowing and fee records are kept according to library policy."
+        },
+        {
+          "heading": "Your Rights & Choices",
+          "body": "You may access, correct, or update your profile at any time, and you can request account deletion by contacting support.\nYou may opt out of non-essential communications while still receiving important account notices."
+        },
+        {
+          "heading": "Changes & Contact",
+          "body": "We may update this policy from time to time and will announce significant changes on the platform.\nQuestions about privacy? Contact us at support@amethyst-library.com."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "subtitle": "The rules that govern your use of the AmeThyst Digital Library.",
+      "sections": [
+        {
+          "heading": "Acceptance of Terms",
+          "body": "By creating an account or using the AmeThyst Digital Library, you agree to these Terms of Service. If you do not agree, please do not use the platform."
+        },
+        {
+          "heading": "Accounts & Eligibility",
+          "body": "You must provide accurate information when creating an account and keep your credentials secure. You are responsible for all activity under your account.\nThe library serves students and community members of AmeThyst. Accounts may be suspended for misuse."
+        },
+        {
+          "heading": "Acceptable Use",
+          "body": "You agree not to misuse the platform, including attempting to access other users' accounts, disrupting services, or using the library for unlawful purposes.\nPlease follow the instructions of library staff and respect library property."
+        },
+        {
+          "heading": "Library Services & Borrowing",
+          "body": "Reservations and borrowings depend on availability and branch policy. Present your pickup PIN to collect a book and your return PIN to return it.\nBorrowed books must be returned by the due date. Late, damaged, or lost materials may result in fees."
+        },
+        {
+          "heading": "Fees & Payments",
+          "body": "Fees for overdue, damaged, or lost materials are calculated under the library's published policy and must be settled before further borrowing.\nIf you believe a fee is incorrect, raise the issue with library staff promptly."
+        },
+        {
+          "heading": "Study Groups & Community",
+          "body": "Study groups are user-created spaces. Hosts manage their groups, and members must behave respectfully. The library may remove groups that violate these terms."
+        },
+        {
+          "heading": "Intellectual Property",
+          "body": "The AmeThyst Library name, logo, and platform content belong to their respective owners. Book data is provided for personal, non-commercial use."
+        },
+        {
+          "heading": "Liability & Disclaimers",
+          "body": "The platform is provided as-is without warranties of any kind. The library is not liable for indirect damages arising from the use of the service.\nWe aim for high availability but do not guarantee uninterrupted access."
+        },
+        {
+          "heading": "Termination",
+          "body": "We may suspend or terminate accounts that violate these terms. You may close your account at any time by contacting support."
+        },
+        {
+          "heading": "Changes & Governing Law",
+          "body": "We may update these terms as the platform evolves. Continued use after changes constitutes acceptance.\nThese terms are governed by applicable law, and any disputes will be resolved in the relevant courts."
+        }
+      ]
+    }
   }
 }

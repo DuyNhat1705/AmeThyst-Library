@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useI18n } from '../../providers/I18nProvider';
-import { getToken, apiFetch } from '../../utils/apiClient';
+import { apiFetch } from '../../utils/apiClient';
 
 const SLOT_COUNT = 6;
 
@@ -103,12 +103,6 @@ export default function RoomCheckinTab() {
       return;
     }
 
-    const token = getToken();
-    if (!token) {
-      setError('Please sign in');
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -137,12 +131,6 @@ export default function RoomCheckinTab() {
     setConfirmOpen(false);
 
     if (!verifiedData) {
-      return;
-    }
-
-    const token = getToken();
-    if (!token) {
-      setError('Please sign in');
       return;
     }
 

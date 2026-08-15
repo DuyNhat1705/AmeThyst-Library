@@ -43,10 +43,10 @@ export default function BorrowInfoPanel({ borrower, book, borrowing }: BorrowInf
         </p>
         <div className="space-y-2 text-sm">
           <p><span className="text-neutral-400">{t('verification.borrower_section')}:</span> <span className="font-medium dark:text-neutral-200">{borrower.username}</span></p>
-          <p><span className="text-neutral-400">Gender:</span> <span className="font-medium dark:text-neutral-200 capitalize">{borrower.gender || '—'}</span></p>
-          <p><span className="text-neutral-400">Phone:</span> <span className="font-medium dark:text-neutral-200">{borrower.phone_number || '—'}</span></p>
-          <p><span className="text-neutral-400">Email:</span> <span className="font-medium dark:text-neutral-200">{borrower.email}</span></p>
-          <p><span className="text-neutral-400">Birth:</span> <span className="font-medium dark:text-neutral-200">{borrower.birth_date ? new Date(borrower.birth_date).toLocaleDateString() : '—'}</span></p>
+          <p><span className="text-neutral-400">{t('verification.borrower_gender')}:</span> <span className="font-medium dark:text-neutral-200 capitalize">{borrower.gender || '—'}</span></p>
+          <p><span className="text-neutral-400">{t('verification.borrower_phone')}:</span> <span className="font-medium dark:text-neutral-200">{borrower.phone_number || '—'}</span></p>
+          <p><span className="text-neutral-400">{t('verification.borrower_email')}:</span> <span className="font-medium dark:text-neutral-200">{borrower.email}</span></p>
+          <p><span className="text-neutral-400">{t('verification.borrower_birth')}:</span> <span className="font-medium dark:text-neutral-200">{borrower.birth_date ? new Date(borrower.birth_date).toLocaleDateString() : '—'}</span></p>
         </div>
       </div>
 

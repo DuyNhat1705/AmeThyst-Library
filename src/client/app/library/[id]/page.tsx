@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import BookDetailTemplate, { BookDetails, RecommendedBook } from '../../components/templates/BookDetailTemplate';
 import { getLoggedInUser } from '../../utils/user';
+import { apiFetch } from '../../utils/apiClient';
 
 export default function BookPage() {
   const { id } = useParams();
@@ -37,33 +38,18 @@ export default function BookPage() {
       setLoading(true);
       setError(null);
       try {
-        const token = sessionStorage.getItem('token');
-        const headers: HeadersInit = {};
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const [bookRes, recsResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`, { headers }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}/related`)
+        const [bookResult, recsResult] = await Promise.all([
+          apiFetch<BookDetails>(`/api/library/books/${id}`),
+          apiFetch<RecommendedBook[]>(`/api/library/books/${id}/related`)
         ]);
-        
-        const bookData = await bookRes.json();
-        const recsData = await recsResponse.json();
-        
-        if (bookRes.ok) setBook(bookData);
-        setRecommendations(recsData);
+        if (bookResult.success && bookResult.data) setBook(bookResult.data);
+        if (recsResult.success) setRecommendations(recsResult.data || []);
 
         // Fetch wishlist status if logged in as user
         const currentUser = getLoggedInUser();
-        if (token && currentUser?.role === 'user') {
-          const statusRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/status/${id}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (statusRes.ok) {
-            const statusData = await statusRes.json();
-            setIsWishlisted(statusData.wishlisted);
-          }
+        if (currentUser?.role === 'user') {
+          const statusResult = await apiFetch<{ wishlisted: boolean }>(`/api/wishlist/status/${id}`);
+          if (statusResult.success && statusResult.data) setIsWishlisted(statusResult.data.wishlisted);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,33 +66,24 @@ export default function BookPage() {
     setIsReserving(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
+      if (!getLoggedInUser()) {
         setError('Please sign in to reserve books');
         return;
       }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/reserve`, {
+      const result = await apiFetch('/api/library/reserve', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ bookId: book.id, branchId: selectedBranchId }),
       });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (result.success) {
         setReserved(true);
         setSelectedBranchId(null);
-        const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/books/${id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const updatedData = await updatedResponse.json();
-        setBook(updatedData);
+        const updatedResult = await apiFetch<BookDetails>(`/api/library/books/${id}`);
+        if (updatedResult.success && updatedResult.data) setBook(updatedResult.data);
       } else {
-        setError(data.error?.message || 'Failed to reserve book');
+        setError(result.message || 'Failed to reserve book');
       }
     } catch (error) {
       console.error('Error reserving book:', error);
@@ -126,17 +103,12 @@ export default function BookPage() {
       return;
     }
 
-    const token = sessionStorage.getItem('token');
     const method = isWishlisted ? 'DELETE' : 'POST';
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${id}`, {
+      const result = await apiFetch(`/api/wishlist/${id}`, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       });
-      const data = await res.json();
-      if (res.ok) {
+      if (result.success) {
         setIsWishlisted(!isWishlisted);
         setToast({
           message: isWishlisted 
@@ -145,7 +117,7 @@ export default function BookPage() {
           type: 'success'
         });
       } else {
-        setToast({ message: data.error || 'Failed to update wishlist', type: 'error' });
+        setToast({ message: result.message || 'Failed to update wishlist', type: 'error' });
       }
     } catch (err) {
       console.error('Error updating wishlist:', err);

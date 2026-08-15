@@ -208,7 +208,9 @@ export const exportUsers = async (req, res) => {
       return sendError(res, 400, 'BAD_REQUEST', validation.error);
     }
     const { search, role, status } = req.query;
-    const users = await getExportUsersListService({ search, role, status });
+    const exportRows = await getExportUsersListService({ search, role, status });
+    const truncated = exportRows.length > 1000;
+    const users = exportRows.slice(0, 1000);
 
     // Build CSV Headers
     const headers = ['User ID', 'Username', 'Email', 'Phone Number', 'Role', 'Status', 'Joined Date', 'Last Login'];
@@ -232,6 +234,7 @@ export const exportUsers = async (req, res) => {
     // Set Response Headers
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="users_export.csv"');
+    res.setHeader('X-Export-Truncated', String(truncated));
     
     return res.status(200).send(csvContent);
   } catch (err) {

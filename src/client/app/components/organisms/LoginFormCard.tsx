@@ -74,7 +74,12 @@ export default function LoginFormCard({
         <OAuthButtons label={t('auth.sign_in_google')} disabled={isLoading} />
 
         <div className="flex flex-col items-center gap-4 mt-2">
-          <p className="text-[#45474C] dark:text-neutral-400 text-sm tracking-[-0.01em]">{t('auth.no_account')} {t('auth.create_one')}</p>
+          <p className="text-[#45474C] dark:text-neutral-400 text-sm tracking-[-0.01em]">
+            {t('auth.no_account')}{' '}
+            <Link href="/register" className="text-[#006A61] dark:text-[#FFB95F] font-medium hover:underline">
+              {t('auth.create_one')}
+            </Link>
+          </p>
           <Link href="/register" className="w-full h-[52px]">
             <Button variant="primary" className="w-full h-[52px]">
               {t('auth.register_button')}

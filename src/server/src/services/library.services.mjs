@@ -124,7 +124,6 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     finalWhereString = `WHERE ${filterSql.replace(/^\s*AND\s*/i, '')}`;
   }
 
-  const isUnlimited = !limit || limit >= 1000;
   const limitParam = `$${paramIndex++}`;
   const offsetParam = `$${paramIndex++}`;
   
@@ -141,7 +140,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
     LEFT JOIN public.library l ON b.book_id = l.book_id
     ${finalWhereString}
     ORDER BY b.title ASC
-    ${isUnlimited ? '' : `LIMIT ${limitParam} OFFSET ${offsetParam}`}
+    LIMIT ${limitParam} OFFSET ${offsetParam}
   `;
 
   // 4. Execute Queries concurrently (including public.library branch stocks)
@@ -154,7 +153,7 @@ export const getBooksList = async (page = 1, limit = 24, filters = {}) => {
 
   const [countRes, booksRes, stocksRes] = await Promise.all([
     pool.query(countQuery, queryParams),
-    pool.query(booksQuery, isUnlimited ? queryParams : [...queryParams, limit, offset]),
+    pool.query(booksQuery, [...queryParams, limit, offset]),
     pool.query(stocksQuery)
   ]);
 
@@ -271,7 +270,10 @@ export const createReservation = async (userId, bookId, branchId) => {
   try {
     await client.query('BEGIN');
 
-    const userCheck = await client.query('SELECT user_id FROM public.users WHERE user_id = $1', [userId]);
+    const userCheck = await client.query(
+      'SELECT user_id, borrow_num FROM public.users WHERE user_id = $1 FOR UPDATE',
+      [userId],
+    );
     if (userCheck.rows.length === 0) {
       await client.query('ROLLBACK');
       return { 
@@ -292,10 +294,7 @@ export const createReservation = async (userId, bookId, branchId) => {
       };
     }
 
-    // 0.5 Check user's borrow_num against limit
-    const userBorrowQuery = 'SELECT borrow_num FROM public.users WHERE user_id = $1';
-    const userBorrowResult = await client.query(userBorrowQuery, [userId]);
-    const currentBorrowNum = userBorrowResult.rows[0].borrow_num || 0;
+    const currentBorrowNum = userCheck.rows[0].borrow_num || 0;
 
     if (currentBorrowNum >= borrowLimit) {
       await client.query('ROLLBACK');
@@ -606,6 +605,16 @@ export const createBookService = async (bookData) => {
     const image_url = bookData.image_url || null;
     const price = bookData.price || 0;
 
+    if (isbn) {
+      const existingRes = await client.query('SELECT book_id, title FROM public.books WHERE isbn = $1', [isbn]);
+      if (existingRes.rows.length > 0) {
+        const dupErr = new Error(`A book with ISBN '${isbn}' already exists in the catalog ("${existingRes.rows[0].title}").`);
+        dupErr.statusCode = 400;
+        dupErr.code = 'DUPLICATE_BOOK';
+        throw dupErr;
+      }
+    }
+
     // 2. Insert into public.books
     const insertBookQuery = `
       INSERT INTO public.books (
@@ -649,6 +658,12 @@ export const createBookService = async (bookData) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error creating book in database:', error);
+    if (error.code === '23505') {
+      const dupErr = new Error(`A book with this ISBN (${bookData.isbn || 'unknown'}) already exists in the catalog.`);
+      dupErr.statusCode = 400;
+      dupErr.code = 'DUPLICATE_BOOK';
+      throw dupErr;
+    }
     throw error;
   } finally {
     client.release();
@@ -676,6 +691,16 @@ export const updateBookService = async (bookId, bookData) => {
     const genres = Array.isArray(bookData.genres) ? bookData.genres : (bookData.genres ? [bookData.genres] : []);
     const image_url = bookData.image_url || null;
     const price = bookData.price || 0;
+
+    if (isbn) {
+      const existingRes = await client.query('SELECT book_id, title FROM public.books WHERE isbn = $1 AND book_id != $2', [isbn, bookId]);
+      if (existingRes.rows.length > 0) {
+        const dupErr = new Error(`A book with ISBN '${isbn}' already exists in the catalog ("${existingRes.rows[0].title}").`);
+        dupErr.statusCode = 400;
+        dupErr.code = 'DUPLICATE_BOOK';
+        throw dupErr;
+      }
+    }
 
     const updateBookQuery = `
       UPDATE public.books
@@ -719,6 +744,12 @@ export const updateBookService = async (bookId, bookData) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating book in database:', error);
+    if (error.code === '23505') {
+      const dupErr = new Error(`Cannot update book: A book with ISBN (${bookData.isbn || 'unknown'}) already exists in the catalog.`);
+      dupErr.statusCode = 400;
+      dupErr.code = 'DUPLICATE_BOOK';
+      throw dupErr;
+    }
     throw error;
   } finally {
     client.release();

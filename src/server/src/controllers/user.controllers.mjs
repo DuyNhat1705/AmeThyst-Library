@@ -4,6 +4,9 @@ import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
 import { updateAvatarService } from '../services/user.services.mjs';
 import { systemConfigurationService } from '../services/system-configuration.services.mjs';
 import { MAX_AVATAR_SIZE } from '../middlewares/multer.middlewares.mjs';
+import { revokeUserSessions } from '../services/auth-session.services.mjs';
+import { disconnectUserSockets } from '../config/socket.mjs';
+import { clearAuthCookies } from '../utils/authHelpers.mjs';
 
 const getProfile = async (req, res) => {
   try {
@@ -86,6 +89,9 @@ const changePassword = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     await updatePassword(req.user.userId, passwordHash);
+    await revokeUserSessions(req.user.userId, 'password_changed');
+    disconnectUserSockets(req.user.userId);
+    clearAuthCookies(res);
 
     res.status(200).json({ message: 'Password updated successfully' });
   } catch (err) {

@@ -1,154 +1,79 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-export function getInitials(name: string): string {
-  if (!name) return '';
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { getCsrfToken, resetCsrfToken } from './apiClient';
 
 export interface StoredUser {
-  userId?: string;
-  username?: string;
-  email?: string;
-  phone_number?: string;
-  avatar?: string;
-  role?: string;
-  must_change_password?: boolean;
+  userId?: string; username?: string; email?: string; phone_number?: string; avatar?: string;
+  role?: string; branch_id?: number | null; must_change_password?: boolean;
 }
 
-export function getLoggedInUser(): StoredUser | null {
-  if (typeof window === 'undefined') return null;
-  const userStr = sessionStorage.getItem('user');
-  if (!userStr) return null;
-  try {
-    return JSON.parse(userStr);
-  } catch (e) {
-    return null;
-  }
+let currentUser: StoredUser | null = null;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export function setCurrentUser(user: StoredUser | null) {
+  currentUser = user;
+  resetCsrfToken();
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('user-updated', { detail: user }));
 }
 
-export function getLoggedInUserInitials(): string {
-  const user = getLoggedInUser();
-  if (!user || !user.username) return '';
-  return getInitials(user.username);
+export function getInitials(name: string): string {
+  return name ? name.split(' ').map((part) => part[0]).join('').toUpperCase().slice(0, 2) : '';
 }
+export const getLoggedInUser = () => currentUser;
+export const getLoggedInUserInitials = () => getInitials(currentUser?.username || '');
+export const isLoggedIn = () => Boolean(currentUser);
+export const getAuthToken = (): null => null;
 
-export function isLoggedIn(): boolean {
-  if (typeof window === 'undefined') return false;
-  return !!sessionStorage.getItem('token') && !!sessionStorage.getItem('user');
-}
-
-/**
- * Returns the stored JWT token, or null if not logged in.
- */
-export function getAuthToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem('token');
-}
-
-/**
- * Clears the stored auth token and user data, logging the user out.
- */
-export function logoutUser(): void {
+export async function logoutUser(): Promise<void> {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem('token');
-  sessionStorage.removeItem('user');
-  window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
+  const csrf = await getCsrfToken();
+  await fetch(`${apiUrl}/auth/logout`, { method: 'POST', credentials: 'include', headers: csrf ? { 'X-CSRF-Token': csrf } : {} }).catch(() => undefined);
+  resetCsrfToken();
+  setCurrentUser(null);
 }
 
-/**
- * Merges partial fields into the stored user object and persists it.
- * Only updates keys that are defined in StoredUser.
- */
 export function updateStoredUser(partial: Partial<StoredUser>): StoredUser | null {
-  const current = getLoggedInUser();
-  if (!current) return null;
-  const updated: StoredUser = { ...current, ...partial };
-  sessionStorage.setItem('user', JSON.stringify(updated));
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('user-updated', { detail: updated }));
-  }
-  return updated;
+  if (!currentUser) return null;
+  currentUser = { ...currentUser, ...partial };
+  setCurrentUser(currentUser);
+  return currentUser;
 }
 
-/**
- * Custom React hook that registers state for stored user updates
- * and triggers re-renders on the custom 'user-updated' event.
- */
 export function useStoredUser(): StoredUser | null {
-  const [user, setUser] = useState<StoredUser | null>(() =>
-    typeof window !== 'undefined' ? getLoggedInUser() : null
-  );
-
+  const [user, setUser] = useState<StoredUser | null>(currentUser);
   useEffect(() => {
-    const onCustom = (e: Event) => {
-      setUser((e as CustomEvent<StoredUser | null>).detail);
-    };
-
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'user') {
-        setUser(e.newValue ? JSON.parse(e.newValue) : null);
-      }
-    };
-
-    window.addEventListener('user-updated', onCustom);
-    window.addEventListener('storage', onStorage);
-
-    return () => {
-      window.removeEventListener('user-updated', onCustom);
-      window.removeEventListener('storage', onStorage);
-    };
+    const onUpdate = (event: Event) => setUser((event as CustomEvent<StoredUser | null>).detail);
+    window.addEventListener('user-updated', onUpdate);
+    return () => window.removeEventListener('user-updated', onUpdate);
   }, []);
-
   return user;
 }
 
-/**
- * Redirects the user to the specified path if they are already logged in.
- * If no path is given, resolves based on the user's role.
- */
-export function useRedirectIfLoggedIn(redirectTo?: string): void {
-  const router = useRouter();
-  useEffect(() => {
-    if (isLoggedIn()) {
-      const target = redirectTo || getRedirectPathForUser(getLoggedInUser());
-      router.push(target);
-    }
-  }, [router, redirectTo]);
-}
-
-/**
- * Redirects the user to the login page if they are not logged in.
- */
-export function useRequireAuth(redirectTo: string = '/login'): void {
-  const router = useRouter();
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push(redirectTo);
-    }
-  }, [router, redirectTo]);
-}
-/**
- * Resolves the redirect path based on the user's role.
- */
 export function getRedirectPathForUser(user: StoredUser | null): string {
   if (!user) return '/login';
   if (user.role === 'librarian') return '/dashboard/librarian';
   if (user.role === 'admin') return '/dashboard/admin';
   return '/library';
 }
-
-/**
- * Returns the dashboard path based on user's role.
- */
 export function getDashboardPath(user: StoredUser | null): string {
   if (!user) return '';
   if (user.role === 'librarian') return '/dashboard/librarian';
   if (user.role === 'admin') return '/dashboard/admin';
   return '/dashboard/user';
+}
+
+export function useRedirectIfLoggedIn(redirectTo?: string): void {
+  const router = useRouter();
+  const user = useStoredUser();
+  useEffect(() => { if (user) router.push(redirectTo || getRedirectPathForUser(user)); }, [router, redirectTo, user]);
+}
+export function useRequireAuth(redirectTo = '/login'): void {
+  const router = useRouter();
+  const user = useStoredUser();
+  useEffect(() => {
+    const onReady = () => { if (!currentUser) router.push(redirectTo); };
+    window.addEventListener('auth-ready', onReady);
+    if (user) return () => window.removeEventListener('auth-ready', onReady);
+    return () => window.removeEventListener('auth-ready', onReady);
+  }, [router, redirectTo, user]);
 }

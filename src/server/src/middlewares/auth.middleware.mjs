@@ -1,13 +1,18 @@
 import jwt from 'jsonwebtoken';
 import pool from '../config/postgres.mjs';
+import { ACCESS_COOKIE, JWT_AUDIENCE, JWT_ISSUER } from '../utils/authHelpers.mjs';
 
 const authError = (res, status, code, message) => res.status(status).json({
   success: false,
   error: { code, message },
 });
 
-const authenticate = async (token) => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+export const authenticate = async (token) => {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+    algorithms: ['HS256'],
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
+  });
   const userId = decoded?.userId;
   if (!userId) {
     const error = new Error('Token does not contain a valid user identifier.');
@@ -15,7 +20,7 @@ const authenticate = async (token) => {
     throw error;
   }
   const result = await pool.query(
-    'SELECT user_id, email, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
+    'SELECT user_id, email, username, avatar, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
     [userId],
   );
   if (!result.rows[0]) {
@@ -34,7 +39,7 @@ const authenticate = async (token) => {
     error.code = 'INVALID_TOKEN_VERSION';
     throw error;
   }
-  return { ...decoded, userId: user.user_id, email: user.email, role: user.role, branch_id: user.branch_id ?? null, status: user.status, status: user.status, must_change_password: user.must_change_password ?? false };
+  return { ...decoded, userId: user.user_id, email: user.email, username: user.username, avatar: user.avatar, role: user.role, branch_id: user.branch_id ?? null, status: user.status, must_change_password: user.must_change_password ?? false };
 };
 
 const isPasswordChangeRequest = (req) => {
@@ -44,7 +49,7 @@ const isPasswordChangeRequest = (req) => {
 
 export const verifyToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = (authHeader && authHeader.split(' ')[1]) || req.cookies?.[ACCESS_COOKIE];
   if (!token) return authError(res, 401, 'AUTH_REQUIRED', 'No token provided.');
 
   try {
@@ -68,7 +73,7 @@ export const verifyToken = async (req, res, next) => {
  */
 export const optionalAuth = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = (authHeader && authHeader.split(' ')[1]) || req.cookies?.[ACCESS_COOKIE];
 
   if (!token) {
     req.user = null;

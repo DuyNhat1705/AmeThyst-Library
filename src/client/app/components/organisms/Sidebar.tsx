@@ -41,7 +41,7 @@ export default function Sidebar({
   return (
     <>
       <button
-        className="lg:hidden p-4 text-[#091426] dark:text-neutral-200"
+        className="lg:hidden p-4 rounded-md text-[#091426] dark:text-neutral-200 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
         onClick={() => setIsOpen(!isOpen)}
       >
         {t('sidebar.menu')}
