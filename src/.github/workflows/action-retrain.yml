@@ -1,0 +1,131 @@
+name: Memgraph Data Sync & Retraining Pipeline
+
+on:
+  schedule:
+    # Run automatically every day at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      run_graphsage:
+        description: 'Run GraphSAGE training after sync'
+        type: boolean
+        default: true
+      run_lightgbm:
+        description: 'Run LightGBM training after sync'
+        type: boolean
+        default: true
+      export_snapshot:
+        description: 'Export Memgraph snapshot artifact'
+        type: boolean
+        default: true
+
+jobs:
+  sync-and-retrain:
+    runs-on: ubuntu-latest
+
+    services:
+      memgraph:
+        image: memgraph/memgraph-mage:latest
+        ports:
+          - 7687:7687
+        env:
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r database/Init_data/requirements.txt
+
+      - name: Wait for Memgraph service connection
+        env:
+          MEMGRAPH_HOST: ${{ secrets.MEMGRAPH_HOST }}
+          MEMGRAPH_PORT: ${{ secrets.MEMGRAPH_PORT }}
+        run: |
+          python -c "
+          import os, socket, time
+          host = os.environ['MEMGRAPH_HOST']
+          port = int(os.environ['MEMGRAPH_PORT'])
+          print(f'Waiting for Memgraph at {host}:{port}...')
+          for _ in range(30):
+              try:
+                  with socket.create_connection((host, port), timeout=2):
+                      print('Memgraph is ready!')
+                      break
+              except OSError:
+                  time.sleep(2)
+          else:
+              raise TimeoutError('Memgraph service timed out.')
+          "
+
+      - name: Sync PostgreSQL (Supabase) data to Memgraph
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+        run: |
+          echo "Starting data synchronization from Supabase PostgreSQL to Memgraph..."
+          python database/Init_data/Init_graph.py
+
+      - name: Retrain GraphSAGE model
+        if: ${{ github.event_name == 'schedule' || inputs.run_graphsage == true }}
+        env:
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+        run: |
+          echo "Triggering GraphSAGE link prediction & embedding retraining..."
+          python database/Init_data/GraphSAGE.py
+
+      - name: Retrain LightGBM ranker
+        if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: |
+          echo "Training LightGBM model..."
+          python database/Init_data/LightGBM.py
+
+      - name: Export Memgraph snapshot artifact
+        if: ${{ github.event_name == 'schedule' || inputs.export_snapshot == true }}
+        env:
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+        run: |
+          echo "Attempting snapshot export..."
+          CONTAINER_ID=$(docker ps -q -f ancestor=memgraph/memgraph-mage:latest | head -n 1)
+          export MEMGRAPH_CONTAINER_NAME="$CONTAINER_ID"
+          python database/Init_data/Model_snapshot.py export || {
+            echo "Fallback: dumping database cypher log..."
+            docker exec "$CONTAINER_ID" mgconsole --username "${MEMGRAPH_USER}" --password "${MEMGRAPH_PASSWORD}" --output-format=cypherl -c "DUMP DATABASE;" > database/Init_data/datagraph_backup.cypher || true
+          }
+
+      - name: Upload Memgraph Trained Artifacts
+        if: ${{ github.event_name == 'schedule' || inputs.export_snapshot == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: memgraph-trained-snapshot
+          path: |
+            database/Init_data/amethyst_graph.snapshot
+            database/Init_data/datagraph_backup.cypher
+          retention-days: 14
+          if-no-files-found: ignore

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
 # Database Connection Configurations
-MEMGRAPH_URI = "bolt://localhost:7687"  # Explicit loopback to protect socket connectivity
+MEMGRAPH_URI = os.getenv("MEMGRAPH_URI", "bolt://localhost:7687")
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 ENV_PATH = os.path.join(ROOT_DIR, ".env")
