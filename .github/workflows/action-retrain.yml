@@ -48,7 +48,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r database/Init_data/requirements.txt
+          pip install -r src/database/Init_data/requirements.txt
 
       - name: Wait for Memgraph service connection
         env:
@@ -83,7 +83,7 @@ jobs:
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
         run: |
           echo "Starting data synchronization from Supabase PostgreSQL to Memgraph..."
-          python database/Init_data/Init_graph.py
+          python src/database/Init_data/Init_graph.py
 
       - name: Retrain GraphSAGE model
         if: ${{ github.event_name == 'schedule' || inputs.run_graphsage == true }}
@@ -93,7 +93,7 @@ jobs:
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
         run: |
           echo "Triggering GraphSAGE link prediction & embedding retraining..."
-          python database/Init_data/GraphSAGE.py
+          python src/database/Init_data/GraphSAGE.py
 
       - name: Retrain LightGBM ranker
         if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
@@ -105,7 +105,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           echo "Training LightGBM model..."
-          python database/Init_data/LightGBM.py
+          python src/database/Init_data/LightGBM.py
 
       - name: Export Memgraph snapshot artifact
         if: ${{ github.event_name == 'schedule' || inputs.export_snapshot == true }}
@@ -117,9 +117,9 @@ jobs:
           echo "Attempting snapshot export..."
           CONTAINER_ID=$(docker ps -q -f ancestor=memgraph/memgraph-mage:latest | head -n 1)
           export MEMGRAPH_CONTAINER_NAME="$CONTAINER_ID"
-          python database/Init_data/Model_snapshot.py export || {
+          python src/database/Init_data/Model_snapshot.py export || {
             echo "Fallback: dumping database cypher log..."
-            docker exec "$CONTAINER_ID" mgconsole --username "${MEMGRAPH_USER}" --password "${MEMGRAPH_PASSWORD}" --output-format=cypherl -c "DUMP DATABASE;" > database/Init_data/datagraph_backup.cypher || true
+            docker exec "$CONTAINER_ID" mgconsole --username "${MEMGRAPH_USER}" --password "${MEMGRAPH_PASSWORD}" --output-format=cypherl -c "DUMP DATABASE;" > src/database/Init_data/datagraph_backup.cypher || true
           }
 
       - name: Upload Memgraph Trained Artifacts
@@ -128,7 +128,7 @@ jobs:
         with:
           name: memgraph-trained-snapshot
           path: |
-            database/Init_data/amethyst_graph.snapshot
-            database/Init_data/datagraph_backup.cypher
+            src/database/Init_data/amethyst_graph.snapshot
+            src/database/Init_data/datagraph_backup.cypher
           retention-days: 14
           if-no-files-found: ignore
