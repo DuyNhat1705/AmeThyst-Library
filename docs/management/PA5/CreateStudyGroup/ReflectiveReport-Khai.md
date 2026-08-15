@@ -36,16 +36,18 @@ Performed by: All Members | Reviewed by: Vũ Duy Nhất | Edited by: All Members
 - Facilitated easy updates and seamless development of new features.
 - User-friendly, with most necessary skills and prompts pre-configured, lowering the learning curve.
 - Helped identify logical errors early on and clarified ambiguous requirements before implementation.
+- Compared with traditional development, Spec Kit provided a clearer link between requirements, implementation plans, and code, reducing the risk of the final product diverging from the original requirements.
 
 ### 2. Limitations
 - Writing and refining specification documents was heavily time-consuming.
 - Continuously updating specifications incurred noticeable token costs.
 - Occasionally, the specification documents lacked clarity or missed logical details for complex features.
+- Unlike traditional development, where small changes can often be applied directly to the code, specification-driven development required related documents to be updated consistently, creating additional maintenance overhead.
 
 ## III. AI Tools Usage
 
 ### 1. Effective aspects
-- Saved hundreds of hours of manual coding. The workflow shifted efficiently to prompting and subsequent reviewing.
+- Saved significant development time by shifting much of the workflow from manual coding to prompting, reviewing, and refining generated code.
 - Accelerated the prototyping phase by instantly providing functional boilerplate code and basic structure.
 
 ### 2. Limitations encountered
@@ -63,7 +65,7 @@ Performed by: All Members | Reviewed by: Vũ Duy Nhất | Edited by: All Members
 
 ### 1. Nguyễn Lê Hoàng Khải
 - **Personal Contribution:** Developed various project documents, implemented the Study Group functional group, developed the View Book Detail use case within the Searching group, and built the System Configuration feature in the Administration module.
-- **Personal Learning:** Gained practical experience with AI agents and utilized technologies like Spec Kit to optimize agent usage, understanding their strengths and weaknesses to prepare for the AI era. Key takeaways include: writing prompts in a structured manner (using headings when possible) to minimize agent errors and clarify tasks; understanding how to start new conversations or query past ones to optimize token usage; and identifying the "dumb zones" of agents and leveraging specific agent skills to achieve desired outcomes.
+- **Personal Learning:** Gained practical experience with AI agents and used technologies such as Spec Kit to optimize agent-assisted development while better understanding the strengths and limitations of these tools. I learned to write structured prompts, using headings when appropriate, to clarify tasks and reduce agent errors. I also learned when to start a new conversation or refer to previous ones to optimize token usage. Finally, I became better at identifying situations in which agents perform poorly and applying specific agent skills to achieve the desired outcomes.
 
 ### 2. [Member 2 Name]
 - **Personal Contribution:** [Briefly describe what you contributed to the project]
