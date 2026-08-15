@@ -62,7 +62,7 @@ export default function ImageUploader({
 
       const res = await fetch(`${API_BASE}/api/books/upload-cover`, {
         method: 'POST',
-        headers: authHeaders(),
+        headers: await authHeaders(),
         credentials: 'include',
         body: formData,
       });

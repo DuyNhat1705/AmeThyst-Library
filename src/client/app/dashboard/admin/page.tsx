@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
       const url = `${API_URL}/api/admin/users/export?search=${encodeURIComponent(debouncedSearch)}&role=${selectedRole}&status=${selectedStatus}`;
       
       const response = await fetch(url, {
-        headers: authHeaders()
+        headers: await authHeaders()
       });
 
       if (!response.ok) {

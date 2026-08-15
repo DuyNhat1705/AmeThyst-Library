@@ -12,12 +12,18 @@ export const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 export const JWT_ISSUER = process.env.JWT_ISSUER || 'amethyst-library';
 export const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'amethyst-client';
 
-const secureCookies = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production';
+// The client and API may live on different sites (e.g. Vercel + Render). Lax
+// cookies are never sent on cross-site subresource fetches, so the auth handoff
+// in /auth/callback would fail. Use None (always with Secure) in production;
+// keep Lax for local development where everything shares the localhost site.
+const secureCookies = isProduction;
+const cookieSameSite = isProduction ? 'none' : 'lax';
 
 export const accessCookieOptions = () => ({
   httpOnly: true,
   secure: secureCookies,
-  sameSite: 'lax',
+  sameSite: cookieSameSite,
   path: '/',
   maxAge: 15 * 60 * 1000,
 });
@@ -25,7 +31,7 @@ export const accessCookieOptions = () => ({
 export const refreshCookieOptions = () => ({
   httpOnly: true,
   secure: secureCookies,
-  sameSite: 'lax',
+  sameSite: cookieSameSite,
   path: '/auth',
   maxAge: REFRESH_TOKEN_TTL_MS,
 });
@@ -33,7 +39,7 @@ export const refreshCookieOptions = () => ({
 export const csrfCookieOptions = () => ({
   httpOnly: false,
   secure: secureCookies,
-  sameSite: 'lax',
+  sameSite: cookieSameSite,
   path: '/',
   maxAge: REFRESH_TOKEN_TTL_MS,
 });

@@ -156,7 +156,7 @@ export default function BookFormModal({ isOpen, onClose, onSuccess, branches }) 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...authHeaders()
+          ...(await authHeaders())
         },
         credentials: 'include',
         body: JSON.stringify(payload)

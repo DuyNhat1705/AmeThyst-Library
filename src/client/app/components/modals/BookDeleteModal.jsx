@@ -34,7 +34,7 @@ export default function BookDeleteModal({ isOpen, onClose, onSuccess, book, targ
 
       const res = await fetch(url, {
         method: 'DELETE',
-        headers: authHeaders(),
+        headers: await authHeaders(),
         credentials: 'include',
       });
 

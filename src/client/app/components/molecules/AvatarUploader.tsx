@@ -265,7 +265,7 @@ export default function AvatarUploader({ avatarUrl, onAvatarUpdate, username }: 
 
         response = await fetch(`${API}/user/avatar/crop`, {
           method: 'POST',
-          headers: authHeaders(),
+          headers: await authHeaders(),
           credentials: 'include',
           body: formData,
         });
@@ -282,7 +282,7 @@ export default function AvatarUploader({ avatarUrl, onAvatarUpdate, username }: 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...authHeaders(),
+            ...(await authHeaders()),
           },
           credentials: 'include',
           body: JSON.stringify(payload),

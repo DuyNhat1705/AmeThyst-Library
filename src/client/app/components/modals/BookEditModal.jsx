@@ -240,7 +240,7 @@ export default function BookEditModal({ isOpen, onClose, onSuccess, book, branch
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          ...authHeaders()
+          ...(await authHeaders())
         },
         credentials: 'include',
         body: JSON.stringify(payload)

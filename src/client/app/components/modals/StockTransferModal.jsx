@@ -55,7 +55,7 @@ export default function StockTransferModal({ isOpen, onClose, onSuccess, book, b
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...authHeaders()
+          ...(await authHeaders())
         },
         credentials: 'include',
         body: JSON.stringify(payload)

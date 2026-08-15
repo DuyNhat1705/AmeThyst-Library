@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getCsrfToken, resetCsrfToken } from './apiClient';
 
 export interface StoredUser {
   userId?: string; username?: string; email?: string; phone_number?: string; avatar?: string;
@@ -24,8 +25,9 @@ export const getAuthToken = (): null => null;
 
 export async function logoutUser(): Promise<void> {
   if (typeof window === 'undefined') return;
-  const csrf = document.cookie.split('; ').find((item) => item.startsWith('amethyst_csrf='))?.split('=')[1];
-  await fetch(`${apiUrl}/auth/logout`, { method: 'POST', credentials: 'include', headers: csrf ? { 'X-CSRF-Token': decodeURIComponent(csrf) } : {} }).catch(() => undefined);
+  const csrf = await getCsrfToken();
+  await fetch(`${apiUrl}/auth/logout`, { method: 'POST', credentials: 'include', headers: csrf ? { 'X-CSRF-Token': csrf } : {} }).catch(() => undefined);
+  resetCsrfToken();
   setCurrentUser(null);
 }
 
