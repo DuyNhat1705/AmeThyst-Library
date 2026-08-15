@@ -16,6 +16,21 @@ vi.mock('../../src/config/postgres.mjs', () => ({
   },
 }));
 
+vi.mock('../../src/services/system-configuration.services.mjs', () => ({
+  systemConfigurationService: {
+    getSnapshot: vi.fn().mockReturnValue({
+      FEE_ADMIN: 1,
+      FEE_ADDON: 0,
+      DAMAGE_COEFFICIENTS: {
+        lost: 2.0,
+        torn_pages: 0.20,
+        folded_pages: 0.10,
+      }
+    }),
+    getState: vi.fn().mockReturnValue({ version: 1 }),
+  },
+}));
+
 const BORROW_ID = 'bb-001';
 const LIBRARIAN_BRANCH = 1;
 
@@ -47,19 +62,19 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
   });
 
   describe('findBorrowRecordByPin', () => {
-    it('[TC-SRV-DASH-001] should return the matched borrow record joined with user and book', async () => {
+    it('[TC-SRV-PIN-LIB-001] should return the matched borrow record joined with user and book', async () => {
       pool.query.mockResolvedValue({ rows: [sampleRecord] });
 
-      const result = await findBorrowRecordByPin('123456', 'pending');
+      const result = await findBorrowRecordByPin('123456', 'pending', 1);
 
       expect(result).toEqual(sampleRecord);
       expect(pool.query).toHaveBeenCalledWith(
         expect.stringContaining('FROM public.borrow_book bb'),
-        ['123456', 'pending']
+        ['123456', 'pending', 1]
       );
     });
 
-    it('[TC-SRV-DASH-002] should return null when no record matches', async () => {
+    it('[TC-SRV-PIN-LIB-002] should return null when no record matches', async () => {
       pool.query.mockResolvedValue({ rows: [] });
 
       const result = await findBorrowRecordByPin('999999', 'pending');
@@ -69,7 +84,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
   });
 
   describe('verifyPin - confirm borrow flow', () => {
-    it('[TC-SRV-DASH-003] should return borrower and book details when PIN is valid', async () => {
+    it('[TC-SRV-PIN-LIB-003] should return borrower and book details when PIN is valid', async () => {
       pool.query.mockResolvedValue({ rows: [sampleRecord] });
 
       const result = await verifyPin('123456', LIBRARIAN_BRANCH);
@@ -94,7 +109,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-004] should return PIN_NOT_FOUND with 404 when the PIN is invalid or expired', async () => {
+    it('[TC-SRV-PIN-LIB-004] should return PIN_NOT_FOUND with 404 when the PIN is invalid or expired', async () => {
       pool.query.mockResolvedValue({ rows: [] });
 
       const result = await verifyPin('999999', LIBRARIAN_BRANCH);
@@ -105,7 +120,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-005] should return WRONG_BRANCH with 403 when the reservation belongs to another branch', async () => {
+    it('[TC-SRV-PIN-LIB-005] should return WRONG_BRANCH with 403 when the reservation belongs to another branch', async () => {
       pool.query.mockResolvedValue({ rows: [{ ...sampleRecord, branch_id: 2 }] });
 
       const result = await verifyPin('123456', LIBRARIAN_BRANCH);
@@ -116,7 +131,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-006] should join array authors/genres into a comma-separated string', async () => {
+    it('[TC-SRV-PIN-LIB-006] should join array authors/genres into a comma-separated string', async () => {
       pool.query.mockResolvedValue({
         rows: [
           {
@@ -135,7 +150,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
   });
 
   describe('verifyReturnPin - confirm return flow', () => {
-    it('[TC-SRV-DASH-007] should return borrowing details when the return PIN is valid', async () => {
+    it('[TC-SRV-PIN-LIB-007] should return borrowing details when the return PIN is valid', async () => {
       pool.query.mockResolvedValue({
         rows: [
           {
@@ -178,7 +193,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       );
     });
 
-    it('[TC-SRV-DASH-008] should return PIN_NOT_FOUND with 404 when the return PIN is invalid', async () => {
+    it('[TC-SRV-PIN-LIB-008] should return PIN_NOT_FOUND with 404 when the return PIN is invalid', async () => {
       pool.query.mockResolvedValue({ rows: [] });
 
       const result = await verifyReturnPin('999999');
@@ -215,7 +230,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       arrangeHappyPath();
     });
 
-    it('[TC-SRV-DASH-009] should set status borrowed with a 14-day due date and commit', async () => {
+    it('[TC-SRV-PIN-LIB-009] should set status borrowed with a 14-day due date and commit', async () => {
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('due_date < NOW()')) return { rows: [{ overdue_count: '0' }] };
         if (sql.includes('SELECT user_id FROM public.users')) return { rows: [{ user_id: 'u-001' }] };
@@ -233,7 +248,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       expect(result).toEqual({ borrowId: BORROW_ID, status: 'borrowed', due_date: expect.any(Date) });
     });
 
-    it('[TC-SRV-DASH-010] should return NOT_FOUND with 404 when the borrow record does not exist', async () => {
+    it('[TC-SRV-PIN-LIB-010] should return NOT_FOUND with 404 when the borrow record does not exist', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (sql.includes('SELECT user_id, book_id, branch_id FROM public.borrow_book')) {
           return { rows: [] };
@@ -250,7 +265,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-011] should return USER_INELIGIBLE with 409 when the user has overdue books', async () => {
+    it('[TC-SRV-PIN-LIB-011] should return USER_INELIGIBLE with 409 when the user has overdue books', async () => {
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('due_date < NOW()')) return { rows: [{ overdue_count: '2' }] };
         if (sql.includes('SELECT user_id FROM public.users')) return { rows: [{ user_id: 'u-001' }] };
@@ -266,7 +281,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-012] should return USER_INELIGIBLE with 409 when the user does not exist', async () => {
+    it('[TC-SRV-PIN-LIB-012] should return USER_INELIGIBLE with 409 when the user does not exist', async () => {
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('due_date < NOW()')) return { rows: [{ overdue_count: '0' }] };
         if (sql.includes('SELECT user_id FROM public.users')) return { rows: [] };
@@ -281,7 +296,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-013] should release the client and roll back when a query throws', async () => {
+    it('[TC-SRV-PIN-LIB-013] should release the client and roll back when a query throws', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (sql.includes('SELECT user_id, book_id, branch_id FROM public.borrow_book')) {
           throw new Error('db failure');
@@ -330,7 +345,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       arrangeHappyPath();
     });
 
-    it('[TC-SRV-DASH-014] should record a clean return with no penalty and restore inventory', async () => {
+    it('[TC-SRV-PIN-LIB-014] should record a clean return with no penalty and restore inventory', async () => {
       const result = await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false);
 
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
@@ -358,7 +373,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-015] should return NOT_FOUND with 404 when the borrow record is not pending_return', async () => {
+    it('[TC-SRV-PIN-LIB-015] should return NOT_FOUND with 404 when the borrow record is not pending_return', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (sql.includes('SELECT bb.user_id, bb.book_id, bb.borrow_date, bb.due_date, b.price')) {
           return { rows: [] };
@@ -366,7 +381,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
         return { rows: [] };
       });
 
-      const result = await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false);
+      const result = await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false, 1);
 
       expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
       expect(result).toEqual({
@@ -375,8 +390,8 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-016] should charge a lost book penalty of twice the price', async () => {
-      const result = await confirmReturn(BORROW_ID, 1, [], 'Book lost', true);
+    it('[TC-SRV-PIN-LIB-016] should charge a lost book penalty of twice the price', async () => {
+      const result = await confirmReturn(BORROW_ID, 1, [], 'Book lost', true, 1);
 
       expect(mockClient.query).toHaveBeenCalledWith(
         expect.stringContaining('INSERT INTO public.book_penalty'),
@@ -394,8 +409,8 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       });
     });
 
-    it('[TC-SRV-DASH-017] should charge a damage penalty based on the worst damage coefficient', async () => {
-      const result = await confirmReturn(BORROW_ID, 1, ['folded_pages'], 'Fold corner', false);
+    it('[TC-SRV-PIN-LIB-017] should charge a damage penalty based on the worst damage coefficient', async () => {
+      const result = await confirmReturn(BORROW_ID, 1, ['folded_pages'], 'Fold corner', false, 1);
 
       // price=50, coefficient folded_pages=0.10 => 0.10*50 + Fee_admin(1) + 0 = 6
       expect(result.data.penaltyAmount).toBe(6);
@@ -403,7 +418,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       expect(result.data.inventoryUpdated).toBe(true);
     });
 
-    it('[TC-SRV-DASH-018] should charge an overdue penalty when returned after due date in perfect condition', async () => {
+    it('[TC-SRV-PIN-LIB-018] should charge an overdue penalty when returned after due date in perfect condition', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (sql === 'BEGIN' || sql === 'COMMIT') return { rows: [] };
         if (sql.includes('SELECT bb.user_id, bb.book_id, bb.borrow_date, bb.due_date, b.price')) {
@@ -425,14 +440,14 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
         return { rows: [] };
       });
 
-      const result = await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false);
+      const result = await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false, 1);
 
       expect(result.data.issue).toBe('overdue');
       expect(result.data.penaltyAmount).toBeGreaterThan(0);
     });
 
-    it('[TC-SRV-DASH-019] should clear the PIN and expired_at from the borrow record on successful return', async () => {
-      await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false);
+    it('[TC-SRV-PIN-LIB-019] should clear the PIN and expired_at from the borrow record on successful return', async () => {
+      await confirmReturn(BORROW_ID, 1, ['perfect_condition'], null, false, 1);
 
       expect(mockClient.query).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE public.borrow_book SET pin = NULL, expired_at = NULL'),
@@ -440,7 +455,7 @@ describe('dashboard.librarian.services.mjs - PIN verification', () => {
       );
     });
 
-    it('[TC-SRV-DASH-020] should release the client and roll back when the transaction throws', async () => {
+    it('[TC-SRV-PIN-LIB-020] should release the client and roll back when the transaction throws', async () => {
       mockClient.query.mockImplementation(async (sql) => {
         if (sql.includes('SELECT bb.user_id, bb.book_id, bb.borrow_date, bb.due_date, b.price')) {
           throw new Error('transaction failed');

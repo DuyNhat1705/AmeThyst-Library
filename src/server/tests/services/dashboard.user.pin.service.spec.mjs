@@ -24,7 +24,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
   });
 
   describe('generatePickupPin - confirm borrow flow', () => {
-    it('[TC-SRV-DASH-001] should generate a 6-digit PIN, set status pending, and return expiresAt 180s in the future', async () => {
+    it('[TC-SRV-PIN-US-001] should generate a 6-digit PIN, set status pending, and return expiresAt 180s in the future', async () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.5);
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('WHERE borrow_id = $1 AND user_id = $2 AND status IN')) {
@@ -59,7 +59,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       vi.restoreAllMocks();
     });
 
-    it('[TC-SRV-DASH-002] should return RESERVATION_NOT_FOUND when the reservation does not exist', async () => {
+    it('[TC-SRV-PIN-US-002] should return RESERVATION_NOT_FOUND when the reservation does not exist', async () => {
       pool.query.mockResolvedValue({ rows: [] });
 
       const result = await generatePickupPin(USER_ID, BORROW_ID);
@@ -71,7 +71,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       expect(pool.query).toHaveBeenCalledTimes(1);
     });
 
-    it('[TC-SRV-DASH-003] should reuse the existing active PIN without regenerating', async () => {
+    it('[TC-SRV-PIN-US-003] should reuse the existing active PIN without regenerating', async () => {
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('WHERE borrow_id = $1 AND user_id = $2 AND status IN')) {
           return { rows: [{ borrow_id: BORROW_ID, user_id: USER_ID }] };
@@ -88,7 +88,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       expect(pool.query).toHaveBeenCalledTimes(2);
     });
 
-    it('[TC-SRV-DASH-004] should return PIN_GENERATION_FAILED after 3 unique-violation attempts', async () => {
+    it('[TC-SRV-PIN-US-004] should return PIN_GENERATION_FAILED after 3 unique-violation attempts', async () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.5);
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('WHERE borrow_id = $1 AND user_id = $2 AND status IN')) {
@@ -117,7 +117,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       vi.restoreAllMocks();
     });
 
-    it('[TC-SRV-DASH-005] should throw non-unique database errors', async () => {
+    it('[TC-SRV-PIN-US-005] should throw non-unique database errors', async () => {
       pool.query.mockImplementation(async (sql) => {
         if (sql.includes('WHERE borrow_id = $1 AND user_id = $2 AND status IN')) {
           return { rows: [{ borrow_id: BORROW_ID, user_id: USER_ID }] };
@@ -139,10 +139,10 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
   });
 
   describe('generateReturnPin - confirm return flow', () => {
-    it('[TC-SRV-DASH-006] should generate a PIN and set status pending_return for a borrowed book', async () => {
+    it('[TC-SRV-PIN-US-006] should generate a PIN and set status pending_return for a borrowed book', async () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.25);
       pool.query.mockImplementation(async (sql) => {
-        if (sql.includes('AND status = \'borrowed\'')) {
+        if (sql.includes('AND status IN')) {
           return { rows: [{ borrow_id: BORROW_ID, user_id: USER_ID }] };
         }
         if (sql.includes('pin IS NOT NULL AND expired_at > NOW()')) {
@@ -168,7 +168,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       vi.restoreAllMocks();
     });
 
-    it('[TC-SRV-DASH-007] should return BORROW_NOT_FOUND when the book is not currently borrowed', async () => {
+    it('[TC-SRV-PIN-US-007] should return BORROW_NOT_FOUND when the book is not currently borrowed', async () => {
       pool.query.mockResolvedValue({ rows: [] });
 
       const result = await generateReturnPin(USER_ID, BORROW_ID);
@@ -182,7 +182,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       });
     });
 
-    it('[TC-SRV-DASH-008] should return INTERNAL_ERROR with 500 when a database failure occurs', async () => {
+    it('[TC-SRV-PIN-US-008] should return INTERNAL_ERROR with 500 when a database failure occurs', async () => {
       pool.query.mockRejectedValue(new Error('db down'));
 
       const result = await generateReturnPin(USER_ID, BORROW_ID);
@@ -195,7 +195,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
   });
 
   describe('cleanupReturnPin', () => {
-    it('[TC-SRV-DASH-009] should clear the return PIN and restore status borrowed when a row was updated', async () => {
+    it('[TC-SRV-PIN-US-009] should clear the return PIN and restore status borrowed when a row was updated', async () => {
       pool.query.mockResolvedValue({ rowCount: 1 });
 
       const cleaned = await cleanupReturnPin(USER_ID, BORROW_ID);
@@ -207,7 +207,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       );
     });
 
-    it('[TC-SRV-DASH-010] should return false when no row matched pending_return', async () => {
+    it('[TC-SRV-PIN-US-010] should return false when no row matched pending_return', async () => {
       pool.query.mockResolvedValue({ rowCount: 0 });
 
       const cleaned = await cleanupReturnPin(USER_ID, BORROW_ID);
@@ -217,7 +217,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
   });
 
   describe('cleanupReservationPin', () => {
-    it('[TC-SRV-DASH-011] should clear the pickup PIN and restore status reserved when a row was updated', async () => {
+    it('[TC-SRV-PIN-US-011] should clear the pickup PIN and restore status reserved when a row was updated', async () => {
       pool.query.mockResolvedValue({ rowCount: 1 });
 
       const cleaned = await cleanupReservationPin(USER_ID, BORROW_ID);
@@ -229,7 +229,7 @@ describe('dashboard.user.services.mjs - PIN lifecycle', () => {
       );
     });
 
-    it('[TC-SRV-DASH-012] should return false when no pending row matched', async () => {
+    it('[TC-SRV-PIN-US-012] should return false when no pending row matched', async () => {
       pool.query.mockResolvedValue({ rowCount: 0 });
 
       const cleaned = await cleanupReservationPin(USER_ID, BORROW_ID);
