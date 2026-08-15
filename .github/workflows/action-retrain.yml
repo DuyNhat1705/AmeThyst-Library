@@ -3,7 +3,7 @@ name: Memgraph Data Sync & Retraining Pipeline
 on:
   push:
     branches:
-      - Git-action
+      - GitHub-action
   schedule:
     # Run automatically every day at 02:00 UTC
     - cron: '0 2 * * *'
