@@ -37,13 +37,21 @@ Performed by: Phan Lê Anh Minh | Reviewed by: Vũ Duy Nhất | Edited by: Phan 
 
 *Note: Discuss how the experience of using Spec Kit for specification-driven development was. What were the benefits and limitations compared to traditional development?*
 
-### 1. Benefits
+### 1. Experience
+
+Using Spec Kit gave the team a more systematic way to turn feature requests into implementation through specifications, plans, tasks, and verification. It was especially useful for complex features because requirements, edge cases, dependencies, and test evidence could be traced throughout the workflow. However, the experience also showed that the generated artifacts were only as reliable as the prompts and repository context provided, so the team still needed to review the actual code and test results before accepting them.
+
+### 2. Benefits & Limitations in Comparison with Traditional Development
+
+**Benefits**
+
 - The `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, and `/speckit.implement` sequence provided a repeatable path from a feature request to implementation. It required the team to define user stories, edge cases, measurable success criteria, technical context, file impact, dependencies, and verification before editing code.
 - Spec Kit improved traceability between requirements and evidence. For the authentication registration suite, requirement tags `@A_R1` through `@A_R10`, unique test IDs, source layers, and execution outcomes were traceable through the reduction specification, plan, task list, and test files; failed requirements were mapped separately to the Bug Report.
 - The supporting artifacts - research notes, API contracts, data models, quick-start guides, checklists, and task dependencies - made complex work easier to review, hand over, demonstrate, and revisit.
 - Compared with direct implementation, specification-driven development surfaced security and failure conditions earlier, including suspended-account checks, self-mutation prevention, last-active-admin protection, parameterized queries, CSV formula-injection protection, token-expiry boundaries, and email-delivery consistency.
 
-### 2. Limitations
+**Limitations**
+
 - Spec Kit could not guarantee that its assumptions matched the repository. Generated tests initially expected JWTs in query parameters or bodies even though the final application used cookie-based sessions and generic anti-enumeration responses. Production code and real execution still had to be treated as the authoritative evidence.
 - The generated scope could be larger than necessary. Without strict prompts, it could add files, components, schema concepts, configuration changes, or abstractions that duplicated existing behavior. The team had to state exclusions and file-impact boundaries explicitly and remove unnecessary output afterward.
 - Specifications and completed task checkboxes could become stale as implementation decisions changed. A documented requirement or checked task did not prove that the behavior existed, so the final diff, automated test output, and manual scenarios remained necessary.

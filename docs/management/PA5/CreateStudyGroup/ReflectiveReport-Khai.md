@@ -31,14 +31,22 @@ Performed by: All Members | Reviewed by: Vũ Duy Nhất | Edited by: All Members
 
 ## II. Spec Kit Experience
 
-### 1. Benefits
+### 1. Experience
+
+Our experience with Spec Kit showed that the quality of the implementation depended heavily on how clearly the requirements were described. When a specification lacked important details, the AI often produced incorrect or incomplete results; however, an overly detailed description could also constrain the solution or lead it away from our actual intent. We therefore learned that specifications should be structured with clear requirements, expected behaviors, and priorities while remaining concise enough to allow appropriate implementation decisions. Keeping this structure consistent also made specifications easier to review and update throughout development.
+
+### 2. Benefits & Limitations in Comparison with Traditional Development
+
+**Benefits**
+
 - Ensured strong synchronization between project requirements and actual code implementation.
 - Facilitated easy updates and seamless development of new features.
 - User-friendly, with most necessary skills and prompts pre-configured, lowering the learning curve.
 - Helped identify logical errors early on and clarified ambiguous requirements before implementation.
 - Compared with traditional development, Spec Kit provided a clearer link between requirements, implementation plans, and code, reducing the risk of the final product diverging from the original requirements.
 
-### 2. Limitations
+**Limitations**
+
 - Writing and refining specification documents was heavily time-consuming.
 - Continuously updating specifications incurred noticeable token costs.
 - Occasionally, the specification documents lacked clarity or missed logical details for complex features.
