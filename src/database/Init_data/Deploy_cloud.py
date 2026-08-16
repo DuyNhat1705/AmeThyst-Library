@@ -138,9 +138,15 @@ def deploy_to_memgraph_cloud():
 
     statements = split_cypher_statements(content)
 
+    if not statements or len(statements) == 0:
+        print("[CRITICAL ABORT] Cypher dump file contains 0 valid statements!")
+        print("Aborting deployment immediately to prevent accidental data wipe on Memgraph Cloud.")
+        sys.exit(1)
+
     try:
         with driver.session() as session:
-            print("Wiping existing graph on Memgraph Cloud...")
+            print(f"Validated {len(statements)} statements to restore.")
+            print("Wiping existing graph on Memgraph instance...")
             session.run("MATCH (n) DETACH DELETE n")
 
             print(f"Restoring {len(statements)} Cypher statements to Memgraph Cloud...")
