@@ -99,17 +99,33 @@ def deploy_to_memgraph_cloud():
 
     print(f"Connecting to Memgraph Cloud instance at {cloud_uri}...")
 
-    # 2. SSL & Protocol Handshake Configuration for Raw IPs / Self-Signed Certs
-    driver_kwargs = {}
-    if cloud_uri.startswith("bolt://"):
-        driver_kwargs["encrypted"] = False
-
+    # 2. SSL & Protocol Handshake Configuration with Auto-Fallback
     auth_tuple = (cloud_user, cloud_password) if (cloud_user and cloud_password) else None
+    
+    driver = None
+    connection_errors = []
+    
+    # Attempt unencrypted bolt first, then encrypted if server requires TLS
+    for use_encryption in [False, True]:
+        try:
+            test_kwargs = {"encrypted": use_encryption}
+            test_driver = GraphDatabase.driver(cloud_uri, auth=auth_tuple, **test_kwargs)
+            with test_driver.session() as s:
+                s.run("RETURN 1")
+            driver = test_driver
+            print(f" -> Connected to Memgraph Cloud successfully (encryption={use_encryption}).")
+            break
+        except Exception as conn_err:
+            connection_errors.append(f"encrypted={use_encryption}: {conn_err}")
 
-    try:
-        driver = GraphDatabase.driver(cloud_uri, auth=auth_tuple, **driver_kwargs)
-    except Exception as init_err:
-        print(f"[Error] Failed to initialize GraphDatabase driver: {init_err}")
+    if not driver:
+        print("[Error] Failed to connect to Memgraph Cloud instance!")
+        print("Diagnostic Details:")
+        for err in connection_errors:
+            print(f"  - {err}")
+        print("\nPlease check:")
+        print("  1. VPS Firewall / Security Group: Ensure port 7687 is open to inbound traffic.")
+        print("  2. Memgraph Config: Ensure --bolt-address=0.0.0.0 in memgraph.conf (not 127.0.0.1).")
         sys.exit(1)
 
     if not os.path.exists(CYPHER_FILE_PATH):
