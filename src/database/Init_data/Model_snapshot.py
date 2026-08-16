@@ -11,10 +11,12 @@ ENV_PATH = os.path.join(ROOT_DIR, ".env")
 load_dotenv(ENV_PATH)
 load_dotenv()  # Fallback to local directory
 
-MEMGRAPH_URI = os.getenv("MEMGRAPH_URI", "bolt://localhost:7687")
-MEMGRAPH_USER = os.getenv("MEMGRAPH_USER", "amethyst_admin")
-MEMGRAPH_PASSWORD = os.getenv("MEMGRAPH_PASSWORD", "AmethystMG2026")
-CONTAINER_NAME = os.getenv("MEMGRAPH_CONTAINER_NAME", "amethyst_memgraph")
+mem_host = os.getenv("MEMGRAPH_HOST") or "localhost"
+mem_port = os.getenv("MEMGRAPH_PORT") or "7687"
+MEMGRAPH_URI = os.getenv("MEMGRAPH_URI") or f"bolt://{mem_host}:{mem_port}"
+MEMGRAPH_USER = os.getenv("MEMGRAPH_USER")
+MEMGRAPH_PASSWORD = os.getenv("MEMGRAPH_PASSWORD")
+CONTAINER_NAME = os.getenv("MEMGRAPH_CONTAINER_NAME")
 
 # Target paths inside the container and host
 SNAPSHOT_FILENAME = "amethyst_graph.snapshot"

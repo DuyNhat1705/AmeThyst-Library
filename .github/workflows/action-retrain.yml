@@ -1,9 +1,6 @@
 name: Memgraph Data Sync & Retraining Pipeline
 
 on:
-  push:
-    branches:
-      - GitHub-action
   schedule:
     # Run automatically every day at 02:00 UTC
     - cron: '0 2 * * *'
@@ -52,13 +49,21 @@ jobs:
 
       - name: Wait for Memgraph service connection
         env:
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
           MEMGRAPH_HOST: ${{ secrets.MEMGRAPH_HOST }}
           MEMGRAPH_PORT: ${{ secrets.MEMGRAPH_PORT }}
         run: |
           python -c "
-          import os, socket, time
-          host = os.environ['MEMGRAPH_HOST']
-          port = int(os.environ['MEMGRAPH_PORT'])
+          import os, socket, time, urllib.parse
+          uri = os.environ.get('MEMGRAPH_URI') or ''
+          if uri:
+              parsed = urllib.parse.urlparse(uri.replace('bolt://', 'http://'))
+              host = parsed.hostname or 'localhost'
+              port = parsed.port or 7687
+          else:
+              host = os.environ.get('MEMGRAPH_HOST') or 'localhost'
+              raw_port = (os.environ.get('MEMGRAPH_PORT') or '').strip()
+              port = int(raw_port) if raw_port.isdigit() else 7687
           print(f'Waiting for Memgraph at {host}:{port}...')
           for _ in range(30):
               try:

@@ -11,15 +11,17 @@ load_dotenv(ENV_PATH)
 load_dotenv()  # Fallback to local execution directory
 
 # Database Connection Configurations
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_USER = os.getenv("DB_USER", "lib_admin")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "Methyst1306")
-DB_NAME = os.getenv("DB_NAME", "postgres")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 
-MEMGRAPH_URI = os.getenv("MEMGRAPH_URI", "bolt://localhost:7687")
-MEMGRAPH_USER = os.getenv("MEMGRAPH_USER", "amethyst_admin")
-MEMGRAPH_PASSWORD = os.getenv("MEMGRAPH_PASSWORD", "AmethystMG2026")
+mem_host = os.getenv("MEMGRAPH_HOST") or "localhost"
+mem_port = os.getenv("MEMGRAPH_PORT") or "7687"
+MEMGRAPH_URI = os.getenv("MEMGRAPH_URI") or f"bolt://{mem_host}:{mem_port}"
+MEMGRAPH_USER = os.getenv("MEMGRAPH_USER")
+MEMGRAPH_PASSWORD = os.getenv("MEMGRAPH_PASSWORD")
 
 CONSTRAINTS_AND_CLEANUP = [
     "MATCH (n) DETACH DELETE n;",
