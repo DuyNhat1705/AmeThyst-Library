@@ -6,12 +6,16 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
+      sync_db:
+        description: 'Sync PostgreSQL (Supabase) data to Memgraph before retraining'
+        type: boolean
+        default: false
       run_graphsage:
-        description: 'Run GraphSAGE training after sync'
+        description: 'Run GraphSAGE training'
         type: boolean
         default: true
       run_lightgbm:
-        description: 'Run LightGBM training after sync'
+        description: 'Run LightGBM training'
         type: boolean
         default: true
       export_snapshot:
@@ -77,6 +81,7 @@ jobs:
           "
 
       - name: Sync PostgreSQL (Supabase) data to Memgraph
+        if: ${{ inputs.sync_db == true }}
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.DB_PORT }}

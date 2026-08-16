@@ -46,13 +46,26 @@ def parse_embedding(val):
 
 def run_graph_initialization():
     print("Connecting to PostgreSQL...")
-    pg_conn = psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
+    if not DB_HOST:
+        raise ValueError(
+            "DB_HOST environment variable is missing or empty! "
+            "If running in GitHub Actions, ensure repository secrets (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME) are configured in GitHub Settings."
+        )
+
+    connect_kwargs = {
+        "host": DB_HOST,
+        "port": DB_PORT or 5432,
+        "user": DB_USER,
+        "password": DB_PASSWORD,
+        "database": DB_NAME
+    }
+
+    # Add SSL mode if connecting to remote hosts like Supabase
+    sslmode = os.getenv("DB_SSLMODE")
+    if sslmode:
+        connect_kwargs["sslmode"] = sslmode
+
+    pg_conn = psycopg2.connect(**connect_kwargs)
     
     print("Connecting to Memgraph instance...")
     memgraph_driver = GraphDatabase.driver(MEMGRAPH_URI, auth=(MEMGRAPH_USER, MEMGRAPH_PASSWORD))
