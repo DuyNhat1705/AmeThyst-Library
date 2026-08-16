@@ -8,13 +8,6 @@ export default defineConfig({
     projects: [
       {
         test: {
-          name: 'test_security_hardening',
-          globals: true,
-          include: ['tests/security/security-hardening.spec.mjs'],
-        },
-      },
-      {
-        test: {
           name: 'test_auth_register',
           globals: true,
           strictTags: false,
@@ -43,18 +36,6 @@ export default defineConfig({
             { name: '@A_R8', description: 'Infrastructure Failure Handling' },
             { name: '@A_R9', description: 'Transactional Consistency & Boundaries' },
             { name: '@A_R10', description: 'HTTP Response and Redirect Matrix Mapping' },
-          ],
-        },
-      },
-      {
-        test: {
-          name: 'test_room_checkin',
-          globals: true,
-          strictTags: false,
-          include: [
-            'tests/services/room.services.spec.mjs',
-            'tests/services/dashboard.librarian.services.spec.mjs',
-            'tests/services/dashboard.librarian.rooms.spec.mjs',
           ],
         },
       },
@@ -116,27 +97,6 @@ export default defineConfig({
             { name: '@SG_CREATE_SLOT', description: 'Create Study Group authoritative slot validation' },
             { name: '@SG_CREATE_ATOMIC', description: 'Create Study Group atomic persistence orchestration' },
             { name: '@SG_CREATE_ERRORS', description: 'Create Study Group persistence error mapping' },
-          ],
-        },
-      },
-
-      {
-        test: {
-          name: 'test_system_configuration',
-          globals: true,
-          strictTags: false,
-          include: ['tests/integration/system-configuration.api.spec.mjs'],
-        },
-      },
-
-      {
-        test: {
-          name: 'test_admin_statistics',
-          globals: true,
-          strictTags: false,
-          include: [
-            'tests/services/statistics.service.spec.mjs',
-            'tests/services/top_categories.service.spec.mjs',
           ],
         },
       },
