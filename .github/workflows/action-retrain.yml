@@ -148,11 +148,15 @@ jobs:
           if-no-files-found: ignore
 
       - name: Deploy retrained graph to Memgraph Cloud
-        if: ${{ (github.event_name == 'schedule' || inputs.deploy_cloud == true) && secrets.MEMGRAPH_URI_SERVER != '' }}
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_cloud == true }}
         env:
-          MEMGRAPH_CLOUD_URI: ${{ secrets.MEMGRAPH_URI_SERVER }}
-          MEMGRAPH_CLOUD_USER: ${{ secrets.MEMGRAPH_USER_SERVER }}
+          MEMGRAPH_URI_SERVER: ${{ secrets.MEMGRAPH_URI_SERVER }}
+          MEMGRAPH_USER_SERVER: ${{ secrets.MEMGRAPH_USER_SERVER }}
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
         run: |
-          echo "Deploying retrained database dump to Memgraph Cloud..."
-          python src/database/Init_data/Deploy_cloud.py
+          if [ -n "$MEMGRAPH_URI_SERVER" ]; then
+            echo "Deploying retrained database dump to Memgraph Cloud..."
+            python src/database/Init_data/Deploy_cloud.py
+          else
+            echo "MEMGRAPH_URI_SERVER is not set. Skipping deployment."
+          fi
