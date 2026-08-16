@@ -6,6 +6,7 @@ import pool from '../../src/config/postgres.mjs';
 import { createStudyGroup } from '../../src/services/study-group.services.mjs';
 import { emitStudyGroupChanged } from '../../src/config/socket.mjs';
 import studyGroupRoutes from '../../src/routes/study-group.routes.mjs';
+import { JWT_AUDIENCE, JWT_ISSUER } from '../../src/utils/authHelpers.mjs';
 
 vi.mock('jsonwebtoken', () => ({
   default: { verify: vi.fn() },
@@ -88,9 +89,13 @@ describe('Create Study Group API', () => {
           isHost: true,
         },
       });
-      expect(jwt.verify).toHaveBeenCalledWith('valid-token', process.env.JWT_SECRET);
+      expect(jwt.verify).toHaveBeenCalledWith('valid-token', process.env.JWT_SECRET, {
+        algorithms: ['HS256'],
+        issuer: JWT_ISSUER,
+        audience: JWT_AUDIENCE,
+      });
       expect(pool.query).toHaveBeenCalledWith(
-        'SELECT user_id, email, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
+        'SELECT user_id, email, username, avatar, role, branch_id, status, token_version, must_change_password FROM public.users WHERE user_id = $1',
         ['token-user-id'],
       );
       expect(createStudyGroup).toHaveBeenCalledWith('host-1', {

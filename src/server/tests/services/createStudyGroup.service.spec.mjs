@@ -158,7 +158,7 @@ describe('Create Study Group Service', () => {
       expect(model.insertStudyGroup).not.toHaveBeenCalled();
     });
 
-    it('[TC-SRV-CSG-007b] rejects an already-booked slot before inserting a reservation', async () => {
+    it('[TC-SRV-CSG-008] rejects an already-booked slot before inserting a reservation', async () => {
       model.findSlotForCreation.mockResolvedValue({ capacity: 4, occupied: true });
 
       await expect(createStudyGroup(hostId, validInput()))
@@ -171,7 +171,7 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 4 - Atomic creation orchestration', { tags: '@SG_CREATE_ATOMIC' }, () => {
-    it('[TC-SRV-CSG-008] creates reservation then group and returns the projected detail in one transaction', async () => {
+    it('[TC-SRV-CSG-009] creates reservation then group and returns the projected detail in one transaction', async () => {
       const result = await createStudyGroup(hostId, validInput({
         title: '  Algorithm Study Group  ',
         description: '  Prepare for the final examination.  ',
@@ -209,14 +209,14 @@ describe('Create Study Group Service', () => {
   });
 
   describe('Test 5 - Persistence error mapping', { tags: '@SG_CREATE_ERRORS' }, () => {
-    it('[TC-SRV-CSG-009] maps an active-slot uniqueness race to SLOT_UNAVAILABLE', async () => {
+    it('[TC-SRV-CSG-010] maps an active-slot uniqueness race to SLOT_UNAVAILABLE', async () => {
       model.insertReservation.mockRejectedValue({ code: '23505' });
 
       await expect(createStudyGroup(hostId, validInput()))
         .rejects.toMatchObject({ code: 'SLOT_UNAVAILABLE', status: 409 });
     });
 
-    it('[TC-SRV-CSG-010] maps a missing authenticated user foreign key to AUTH_USER_NOT_FOUND', async () => {
+    it('[TC-SRV-CSG-011] maps a missing authenticated user foreign key to AUTH_USER_NOT_FOUND', async () => {
       model.insertReservation.mockRejectedValue({
         code: '23503',
         constraint: 'fk_reserve_user',
@@ -226,7 +226,7 @@ describe('Create Study Group Service', () => {
         .rejects.toMatchObject({ code: 'AUTH_USER_NOT_FOUND', status: 401 });
     });
 
-    it('[TC-SRV-CSG-011] preserves unexpected persistence errors for the controller boundary', async () => {
+    it('[TC-SRV-CSG-012] preserves unexpected persistence errors for the controller boundary', async () => {
       const error = new Error('Connection lost');
       model.insertReservation.mockRejectedValue(error);
 
