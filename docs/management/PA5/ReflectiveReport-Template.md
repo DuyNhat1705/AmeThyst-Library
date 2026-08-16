@@ -32,13 +32,17 @@ Performed by: [Name] | Reviewed by: [Name] | Edited by: [Name]
 
 *Note: Discuss how the experience of using Spec Kit for specification-driven development was. What were the benefits and limitations compared to traditional development?*
 
-### 1. Benefits
-- [Benefit 1]
-- [Benefit 2]
-
-### 2. Limitations
-- [Limitation 1]
-- [Limitation 2]
+### 1. Experience
+Paragraph 
+### 2. Benefits & Limitations in Comparison with Traditional Development
+**Benefits**
+- Benefit 1
+- Benefit 2
+- Benefit 3
+**Limitations**
+- Limitation 1
+- Limitation 2
+- Limitation 3
 
 ## III. AI Tools Usage
 
