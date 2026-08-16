@@ -3,23 +3,27 @@ name: Memgraph Data Sync & Retraining Pipeline
 on:
   schedule:
     # Run automatically every day at 02:00 UTC
-    - cron: '0 2 * * *'
+    - cron: '0 2 */3 * *'
   workflow_dispatch:
     inputs:
       sync_db:
         description: 'Sync PostgreSQL (Supabase) data to Memgraph before retraining'
         type: boolean
-        default: true
+        default: false
       run_graphsage:
         description: 'Run GraphSAGE training'
         type: boolean
-        default: true
+        default: false
       run_lightgbm:
         description: 'Run LightGBM training'
         type: boolean
-        default: true
+        default: false
       export_snapshot:
         description: 'Export Memgraph snapshot artifact'
+        type: boolean
+        default: false
+      deploy_cloud:
+        description: 'Deploy retrained graph to Memgraph Cloud'
         type: boolean
         default: true
 
@@ -142,3 +146,13 @@ jobs:
             src/database/Init_data/datagraph_backup.cypher
           retention-days: 14
           if-no-files-found: ignore
+
+      - name: Deploy retrained graph to Memgraph Cloud
+        if: ${{ (github.event_name == 'schedule' || inputs.deploy_cloud == true) && secrets.MEMGRAPH_URI_SERVER != '' }}
+        env:
+          MEMGRAPH_CLOUD_URI: ${{ secrets.MEMGRAPH_URI_SERVER }}
+          MEMGRAPH_CLOUD_USER: ${{ secrets.MEMGRAPH_USER_SERVER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+        run: |
+          echo "Deploying retrained database dump to Memgraph Cloud..."
+          python src/database/Init_data/Deploy_cloud.py
