@@ -146,21 +146,72 @@ def deploy_to_memgraph_cloud():
     try:
         with driver.session() as session:
             print(f"Validated {len(statements)} statements to restore.")
-            print("Wiping existing graph on Memgraph instance...")
-            session.run("MATCH (n) DETACH DELETE n")
-
-            print(f"Restoring {len(statements)} Cypher statements to Memgraph Cloud...")
-            success_count = 0
-            for stmt in statements:
-                # 3. Strip trailing semicolons: Bolt protocol expects statements WITHOUT trailing semicolon
-                clean_stmt = stmt.rstrip(";").strip()
-                if not clean_stmt:
-                    continue
+            print("Wiping existing graph on Memgraph instance via instant storage reset...")
+            try:
+                session.run("STORAGE MODE IN_MEMORY_ANALYTICAL")
+                session.run("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
+                print(" -> Instant graph reset via STORAGE MODE completed.")
+            except Exception:
                 try:
-                    session.run(clean_stmt)
+                    session.run("DROP GRAPH")
+                    print(" -> Instant graph reset via DROP GRAPH completed.")
+                except Exception:
+                    session.run("MATCH (n) DETACH DELETE n")
+                    print(" -> Fallback DETACH DELETE completed.")
+
+            # Separate constraint/index statements from data statements to run indexes first
+            index_stmts = []
+            data_stmts = []
+            for stmt in statements:
+                clean = stmt.rstrip(";").strip()
+                if not clean:
+                    continue
+                if "CREATE CONSTRAINT" in clean.upper() or "CREATE INDEX" in clean.upper():
+                    index_stmts.append(clean)
+                else:
+                    data_stmts.append(clean)
+
+            # 1. Run index and constraint statements first
+            if index_stmts:
+                print(f"Applying {len(index_stmts)} schema constraints and indexes...")
+                for idx_stmt in index_stmts:
+                    try:
+                        session.run(idx_stmt)
+                    except Exception as idx_err:
+                        print(f" Note on index/constraint: {idx_err}")
+
+            # 2. Batch data restoration statements in transactions of BATCH_SIZE (500)
+            # Periodic FREE MEMORY calls after commits trim internal allocator memory back to OS.
+            BATCH_SIZE = 500
+            print(f"Restoring {len(data_stmts)} Cypher statements in transaction batches of {BATCH_SIZE} with periodic memory trimming...")
+            
+            success_count = len(index_stmts)
+            tx = session.begin_transaction()
+            batch_count = 0
+
+            for stmt in data_stmts:
+                try:
+                    tx.run(stmt)
+                    batch_count += 1
                     success_count += 1
                 except Exception as stmt_err:
                     print(f" Note on statement execution: {stmt_err}")
+
+                if batch_count >= BATCH_SIZE:
+                    tx.commit()
+                    try:
+                        session.run("FREE MEMORY")
+                    except Exception:
+                        pass
+                    tx = session.begin_transaction()
+                    batch_count = 0
+
+            if batch_count > 0:
+                tx.commit()
+                try:
+                    session.run("FREE MEMORY")
+                except Exception:
+                    pass
 
             print(f"Successfully restored {success_count}/{len(statements)} statements.")
 
