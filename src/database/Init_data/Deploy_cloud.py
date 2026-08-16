@@ -113,8 +113,24 @@ def deploy_to_memgraph_cloud():
         sys.exit(1)
 
     if not os.path.exists(CYPHER_FILE_PATH):
-        print(f"[Error] Cypher dump file not found at: {CYPHER_FILE_PATH}")
-        sys.exit(1)
+        print(f"Cypher dump file not found at {CYPHER_FILE_PATH}. Fetching database dump from local Memgraph...")
+        local_uri = os.getenv("MEMGRAPH_URI") or "bolt://localhost:7687"
+        local_user = os.getenv("MEMGRAPH_USER")
+        local_pass = os.getenv("MEMGRAPH_PASSWORD")
+        local_auth = (local_user, local_pass) if (local_user and local_pass) else None
+        
+        try:
+            local_driver = GraphDatabase.driver(local_uri, auth=local_auth, encrypted=False)
+            with local_driver.session() as local_session:
+                res = local_session.run("DUMP DATABASE;")
+                dump_lines = [rec[0] for rec in res if rec and rec[0]]
+            with open(CYPHER_FILE_PATH, "w", encoding="utf-8") as f:
+                f.write("\n".join(dump_lines))
+            print(f"[OK] Fallback dump generated successfully ({len(dump_lines)} statements).")
+            local_driver.close()
+        except Exception as fallback_err:
+            print(f"[Error] Cypher dump file missing and fallback dump failed: {fallback_err}")
+            sys.exit(1)
 
     print(f"Reading Cypher backup dump from {CYPHER_FILE_PATH}...")
     with open(CYPHER_FILE_PATH, "r", encoding="utf-8") as f:

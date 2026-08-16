@@ -27,7 +27,8 @@ SNAPSHOT_PATH_HOST = os.path.join(SCRIPT_DIR, SNAPSHOT_FILENAME)
 
 def export_snapshot():
     print("Connecting to Memgraph to trigger database snapshot...")
-    driver = GraphDatabase.driver(MEMGRAPH_URI, auth=(MEMGRAPH_USER, MEMGRAPH_PASSWORD))
+    auth = (MEMGRAPH_USER, MEMGRAPH_PASSWORD) if (MEMGRAPH_USER and MEMGRAPH_PASSWORD) else None
+    driver = GraphDatabase.driver(MEMGRAPH_URI, auth=auth)
     try:
         with driver.session() as session:
             # 1. Trigger snapshot creation in Memgraph
