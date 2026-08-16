@@ -62,7 +62,19 @@ def export_snapshot():
             with open(SNAPSHOT_PATH_HOST, "wb") as f:
                 f.write(stream_result.stdout)
                 
-            print(f"[OK] Snapshot exported cleanly to: {SNAPSHOT_PATH_HOST}")
+            print(f"[OK] Binary snapshot exported cleanly to: {SNAPSHOT_PATH_HOST}")
+
+        # 4. Dump Cypher script natively via Bolt session for cloud deployment
+        cypher_path = os.path.join(SCRIPT_DIR, "datagraph_backup.cypher")
+        print(f"Dumping database Cypher script to: {cypher_path}...")
+        with driver.session() as session:
+            result = session.run("DUMP DATABASE;")
+            statements = [record[0] for record in result if record and record[0]]
+
+        with open(cypher_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(statements))
+        print(f"[OK] Cypher backup exported cleanly ({len(statements)} statements, {os.path.getsize(cypher_path)} bytes).")
+
     except Exception as e:
         print(f"[Error] Export failed: {e}")
         sys.exit(1)
