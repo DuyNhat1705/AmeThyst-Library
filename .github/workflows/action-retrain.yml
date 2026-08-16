@@ -9,19 +9,19 @@ on:
       sync_db:
         description: 'Sync PostgreSQL (Supabase) data to Memgraph before retraining'
         type: boolean
-        default: false
+        default: true
       run_graphsage:
         description: 'Run GraphSAGE training'
         type: boolean
-        default: false
+        default: true
       run_lightgbm:
         description: 'Run LightGBM training'
         type: boolean
-        default: false
+        default: true
       export_snapshot:
         description: 'Export Memgraph snapshot artifact'
         type: boolean
-        default: false
+        default: true
       deploy_cloud:
         description: 'Deploy retrained graph to Memgraph Cloud'
         type: boolean
