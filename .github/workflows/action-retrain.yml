@@ -131,10 +131,14 @@ jobs:
           echo "Attempting snapshot export..."
           CONTAINER_ID=$(docker ps -q -f ancestor=memgraph/memgraph-mage:latest | head -n 1)
           export MEMGRAPH_CONTAINER_NAME="$CONTAINER_ID"
-          python src/database/Init_data/Model_snapshot.py export || {
-            echo "Fallback: dumping database cypher log..."
+          python src/database/Init_data/Model_snapshot.py export || true
+
+          echo "Dumping database cypher script for deployment..."
+          if [ -n "${MEMGRAPH_USER}" ] && [ -n "${MEMGRAPH_PASSWORD}" ]; then
             docker exec "$CONTAINER_ID" mgconsole --username "${MEMGRAPH_USER}" --password "${MEMGRAPH_PASSWORD}" --output-format=cypherl -c "DUMP DATABASE;" > src/database/Init_data/datagraph_backup.cypher || true
-          }
+          else
+            docker exec "$CONTAINER_ID" mgconsole --output-format=cypherl -c "DUMP DATABASE;" > src/database/Init_data/datagraph_backup.cypher || true
+          fi
 
       - name: Upload Memgraph Trained Artifacts
         if: ${{ github.event_name == 'schedule' || inputs.export_snapshot == true }}
