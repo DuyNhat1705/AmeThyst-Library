@@ -23,16 +23,16 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
 - [Use-Case Specification](#use-case-specification)
   - [Revision History](#revision-history)
   - [Table of Contents](#table-of-contents)
-  - [I. Regulation of Abstract Actors](#i-regulation-of-abstract-actors)
+  - [I. Actor Regulation](#i-actor-regulation)
   - [II. Authentication](#ii-authentication)
     - [Use case diagram](#use-case-diagram)
     - [UC-AUTH-01: Register](#uc-auth-01-register)
-    - [UC-AUTH-02: Verify By Email](#uc-auth-02-verify-by-email)
+    - [UC-AUTH-02: Verify Email](#uc-auth-02-verify-email)
     - [UC-AUTH-03: Google OAuth](#uc-auth-03-google-oauth)
     - [UC-AUTH-04: Login](#uc-auth-04-login)
-    - [UC-AUTH-05: Forget Password](#uc-auth-05-forget-password)
-    - [UC-AUTH-06: Verify By OTP](#uc-auth-06-verify-by-otp)
-    - [UC-AUTH-07: Change Password](#uc-auth-07-change-password)
+    - [UC-AUTH-05: Forgot Password](#uc-auth-05-forgot-password)
+    - [UC-AUTH-06: Verify OTP](#uc-auth-06-verify-otp)
+    - [UC-AUTH-07: Reset Password](#uc-auth-07-reset-password)
   - [III. Profile Management](#iii-profile-management)
     - [Use case diagram](#use-case-diagram-1)
     - [UC-PROF-01: View Self Profile](#uc-prof-01-view-self-profile)
@@ -40,80 +40,85 @@ Performed by: Phan Lê Anh Minh, Trần Lê Hoàng Gia | Reviewed by: All Member
     - [UC-PROF-03: Change Avatar](#uc-prof-03-change-avatar)
     - [UC-PROF-04: Change Password](#uc-prof-04-change-password)
   - [IV. Books Exploration \& Interaction](#iv-books-exploration--interaction)
-    - [Usecase Diagram](#usecase-diagram)
-    - [UC-BK-01: Book Searching](#uc-bk-01-book-searching)
-    - [UC-BK-02: Filtering Book](#uc-bk-02-filtering-book)
-    - [UC-BK-03: View Book Detail](#uc-bk-03-view-book-detail)
-    - [UC-BK-04: Add Book Favorite](#uc-bk-04-add-book-favorite)
-    - [UC-BK-05: Book Reservation](#uc-bk-05-book-reservation)
-    - [UC-BK-06: Canceling Book Reservation](#uc-bk-06-canceling-book-reservation)
-    - [UC-BK-07: Generating Pin](#uc-bk-07-generating-pin)
-  - [V. Study Group Creation \& Facility Reservation](#v-study-group-creation--facility-reservation)
     - [Use case diagram](#use-case-diagram-2)
+    - [UC-BK-01: Book Searching](#uc-bk-01-book-searching)
+    - [UC-BK-02: Filter Books](#uc-bk-02-filter-books)
+    - [UC-BK-03: View Book Detail](#uc-bk-03-view-book-detail)
+    - [UC-BK-04: Manage Wishlist](#uc-bk-04-manage-wishlist)
+    - [UC-BK-05: Reserve Book](#uc-bk-05-reserve-book)
+    - [UC-BK-06: Cancel Book Reservation](#uc-bk-06-cancel-book-reservation)
+    - [UC-BK-07: Generate Pickup PIN](#uc-bk-07-generate-pickup-pin)
+  - [V. Study Group Creation \& Facility Reservation](#v-study-group-creation--facility-reservation)
+    - [Use case diagram](#use-case-diagram-3)
     - [UC-FAC-01: View Library Map](#uc-fac-01-view-library-map)
     - [UC-FAC-02: View Facility Information](#uc-fac-02-view-facility-information)
-    - [UC-FAC-03: Room Reservation](#uc-fac-03-room-reservation)
-    - [UC-FAC-04: Canceling Room Reservation](#uc-fac-04-canceling-room-reservation)
-    - [UC-FAC-05: Creating Study Group](#uc-fac-05-creating-study-group)
-    - [UC-FAC-06: Canceling Study Group](#uc-fac-06-canceling-study-group)
-    - [UC-FAC-07: Updating Study Group Information](#uc-fac-07-updating-study-group-information)
+    - [UC-FAC-03: Reserve Room](#uc-fac-03-reserve-room)
+    - [UC-FAC-04: Cancel Room Reservation](#uc-fac-04-cancel-room-reservation)
+    - [UC-FAC-05: Create Study Group](#uc-fac-05-create-study-group)
+    - [UC-FAC-06: Dissolve Study Group](#uc-fac-06-dissolve-study-group)
+    - [UC-FAC-07: Update Study Group](#uc-fac-07-update-study-group)
   - [VI. Study Group](#vi-study-group)
-    - [Use case diagram](#use-case-diagram-3)
-    - [UC-SG-01: Searching Study Group](#uc-sg-01-searching-study-group)
-    - [UC-SG-02: Filtering Study Group](#uc-sg-02-filtering-study-group)
-    - [UC-SG-03: View Study Group Detail](#uc-sg-03-view-study-group-detail)
-    - [UC-SG-04: Inviting Others into Study Group](#uc-sg-04-inviting-others-into-study-group)
-    - [UC-SG-05: Remove Others from Study Group](#uc-sg-05-remove-others-from-study-group)
-    - [UC-SG-06: Finding User By Email](#uc-sg-06-finding-user-by-email)
-    - [UC-SG-07: View Other Profile](#uc-sg-07-view-other-profile)
-    - [UC-SG-08: Creating Join Request](#uc-sg-08-creating-join-request)
-    - [UC-SG-09: Canceling Join Request](#uc-sg-09-canceling-join-request)
-    - [UC-SG-10: Out Study Group](#uc-sg-10-out-study-group)
-  - [VII. AI Recommendation](#vii-ai-recommendation)
     - [Use case diagram](#use-case-diagram-4)
-    - [UC-AIR-01: View Recommended Book](#uc-air-01-view-recommended-book)
-    - [UC-AIR-02: Reset AI Recommend](#uc-air-02-reset-ai-recommend)
-  - [VIII. Librarian](#viii-librarian)
+    - [UC-SG-01: Search Study Groups](#uc-sg-01-search-study-groups)
+    - [UC-SG-02: Filter Study Groups](#uc-sg-02-filter-study-groups)
+    - [UC-SG-03: View Study Group Detail](#uc-sg-03-view-study-group-detail)
+    - [UC-SG-04: Invite Member](#uc-sg-04-invite-member)
+    - [UC-SG-05: Remove Member](#uc-sg-05-remove-member)
+    - [UC-SG-06: Find User by Email](#uc-sg-06-find-user-by-email)
+    - [UC-SG-07: View Other Profile](#uc-sg-07-view-other-profile)
+    - [UC-SG-08: Create Join Request](#uc-sg-08-create-join-request)
+    - [UC-SG-09: Cancel Join Request](#uc-sg-09-cancel-join-request)
+    - [UC-SG-10: Leave Study Group](#uc-sg-10-leave-study-group)
+    - [UC-SG-11: Review Join Request](#uc-sg-11-review-join-request)
+    - [UC-SG-12: Respond to Invitation](#uc-sg-12-respond-to-invitation)
+  - [VII. AI Recommendation](#vii-ai-recommendation)
     - [Use case diagram](#use-case-diagram-5)
-    - [UC-LIB-01: Adding Books](#uc-lib-01-adding-books)
-    - [UC-LIB-02: Removing Books](#uc-lib-02-removing-books)
-    - [UC-LIB-03: Confirming Book Return](#uc-lib-03-confirming-book-return)
-    - [UC-LIB-04: Recording Loan](#uc-lib-04-recording-loan)
-    - [UC-LIB-05: Confirming Book Borrowed](#uc-lib-05-confirming-book-borrowed)
-    - [UC-LIB-06: Confirming Room Checkin](#uc-lib-06-confirming-room-checkin)
-    - [UC-LIB-07: Announcement](#uc-lib-07-announcement)
-  - [IX. Admin](#ix-admin)
+    - [UC-AIR-01: View Recommended Books](#uc-air-01-view-recommended-books)
+    - [UC-AIR-02: Renew Recommendations](#uc-air-02-renew-recommendations)
+  - [VIII. Librarian](#viii-librarian)
     - [Use case diagram](#use-case-diagram-6)
-    - [UC-ADM-01: View User Account](#uc-adm-01-view-user-account)
-    - [UC-ADM-02: Generating CSV Report](#uc-adm-02-generating-csv-report)
-    - [UC-ADM-03: Authorization](#uc-adm-03-authorization)
-    - [UC-ADM-04: Role Control](#uc-adm-04-role-control)
-    - [UC-ADM-05: Use-case Permission](#uc-adm-05-use-case-permission)
+    - [UC-LIB-01: Add Books](#uc-lib-01-add-books)
+    - [UC-LIB-02: Remove Books](#uc-lib-02-remove-books)
+    - [UC-LIB-03: Confirm Book Return](#uc-lib-03-confirm-book-return)
+    - [UC-LIB-04: Assess Return and Penalty](#uc-lib-04-assess-return-and-penalty)
+    - [UC-LIB-05: Confirm Book Borrowing](#uc-lib-05-confirm-book-borrowing)
+    - [UC-LIB-06: Confirm Room Check-in](#uc-lib-06-confirm-room-check-in)
+    - [UC-LIB-07: Manage Announcements](#uc-lib-07-manage-announcements)
+  - [IX. System Administration](#ix-system-administration)
+    - [Use case diagram](#use-case-diagram-7)
+    - [UC-ADM-01: Manage User Accounts](#uc-adm-01-manage-user-accounts)
+    - [UC-ADM-02: Export User CSV](#uc-adm-02-export-user-csv)
+    - [UC-ADM-03: Manage Role Assignments](#uc-adm-03-manage-role-assignments)
+    - [UC-ADM-04: Promote or Demote Account](#uc-adm-04-promote-or-demote-account)
+    - [UC-ADM-05: Invite Administrator](#uc-adm-05-invite-administrator)
     - [UC-ADM-06: System Configuration](#uc-adm-06-system-configuration)
     - [UC-ADM-07: View Statistics](#uc-adm-07-view-statistics)
 
-## I. Regulation of Abstract Actors
+## I. Actor Regulation
 
 ```mermaid
 flowchart RL
-    %% Abstract Parent Actors
-    GeneralUser(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    LoggedUser(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
+    Visitor(["<center>fa:fa-user Visitor</center>"])
+    AuthenticatedUser(["<center>{abstract}<br/>fa:fa-user Authenticated User</center>"])
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Librarian(["<center>fa:fa-user Librarian</center>"])
+    Admin(["<center>fa:fa-user System Administrator</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Member(["<center>fa:fa-user Study Group Member</center>"])
+    Applicant(["<center>fa:fa-user Prospective Member</center>"])
 
-    %% Concrete Actors
-    Guest([fa:fa-user Guest])
-    User([fa:fa-user User])
-    Librarian([fa:fa-user Librarian])
-    Admin([fa:fa-user Admin])
-
-    %% Hierarchy (Child --> Parent)
-    Guest --> GeneralUser
-    LoggedUser --> GeneralUser
-
-    User --> LoggedUser
-    Librarian --> LoggedUser
-    Admin --> LoggedUser
+    Visitor --> PlatformUser
+    AuthenticatedUser --> PlatformUser
+    Reader --> AuthenticatedUser
+    Librarian --> AuthenticatedUser
+    Admin --> AuthenticatedUser
+    Host --> Reader
+    Member --> Reader
+    Applicant --> Reader
 ```
+
+`Reader (Patron)` maps to the persisted application role `user`. `Authenticated User` is an abstract actor shared by Reader, Librarian, and System Administrator. Contextual study-group actors specialize Reader rather than introducing new application roles.
 
 ## II. Authentication
 
@@ -121,49 +126,37 @@ flowchart RL
 
 ```mermaid
 flowchart LR
-    %% Left Actor
-    ActorGuest(["<center>fa:fa-user Guest</center>"])
-        %% Central System Boundary Subgraph
+    Visitor(["<center>fa:fa-user Visitor</center>"])
+
     subgraph Authentication [Authentication]
-        UC_Reg(["<center>UC-AUTH-01:<br>Register</center>"])
-        UC_OAuth(["<center> UC-AUTH-03:<br>Google OAuth</center>"])
-        UC_Login(["<center>UC-AUTH-04:<br>Login</center>"])
-        UC_Forget(["<center>UC-AUTH-05:<br>Forget Password</center>"])
-        UC_Change(["<center>UC-AUTH-07:<br>Change Password</center>"])
-        UC_VerifyEmail(["<center>UC-AUTH-02:<br>Verify By Email</center>"])
-        UC_VerifyOTP(["<center>UC-AUTH-06:<br>Verify By OTP</center>"])
+        direction TB
+        UC_Register(["<center>UC-AUTH-01:<br/>Register</center>"])
+        UC_VerifyEmail(["<center>UC-AUTH-02:<br/>Verify Email</center>"])
+        UC_OAuth(["<center>UC-AUTH-03:<br/>Google OAuth</center>"])
+        UC_Login(["<center>UC-AUTH-04:<br/>Login</center>"])
+        UC_Forgot(["<center>UC-AUTH-05:<br/>Forgot Password</center>"])
+        UC_VerifyOTP(["<center>UC-AUTH-06:<br/>Verify OTP</center>"])
+        UC_Reset(["<center>UC-AUTH-07:<br/>Reset Password</center>"])
+
+        UC_Register -. "<< include >>" .-> UC_VerifyEmail
+        UC_Forgot -. "<< include >>" .-> UC_VerifyOTP
+        UC_Forgot -. "<< include >>" .-> UC_Reset
     end
 
-    %% Right Actors
-    ActorEmail(["<center>&lt;&lt; service &gt;&gt;<br>fa:fa-envelope Email</center>"])
-    ActorGoogle(["<center>&lt;&lt; service &gt;&gt;<br>fa:fa-id-card Google Client</center>"])
+    Email(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-envelope Email Service</center>"])
+    Google(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-id-card Google Identity</center>"])
 
-    %% -------------------------------------------------------------
-    %% Structural Layout Anchors (Invisible lines to center-align the subgraph)
-    %% -------------------------------------------------------------
-    ActorGuest ~~~ Authentication ~~~ ActorEmail
-    ActorGuest ~~~ Authentication ~~~~ ActorGoogle
+    Visitor ~~~ Authentication ~~~ Email
+    Visitor ~~~ Authentication ~~~~ Google
 
-    %% -------------------------------------------------------------
-    %% Actual Connections (Matching your image exactly)
-    %% -------------------------------------------------------------
-    %% Left Actor Associations
-    ActorGuest --- UC_Reg
-    ActorGuest --- UC_OAuth
-    ActorGuest --- UC_Login
-    ActorGuest --- UC_Forget
+    Visitor --- UC_Register
+    Visitor --- UC_OAuth
+    Visitor --- UC_Login
+    Visitor --- UC_Forgot
+    UC_VerifyEmail --- Email
+    UC_VerifyOTP --- Email
+    UC_OAuth --- Google
 
-    %% Subgraph Internal Include Relationships
-    UC_Reg -. "<< include >>" .-> UC_VerifyEmail
-    UC_Forget -. "<< include >>" .-> UC_VerifyOTP
-    UC_Forget -. "<< include >>" .-> UC_Change
-
-    %% Right Actor Associations
-    UC_VerifyEmail --- ActorEmail
-    UC_OAuth --- ActorGoogle
-    UC_VerifyOTP --- ActorEmail
-
-    %% Styling
     style Authentication fill:#fff,stroke:#333,stroke-width:2px
 ```
 
@@ -187,13 +180,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a new guest user to create an account within the system by providing an email address and creating a secure password.
-        <br><em>(Includes / Extends: <strong>Includes UC-AUTH-02 (Verify By Email).</strong>)</em>
+        Allows a visitor to submit registration details and receive an email-verification link before an account is activated.
+        <br><em>(Includes / Extends: <strong>Includes UC-AUTH-02 (Verify Email).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Guest / User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -210,9 +203,9 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user enters their name, email address, password, and password confirmation into the designated registration fields.</li>
           <li><strong>[Actor Action]:</strong> The user submits the registration form.</li>
-          <li><strong>[Data Processing]:</strong> The system validates that the email format is correct and checks the database to verify the email is not already associated with an existing account.</li>
-          <li><strong>[System Response]:</strong> The system executes the mandatory include sub-routine <code>Verify By Email (UC-AUTH-02)</code> to issue a verification link.</li>
-          <li><strong>[Data Processing]:</strong> The system hashes the password using a secure cryptographic algorithm and saves a new user record with a "Pending Verification" status flag.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the submitted fields and checks both active and pending registrations for the email address.</li>
+          <li><strong>[Data Processing]:</strong> The system hashes the password and creates or replaces a record in <code>pending_users</code> with a time-limited verification token.</li>
+          <li><strong>[System Response]:</strong> The system executes <code>Verify Email (UC-AUTH-02)</code> by sending the verification link.</li>
           <li><strong>[Display Result]:</strong> The system displays a registration success message instructing the user to check their email inbox to complete the verification sequence.</li>
         </ol>
       </td>
@@ -222,10 +215,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Email Redundancy (Step 3):</strong> If the email address already exists in the system database:
+            <strong>Existing Account (Step 3):</strong> If the email address already belongs to an active account:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system terminates the registration sequence.</li>
-              <li>The system prevents record creation and displays an inline validation error: "Email address is already registered."</li>
+              <li>The system does not create or replace a pending registration.</li>
+              <li>The system returns the same generic check-email response used by the normal flow, preventing account enumeration.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No database writes commit; the registration form state remains intact with user inputs preserved.</span>
           </li>
@@ -244,7 +237,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Staged Database Profile:</strong> A new user profile record is instantiated in the database with a status set to "Pending Verification".</li>
+          <li><strong>Staged Registration:</strong> A pending registration exists in <code>pending_users</code>; no active <code>users</code> row is created until email verification succeeds.</li>
         </ul>
       </td>
     </tr>
@@ -278,13 +271,13 @@ flowchart LR
 
 ---
 
-### UC-AUTH-02: Verify By Email
+### UC-AUTH-02: Verify Email
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Verify By Email
+        Use Case: Verify Email
       </th>
     </tr>
   </thead>
@@ -302,7 +295,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -320,7 +313,7 @@ flowchart LR
           <li><strong>[Data Processing]:</strong> The system packages a transactional email notification payload enclosing the activation token URI link parameters.</li>
           <li><strong>[Data Processing]:</strong> The system dispatches the compilation payload out to the external Transactional Email Service Provider engine API.</li>
           <li><strong>[Actor Action]:</strong> The user opens their personal email client workspace, opens the message, and clicks the enclosed activation link parameter object.</li>
-          <li><strong>[System Response]:</strong> The system interceptor parses the incoming request URI, confirms token validity, updates the matching user account status parameter flag from "Pending" to "Active", and returns a verification success confirmation callback to the parent context.</li>
+          <li><strong>[System Response]:</strong> The system validates the token, creates the active Reader account from the pending record, removes that pending record, establishes an authenticated session, and redirects to the application.</li>
         </ol>
       </td>
     </tr>
@@ -332,9 +325,9 @@ flowchart LR
             <strong>Boundary Horizon Exceeded (Step 5):</strong> If the user clicks the validation link after the expiration boundary has passed:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system flags the token lifecycle entry as invalid.</li>
-              <li>The system renders a "Link Expired" error block layout panel and provides an interface node to request a new verification message block.</li>
+              <li>The system removes the expired pending registration and displays an expired-link result; the visitor must register again to receive a new link.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Account attributes retain their unverified resting states; target token entries purge from the operational caching memory layer.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No active account or authenticated session is created.</span>
           </li>
         </ul>
       </td>
@@ -343,7 +336,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Account Modification Activation:</strong> User profile database rows convert permanently to fully verified "Active" operation states.</li>
+          <li><strong>Account Activation:</strong> An active Reader account is created, the pending registration is removed, and an authenticated cookie session is established.</li>
         </ul>
       </td>
     </tr>
@@ -400,7 +393,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -505,7 +498,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -541,12 +534,8 @@ flowchart LR
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Session context objects remain completely unauthenticated; internal login failure counter logs increment.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Unverified Registration Blockade (Step 5):</strong> If the target account profile maintains an unverified state flag (e.g., registration incomplete):
-            <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system interrupts the standard loading routine parameter scripts.</li>
-              <li>The system redirects the user viewport frame to a dynamic email re-verification workflow layout.</li>
-            </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Access to secure workspaces remains blocked; the user is locked to the verification dashboard lane.</span>
+            <strong>Temporary Account Lock (Step 4):</strong> After five consecutive failed attempts, the system locks password login for that account for 15 minutes and returns a generic authentication error.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No authenticated session is created; the lockout timestamp is retained.</span>
           </li>
         </ul>
       </td>
@@ -589,13 +578,13 @@ flowchart LR
 
 ---
 
-### UC-AUTH-05: Forget Password
+### UC-AUTH-05: Forgot Password
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Forget Password
+        Use Case: Forgot Password
       </th>
     </tr>
   </thead>
@@ -608,12 +597,12 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Orchestrates the multi-stage account recovery sequence allowing a user who lost their credentials to re-secure account access via dynamic secondary channel checks.
-        <br><em>(Includes / Extends: <strong>Includes UC-AUTH-06 (Verify By OTP) and UC-AUTH-07 (Change Password).</strong>)</em>
+        <br><em>(Includes / Extends: <strong>Includes UC-AUTH-06 (Verify OTP) and UC-AUTH-07 (Reset Password).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -629,8 +618,8 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user clicks the "Forgot Password?" text link navigation node on the login view panel layout.</li>
           <li><strong>[Actor Action]:</strong> The user inputs their registered account email identifier into the recovery prompt and submits.</li>
-          <li><strong>[System Response]:</strong> The system verifies the user record exists and triggers the mandatory include sub-routine <code>Verify By OTP (UC-AUTH-06)</code> to validate identity.</li>
-          <li><strong>[System Response]:</strong> Upon catching a successful callback validation status from the OTP routine, the system invokes the mandatory include sub-routine <code>Change Password (UC-AUTH-07)</code>.</li>
+          <li><strong>[System Response]:</strong> The system always displays the same generic response; only an existing account receives an OTP email through <code>Verify OTP (UC-AUTH-06)</code>.</li>
+          <li><strong>[System Response]:</strong> After successful OTP validation, the system permits <code>Reset Password (UC-AUTH-07)</code>.</li>
           <li><strong>[Display Result]:</strong> The system presents a password reset complete confirmation view layout with a redirection button linking back to the login page.</li>
         </ol>
       </td>
@@ -662,7 +651,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Token Expiration Ceiling:</strong> The recovery orchestration flow lifecycle must expire within 15 minutes of initial generation token stamping.</li>
+          <li><strong>Enumeration Protection:</strong> The response must not reveal whether the submitted email belongs to an account.</li>
         </ul>
       </td>
     </tr>
@@ -686,13 +675,13 @@ flowchart LR
 
 ---
 
-### UC-AUTH-06: Verify By OTP
+### UC-AUTH-06: Verify OTP
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Verify By OTP
+        Use Case: Verify OTP
       </th>
     </tr>
   </thead>
@@ -705,12 +694,12 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Internal identity verification framework routine processing temporary One-Time Password generation, delivery routing, and validation.
-        <br><em>(Includes / Extends: <strong>Included UC supporting parent operational blocks under UC-AUTH-05 (Forget Password).</strong>)</em>
+        <br><em>(Includes / Extends: <strong>Included by UC-AUTH-05 (Forgot Password).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -725,10 +714,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Data Processing]:</strong> The system generates a highly localized 6-digit numeric One-Time Password parameter token.</li>
-          <li><strong>[Data Processing]:</strong> The system saves the generated OTP token to a short-lived memory cache with an explicit 5-minute time-to-live parameter.</li>
-          <li><strong>[Data Processing]:</strong> The system routes the OTP payload to the user's secondary verification channel via the External Messaging Service Provider API.</li>
+          <li><strong>[Data Processing]:</strong> The system stores a hash of the OTP in PostgreSQL with a 60-second initial validity period and a maximum of five verification attempts.</li>
+          <li><strong>[Data Processing]:</strong> The system sends the OTP to the account email address through the transactional email service.</li>
           <li><strong>[Actor Action]:</strong> The user receives the numeric passcode, types the characters into the application UI validation interface layout box, and submits.</li>
-          <li><strong>[System Response]:</strong> The system references the cache layer to verify match alignment and returns a successful verification completion token callback.</li>
+          <li><strong>[System Response]:</strong> The system compares the submitted value with the stored hash and, on success, records password-reset authorization valid for five minutes.</li>
         </ol>
       </td>
     </tr>
@@ -737,20 +726,20 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Mismatched Passcode Entry (Step 5):</strong> If the user inputs a numeric sequence that does not match the active cached value:
+            <strong>Mismatched Passcode Entry (Step 5):</strong> If the visitor enters an incorrect OTP:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system blocks transaction submission loops.</li>
               <li>The system increments a failure tally index row and throws a validation mismatch warning notice.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The verification validation step remains unfulfilled; if failures surpass 3 consecutive attempts, the session token blocks completely.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Verification remains incomplete; after five failed attempts, that OTP can no longer be used.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Cache Expiration Cleared (Step 5):</strong> If the user interface session remains idle until the 5-minute TTL cache window completely clears:
+            <strong>OTP Expired (Step 5):</strong> If the submitted OTP has passed its validity period:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system invalidates the current recovery attempt path parameters.</li>
               <li>The system forces a fresh configuration request iteration workflow.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The memory cache layer purges the entry parameters cleanly; the user interface falls back to step 1.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The OTP is rejected and the visitor must request a new recovery OTP.</span>
           </li>
         </ul>
       </td>
@@ -759,7 +748,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Temporary Authentication Staging:</strong> The current browser session context earns a temporary "Identity Confirmed" verification token pass.</li>
+          <li><strong>Temporary Reset Authorization:</strong> The PostgreSQL OTP record is marked verified for five minutes.</li>
         </ul>
       </td>
     </tr>
@@ -793,13 +782,13 @@ flowchart LR
 
 ---
 
-### UC-AUTH-07: Change Password
+### UC-AUTH-07: Reset Password
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Change Password
+        Use Case: Reset Password
       </th>
     </tr>
   </thead>
@@ -812,12 +801,12 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
         Internal business utility module managing new password parameter capture, verification constraints check, and core database credential updates.
-        <br><em>(Includes / Extends: <strong>Included UC supporting parent operational blocks under UC-AUTH-05 (Forget Password).</strong>)</em>
+        <br><em>(Includes / Extends: <strong>Included by UC-AUTH-05 (Forgot Password).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Logged user</td>
+      <td style="vertical-align: top;">Visitor</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -835,7 +824,7 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> The user inputs a fresh password string value and completes the verifying confirmation field duplication text box.</li>
           <li><strong>[System Response]:</strong> The system evaluates the input parameters to ensure both entries align perfectly and clear complexity criteria check limits.</li>
           <li><strong>[Data Processing]:</strong> The system hashes the fresh input password selection payload using cryptographic salt properties and writes the value directly to the user profile table column database space.</li>
-          <li><strong>[Data Processing]:</strong> The system clears out any active external session token allocations for this user to enforce a global logout across all peripheral devices.</li>
+          <li><strong>[Data Processing]:</strong> The system increments the user's token version, revokes all existing sessions, and removes the used OTP record.</li>
           <li><strong>[System Response]:</strong> The system issues a successful operation completion code signal return back out to the master workflow orchestrator.</li>
         </ol>
       </td>
@@ -895,30 +884,28 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    %% Actors
-    ActorLeft(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
-    ActorRight(["<center>&lt;&lt; service &gt;&gt; <br>fa:fa-images Cloudinary</center>"])
+    AuthenticatedUser(["<center>{abstract}<br/>fa:fa-user Authenticated User</center>"])
 
-    %% System Boundary
     subgraph ProfileManagement [Profile Management]
-        UC1(["<center>UC-PROF-01:<br>View Self Profile</center>"])
-        UC2(["<center>UC-PROF-02:<br>Edit Profile</center>"])
-        UC3(["<center>UC-PROF-03:<br>Change Avatar</center>"])
-        UC4(["<center>UC-PROF-04:<br>Change Password</center>"])
+        direction TB
+        UC_View(["<center>UC-PROF-01:<br/>View Self Profile</center>"])
+        UC_Edit(["<center>UC-PROF-02:<br/>Edit Profile</center>"])
+        UC_Avatar(["<center>UC-PROF-03:<br/>Change Avatar</center>"])
+        UC_Password(["<center>UC-PROF-04:<br/>Change Password</center>"])
+
+        UC_Edit -. "<< extend >>" .-> UC_View
+        UC_Avatar -. "<< extend >>" .-> UC_View
+        UC_Password -. "<< extend >>" .-> UC_View
     end
 
-	ActorLeft ~~~~~ ProfileManagement ~~~ ActorRight
+    Cloudinary(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-images Cloudinary</center>"])
 
-    %% Relationships
-    ActorLeft --- UC1
-    ActorLeft --- UC4
+    AuthenticatedUser ~~~~~ ProfileManagement ~~~ Cloudinary
 
-    UC2 -. "<< extend >>" .-> UC1
-    UC3 -. "<< extend >>" .-> UC1
+    AuthenticatedUser --- UC_View
+    AuthenticatedUser --- UC_Password
+    UC_Avatar --- Cloudinary
 
-    UC3 --- ActorRight
-
-    %% Styling to make it clean
     style ProfileManagement fill:#fff,stroke:#333,stroke-width:2px
 ```
 
@@ -948,7 +935,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Logged user</td>
+      <td style="vertical-align: top;">Authenticated User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1049,7 +1036,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Logged user</td>
+      <td style="vertical-align: top;">Authenticated User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1145,7 +1132,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Logged user</td>
+      <td style="vertical-align: top;">Authenticated User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1258,12 +1245,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Enables a logged-in system member to securely re-verify their identity credentials and initialize a password modification procedure to overwrite existing authentication keys.
+        Enables an Authenticated User to verify the current password and replace it with a new password.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Logged user</td>
+      <td style="vertical-align: top;">Authenticated User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1359,60 +1346,44 @@ flowchart LR
 
 ## IV. Books Exploration & Interaction
 
-### Usecase Diagram
+### Use case diagram
 
 ```mermaid
 flowchart TD
-    %% Actors
-    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% System Boundary Subgraph
-    subgraph BooksSystem [Books]
-        %% Column 1: Search & Filter Features
+    subgraph BooksSystem [Books Exploration & Interaction]
         subgraph SearchBlock [Search Features]
-            UC_StdSearch(["<center>Standard Search</center>"])
-            UC_SemSearch(["<center>Search with context<br>and description</center>"])
-            UC_AbsSearching(["<center>UC-BK-01:<br>Book Searching</center>"])
-            UC_Filter(["<center>UC-BK-02:<br>Filtering Book</center>"])
+            UC_Search(["<center>UC-BK-01:<br/>Book Searching</center>"])
+            UC_Filter(["<center>UC-BK-02:<br/>Filter Books</center>"])
         end
 
-        %% Column 2: Book Actions
         subgraph ActionBlock [Book Actions]
-            UC_ViewDetail(["<center>UC-BK-03:<br>View Book Detail</center>"])
-            UC_AddFav(["<center>UC-BK-04:<br>Add Book Favorite</center>"])
-            UC_Reserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
+            UC_Detail(["<center>UC-BK-03:<br/>View Book Detail</center>"])
+            UC_Wishlist(["<center>UC-BK-04:<br/>Manage Wishlist</center>"])
+            UC_Reserve(["<center>UC-BK-05:<br/>Reserve Book</center>"])
         end
 
-        %% Column 3: Reservation Management
         subgraph ReserveBlock [Reservation Management]
-            UC_CreateReserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
-            UC_CancelReserve(["<center>UC-BK-06:<br>Canceling Book Reservation</center>"])
-            UC_GenPin(["<center>UC-BK-07:<br>Generating Pin</center>"])
+            UC_Cancel(["<center>UC-BK-06:<br/>Cancel Book Reservation</center>"])
+            UC_Pin(["<center>UC-BK-07:<br/>Generate Pickup PIN</center>"])
         end
+
+        UC_Filter -. "<< extend >>" .-> UC_Search
+        UC_Wishlist -. "<< extend >>" .-> UC_Detail
+        UC_Reserve -. "<< extend >>" .-> UC_Detail
     end
 
-    %% Actor Associations
-    Actor1 --- UC_AbsSearching
-    Actor1 --- UC_Filter
-    Actor1 --- UC_ViewDetail
-    Actor2 --- UC_AddFav
-    Actor2 --- UC_Reserve
-    Actor2 --- UC_CancelReserve
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
 
-    %% Valid Generalization (Standard/Semantic ARE types of Search)
-    UC_StdSearch --> UC_AbsSearching
-    UC_SemSearch --> UC_AbsSearching
+    PlatformUser --- UC_Search
+    PlatformUser --- UC_Filter
+    PlatformUser --- UC_Detail
+    Reader --- UC_Wishlist
+    Reader --- UC_Reserve
+    Reader --- UC_Cancel
+    Reader --- UC_Pin
 
-    %% Extend & Include Relationships
-    UC_AddFav -. "<< extend >>" .-> UC_ViewDetail
-    UC_Reserve -. "<< extend >>" .-> UC_ViewDetail
-
-    %% Generating PIN is an INCLUDED step during reservation creation
-    UC_CreateReserve -. "<< include >>" .-> UC_GenPin
-    UC_Reserve -. "<< include >>" .-> UC_CreateReserve
-
-    %% Styling
     style BooksSystem fill:#fff,stroke:#333,stroke-width:2px
     style SearchBlock fill:none,stroke:none
     style ActionBlock fill:none,stroke:none
@@ -1439,13 +1410,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the user to look up specific books within the library system catalog using either explicit keyword parameters (title, author, ISBN strings) or context-aware semantic phrases. The system handles processing configurations via an explicit user mode toggle switch, accommodates minor typos dynamically, triggers automatically upon pressing the "Enter" key, coordinates alongside active metadata filters, and records all query executions into the historical search database.
-        <br><em>(Includes / Extends: <strong>Specialized by Standard Search (Keyword matching) and Semantic search (Context queries).</strong>)</em>
+        Allows any platform user to search the catalog. The backend runs text and semantic retrieval in parallel, merges the ranked results, and applies the selected catalog filters.
+        <br><em>(Includes / Extends: <strong>Extended by UC-BK-02 (Filter Books).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1461,13 +1432,12 @@ flowchart TD
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user accesses the primary catalog search interface view.</li>
-          <li><strong>[System Response]:</strong> The system displays the search panel dashboard layout, featuring a text input field, an explicit mode toggle switch (Standard vs. Semantic), and access to metadata filter control panels.</li>
-          <li><strong>[Actor Action]:</strong> The user adjusts the toggle switch to their preferred search type (Standard Keyword or Semantic Context).</li>
-          <li><strong>[Actor Action]:</strong> *Optional:* The user sets or updates overlapping constraint toggles within the metadata filter panels (e.g., availability status, structural categories, languages, or publication eras).</li>
+          <li><strong>[System Response]:</strong> The system displays one search field and the available metadata filters.</li>
+          <li><strong>[Actor Action]:</strong> <em>Optional:</em> The user selects catalog filters such as category or availability.</li>
           <li><strong>[Actor Action]:</strong> The user types their query string into the search input box. (The background typo-tolerance layer dynamically monitors input parameters for character permutations).</li>
           <li><strong>[Actor Action]:</strong> The user executes the query by pressing the <code>Enter</code> key on their keyboard or clicking the search icon button widget.</li>
-          <li><strong>[Data Processing]:</strong> The system intercepts the submission runtime event and immediately creates an asynchronous database logging transaction to write the raw search text string, timestamp, applied filter, and User ID parameters into the historical search database log tables.</li>
-          <li><strong>[Data Processing]:</strong> The system processes the query payload text by both keywords and context-aware matching.</li>
+          <li><strong>[Data Processing]:</strong> The system runs text and semantic retrieval in parallel and merges their ranked results.</li>
+          <li><strong>[Data Processing]:</strong> For an authenticated Reader and an explicit search submission, the system records the search history; public browsing is not attributed to a user.</li>
           <li><strong>[Data Processing]:</strong> The system applies any active metadata filter constraint parameters to strip disqualified records out of the resulting query dataset match array.</li>
           <li><strong>[Display Result]:</strong> The system displays the final ranked, filtered list layout array of matching book cards (cover image, title, author, genre) onto the viewport panel.</li>
           <li><strong>[Actor Action]:</strong> The user may scroll through the results and optionally choose to save a specific book directly to their wishlist.</li>
@@ -1502,7 +1472,7 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
           <li><strong>Workspace Population:</strong> The relevant search query matches successfully populate the active layout window on screen.</li>
-          <li><strong>Transaction Logging Commitment:</strong> The user's query parameters are safely recorded inside the historical database logging framework for analytics and user history dashboards.</li>
+          <li><strong>Conditional History:</strong> Search history is recorded only for an authenticated Reader when history logging is requested.</li>
         </ul>
       </td>
     </tr>
@@ -1537,13 +1507,13 @@ flowchart TD
 
 ---
 
-### UC-BK-02: Filtering Book
+### UC-BK-02: Filter Books
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Filtering Book
+        Use Case: Filter Books
       </th>
     </tr>
   </thead>
@@ -1560,7 +1530,7 @@ flowchart TD
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1650,13 +1620,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Acts as the primary informational hub for a specific catalog asset. It retrieves comprehensive book metadata, real-time inventory counts, user reviews, dynamically compiles a carousel of related books based on genre classification, and hosts entry nodes for user interactions (Wishlist, Favorites, and Reservations).
-        <br><em>(Includes / Extends: <strong>Extended by use cases: UC-BK-04 (Add Book Favorite), UC-BK-05 (Book Reservation).</strong>)</em>
+        Displays a book's catalog metadata, current inventory and related books, and exposes Reader-only wishlist and reservation actions.
+        <br><em>(Includes / Extends: <strong>Extended by UC-BK-04 (Manage Wishlist) and UC-BK-05 (Reserve Book).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1672,12 +1642,12 @@ flowchart TD
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user clicks on a specific book cover visual image component or text link element anchor object from any display grid or search result array.</li>
           <li><strong>[System Response]:</strong> The system captures the event parameter and calls a background object retrieval query to fetch database records tied to the chosen unique identification string (`Book_ID`).</li>
-          <li><strong>[Data Processing]:</strong> The system extracts structural descriptive fields (Title, Author, Publisher, Synopsis summary text, and user review message matrices).</li>
+          <li><strong>[Data Processing]:</strong> The system extracts the book's catalog metadata, including title, author, publisher, description, categories and image information.</li>
           <li><strong>[Data Processing]:</strong> The system requests live, real-time snapshot inventory balance summaries to calculate total copies owned versus active copies currently available for circulation.</li>
           <li><strong>[Data Processing]:</strong> The system queries the book catalog database to isolate up to 10 highly rated or trending books sharing matching genre classifications with the current target book.</li>
-          <li><strong>[Display Result]:</strong> The system renders the comprehensive profile view template workspace, mapping metadata, inventory states, and reviews cleanly into upper layout blocks.</li>
+          <li><strong>[Display Result]:</strong> The system renders the metadata and inventory state in the book-detail view.</li>
           <li><strong>[Display Result]:</strong> The system populates a horizontal, swipeable "Related Books by Genre" carousel grid component at the terminal end of the page viewport layout.</li>
-          <li><strong>[System Response]:</strong> The system checks the active user session status token to dynamically expose action controls: <br> <strong>- For all users:</strong> Exposes basic detail visibility and the related carousel nodes. <br> <strong>- For authenticated users:</strong> Activates operational interaction buttons for "Add to Wishlist" (heart icon) and "Reserve Book".</li>
+          <li><strong>[System Response]:</strong> All platform users can view the details and related books; an authenticated Reader can additionally manage the wishlist or reserve the book.</li>
           <li><strong>[Actor Action]:</strong> The user reviews the details and can scroll through the carousel, click a related book to transition views, or click an interaction button to trigger a secondary workflow.</li>
         </ol>
       </td>
@@ -1726,8 +1696,8 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Add Book Favorite:</strong> Location inside event flow: Exposing action controls for authenticated users (Step 8).</li>
-          <li><strong>Book Reservation:</strong> Location inside event flow: Exposing action controls for authenticated users (Step 8).</li>
+          <li><strong>Manage Wishlist:</strong> Available to a Reader from the book-detail view.</li>
+          <li><strong>Reserve Book:</strong> Available to a Reader from the book-detail view.</li>
         </ul>
       </td>
     </tr>
@@ -1743,13 +1713,13 @@ flowchart TD
 
 ---
 
-### UC-BK-04: Add Book Favorite
+### UC-BK-04: Manage Wishlist
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Add Book Favorite
+        Use Case: Manage Wishlist
       </th>
     </tr>
   </thead>
@@ -1761,13 +1731,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Extends detailed profiles to allow users to anchor an item to their account collections for rapid retrieval access utilities.
+        Extends book details so a Reader can add or remove a book from their personal wishlist.
         <br><em>(Includes / Extends: <strong>Extends UC-BK-03 (View Book Detail) — extension point: Exposing action controls for authenticated users.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1783,7 +1753,7 @@ flowchart TD
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user initiates a request by clicking the Heart icon on the book details cover pane interface.</li>
-          <li><strong>[Data Processing]:</strong> The system inserts a relationship link row tracking User ID to Book ID into the system database.</li>
+          <li><strong>[Data Processing]:</strong> The system inserts the Reader–Book wishlist relationship in PostgreSQL and attempts to synchronize the preference edge to Memgraph.</li>
           <li><strong>[Display Result]:</strong> The system modifies the color of the icon component to red and fires a system status toast announcement to demonstrate successful data binding.</li>
           <li><strong>[Actor Action]:</strong> The user can later review the personal wishlist in their main wishlist dashboard space.</li>
         </ol>
@@ -1847,13 +1817,13 @@ flowchart TD
 
 ---
 
-### UC-BK-05: Book Reservation
+### UC-BK-05: Reserve Book
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Book Reservation
+        Use Case: Reserve Book
       </th>
     </tr>
   </thead>
@@ -1865,13 +1835,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Handles the end-to-end process allowing an authenticated user to place a physical hold on a book copy directly from its details page. The system internally enforces account constraint metrics, checks real-time inventory availability layers, updates catalog status allocations, and writes transaction logs securely.
+        Allows a Reader to reserve an available book at a selected branch after account, policy, duplication and inventory checks succeed.
         <br><em>(Includes / Extends: <strong>Extends UC-BK-03 (View Book Detail) — extension point: Exposing action controls for authenticated users.<br>Specializes the abstract usecase Managing Reserved Books.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1887,11 +1857,10 @@ flowchart TD
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user clicks the primary "Reserve Book" action button parameter layout object node on the book details screen.</li>
-          <li><strong>[System Response]:</strong> The system intercepts the transaction context request and evaluates the user's active concurrent reservation counts against maximum account allowance thresholds.</li>
-          <li><strong>[System Response]:</strong> The system queries internal inventory engines to verify that a physical copy tracking row for the matching asset carries an explicit "Available" tracking tag status.</li>
-          <li><strong>[Data Processing]:</strong> The system locks the selected target copy database row record, changing its state configuration status flag from "Available" to "Reserved".</li>
-          <li><strong>[Data Processing]:</strong> The system logs a fresh instance tracking transaction entry row detailing unique timestamps, user identifiers, reference keys, and an automated pickup expiration countdown tracker.</li>
-          <li><strong>[Display Result]:</strong> The system updates live inventory tracking counts (decrementing available copies) and presents a checkout success overview dashboard containing return deadlines, pickup instructions, and option nodes to view the pickup verification details.</li>
+          <li><strong>[System Response]:</strong> The system rejects Readers with unpaid debt, enforces the configured active-borrow limit, and rejects a duplicate active reservation for the same book.</li>
+          <li><strong>[System Response]:</strong> The system locks the book inventory row for the selected branch and verifies that at least one copy is available.</li>
+          <li><strong>[Data Processing]:</strong> Within one transaction, the system decrements available quantity, increments the Reader's borrow count, and creates a <code>reserved</code> borrowing record.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the reservation. A pickup PIN is generated later through UC-BK-07, not during this use case.</li>
         </ol>
       </td>
     </tr>
@@ -1910,7 +1879,7 @@ flowchart TD
             <strong>Material Allocation Shortage (Step 3):</strong> If the inventory query reveals that all physical tracking records for the matching asset register zero available quantities:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system cancels the standard booking pathway logic parameters.</li>
-              <li>The system updates screen interface element blocks and opens an interactive confirmation modal dialogue box asking if the user desires inclusion on public queue waiting lists.</li>
+              <li>The system reports that the selected branch has no available copy; no wait-list record is created.</li>
             </ol>
           </li>
         </ul>
@@ -1955,13 +1924,13 @@ flowchart TD
 
 ---
 
-### UC-BK-06: Canceling Book Reservation
+### UC-BK-06: Cancel Book Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Canceling Book Reservation
+        Use Case: Cancel Book Reservation
       </th>
     </tr>
   </thead>
@@ -1973,13 +1942,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a user to void outstanding holds on book assets, clearing tracking rows and returning units to open circulation loops.
+        Allows a Reader to cancel an active book reservation, remove its reservation row, and restore the branch inventory count.
         <br><em>(Includes / Extends: <strong>Specializes the abstract usecase Managing Reserved Books.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -1996,8 +1965,7 @@ flowchart TD
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user accesses their account profile reservation review summary board.</li>
           <li><strong>[Actor Action]:</strong> The user identifies the specific reservation card item layout block and clicks the "Cancel Reservation" text control trigger button.</li>
-          <li><strong>[Data Processing]:</strong> The system updates tracking records, changing status descriptions to "Cancelled".</li>
-          <li><strong>[Data Processing]:</strong> The system increments item allocation numbers, marking the physical inventory asset copy status to "Available".</li>
+          <li><strong>[Data Processing]:</strong> Within one transaction, the system deletes the active reservation record, restores the branch's available quantity, and decrements the Reader's borrow count.</li>
           <li><strong>[Display Result]:</strong> The system strips the active item block out of current summary layout screens.</li>
         </ol>
       </td>
@@ -2055,13 +2023,13 @@ flowchart TD
 
 ---
 
-### UC-BK-07: Generating Pin
+### UC-BK-07: Generate Pickup PIN
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Generating Pin
+        Use Case: Generate Pickup PIN
       </th>
     </tr>
   </thead>
@@ -2073,19 +2041,19 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Generates temporary, high-security validation passcode tokens to authorize locker retrieval or desk checkout protocols.
+        Generates or reuses a short-lived pickup PIN for a Reader's active book reservation so a Librarian can confirm borrowing.
         <br><em>(Includes / Extends: <strong>Specializes the abstract usecase Managing Reserved Books.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Item Pipeline State:</strong> A specific target hold tracking status is officially set to "Ready for Pickup".</li>
+          <li><strong>Reservation State:</strong> The Reader owns an active reservation whose status permits pickup PIN generation.</li>
         </ul>
       </td>
     </tr>
@@ -2095,8 +2063,8 @@ flowchart TD
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user navigates to the active booking details pane within their account hub dashboard.</li>
           <li><strong>[Actor Action]:</strong> The user triggers the "Generate Pickup PIN" transaction button control item.</li>
-          <li><strong>[System Response]:</strong> The system runs security hashing modules to output a 6-digit numeric passkey linked to that collection row ID.</li>
-          <li><strong>[Data Processing]:</strong> The system stores the passkey in short-term active memory caches with an explicit 15-minute time-to-live parameter.</li>
+          <li><strong>[System Response]:</strong> The system generates a 6-digit PIN, or reuses the still-valid PIN for that reservation.</li>
+          <li><strong>[Data Processing]:</strong> The system stores the PIN and expiry timestamp on the borrowing record in PostgreSQL with a 3-minute validity period.</li>
           <li><strong>[Display Result]:</strong> The system renders the generated PIN digits on-screen using large high-contrast text styling components alongside a live visual countdown progress bar tracker.</li>
         </ol>
       </td>
@@ -2108,10 +2076,10 @@ flowchart TD
           <li style="margin-bottom: 8px;">
             <strong>Checkout Expiration Time Breach (Step 4):</strong> If the tracking countdown reaches zero before terminal checkouts finish:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system purges the expired passcode token sequence out of live cache parameters.</li>
+              <li>The system treats the stored PIN as expired and allows the Reader to generate a replacement.</li>
               <li>The system alters UI layouts to reveal a "Regenerate Expired Token" control shortcut.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Authorization passcodes delete out of lookup caches; screen output contents display expired states.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The expired PIN cannot authorize checkout.</span>
           </li>
         </ul>
       </td>
@@ -2120,7 +2088,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Instance Authentication Staging:</strong> A secure token instance exists inside application memory, and authentication interfaces display access credentials.</li>
+          <li><strong>Pickup Authorization:</strong> A time-limited PIN is stored on the reservation and displayed to the Reader.</li>
         </ul>
       </td>
     </tr>
@@ -2158,60 +2126,37 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    %% Actors
-    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% System Boundary Subgraph
-    subgraph LibrarySystem [Library Map & Study Group & Room Reservation]
-        %% Use Cases (using circle style: ([ ]) )
-        UC_ViewMap(["<center>UC-FAC-01:<br>View Library Map</center>"])
-        UC_ViewFacility(["<center>UC-FAC-02:<br>View Facility Information</center>"])
+    subgraph FacilitySystem [Library Map & Study Group & Room Reservation]
+        UC_Map(["<center>UC-FAC-01:<br/>View Library Map</center>"])
+        UC_Facility(["<center>UC-FAC-02:<br/>View Facility Information</center>"])
+        UC_Room(["<center>UC-FAC-03:<br/>Reserve Room</center>"])
+        UC_CancelRoom(["<center>UC-FAC-04:<br/>Cancel Room Reservation</center>"])
+        UC_CreateGroup(["<center>UC-FAC-05:<br/>Create Study Group</center>"])
+        UC_Dissolve(["<center>UC-FAC-06:<br/>Dissolve Study Group</center>"])
+        UC_Update(["<center>UC-FAC-07:<br/>Update Study Group</center>"])
 
-        UC_AbsReserving(["<center>UC-FAC-03:<br>Room Reservation</center>"])
-        UC_ReservingFreely(["<center>Reserving Room Freely</center>"])
-        UC_ReservingStudyGroup(["<center>Reserving Room<br>for Study Group</center>"])
-
-        UC_AbsManagingRoom(["<center>{abstract} <br> Managing Room</center>"])
-        UC_CreateReservation(["<center>UC-FAC-03:<br>Creating Room Reservation</center>"])
-        UC_CancelReservation(["<center>UC-FAC-04:<br>Canceling Room Reservation</center>"])
-
-        UC_AbsManagingStudy(["<center>{abstract}<br>Managing Study Group</center>"])
-        UC_CreateStudyGroup(["<center>UC-FAC-05:<br>Creating Study Group</center>"])
-        UC_CancelStudyGroup(["<center>UC-FAC-06:<br>Canceling Study Group</center>"])
-        UC_UpdateStudyGroup(["<center>UC-FAC-07:<br>Updating Study Group<br>Information</center>"])
+        UC_Facility -. "<< extend >>" .-> UC_Map
+        UC_Room -. "<< extend >>" .-> UC_Facility
+        UC_CreateGroup -. "<< extend >>" .-> UC_Facility
+        UC_CreateGroup -. "<< include >>" .-> UC_Room
     end
 
-    %% -------------------------------------------------------------
-    %% Actor Associations
-    %% -------------------------------------------------------------
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Host --> Reader
 
-    Actor1 --- UC_ViewMap
-    Actor2 --- UC_AbsReserving
+    PlatformUser ~~~ FacilitySystem ~~~ Reader
 
-    %% -------------------------------------------------------------
-    %% Extend & Include Relationships
-    %% -------------------------------------------------------------
-    UC_ViewFacility -. "<< extend >>" .-> UC_ViewMap
-    UC_AbsReserving -. "<< extend >>" .-> UC_ViewFacility
-    UC_AbsReserving -. "<< include >>" .-> UC_AbsManagingRoom
-    UC_ReservingStudyGroup -. "<< include >>" .-> UC_AbsManagingStudy
+    PlatformUser --- UC_Map
+    Reader --- UC_Room
+    Reader --- UC_CancelRoom
+    Reader --- UC_CreateGroup
+    Host --- UC_Dissolve
+    Host --- UC_Update
 
-    %% -------------------------------------------------------------
-    %% Generalization Relationships (pointing Specific -> Abstract)
-    %% -------------------------------------------------------------
-    UC_ReservingFreely --> UC_AbsReserving
-    UC_ReservingStudyGroup --> UC_AbsReserving
-
-    UC_CreateReservation --> UC_AbsManagingRoom
-    UC_CancelReservation --> UC_AbsManagingRoom
-
-    UC_CreateStudyGroup --> UC_AbsManagingStudy
-    UC_CancelStudyGroup --> UC_AbsManagingStudy
-    UC_UpdateStudyGroup --> UC_AbsManagingStudy
-
-    %% Styling
-    style LibrarySystem fill:#fff,stroke:#333,stroke-width:2px
+    style FacilitySystem fill:#fff,stroke:#333,stroke-width:2px
 ```
 ---
 
@@ -2233,12 +2178,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a user to view the interactive graphical spatial layout floor plan map of the physical library facilities.
+        Allows any platform user to view the interactive library floor map and select mapped rooms or facilities.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2253,7 +2198,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user selects the "Interactive Map" tab component link from the primary navigation portal.</li>
-          <li><strong>[System Response]:</strong> The system queries the database to load the current geometric library floor map configuration data models.</li>
+          <li><strong>[System Response]:</strong> The client loads the maintained static floor-map asset and its interactive room identifiers.</li>
           <li><strong>[Display Result]:</strong> The system renders the complete high-resolution layout map canvas onto the active user screen interface.</li>
           <li><strong>[Actor Action]:</strong> The user navigates, pans, or zooms around the active floor coordinate spaces.</li>
         </ol>
@@ -2266,8 +2211,8 @@ flowchart LR
           <li style="margin-bottom: 8px;">
             <strong>Asset Loading Failure (Step 2):</strong> If map structural asset vector files fail to load from backend content delivery nodes:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system terminates the display script routine.</li>
-              <li>The system defaults to rendering a static text-based directory list layout grid of floors.</li>
+              <li>The system stops the interactive-map initialization.</li>
+              <li>The interface displays an asset-unavailable state and allows the user to retry or return to facility navigation.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The active workspace falls back to descriptive layout index directories; errors parse securely into diagnostic logs.</span>
           </li>
@@ -2328,13 +2273,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Extends the active map visualization layout dashboard panel to display specific metadata parameters, operational schedules, capacity thresholds, and equipment summaries for a chosen target room asset.
+        Extends the library map to display a selected room's metadata, capacity and equipment. Availability data and reservation actions are exposed only to an authenticated Reader.
         <br><em>(Includes / Extends: <strong>Extends UC-FAC-01 (View Library Map) — extension point: User selects a specific room or point-of-interest zone node anchor element within the visual map array space.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2350,7 +2295,7 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user hovers over and clicks an active structural facility zone/room element node anchor on the map layout model.</li>
           <li><strong>[System Response]:</strong> The system reads the clicked room ID parameter, intercepting the base mapping loop.</li>
-          <li><strong>[Data Processing]:</strong> The system queries database profiles to extract targeted capacity indices, itemized equipment inventories, and booking schedule statuses.</li>
+          <li><strong>[Data Processing]:</strong> The system retrieves the room metadata from PostgreSQL. If the actor is a Reader, it also retrieves reservable availability slots.</li>
           <li><strong>[Display Result]:</strong> The system updates the UI by opening an aligned descriptive contextual informational summary side-drawer panel sheet component over the map workspace.</li>
         </ol>
       </td>
@@ -2360,9 +2305,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Legacy Component Deletion (Step 3):</strong> If the chosen facility room identifier parameters match legacy hardware profiles deleted from standard database lookup tables:
+            <strong>Room Not Found (Step 3):</strong> If the selected room identifier no longer resolves to an active room:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system presents a temporary notification popup indicating "Facility configuration parameters updated, listing refresh required."</li>
+              <li>The system reports that the room is unavailable and closes or refreshes the detail panel.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Invalid profile popups close immediately; the base layer interactive map forces an automatic silent index update routine.</span>
           </li>
@@ -2404,13 +2349,13 @@ flowchart LR
 
 ---
 
-### UC-FAC-03: Room Reservation
+### UC-FAC-03: Reserve Room
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Room Reservation
+        Use Case: Reserve Room
       </th>
     </tr>
   </thead>
@@ -2422,13 +2367,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Handles the end-to-end process enabling an authenticated user to directly secure a short-term reservation allocation block for an open facility study space. The system dynamically parses target timeline boundaries, enforces duration limits, resolves concurrent race conditions, locks availability grids, and outputs entrance validation credentials.
-        <br><em>(Includes / Extends: <strong>Specialized by Reserve room freely and Reserve room for Study group.</strong>)</em>
+        Allows a Reader to reserve one predefined room-availability slot for individual use, or continue to UC-FAC-05 to create a study group for that slot.
+        <br><em>(Related flow: <strong>Group mode continues to UC-FAC-05 (Create Study Group), which includes this room-reservation behavior.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2451,12 +2396,10 @@ flowchart LR
               <li><strong>Study Group Reservation:</strong> The user selects study group reservation and fills out additional required information (e.g., study group selection/name, study topic/purpose, and member list).</li>
             </ul>
           </li>
-          <li><strong>[System Response]:</strong> The system intercepts the transaction context, reads the target facility room item identifier, reservation purpose parameters, and captures the requested operational time window timeline boundaries.</li>
-          <li><strong>[Data Processing]:</strong> The system queries the database tables to verify that the target room space record does not contain active, overlapping booking blocks within that specific timeframe.</li>
-          <li><strong>[Data Processing]:</strong> The system evaluates the parsed duration parameters against standard account booking thresholds to ensure the timeline conforms to allowed continuous hourly limits.</li>
-          <li><strong>[Data Processing]:</strong> The system locks the target calendar matrix block, shifting availability state configurations from "Available" to "Booked / Reserved".</li>
-          <li><strong>[Data Processing]:</strong> The system logs a unique transactional allocation receipt index tracking row record detailing room numbers, account keys, reservation purpose mode (Free or Study Group metadata), timestamps, and entry variables.</li>
-          <li><strong>[Display Result]:</strong> The system updates the live scheduling UI matrix dynamically to strip the targeted space block parameters out of the public discovery views, and displays a confirmation card layout showing specific room entrance verification PINs.</li>
+          <li><strong>[System Response]:</strong> The system reads the selected availability ID and date, then verifies that the Reader has fewer than five active room reservations.</li>
+          <li><strong>[Data Processing]:</strong> The system locks the selected availability slot and rejects any duplicate reservation through the database constraint.</li>
+          <li><strong>[Data Processing]:</strong> For individual mode, the system creates a <code>reserved</code> room-reservation row and increments the Reader's reservation count. Group mode continues through UC-FAC-05 in the same transaction.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the selected fixed slot. The room check-in PIN is generated later from the Reader's reservation dashboard.</li>
         </ol>
       </td>
     </tr>
@@ -2473,13 +2416,12 @@ flowchart LR
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No reservation is submitted or written to the database; the active booking form remains open pending complete data entry.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Duration Threshold Exception (Step 6):</strong> If the targeted time duration parameters violate application booking limit thresholds:
+            <strong>Reservation Limit Reached:</strong> If the Reader already has five active room reservations:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system interrupts the processing logic routine immediately.</li>
-              <li>The system throws an allocation constraint exception flag and blocks database write pipelines from committing changes.</li>
-              <li>The system highlights the duration configuration components on screen with a validation alert notice.</li>
+              <li>The system rejects the request without creating a reservation.</li>
+              <li>The interface reports that the active room-reservation limit has been reached.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Internal database state architectures maintain original conditions; the active booking form remains open on the user interface pane pending user boundary revisions.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The selected slot remains unchanged.</span>
           </li>
           <li style="margin-bottom: 8px;">
             <strong>Grid Collision Race Condition (Step 7):</strong> If another concurrent transaction session locks the exact same spatial grid slot milliseconds before submission:
@@ -2497,8 +2439,8 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Account Allocation Locked:</strong> An individual space transaction token instantiates securely, locking the designated room parameters for the designated duration.</li>
-          <li><strong>Global Grid Update:</strong> Core database calendar indices update permanently, blocking alternative reservation requests across all client discovery platforms.</li>
+          <li><strong>Reservation Created:</strong> One reservation row owns the selected predefined availability slot and date.</li>
+          <li><strong>Availability Protected:</strong> A concurrent request cannot reserve the same slot and date.</li>
         </ul>
       </td>
     </tr>
@@ -2506,7 +2448,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Serializable Transaction Isolation:</strong> Calendar scheduling check updates and state parameter adjustments must rely entirely on strict serializable transaction isolation logic rules to fully block duplicate double-booking anomalies during concurrent load spikes.</li>
+          <li><strong>Concurrency Protection:</strong> Slot selection uses a database transaction, row locking, and a uniqueness constraint to prevent double booking.</li>
         </ul>
       </td>
     </tr>
@@ -2532,13 +2474,13 @@ flowchart LR
 
 ---
 
-### UC-FAC-04: Canceling Room Reservation
+### UC-FAC-04: Cancel Room Reservation
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Canceling Room Reservation
+        Use Case: Cancel Room Reservation
       </th>
     </tr>
   </thead>
@@ -2550,12 +2492,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Processes user request commands to void active outstanding room slot holds, returning spaces into open catalog index pools.
+        Allows a Reader to cancel an owned pending or reserved room booking and release its selected slot.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2571,8 +2513,7 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user opens their personal active schedule dashboard interface window panel.</li>
           <li><strong>[Actor Action]:</strong> The user selects a target upcoming room reservation object row control card and hits "Cancel Booking".</li>
-          <li><strong>[Data Processing]:</strong> The system processes the cancellation call context, modifying the database entry status description tag index values to "Cancelled".</li>
-          <li><strong>[Data Processing]:</strong> The system modifies the targeted room structural availability calendar rows back to an "Available" state configuration parameter flag.</li>
+          <li><strong>[Data Processing]:</strong> Within one transaction, the system deletes the owned pending/reserved reservation row and decrements the Reader's active reservation count.</li>
           <li><strong>[Display Result]:</strong> The system sends confirmation notices to the user workspace screen while triggering background clearing loops.</li>
         </ol>
       </td>
@@ -2582,12 +2523,11 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Penalty Policy Horizon Encroachment (Step 3):</strong> If the user processes cancellation intents within restricted time lock penalty parameters:
+            <strong>Reservation Is Not Cancellable (Step 3):</strong> If the reservation is absent, belongs to another Reader, or is no longer pending/reserved:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system marks the database transaction status as "Late Cancellation".</li>
-              <li>The system flags the account history log index with an automated usage compliance flag warning.</li>
+              <li>The system rejects the request and preserves the current record.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The space hold clears out safely; administrative metric systems update account infraction tracking fields.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No reservation or account count is changed.</span>
           </li>
         </ul>
       </td>
@@ -2604,7 +2544,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Electronic Lock Synchronization:</strong> Cancel actions must trigger asynchronous event loops that instantly clear associated digital security locks installed at the physical room site coordinates.</li>
+          <li><strong>Atomic Cancellation:</strong> Reservation deletion and the Reader's reservation-count update complete within one database transaction.</li>
         </ul>
       </td>
     </tr>
@@ -2619,9 +2559,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-03-BF01-room-reservations.jfif" alt="UC-FAC-04 Basic Flow - Room Reservations (shared with UC-FAC-03)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
         <p><em>Figure P-FAC-03-BF01 – Room Reservations (reused for canceling a room reservation)</em></p>
-        <p><em>Figure P-FAC-03-BF02 – Late Room Cancellation</em></p>
-        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 Alternative Flow 01 - Late Cancellation Warning" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
-        <p><em>Figure P-FAC-04-AF01 – Late Cancellation Warning</em></p>
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Facility/P-FAC-04-AF01-late-cancellation-warning.jfif" alt="UC-FAC-04 legacy alternative-flow prototype to be refreshed" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-FAC-04-AF01 – Legacy prototype; image will be refreshed separately</em></p>
       </td>
     </tr>
   </tbody>
@@ -2629,13 +2568,13 @@ flowchart LR
 
 ---
 
-### UC-FAC-05: Creating Study Group
+### UC-FAC-05: Create Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Creating Study Group
+        Use Case: Create Study Group
       </th>
     </tr>
   </thead>
@@ -2647,13 +2586,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Establishes a fresh data structure instance profile configuring collaborative team metadata, participant rosters, and organizer roles.
-        <br><em>(Includes / Extends: <strong>Child sub-routine supporting parent operational blocks under abstract parent {abstract} Managing Study Group.<br>Included in Reserve room for Study group workflow parameters.</strong>)</em>
+        Creates a study group and its room reservation atomically for the Reader-selected availability slot.
+        <br><em>(Includes / Extends: <strong>Includes UC-FAC-03 (Reserve Room) for the selected availability slot.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2668,10 +2607,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user selects "Form New Study Group" via their group coordination tool dashboard panel.</li>
-          <li><strong>[System Response]:</strong> The system prompts the user to supply structural identity parameters (Group Name, Subject Classification Tag, Maximum Capacity Limits).</li>
+          <li><strong>[System Response]:</strong> The system prompts for title, description, subject and up to five requirements; room capacity comes from the selected room.</li>
           <li><strong>[Actor Action]:</strong> The user populates the configuration fields and clicks "Confirm Setup".</li>
-          <li><strong>[Data Processing]:</strong> The system validates syntax formatting and inserts a fresh team registry record entity row into the active profile databases.</li>
-          <li><strong>[Data Processing]:</strong> The system configures the initialization user's security token role parameter index to "Group Owner / Administrator".</li>
+          <li><strong>[Data Processing]:</strong> The system validates the required fields, locks the selected room slot, creates the room reservation, and creates the study-group row in one transaction.</li>
+          <li><strong>[Data Processing]:</strong> The initiating Reader becomes the Study Group Host.</li>
           <li><strong>[Display Result]:</strong> The system displays the empty group management cockpit interface screen layout views.</li>
         </ol>
       </td>
@@ -2681,10 +2620,10 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Lexical Blocklist Interception (Step 4):</strong> If the chosen Group Name parameter contains words matching active system text blocklist filters:
+            <strong>Invalid Details or Unavailable Slot (Step 4):</strong> If required fields are invalid, requirements exceed five, or the slot was already reserved:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system blocks database row creation frameworks.</li>
-              <li>The system surfaces explicit text layout warnings and locks submission tools pending correction.</li>
+              <li>The system rolls back the transaction so neither the room reservation nor study group is created.</li>
+              <li>The interface reports the validation or slot-conflict error.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Group registry tables experience zero modification tasks; the form setup view model remains open.</span>
           </li>
@@ -2728,13 +2667,13 @@ flowchart LR
 
 ---
 
-### UC-FAC-06: Canceling Study Group
+### UC-FAC-06: Dissolve Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Canceling Study Group
+        Use Case: Dissolve Study Group
       </th>
     </tr>
   </thead>
@@ -2752,7 +2691,7 @@ flowchart LR
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Study Group Host</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2770,8 +2709,8 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> The user clicks the priority action control link labeled "Disband / Delete Study Group".</li>
           <li><strong>[System Response]:</strong> The system raises an interactive safety validation challenge popup confirmation box module.</li>
           <li><strong>[Actor Action]:</strong> The user completes the verification prompt action step.</li>
-          <li><strong>[Data Processing]:</strong> The system modifies team data rows, toggling lifecycle status state values to "Terminated / Disbanded".</li>
-          <li><strong>[Data Processing]:</strong> The system cascade-purges participant relationship map links out of active session caches.</li>
+          <li><strong>[Data Processing]:</strong> If the group is manageable and starts at least three hours later, the system deletes its room reservation; database cascades remove the study group and related records.</li>
+          <li><strong>[Data Processing]:</strong> The system decrements the Host's reservation count.</li>
           <li><strong>[Display Result]:</strong> The system notifies all active team members via operational dashboard alert feeds that the group space has closed.</li>
         </ol>
       </td>
@@ -2781,10 +2720,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Unfulfilled Asset Dependency Barriers (Step 5):</strong> If the group entity profile holds active dependencies such as unfulfilled future room reservations:
+            <strong>Cancellation Window Closed (Step 5):</strong> If the group is no longer manageable or begins in less than three hours:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system prevents structural row delete steps.</li>
-              <li>The system displays a prompt screen detailing that the group cannot be killed until outstanding room bookings are resolved or transferred.</li>
+              <li>The system rejects the dissolution and preserves the group and reservation.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The group deletion command sequence aborts; operational group entity variables maintain status-quo parameters.</span>
           </li>
@@ -2828,13 +2766,13 @@ flowchart LR
 
 ---
 
-### UC-FAC-07: Updating Study Group Information
+### UC-FAC-07: Update Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Updating Study Group Information
+        Use Case: Update Study Group
       </th>
     </tr>
   </thead>
@@ -2846,13 +2784,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Modifies operational configuration metadata parameters including capacity boundaries, name markers, visibility conditions, or subject categories for an existing active group.
-        <br><em>(Includes / Extends: <strong>Specializes abstract parent {abstract} Managing Study Group.</strong>)</em>
+        Allows the Study Group Host to update the title, description, subject and requirements of a manageable group.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Study Group Host</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -2868,9 +2805,9 @@ flowchart LR
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user navigates to the group configuration editing dashboard profile template view layout.</li>
           <li><strong>[System Response]:</strong> The system populates input data entry text boxes with existing live database parameters.</li>
-          <li><strong>[Actor Action]:</strong> The user modifies selected metadata settings (e.g., expanding group capacity thresholds, changing descriptions).</li>
+          <li><strong>[Actor Action]:</strong> The Host modifies title, description, subject or the list of up to five requirements.</li>
           <li><strong>[Actor Action]:</strong> The user clicks the "Save Modifications" processing control button widget.</li>
-          <li><strong>[Data Processing]:</strong> The system performs alignment safety checks to ensure new capacity parameters do not drop below the current count of already enrolled active members.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the allowed fields and confirms that the group is still manageable.</li>
           <li><strong>[Data Processing]:</strong> The system updates the targeted group configuration database columns with the revised parameters.</li>
           <li><strong>[Display Result]:</strong> The system updates workspace windows, rendering flash confirmation notification banners.</li>
         </ol>
@@ -2881,10 +2818,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Active Capacity Floor Violation (Step 5):</strong> If the user attempts to reduce group maximum capacity limits below the total number of currently active registered members:
+            <strong>Invalid Update or Group State (Step 5):</strong> If the payload contains unsupported/invalid values, more than five requirements, or the group is no longer manageable:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system blocks database modification commands.</li>
-              <li>The system flashes validation errors and highlights the capacity text box layout elements in red.</li>
+              <li>The system rejects the update and reports the applicable validation error.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Data updates abort entirely; previous configuration fields remain unchanged inside database storage rows.</span>
           </li>
@@ -2929,54 +2865,62 @@ flowchart LR
 
 ```mermaid
 flowchart TD
- subgraph StudyGroup["Study Group"]
-        UC1(["<center>UC-SG-01:<br>Searching Study Group</center>"])
-        UC2(["<center>UC-SG-02:<br>Filtering Study Group</center>"])
-        UC3(["<center>UC-SG-03:<br>View Study Group Detail</center>"])
-        UC5(["<center>UC-SG-04:<br>Inviting Others into<br>Study Group</center>"])
-        UC4(["<center>{abstract}<br>Interacting with Others</center>"])
-        UC6(["<center>UC-SG-05:<br>Remove Others from<br>Study Group</center>"])
-        UC7(["<center>UC-SG-06:<br>Finding User By Email</center>"])
-        UC8(["<center>UC-SG-07:<br>View Other Profile</center>"])
-        UC9(["<center>{abstract}<br>Interacting with Study Group</center>"])
-        UC10(["<center>{abstract}<br>Managing Join<br>Request</center>"])
-        UC11(["<center>UC-SG-08:<br>Creating Join<br>Request</center>"])
-        UC12(["<center>UC-SG-09:<br>Canceling Join<br>Request</center>"])
-        UC13(["<center>UC-SG-10:<br>Out Study Group</center>"])
-  end
-    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
-    OtherUser(["<center>fa:fa-user Other User</center>"]) --> User
-    GeneralUser(["<center>{abstract}<br>fa:fa-user General User</center>"]) ~~~ StudyGroupCreator
-    StudyGroupCreator ~~~ User
-    GeneralUser ~~~~~ StudyGroup
-    GeneralUser --- UC1 & UC2 & UC3
-    StudyGroupCreator --- UC4 & UC9
-    OtherUser --- UC9
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% Generalization (Specific -> Abstract)
-    UC5 --> UC4
-    UC6 --> UC4
-    UC11 --> UC10
-    UC12 --> UC10
+    subgraph StudyGroupSystem [Study Group]
+        UC_Search(["<center>UC-SG-01:<br/>Search Study Groups</center>"])
+        UC_Filter(["<center>UC-SG-02:<br/>Filter Study Groups</center>"])
+        UC_Detail(["<center>UC-SG-03:<br/>View Study Group Detail</center>"])
+        UC_Invite(["<center>UC-SG-04:<br/>Invite Member</center>"])
+        UC_Remove(["<center>UC-SG-05:<br/>Remove Member</center>"])
+        UC_Find(["<center>UC-SG-06:<br/>Find User by Email</center>"])
+        UC_Profile(["<center>UC-SG-07:<br/>View Other Profile</center>"])
+        UC_Request(["<center>UC-SG-08:<br/>Create Join Request</center>"])
+        UC_Cancel(["<center>UC-SG-09:<br/>Cancel Join Request</center>"])
+        UC_Leave(["<center>UC-SG-10:<br/>Leave Study Group</center>"])
+        UC_Review(["<center>UC-SG-11:<br/>Review Join Request</center>"])
+        UC_Respond(["<center>UC-SG-12:<br/>Respond to Invitation</center>"])
 
-    %% Includes & Extends (Fixed from misuse of generalization)
-    UC5 -. "<< include >>" .-> UC7
-    UC8 -. "<< extend >>" .-> UC4
-    UC10 -. "<< include >>" .-> UC9
-    UC13 -. "<< include >>" .-> UC9
+        UC_Profile -. "<< extend >>" .-> UC_Detail
+        UC_Invite -. "<< include >>" .-> UC_Find
+    end
 
-    style StudyGroup fill:#fff,stroke:#333,stroke-width:2px
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Member(["<center>fa:fa-user Study Group Member</center>"])
+    Applicant(["<center>fa:fa-user Prospective Member</center>"])
+
+    Host --> Reader
+    Member --> Reader
+    Applicant --> Reader
+
+    PlatformUser ~~~~~ StudyGroupSystem
+    PlatformUser ~~~ Host
+
+    PlatformUser --- UC_Search
+    PlatformUser --- UC_Filter
+    PlatformUser --- UC_Detail
+    Reader --- UC_Profile
+    Host --- UC_Invite
+    Host --- UC_Remove
+    Host --- UC_Review
+    Member --- UC_Leave
+    Applicant --- UC_Request
+    Applicant --- UC_Cancel
+    Applicant --- UC_Respond
+
+    style StudyGroupSystem fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 ---
 
-### UC-SG-01: Searching Study Group
+### UC-SG-01: Search Study Groups
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Searching Study Group
+        Use Case: Search Study Groups
       </th>
     </tr>
   </thead>
@@ -2988,18 +2932,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a General User to search for study groups by keyword.
+        Allows any Platform User to search the public study-group listing by keyword.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">General User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Feature Availability:</strong> The General User has access to the study group search feature.</li>
+          <li><strong>Feature Availability:</strong> The Platform User has access to the public study-group search feature.</li>
         </ul>
       </td>
     </tr>
@@ -3007,8 +2951,8 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The General User navigates to the study group search interface.</li>
-          <li><strong>[Actor Action]:</strong> The General User enters a search keyword.</li>
+          <li><strong>[Actor Action]:</strong> The Platform User navigates to the study-group search interface.</li>
+          <li><strong>[Actor Action]:</strong> The Platform User enters a search keyword.</li>
           <li><strong>[Data Processing]:</strong> The system validates the input.</li>
           <li><strong>[Data Processing]:</strong> The system retrieves study groups matching the keyword.</li>
           <li><strong>[Display Result]:</strong> The system displays the list of matching study groups.</li>
@@ -3023,9 +2967,9 @@ flowchart TD
             <strong>Empty or Invalid Input (Step 3):</strong> If the entered keyword is empty or invalid:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system rejects the search request.</li>
-              <li>The system prompts the General User to enter a valid keyword.</li>
+              <li>The system prompts the Platform User to enter a valid keyword.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No search is executed; the General User remains on the search interface.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No search is executed; the Platform User remains on the search interface.</span>
           </li>
           <li style="margin-bottom: 8px;">
             <strong>No Matching Results (Step 4):</strong> If no study groups match the keyword:
@@ -3041,7 +2985,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Result Display:</strong> A list of study groups matching the search criteria is displayed to the General User.</li>
+          <li><strong>Result Display:</strong> A list of study groups matching the search criteria is displayed to the Platform User.</li>
         </ul>
       </td>
     </tr>
@@ -3074,13 +3018,13 @@ flowchart TD
 
 ---
 
-### UC-SG-02: Filtering Study Group
+### UC-SG-02: Filter Study Groups
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Filtering Study Group
+        Use Case: Filter Study Groups
       </th>
     </tr>
   </thead>
@@ -3092,12 +3036,12 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a General User to narrow a study group list using filter criteria such as subject, schedule, or size.
+        Allows any Platform User to narrow the public study-group listing with the supported filters.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">General User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -3111,8 +3055,8 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The General User accesses a study group listing.</li>
-          <li><strong>[Actor Action]:</strong> The General User selects one or more filter criteria.</li>
+          <li><strong>[Actor Action]:</strong> The Platform User accesses a study-group listing.</li>
+          <li><strong>[Actor Action]:</strong> The Platform User selects one or more filter criteria.</li>
           <li><strong>[Data Processing]:</strong> The system validates the selected criteria.</li>
           <li><strong>[Data Processing]:</strong> The system applies the filters to the current list.</li>
           <li><strong>[Display Result]:</strong> The system displays the filtered list.</li>
@@ -3127,7 +3071,7 @@ flowchart TD
             <strong>Invalid Filter Combination (Step 3):</strong> If the selected filters are invalid or conflicting:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system rejects the filter request.</li>
-              <li>The system notifies the General User and retains the previous list.</li>
+              <li>The system notifies the Platform User and retains the previous list.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The previous study group list remains displayed.</span>
           </li>
@@ -3135,7 +3079,7 @@ flowchart TD
             <strong>No Results After Filtering (Step 4):</strong> If no study groups match the filters:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system displays a "no results found" message.</li>
-              <li>The system allows the General User to adjust the filters.</li>
+              <li>The system allows the Platform User to adjust the filters.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The filtered list is empty.</span>
           </li>
@@ -3194,12 +3138,12 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a General User to view detailed information about a specific study group.
+        Allows any Platform User to view the public details of a study group.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">General User</td>
+      <td style="vertical-align: top;">Platform User</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -3213,7 +3157,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The General User selects a study group from a list.</li>
+          <li><strong>[Actor Action]:</strong> The Platform User selects a study group from a list.</li>
           <li><strong>[Data Processing]:</strong> The system retrieves the study group's detailed information.</li>
           <li><strong>[Display Result]:</strong> The system displays the study group details, including description, members, and schedule.</li>
         </ol>
@@ -3237,7 +3181,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Detail Display:</strong> The detailed information of the selected study group is displayed to the General User.</li>
+          <li><strong>Detail Display:</strong> The detailed information of the selected study group is displayed to the Platform User.</li>
         </ul>
       </td>
     </tr>
@@ -3245,7 +3189,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Access Level:</strong> Only information appropriate to the requesting General User's access level is displayed.</li>
+          <li><strong>Public Scope:</strong> Only information exposed by the public study-group detail response is displayed.</li>
         </ul>
       </td>
     </tr>
@@ -3267,13 +3211,13 @@ flowchart TD
 
 ---
 
-### UC-SG-04: Inviting Others into Study Group
+### UC-SG-04: Invite Member
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Inviting Others into Study Group
+        Use Case: Invite Member
       </th>
     </tr>
   </thead>
@@ -3285,18 +3229,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Study Group Creator to invite a user to join a study group they manage.
+        Allows the Study Group Host to invite a registered Reader by email to a manageable study group.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Study Group Creator</td>
+      <td style="vertical-align: top;">Study Group Host</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Authorization State:</strong> The Study Group Creator is authenticated and manages the selected study group.</li>
+          <li><strong>Authorization State:</strong> The Study Group Host is authenticated and manages the selected study group.</li>
         </ul>
       </td>
     </tr>
@@ -3304,11 +3248,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the study group to invite a member to.</li>
-          <li><strong>[Actor Action]:</strong> The Study Group Creator selects a user to invite, optionally using UC-SG-07 (Finding User By Email).</li>
-          <li><strong>[Data Processing]:</strong> The system validates that the target user is not already a member of the study group.</li>
-          <li><strong>[Data Processing]:</strong> The system sends an invitation to the target user.</li>
-          <li><strong>[Display Result]:</strong> The system confirms to the Study Group Creator that the invitation was sent.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Host selects the study group to invite a member to.</li>
+          <li><strong>[Actor Action]:</strong> The Host enters the target Reader's email address.</li>
+          <li><strong>[Data Processing]:</strong> Through UC-SG-06, the system resolves the account and validates the group state, membership and existing invitation/request state.</li>
+          <li><strong>[Data Processing]:</strong> The system creates a pending invitation and sends the invitation email.</li>
+          <li><strong>[Display Result]:</strong> The system confirms to the Study Group Host that the invitation was sent.</li>
         </ol>
       </td>
     </tr>
@@ -3364,13 +3308,13 @@ flowchart TD
 
 ---
 
-### UC-SG-05: Remove Others from Study Group
+### UC-SG-05: Remove Member
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Remove Others from Study Group
+        Use Case: Remove Member
       </th>
     </tr>
   </thead>
@@ -3382,18 +3326,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Study Group Creator to remove an existing member from a study group they manage.
+        Allows the Study Group Host to remove an existing member from a manageable study group.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Study Group Creator</td>
+      <td style="vertical-align: top;">Study Group Host</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Authorization and Membership State:</strong> The Study Group Creator manages the study group; the target user is a current member of the study group.</li>
+          <li><strong>Authorization and Membership State:</strong> The Study Group Host manages the group; the target Reader is a current member.</li>
         </ul>
       </td>
     </tr>
@@ -3401,11 +3345,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the study group and views its member list.</li>
-          <li><strong>[Actor Action]:</strong> The Study Group Creator selects the member to remove.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Host selects the group and views its member list.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Host selects the member to remove.</li>
           <li><strong>[System Response]:</strong> The system requests confirmation of the removal.</li>
           <li><strong>[Data Processing]:</strong> The system removes the selected member from the study group.</li>
-          <li><strong>[Display Result]:</strong> The system confirms the removal to the Study Group Creator.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the removal to the Study Group Host.</li>
         </ol>
       </td>
     </tr>
@@ -3414,7 +3358,7 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Removal Canceled (Step 3):</strong> If the Study Group Creator cancels the confirmation:
+            <strong>Removal Canceled (Step 3):</strong> If the Study Group Host cancels the confirmation:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system cancels the removal process.</li>
             </ol>
@@ -3465,13 +3409,13 @@ flowchart TD
 
 ---
 
-### UC-SG-06: Finding User By Email
+### UC-SG-06: Find User by Email
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Finding User By Email
+        Use Case: Find User by Email
       </th>
     </tr>
   </thead>
@@ -3483,18 +3427,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Study Group Creator to locate a registered user by email address, typically in support of inviting them to a study group.
+        Allows the Study Group Host to resolve a registered Reader by email while creating an invitation.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Study Group Creator</td>
+      <td style="vertical-align: top;">Study Group Host</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Feature Availability:</strong> The Study Group Creator has access to the user lookup feature.</li>
+          <li><strong>Feature Availability:</strong> The Study Group Host is creating an invitation for a manageable group.</li>
         </ul>
       </td>
     </tr>
@@ -3502,7 +3446,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Study Group Creator enters an email address to search for.</li>
+          <li><strong>[Actor Action]:</strong> The Study Group Host enters an email address.</li>
           <li><strong>[Data Processing]:</strong> The system validates the format of the email address.</li>
           <li><strong>[Data Processing]:</strong> The system searches for a registered user matching the entered email address.</li>
           <li><strong>[Display Result]:</strong> The system displays the matching user's basic profile information.</li>
@@ -3516,7 +3460,7 @@ flowchart TD
           <li style="margin-bottom: 8px;">
             <strong>Invalid Email Format (Step 2):</strong> If the email format is invalid:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system prompts the Study Group Creator to correct the input.</li>
+              <li>The system prompts the Study Group Host to correct the input.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No user information is displayed.</span>
           </li>
@@ -3534,7 +3478,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Result Display:</strong> A user matching the provided email address, if found, is presented to the Study Group Creator.</li>
+          <li><strong>Result Available:</strong> The matching account is returned to the invitation flow without exposing sensitive profile fields.</li>
         </ul>
       </td>
     </tr>
@@ -3586,18 +3530,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Study Group Creator to view the profile information of another user, such as a study group member or a prospective invitee.
+        Allows an authenticated Reader to view the basic profile data exposed in the study-group context.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Study Group Creator</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Profile Accessibility:</strong> The target user's profile exists and is accessible to the Study Group Creator.</li>
+          <li><strong>Profile Accessibility:</strong> The target Reader's basic profile is available in the study-group context.</li>
         </ul>
       </td>
     </tr>
@@ -3605,9 +3549,9 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Study Group Creator selects a user, e.g., from a member list or search result.</li>
-          <li><strong>[Data Processing]:</strong> The system retrieves the selected user's profile information according to the target user's visibility settings.</li>
-          <li><strong>[Display Result]:</strong> The system displays the profile to the Study Group Creator.</li>
+          <li><strong>[Actor Action]:</strong> The Reader selects another Reader from the study-group context.</li>
+          <li><strong>[Data Processing]:</strong> The system retrieves the target Reader's basic profile information included by the study-group detail service.</li>
+          <li><strong>[Display Result]:</strong> The system displays the basic profile to the Reader.</li>
         </ol>
       </td>
     </tr>
@@ -3629,7 +3573,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Profile Display:</strong> The requested user's profile information is displayed to the Study Group Creator.</li>
+          <li><strong>Profile Display:</strong> The requested basic profile information is displayed to the Reader.</li>
         </ul>
       </td>
     </tr>
@@ -3659,13 +3603,13 @@ flowchart TD
 
 ---
 
-### UC-SG-08: Creating Join Request
+### UC-SG-08: Create Join Request
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Creating Join Request
+        Use Case: Create Join Request
       </th>
     </tr>
   </thead>
@@ -3677,18 +3621,18 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a user to submit a request to join a study group.
+        Allows a Prospective Member to request membership in an upcoming study group that is not full.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Other User</td>
+      <td style="vertical-align: top;">Prospective Member</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Authentication State:</strong> The Other User is authenticated, and the selected study group exists.</li>
+          <li><strong>Authentication State:</strong> The Prospective Member is authenticated, and the selected study group exists.</li>
         </ul>
       </td>
     </tr>
@@ -3696,12 +3640,12 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Other User selects the study group they wish to join.</li>
-          <li><strong>[Actor Action]:</strong> The Other User submits a request to join.</li>
-          <li><strong>[Data Processing]:</strong> The system validates that the Other User is not already a member and has no existing pending request for the study group.</li>
+          <li><strong>[Actor Action]:</strong> The Prospective Member selects the study group they wish to join.</li>
+          <li><strong>[Actor Action]:</strong> The Prospective Member submits a request to join.</li>
+          <li><strong>[Data Processing]:</strong> The system verifies the group is upcoming and not full, the actor is not the Host or an approved member, no request is pending, and any denial cooldown has elapsed.</li>
           <li><strong>[Data Processing]:</strong> The system creates the join request and associates it with the study group.</li>
-          <li><strong>[Data Processing]:</strong> The system notifies the Study Group Creator of the new join request.</li>
-          <li><strong>[Display Result]:</strong> The system confirms to the Other User that the request has been submitted.</li>
+          <li><strong>[Data Processing]:</strong> The system notifies the Study Group Host of the new join request.</li>
+          <li><strong>[Display Result]:</strong> The system confirms to the Prospective Member that the request has been submitted.</li>
         </ol>
       </td>
     </tr>
@@ -3710,7 +3654,7 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>User Already a Member (Step 3):</strong> If the Other User is already a member of the study group:
+            <strong>User Already a Member (Step 3):</strong> If the Prospective Member is already an approved member of the study group:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system displays an error message.</li>
               <li>The system does not create a request.</li>
@@ -3718,7 +3662,7 @@ flowchart TD
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No new join request is created.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Duplicate Pending Request (Step 3):</strong> If a pending join request already exists for the Other User and study group:
+            <strong>Duplicate Pending Request (Step 3):</strong> If a pending join request already exists for the Prospective Member and study group:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The system displays a message.</li>
               <li>The system does not create a duplicate request.</li>
@@ -3732,7 +3676,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Request Created:</strong> A pending join request for the Other User exists against the selected study group.</li>
+          <li><strong>Request Created:</strong> A pending join request for the Prospective Member exists against the selected study group.</li>
         </ul>
       </td>
     </tr>
@@ -3762,13 +3706,13 @@ flowchart TD
 
 ---
 
-### UC-SG-09: Canceling Join Request
+### UC-SG-09: Cancel Join Request
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Canceling Join Request
+        Use Case: Cancel Join Request
       </th>
     </tr>
   </thead>
@@ -3785,13 +3729,13 @@ flowchart TD
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Other User</td>
+      <td style="vertical-align: top;">Prospective Member</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Authentication State:</strong> The Other User is authenticated.</li>
+          <li><strong>Authentication State:</strong> The Prospective Member is authenticated.</li>
         </ul>
       </td>
     </tr>
@@ -3799,11 +3743,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Other User views their pending join request(s).</li>
-          <li><strong>[Actor Action]:</strong> The Other User selects a pending join request to cancel.</li>
+          <li><strong>[Actor Action]:</strong> The Prospective Member views their pending join request(s).</li>
+          <li><strong>[Actor Action]:</strong> The Prospective Member selects a pending join request to cancel.</li>
           <li><strong>[Data Processing]:</strong> The system validates that the selected request is still pending.</li>
-          <li><strong>[Data Processing]:</strong> The system cancels the join request.</li>
-          <li><strong>[Display Result]:</strong> The system confirms the cancellation to the Other User.</li>
+          <li><strong>[Data Processing]:</strong> The system deletes the actor's pending join-request row.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the cancellation to the Prospective Member.</li>
         </ol>
       </td>
     </tr>
@@ -3858,13 +3802,13 @@ flowchart TD
 
 ---
 
-### UC-SG-10: Out Study Group
+### UC-SG-10: Leave Study Group
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Out Study Group
+        Use Case: Leave Study Group
       </th>
     </tr>
   </thead>
@@ -3876,12 +3820,12 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows a study group member (Study Group Creator or Other User) to voluntarily leave a study group they currently belong to.
+        Allows a non-host Study Group Member to leave an upcoming or full group before the three-hour cutoff.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User (Group Member)</td>
+      <td style="vertical-align: top;">Study Group Member</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -3928,7 +3872,8 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Creator Succession:</strong> If the actor is the Study Group Creator, the system must ensure another member is assigned as the creator before the creator can leave.</li>
+          <li><strong>Host Restriction:</strong> The Host cannot leave the group; the Host must dissolve it through UC-FAC-06 when allowed.</li>
+          <li><strong>Time Restriction:</strong> Leaving is rejected when the group starts in less than three hours.</li>
         </ul>
       </td>
     </tr>
@@ -3948,34 +3893,259 @@ flowchart TD
   </tbody>
 </table>
 
+---
+
+### UC-SG-11: Review Join Request
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Use Case: Review Join Request</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-11</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">Allows the Study Group Host to approve or deny a Reader's pending request to join a group. The decision and any resulting membership, member-count, and group-status changes are committed atomically.</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Study Group Host</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authentication:</strong> The actor is signed in as a Reader.</li>
+          <li><strong>Ownership:</strong> The actor is the Host who created the selected study group.</li>
+          <li><strong>Request State:</strong> The selected record is a pending join request, not an invitation.</li>
+          <li><strong>Group State:</strong> The study group exists and remains manageable before its start time.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Host opens a created study group and views its pending join requests.</li>
+          <li><strong>[System Response]:</strong> The system displays each pending request and the requesting Reader's information.</li>
+          <li><strong>[Actor Action]:</strong> The Host selects a request and chooses <em>Approve</em> or <em>Deny</em>.</li>
+          <li><strong>[Validation]:</strong> The system locks the group and request records, then verifies Host ownership, request type, pending status, and the current group state.</li>
+          <li><strong>[Approve Branch]:</strong> If approved, the system verifies that the group is upcoming and has capacity, marks the request as approved, increases the member count, and marks the group full when capacity is reached.</li>
+          <li><strong>[Deny Branch]:</strong> If denied, the system marks the request as denied without changing the member count.</li>
+          <li><strong>[Data Processing]:</strong> The system records the decision time and commits the decision in one transaction.</li>
+          <li><strong>[Display Result]:</strong> The system refreshes the request list and notifies the requester of the Host's decision. Applicable lifecycle emails are sent after the transaction succeeds.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Unauthorized Review (Step 4):</strong> If the actor is not the group Host, the system rejects the action.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> The request and membership remain unchanged.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Request Missing or Already Resolved (Step 4):</strong> If the request does not exist, is not a join request, or is no longer pending, the system reports that it cannot be processed.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> No duplicate decision or membership is created.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Approval Not Available (Step 5):</strong> If the group has started, is closed, or has reached capacity, the system rejects approval.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> The join request remains pending and the group is unchanged.</span>
+          </li>
+          <li>
+            <strong>Concurrent Update (Steps 4–7):</strong> If another transaction resolves the request or fills the final place first, the system rolls back this transaction and displays the latest state.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> Member count and request status remain consistent.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Approved:</strong> The request is approved, the requester becomes a Study Group Member, and the group member count and status reflect the new membership.</li>
+          <li><strong>Denied:</strong> The request is denied and no membership or member-count change is made.</li>
+          <li><strong>Notification:</strong> The requester receives the decision notification; the Host also receives the applicable membership update when approval succeeds.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authorization:</strong> Only the group Host may review join requests.</li>
+          <li><strong>Concurrency:</strong> The group and request are locked and updated transactionally so capacity cannot be exceeded.</li>
+          <li><strong>Consistency:</strong> A pending request can be resolved only once; stale actions must not create duplicate membership.</li>
+          <li><strong>Delivery Isolation:</strong> A notification or email delivery failure after commit must not reverse the recorded decision.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">None</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-11-BF01-review-join-request.png" alt="UC-SG-11 Basic Flow 01 - Review Join Request" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-11-BF01 – Review Join Request</em></p>
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-11-BF01-review-join-request-bell.png" alt="UC-SG-11 Basic Flow 01 - Join Request Bell Notification" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-11-BF01 (Bell) – Join Request Notification</em></p>
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-11-BF01-review-join-request-mail.png" alt="UC-SG-11 Basic Flow 01 - Join Request Email Notification" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-11-BF01 (Mail) – Join Request Email Notification</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### UC-SG-12: Respond to Invitation
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Use Case: Respond to Invitation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Use Case ID</td>
+      <td style="vertical-align: top;"><strong>UC-SG-12</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
+      <td style="vertical-align: top;">Allows the invited Reader, acting as a Prospective Member, to accept or decline a pending study-group invitation. Acceptance creates membership only when the group still has capacity.</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
+      <td style="vertical-align: top;">Prospective Member</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authentication:</strong> The actor is signed in as a Reader.</li>
+          <li><strong>Invitation Ownership:</strong> The actor is the recipient of the selected invitation.</li>
+          <li><strong>Invitation State:</strong> The selected record is a pending invitation, not a join request.</li>
+          <li><strong>Group State:</strong> The study group exists, has not started, and is not cancelled, completed, or expired.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li><strong>[Actor Action]:</strong> The Prospective Member opens the list of pending study-group invitations.</li>
+          <li><strong>[System Response]:</strong> The system displays invitations for future groups that can still receive a response.</li>
+          <li><strong>[Actor Action]:</strong> The Prospective Member selects an invitation and chooses <em>Accept</em> or <em>Decline</em>.</li>
+          <li><strong>[Validation]:</strong> The system locks the group and invitation records, then verifies recipient ownership, invitation type, pending status, and current group state.</li>
+          <li><strong>[Accept Branch]:</strong> If accepted, the system verifies that the group is upcoming and has capacity, marks the invitation as approved, increases the member count, and marks the group full when capacity is reached.</li>
+          <li><strong>[Decline Branch]:</strong> If declined, the system marks the invitation as denied without creating membership or changing the member count.</li>
+          <li><strong>[Data Processing]:</strong> The system records the decision time and commits the response in one transaction.</li>
+          <li><strong>[Display Result]:</strong> The system refreshes the invitation list and notifies the Host. An acceptance also triggers the applicable membership email to the Host.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Alternative / Exception Flows</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li style="margin-bottom: 8px;">
+            <strong>Wrong Recipient (Step 4):</strong> If the signed-in Reader is not the invitation recipient, the system rejects the response.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> The invitation and membership remain unchanged.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Invitation Missing or Already Resolved (Step 4):</strong> If the invitation does not exist, is not an invitation, or is no longer pending, the system reports that it cannot be processed.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> No duplicate response or membership is created.</span>
+          </li>
+          <li style="margin-bottom: 8px;">
+            <strong>Acceptance Not Available (Step 5):</strong> If the group has started, is closed, or is full, the system rejects acceptance.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> The invitation remains pending and no membership is created.</span>
+          </li>
+          <li>
+            <strong>Concurrent Capacity Change (Steps 4–7):</strong> If another transaction takes the final place first, the system rolls back this response and displays the latest group state.
+            <br><span style="font-size: 13px; color: #475569;"><strong>Postcondition (Exception Flow):</strong> The invitation remains pending and the group capacity is not exceeded.</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Accepted:</strong> The invitation is approved, the invitee becomes a Study Group Member, and the member count and group status reflect the new membership.</li>
+          <li><strong>Declined:</strong> The invitation is denied and no membership or member-count change is made.</li>
+          <li><strong>Notification:</strong> The Host receives the invitation-response notification.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
+      <td style="vertical-align: top;">
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          <li><strong>Authorization:</strong> Only the invitation recipient may accept or decline it.</li>
+          <li><strong>Concurrency:</strong> The group and invitation are locked and updated transactionally so capacity cannot be exceeded.</li>
+          <li><strong>Consistency:</strong> A pending invitation can be resolved only once; a failed acceptance leaves it pending.</li>
+          <li><strong>Delivery Isolation:</strong> A notification or email delivery failure after commit must not reverse the recorded response.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
+      <td style="vertical-align: top;">None</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
+      <td style="vertical-align: top;">
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-12-BF01-respond-to-invitation.png" alt="UC-SG-12 Basic Flow 01 - Respond to Invitation" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-12-BF01 – Respond to Invitation</em></p>
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-12-BF01-respond-to-invitation-bell.png" alt="UC-SG-12 Basic Flow 01 - Invitation Response Bell Notification" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-12-BF01 (Bell) – Invitation Response Notification</em></p>
+        <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/StudyGroup/P-SG-12-BF01-respond-to-invitation-mail.png" alt="UC-SG-12 Basic Flow 01 - Invitation Response Email Notification" style="max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
+        <p><em>Figure P-SG-12-BF01 (Mail) – Invitation Response Email Notification</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 ## VII. AI Recommendation
 
 ### Use case diagram
 
 ```mermaid
 flowchart LR
- subgraph AIRecommendation["AI Recommendation"]
-        UC1(["<center>UC-BK-04:<br>Add Book Favorite</center>"])
-        UC2(["<center>UC-AIR-01:<br>View Recommended Book</center>"])
-        UC3(["<center>UC-AIR-02:<br>Reset AI Recommend</center>"])
-  end
-    ActorUser(["<center>fa:fa-user User</center>"]) ~~~~ AIRecommendation
-    ActorUser --- UC2
-    UC1 -. "<< extend >>" .-> UC2
-    UC3 -. "<< extend >>" .-> UC2
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+
+    subgraph AIRecommendation [AI Recommendations]
+        UC_Wishlist(["<center>UC-BK-04:<br/>Manage Wishlist</center>"])
+        UC_View(["<center>UC-AIR-01:<br/>View Recommended Books</center>"])
+        UC_Renew(["<center>UC-AIR-02:<br/>Renew Recommendations</center>"])
+        UC_Wishlist -. "<< extend >>" .-> UC_View
+        UC_Renew -. "<< extend >>" .-> UC_View
+    end
+
+    Reader ~~~~ AIRecommendation
+    Reader --- UC_View
 
     style AIRecommendation fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 ---
 
-### UC-AIR-01: View Recommended Book
+### UC-AIR-01: View Recommended Books
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: View Recommended Book
+        Use Case: View Recommended Books
       </th>
     </tr>
   </thead>
@@ -3987,12 +4157,12 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the user to view the list of books recommended by the AI recommendation engine.
+        Allows a Reader to view the personalized recommendation feed generated from current catalog and interaction data.
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -4007,8 +4177,8 @@ flowchart LR
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
           <li><strong>[Actor Action]:</strong> The user navigates to the Recommended Book Dashboard within the main Dashboard tab workspace.</li>
-          <li><strong>[System Response]:</strong> The system queries backend microservices to retrieve the AI-generated list of recommended books.</li>
-          <li><strong>[Display Result]:</strong> The system renders the prioritized list of recommended books (containing 10-15 book items) directly onto the user interface viewport.</li>
+          <li><strong>[System Response]:</strong> The system first checks its short-lived feed cache, then the active recommendation rows in PostgreSQL; if neither is available, it generates a feed through the recommendation subsystem.</li>
+          <li><strong>[Display Result]:</strong> The system renders the prioritized personalized book list.</li>
           <li><strong>[Actor Action]:</strong> The user reviews the recommendations, opens individual details panes to examine specific book records, and saves relevant candidate titles into their personal favorites collection array.</li>
         </ol>
       </td>
@@ -4051,7 +4221,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Reset AI Recommend:</strong> Location inside event flow: Viewing the recommended list grid (Step 4).</li>
+          <li><strong>Renew Recommendations:</strong> Available while viewing the current recommendation feed.</li>
         </ul>
       </td>
     </tr>
@@ -4069,13 +4239,13 @@ flowchart LR
 
 ---
 
-### UC-AIR-02: Reset AI Recommend
+### UC-AIR-02: Renew Recommendations
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Reset AI Recommend
+        Use Case: Renew Recommendations
       </th>
     </tr>
   </thead>
@@ -4087,13 +4257,13 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the user to clear their current recommendation cache and trigger the system's background engine to immediately recalculate and regenerate a fresh book recommendation list.
-        <br><em>(Includes / Extends: <strong>Extends UC-AIR-01 (View Recommended Book) — extension point: Regenerating the displayed recommendation list.</strong>)</em>
+        Allows a Reader to retire the active recommendation feed and request a newly generated list.
+        <br><em>(Includes / Extends: <strong>Extends UC-AIR-01 (View Recommended Books) — extension point: renewing the displayed feed.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">User</td>
+      <td style="vertical-align: top;">Reader</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -4110,7 +4280,7 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> While actively viewing the recommended book collection lists, the user selects the <code>Renew</code> buttons.</li>
           <li><strong>[System Response]:</strong> The system intercepts the request command payload and systematically invokes the AI Recommend Module.</li>
           <li><strong>[Data Processing]:</strong> The included AI Recommend Module processes the user's behaviors and evaluates a clean set of recommendations.</li>
-          <li><strong>[Data Processing]:</strong> The system purges historical cache frames and overrides the active recommendation data array rows with the newly received listings.</li>
+          <li><strong>[Data Processing]:</strong> The system marks current recommendation rows as renewed, invalidates the active cache entry, and persists a freshly generated feed.</li>
           <li><strong>[Display Result]:</strong> The system refreshes the client screen dashboard panel to render the fresh, updated recommended book list.</li>
         </ol>
       </td>
@@ -4172,41 +4342,46 @@ flowchart LR
 
 ```mermaid
 flowchart LR
- subgraph LibrarianAdministration["Librarian Administration"]
-        UC1(["<center>{abstract}<br>Managing Book</center>"])
-        UC2(["<center>UC-LIB-01:<br>Adding Books</center>"])
-        UC3(["<center>UC-LIB-02:<br>Removing Books</center>"])
-        UC4(["<center>UC-LIB-03:<br>Confirming Book Return</center>"])
-        UC5(["<center>UC-LIB-04:<br>Recording Loan</center>"])
-        UC6(["<center>Managing Room</center>"])
-        UC7(["<center>{abstract}<br>Verifying Pin</center>"])
-        UC8(["<center>UC-LIB-05:<br>Confirming Book Borrowed</center>"])
-        UC9(["<center>UC-LIB-06:<br>Confirming Room Checkin</center>"])
-        UC10(["<center>UC-LIB-07:<br>Announcement</center>"])
-  end
-    Librarian(["<center>fa:fa-user Librarian</center>"]) ======= LibrarianAdministration
-    Librarian --- UC1 & UC6 & UC10 & UC8 & UC9 & UC4
+    Librarian(["<center>fa:fa-user Librarian</center>"])
 
-    UC2 --> UC1
-    UC3 --> UC1
+    subgraph LibrarianAdministration [Librarian Administration]
+        UC_ManageBooks(["<center>{abstract}<br/>Manage Books</center>"])
+        UC_Add(["<center>UC-LIB-01:<br/>Add Books</center>"])
+        UC_Remove(["<center>UC-LIB-02:<br/>Remove Books</center>"])
+        UC_Return(["<center>UC-LIB-03:<br/>Confirm Book Return</center>"])
+        UC_Assess(["<center>UC-LIB-04:<br/>Assess Return and<br/>Penalty</center>"])
+        UC_Borrow(["<center>UC-LIB-05:<br/>Confirm Book Borrowing</center>"])
+        UC_Room(["<center>UC-LIB-06:<br/>Confirm Room Check-in</center>"])
+        UC_Announcement(["<center>UC-LIB-07:<br/>Manage Announcements</center>"])
+        UC_VerifyPin(["<center>Verify PIN</center>"])
 
-    UC8 -. "<< include >>" .-> UC7
-    UC9 -. "<< include >>" .-> UC7
-    UC5 -. "<< extend >>" .-> UC4
+        UC_Add --> UC_ManageBooks
+        UC_Remove --> UC_ManageBooks
+        UC_Return -. "<< include >>" .-> UC_VerifyPin
+        UC_Return -. "<< include >>" .-> UC_Assess
+        UC_Borrow -. "<< include >>" .-> UC_VerifyPin
+        UC_Room -. "<< include >>" .-> UC_VerifyPin
+    end
+
+    Librarian ~~~~ LibrarianAdministration
+    Librarian --- UC_ManageBooks
+    Librarian --- UC_Return
+    Librarian --- UC_Borrow
+    Librarian --- UC_Room
+    Librarian --- UC_Announcement
 
     style LibrarianAdministration fill:#fff,stroke:#333,stroke-width:2px
-    linkStyle 0 stroke:transparent
 ```
 
 ---
 
-### UC-LIB-01: Adding Books
+### UC-LIB-01: Add Books
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Adding Books
+        Use Case: Add Books
       </th>
     </tr>
   </thead>
@@ -4299,13 +4474,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-02: Removing Books
+### UC-LIB-02: Remove Books
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Removing Books
+        Use Case: Remove Books
       </th>
     </tr>
   </thead>
@@ -4396,13 +4571,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-03: Confirming Book Return
+### UC-LIB-03: Confirm Book Return
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Confirming Book Return
+        Use Case: Confirm Book Return
       </th>
     </tr>
   </thead>
@@ -4414,8 +4589,8 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Librarian to confirm that a borrowed book has been physically returned, updating the associated loan record.
-        <br><em>(Includes / Extends: <strong>Extended by Recording Loan (at Step 5).</strong>)</em>
+        Allows the Librarian to verify a return PIN, inspect the returned copy, assess any penalty, and complete the return.
+        <br><em>(Includes / Extends: <strong>Includes UC-LIB-04 (Assess Return and Penalty).</strong>)</em>
       </td>
     </tr>
     <tr>
@@ -4435,11 +4610,11 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Librarian selects the "Confirm Book Return" option.</li>
-          <li><strong>[System Response]:</strong> The system displays a search interface for active loans.</li>
-          <li><strong>[Actor Action]:</strong> The Librarian selects or scans the book being returned.</li>
-          <li><strong>[Data Processing]:</strong> The system marks the associated loan record as returned and updates the book's availability.</li>
-          <li><strong>[System Response]:</strong> The system confirms the return and exposes the option to record a new loan for the returned book.</li>
+          <li><strong>[Actor Action]:</strong> The Librarian enters the Reader's return PIN.</li>
+          <li><strong>[Data Processing]:</strong> The system verifies the PIN and retrieves the matching active borrowing record.</li>
+          <li><strong>[Actor Action]:</strong> The Librarian records the copy condition and whether the copy is lost.</li>
+          <li><strong>[Data Processing]:</strong> Through UC-LIB-04, the system previews overdue, damage or loss charges and waits for confirmation.</li>
+          <li><strong>[Data Processing]:</strong> The system records the return and any penalty, restores inventory unless the copy is lost, and decrements the Reader's active borrow count.</li>
         </ol>
       </td>
     </tr>
@@ -4448,12 +4623,11 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Record New Loan (Step 5):</strong> If the Librarian chooses to loan the returned book to another member immediately:
+            <strong>Penalty Confirmation Declined (Step 4):</strong> If the Librarian does not confirm the assessed return and penalty:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system invokes Recording Loan (UC-LIB-04).</li>
-              <li>Control returns to this use case upon completion, and the use case ends.</li>
+              <li>The system makes no return, inventory or penalty changes.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> Control passes to UC-LIB-04 (Recording Loan); the postconditions of that use case apply upon completion.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The borrowing record remains active.</span>
           </li>
         </ul>
       </td>
@@ -4462,7 +4636,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Loan Closure:</strong> The loan record is marked as returned and the book is marked as available.</li>
+          <li><strong>Return Completed:</strong> The return and any applicable penalty are recorded; inventory is restored unless the item was marked lost.</li>
         </ul>
       </td>
     </tr>
@@ -4470,7 +4644,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Extension Timing:</strong> The option to record a new loan is available only after the return has been confirmed; invoking it is optional.</li>
+          <li><strong>Assessment Timing:</strong> The penalty assessment occurs after return-PIN verification and condition entry, before the Librarian confirms persistence.</li>
         </ul>
       </td>
     </tr>
@@ -4478,7 +4652,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Recording Loan:</strong> Location inside event flow: After the return is confirmed (Step 5).</li>
+          <li><strong>Assess Return and Penalty:</strong> Invoked after PIN verification and return-condition entry.</li>
         </ul>
       </td>
     </tr>
@@ -4496,13 +4670,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-04: Recording Loan
+### UC-LIB-04: Assess Return and Penalty
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Recording Loan
+        Use Case: Assess Return and Penalty
       </th>
     </tr>
   </thead>
@@ -4514,8 +4688,8 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Extends Confirming Book Return to let the Librarian record a new loan of a book to a member. It may also be initiated directly, outside the extension point.
-        <br><em>(Includes / Extends: <strong>Extends UC-LIB-03 (Confirming Book Return) at Step 5 when the Librarian chooses to loan the returned book to another member.</strong>)</em>
+        Calculates and previews the overdue, damaged-book or lost-book charges used while confirming a return.
+        <br><em>(Includes / Extends: <strong>Included by UC-LIB-03 (Confirm Book Return).</strong>)</em>
       </td>
     </tr>
     <tr>
@@ -4527,7 +4701,7 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li><strong>Verified Authentication State:</strong> The Librarian has successfully authenticated.</li>
-          <li><strong>Selected Book and Member:</strong> The selected book exists in the catalog and a member has been identified.</li>
+          <li><strong>Verified Return:</strong> UC-LIB-03 has resolved an active borrowing record and supplied the return date and condition.</li>
         </ul>
       </td>
     </tr>
@@ -4535,12 +4709,10 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Librarian initiates loan recording, either directly or via the extension point of Confirming Book Return.</li>
-          <li><strong>[Actor Action]:</strong> The Librarian enters or selects the member's identification.</li>
-          <li><strong>[Actor Action]:</strong> The Librarian selects the book to be loaned.</li>
-          <li><strong>[Data Processing]:</strong> The system validates the member's eligibility and the book's availability.</li>
-          <li><strong>[Data Processing]:</strong> The system creates a new loan record and calculates the due date.</li>
-          <li><strong>[Display Result]:</strong> The system confirms the recorded loan to the Librarian.</li>
+          <li><strong>[Data Processing]:</strong> The system calculates overdue days from the borrowing due date.</li>
+          <li><strong>[Actor Action]:</strong> The Librarian supplies the inspected condition and lost-item flag.</li>
+          <li><strong>[Data Processing]:</strong> The system applies the configured overdue, damage and loss rules.</li>
+          <li><strong>[Display Result]:</strong> The system returns an itemized penalty preview to UC-LIB-03 for confirmation.</li>
         </ol>
       </td>
     </tr>
@@ -4549,10 +4721,9 @@ flowchart LR
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Member Ineligible (Step 4):</strong> If the member is not eligible to borrow:
+            <strong>No Penalty Applies:</strong> If the return is on time and the copy has no damage or loss:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system denies the loan.</li>
-              <li>The system displays the reason to the Librarian.</li>
+              <li>The system returns a zero-value penalty preview and UC-LIB-03 continues normally.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No loan record is created.</span>
           </li>
@@ -4563,7 +4734,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Loan Creation:</strong> A new loan record is created and the selected book is marked as on loan.</li>
+          <li><strong>Assessment Ready:</strong> An itemized penalty preview is available to UC-LIB-03; persistence occurs only when the return is confirmed.</li>
         </ul>
       </td>
     </tr>
@@ -4571,7 +4742,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Due Date Calculation:</strong> The due date is calculated according to the library's loan policy.</li>
+          <li><strong>Policy Consistency:</strong> Calculations use the current system-configuration values for overdue, damage and loss charges.</li>
         </ul>
       </td>
     </tr>
@@ -4585,7 +4756,7 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
         <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Librarian/P-LIB-04-BF01-recording-loan-summary.png" alt="UC-LIB-04 Basic Flow 01 - Recording Loan Summary" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
-        <p><em>Figure P-LIB-04-BF01 – Recording Loan Summary</em></p>
+        <p><em>Figure P-LIB-04-BF01 – Return Assessment Summary (prototype image to be refreshed)</em></p>
       </td>
     </tr>
   </tbody>
@@ -4593,13 +4764,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-05: Confirming Book Borrowed
+### UC-LIB-05: Confirm Book Borrowing
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Confirming Book Borrowed
+        Use Case: Confirm Book Borrowing
       </th>
     </tr>
   </thead>
@@ -4634,8 +4805,8 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> The Librarian initiates confirmation of the book borrowing transaction.</li>
           <li><strong>[System Response]:</strong> The system prompts for the member's PIN.</li>
           <li><strong>[Actor Action]:</strong> The Librarian enters the member's PIN.</li>
-          <li><strong>[Data Processing]:</strong> The system verifies the PIN against the member's record.</li>
-          <li><strong>[Data Processing]:</strong> The system marks the transaction as confirmed and logs the confirmation.</li>
+          <li><strong>[Data Processing]:</strong> The system verifies the unexpired PIN against the Reader's existing reserved borrowing record.</li>
+          <li><strong>[Data Processing]:</strong> The system changes that reservation to <code>borrowed</code> and records the borrowing date and 14-day due date.</li>
         </ol>
       </td>
     </tr>
@@ -4694,13 +4865,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-06: Confirming Room Checkin
+### UC-LIB-06: Confirm Room Check-in
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Confirming Room Checkin
+        Use Case: Confirm Room Check-in
       </th>
     </tr>
   </thead>
@@ -4735,8 +4906,8 @@ flowchart LR
           <li><strong>[Actor Action]:</strong> The Librarian initiates confirmation of the room check-in transaction.</li>
           <li><strong>[System Response]:</strong> The system prompts for the member's PIN.</li>
           <li><strong>[Actor Action]:</strong> The Librarian enters the member's PIN.</li>
-          <li><strong>[Data Processing]:</strong> The system verifies the PIN against the member's record.</li>
-          <li><strong>[Data Processing]:</strong> The system marks the member as checked into the room and logs the confirmation.</li>
+          <li><strong>[Data Processing]:</strong> The system verifies the unexpired PIN against the reservation and confirms the Librarian's branch matches the reserved room branch.</li>
+          <li><strong>[Data Processing]:</strong> The system changes the room reservation status to <code>used</code>.</li>
         </ol>
       </td>
     </tr>
@@ -4789,13 +4960,13 @@ flowchart LR
 
 ---
 
-### UC-LIB-07: Announcement
+### UC-LIB-07: Manage Announcements
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Announcement
+        Use Case: Manage Announcements
       </th>
     </tr>
   </thead>
@@ -4807,7 +4978,7 @@ flowchart LR
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Librarian to create and publish an announcement for library members.
+        Allows the Librarian to list, create, update and delete announcements, including draft, active and expired states.
       </td>
     </tr>
     <tr>
@@ -4826,12 +4997,11 @@ flowchart LR
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Librarian selects the "Create Announcement" option.</li>
-          <li><strong>[System Response]:</strong> The system displays the announcement entry form.</li>
-          <li><strong>[Actor Action]:</strong> The Librarian enters the announcement details.</li>
-          <li><strong>[Actor Action]:</strong> The Librarian submits the announcement.</li>
-          <li><strong>[Data Processing]:</strong> The system validates the content and publishes the announcement.</li>
-          <li><strong>[Display Result]:</strong> The system confirms the publication to the Librarian.</li>
+          <li><strong>[Actor Action]:</strong> The Librarian opens announcement management and chooses to create or modify an announcement.</li>
+          <li><strong>[System Response]:</strong> The system displays the current announcements and the announcement form.</li>
+          <li><strong>[Actor Action]:</strong> The Librarian enters the content, publication state and applicable scheduling fields, then submits.</li>
+          <li><strong>[Data Processing]:</strong> The system validates and persists the announcement.</li>
+          <li><strong>[Display Result]:</strong> The system refreshes the management list and confirms the operation. Deletion follows the same authorization and validation boundary.</li>
         </ol>
       </td>
     </tr>
@@ -4886,39 +5056,47 @@ flowchart LR
 
 ---
 
-## IX. Admin
+## IX. System Administration
 
 ### Use case diagram
 
 ```mermaid
 flowchart TD
- subgraph AdminAdministration["Admin Administration"]
-        UC1(["<center>UC-ADM-01:<br>View User Account</center>"])
-        UC2(["<center>UC-ADM-02:<br>Generating CSV Report</center>"])
-        UC3(["<center>UC-ADM-03:<br>Authorization</center>"])
-        UC4(["<center>UC-ADM-04:<br>Role Control</center>"])
-        UC5(["<center>UC-ADM-05:<br>Use-case Permission</center>"])
-        UC6(["<center>UC-ADM-06:<br>System Configuration</center>"])
-        UC7(["<center>UC-ADM-07:<br>View Statistics</center>"])
-  end
-    Admin(["<center>fa:fa-user Admin</center>"]) ~~~~ AdminAdministration
-    Admin --- UC1 & UC3 & UC6 & UC7
-    UC2 -. "<< extend >>" .-> UC1
-    UC4 -. "<< include >>" .-> UC3
-    UC5 -. "<< include >>" .-> UC3
+    Admin(["<center>fa:fa-user System Administrator</center>"])
+
+    subgraph AdminAdministration [System Administration]
+        direction TB
+        UC_Accounts(["<center>UC-ADM-01:<br/>Manage User Accounts</center>"])
+        UC_Export(["<center>UC-ADM-02:<br/>Export User CSV</center>"])
+        UC_Roles(["<center>UC-ADM-03:<br/>Manage Role Assignments</center>"])
+        UC_ChangeRole(["<center>UC-ADM-04:<br/>Promote or Demote<br/>Account</center>"])
+        UC_InviteAdmin(["<center>UC-ADM-05:<br/>Invite Administrator</center>"])
+        UC_Config(["<center>UC-ADM-06:<br/>System Configuration</center>"])
+        UC_Statistics(["<center>UC-ADM-07:<br/>View Statistics</center>"])
+
+        UC_Export -. "<< extend >>" .-> UC_Accounts
+        UC_ChangeRole -. "<< include >>" .-> UC_Roles
+        UC_InviteAdmin -. "<< include >>" .-> UC_Roles
+    end
+
+    Admin ~~~~ AdminAdministration
+    Admin --- UC_Accounts
+    Admin --- UC_Roles
+    Admin --- UC_Config
+    Admin --- UC_Statistics
 
     style AdminAdministration fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 ---
 
-### UC-ADM-01: View User Account
+### UC-ADM-01: Manage User Accounts
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: View User Account
+        Use Case: Manage User Accounts
       </th>
     </tr>
   </thead>
@@ -4930,13 +5108,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Admin to browse the list of registered user accounts and inspect the details of a selected account.
-        <br><em>(Includes / Extends: <strong>Extended by Generating CSV Report (UC-ADM-02) at Step 5.</strong>)</em>
+        Allows the System Administrator to list, filter and inspect accounts, update supported account fields, and suspend or restore access.
+        <br><em>(Includes / Extends: <strong>Extended by UC-ADM-02 (Export User CSV).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -4954,7 +5132,9 @@ flowchart TD
           <li><strong>[Data Processing]:</strong> The system retrieves the list of registered user accounts.</li>
           <li><strong>[Display Result]:</strong> The system displays the list of user accounts to the Admin.</li>
           <li><strong>[Actor Action]:</strong> The Admin selects a specific user account to inspect.</li>
-          <li><strong>[Display Result]:</strong> The system retrieves and displays the detailed information of the selected account.</li>
+          <li><strong>[Display Result]:</strong> The system retrieves and displays account details and the available management actions.</li>
+          <li><strong>[Actor Action]:</strong> The System Administrator may update supported account data or suspend/unsuspend the account.</li>
+          <li><strong>[Data Processing]:</strong> The system validates and persists the change and writes the administrative audit entry.</li>
         </ol>
       </td>
     </tr>
@@ -4984,7 +5164,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Account Details Displayed:</strong> The requested user account information is displayed to the Admin; no account data is modified.</li>
+          <li><strong>Account Management Complete:</strong> The requested account data is displayed and any submitted valid status/profile change is persisted and audited.</li>
         </ul>
       </td>
     </tr>
@@ -4992,7 +5172,6 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Read-Only Access:</strong> This use case is strictly read-only; it must not permit modification of account data.</li>
           <li><strong>Sensitive Field Masking:</strong> Sensitive account fields (e.g., stored credentials) must not be exposed in the displayed details.</li>
         </ul>
       </td>
@@ -5001,7 +5180,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Extension Points</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Generating CSV Report:</strong> Location inside event flow: While account data is currently displayed (after Step 5).</li>
+          <li><strong>Export User CSV:</strong> Available from the filtered account list.</li>
         </ul>
       </td>
     </tr>
@@ -5017,13 +5196,13 @@ flowchart TD
 
 ---
 
-### UC-ADM-02: Generating CSV Report
+### UC-ADM-02: Export User CSV
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Generating CSV Report
+        Use Case: Export User CSV
       </th>
     </tr>
   </thead>
@@ -5035,19 +5214,19 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Extends the account view to let the Admin export the currently displayed user account data into a downloadable CSV file.
-        <br><em>(Includes / Extends: <strong>Extends View User Account (UC-ADM-01) — extension point: the Admin selects "Generate CSV Report" while account data is displayed.</strong>)</em>
+        Exports up to 1,000 user-account rows matching the active account-management filters as a downloadable CSV file.
+        <br><em>(Includes / Extends: <strong>Extends UC-ADM-01 (Manage User Accounts).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Active Base Context Display:</strong> The base use case <code>View User Account (UC-ADM-01)</code> must be currently active and displaying account data.</li>
+          <li><strong>Active Base Context Display:</strong> UC-ADM-01 (Manage User Accounts) is active with the desired filters.</li>
         </ul>
       </td>
     </tr>
@@ -5120,13 +5299,13 @@ flowchart TD
 
 ---
 
-### UC-ADM-03: Authorization
+### UC-ADM-03: Manage Role Assignments
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Authorization
+        Use Case: Manage Role Assignments
       </th>
     </tr>
   </thead>
@@ -5138,13 +5317,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Verifies the Admin's identity and permission to perform a requested administrative function. Invoked internally by other use cases.
-        <br><em>(Includes / Extends: <strong>Included by Role Control (UC-ADM-04) and Use-case Permission (UC-ADM-05).</strong>)</em>
+        Allows the System Administrator to list and filter managed accounts, inspect outstanding liabilities and role history, and initiate supported role-assignment actions.
+        <br><em>(Includes / Extends: <strong>Includes UC-ADM-04 (Promote or Demote Account) and UC-ADM-05 (Invite Administrator) when those actions are selected.</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -5158,11 +5337,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The invoking use case requests authorization.</li>
-          <li><strong>[Data Processing]:</strong> The system validates the Admin's credentials or session token.</li>
-          <li><strong>[Data Processing]:</strong> The system retrieves the Admin's assigned roles and permissions.</li>
-          <li><strong>[Data Processing]:</strong> The system evaluates whether the Admin is authorized for the requested function.</li>
-          <li><strong>[System Response]:</strong> The system returns the authorization result to the invoking use case.</li>
+          <li><strong>[Actor Action]:</strong> The System Administrator opens role management and optionally applies role/status filters.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the administrator session and retrieves manageable accounts.</li>
+          <li><strong>[Display Result]:</strong> The system displays each account's current role and relevant outstanding liabilities.</li>
+          <li><strong>[Actor Action]:</strong> The System Administrator selects an account and reviews its role-change history.</li>
+          <li><strong>[Actor Action]:</strong> The administrator may initiate UC-ADM-04 or UC-ADM-05.</li>
         </ol>
       </td>
     </tr>
@@ -5193,7 +5372,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Authorization Result Determined:</strong> The Admin's authorization status has been determined and returned to the invoking use case.</li>
+          <li><strong>Role Management Context Ready:</strong> The manageable-account list, liabilities and role history are available for the supported assignment actions.</li>
         </ul>
       </td>
     </tr>
@@ -5225,13 +5404,13 @@ flowchart TD
 
 ---
 
-### UC-ADM-04: Role Control
+### UC-ADM-04: Promote or Demote Account
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Role Control
+        Use Case: Promote or Demote Account
       </th>
     </tr>
   </thead>
@@ -5243,13 +5422,13 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Admin to create, modify, and delete roles within the system.
-        <br><em>(Includes / Extends: <strong>Includes Authorization (UC-ADM-03).</strong>)</em>
+        Changes an eligible account among the system's fixed Reader, Librarian and System Administrator roles.
+        <br><em>(Includes / Extends: <strong>Included by UC-ADM-03 (Manage Role Assignments).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -5263,12 +5442,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Admin navigates to the Role Control section.</li>
-          <li><strong>[Data Processing]:</strong> The system invokes <code>Authorization (UC-ADM-03)</code> to verify the Admin's permission to manage roles.</li>
-          <li><strong>[Display Result]:</strong> Upon successful authorization, the system displays the list of existing roles.</li>
-          <li><strong>[Actor Action]:</strong> The Admin creates, edits, or deletes a role.</li>
-          <li><strong>[Data Processing]:</strong> The system validates the submitted role data.</li>
-          <li><strong>[Data Processing]:</strong> The system saves the changes and confirms the update to the Admin.</li>
+          <li><strong>[Actor Action]:</strong> From role management, the System Administrator selects a target account and one of the fixed target roles.</li>
+          <li><strong>[Data Processing]:</strong> The system validates that the administrator is not modifying themself and that the transition is allowed.</li>
+          <li><strong>[Data Processing]:</strong> Promotion from Reader is blocked while borrowing, reservation or penalty liabilities remain; administrator transitions require sudo confirmation and protect the last/senior administrator constraints.</li>
+          <li><strong>[Data Processing]:</strong> The system changes the role, records role history/audit data, and revokes the target account's existing sessions.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the new role.</li>
         </ol>
       </td>
     </tr>
@@ -5277,19 +5455,18 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Authorization Fails (Step 2):</strong> If <code>Authorization (UC-ADM-03)</code> denies access:
+            <strong>Administrative Session Invalid:</strong> If the System Administrator session is invalid or unauthorized:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The use case terminates.</li>
             </ol>
             <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No role data is displayed or modified; access is denied.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Validation Fails (Step 5):</strong> If the submitted data is invalid (e.g., duplicate role name):
+            <strong>Role Change Ineligible:</strong> If the transition violates liability, self-change, last-administrator or seniority safeguards:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system displays an error and prompts the Admin for correction.</li>
-              <li>The Admin resubmits corrected data; the Basic Flow resumes at step 5.</li>
+              <li>The system rejects the role change and reports the applicable reason.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No role changes are saved; the Admin is prompted to correct the input.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> The target role and sessions remain unchanged.</span>
           </li>
         </ul>
       </td>
@@ -5298,7 +5475,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Role Data Persisted:</strong> Role data is created, updated, or deleted and persisted in the system.</li>
+          <li><strong>Assignment Persisted:</strong> The account has one supported role, the change is audited, and prior sessions are revoked.</li>
         </ul>
       </td>
     </tr>
@@ -5307,7 +5484,7 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
           <li><strong>Audit Logging:</strong> Role modifications must be logged for audit purposes.</li>
-          <li><strong>Unique Role Names:</strong> Role names must be unique within the system.</li>
+          <li><strong>Fixed Role Set:</strong> This use case does not create, edit or delete role definitions.</li>
         </ul>
       </td>
     </tr>
@@ -5329,13 +5506,13 @@ flowchart TD
 
 ---
 
-### UC-ADM-05: Use-case Permission
+### UC-ADM-05: Invite Administrator
 
 <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Use Case: Use-case Permission
+        Use Case: Invite Administrator
       </th>
     </tr>
   </thead>
@@ -5347,19 +5524,19 @@ flowchart TD
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Brief Description</td>
       <td style="vertical-align: top;">
-        Allows the Admin to assign or modify the permissions required to access specific use cases or system functions.
-        <br><em>(Includes / Extends: <strong>Includes Authorization (UC-ADM-03).</strong>)</em>
+        Allows the System Administrator to create a new administrator account by email and deliver one-time credentials securely.
+        <br><em>(Includes / Extends: <strong>Included by UC-ADM-03 (Manage Role Assignments).</strong>)</em>
       </td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
-          <li><strong>Verified Authentication State:</strong> The Admin is authenticated.</li>
+          <li><strong>Verified Authentication State:</strong> The System Administrator is authenticated and can complete sudo confirmation.</li>
         </ul>
       </td>
     </tr>
@@ -5367,12 +5544,11 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Flow of Events<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">(Basic Flow)</span></td>
       <td style="vertical-align: top;">
         <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
-          <li><strong>[Actor Action]:</strong> The Admin navigates to the Use-case Permission section.</li>
-          <li><strong>[Data Processing]:</strong> The system invokes <code>Authorization (UC-ADM-03)</code> to verify the Admin's permission to manage use-case permissions.</li>
-          <li><strong>[Display Result]:</strong> Upon successful authorization, the system displays the list of use cases along with their current permission settings.</li>
-          <li><strong>[Actor Action]:</strong> The Admin modifies the permission configuration for a selected use case.</li>
-          <li><strong>[Data Processing]:</strong> The system validates the submitted configuration.</li>
-          <li><strong>[Data Processing]:</strong> The system saves the changes and confirms the update to the Admin.</li>
+          <li><strong>[Actor Action]:</strong> The System Administrator enters the invitee's email and confirms the operation with sudo authentication.</li>
+          <li><strong>[Data Processing]:</strong> The system validates the email and confirms that no account already uses it.</li>
+          <li><strong>[Data Processing]:</strong> The system creates a System Administrator account with a generated temporary password and <code>must_change_password</code> enabled.</li>
+          <li><strong>[System Response]:</strong> The system emails the temporary credentials to the invitee.</li>
+          <li><strong>[Display Result]:</strong> The system confirms the invitation and records the administrative action.</li>
         </ol>
       </td>
     </tr>
@@ -5381,19 +5557,19 @@ flowchart TD
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           <li style="margin-bottom: 8px;">
-            <strong>Authorization Fails (Step 2):</strong> If <code>Authorization (UC-ADM-03)</code> denies access:
+            <strong>Sudo Confirmation Fails:</strong> If the System Administrator cannot confirm sudo authentication:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
               <li>The use case terminates.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No permission data is displayed or modified; access is denied.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No administrator account is created.</span>
           </li>
           <li style="margin-bottom: 8px;">
-            <strong>Invalid Configuration (Step 5):</strong> If the submitted configuration is invalid:
+            <strong>Duplicate Email or Delivery Failure:</strong> If the email already exists or the credential email cannot be delivered:
             <ol style="margin-top: 4px; margin-bottom: 4px; padding-left: 20px;">
-              <li>The system displays an error and does not save the change.</li>
-              <li>The Admin resubmits a corrected configuration; the Basic Flow resumes at step 5.</li>
+              <li>The system rejects a duplicate before creation.</li>
+              <li>If email delivery fails after insertion, the system rolls back the newly created administrator account.</li>
             </ol>
-            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No permission changes are saved; the Admin is prompted to correct the configuration.</span>
+            <span style="font-size: 13px; color: #475569;"><strong>Postcondition (Alternative Flow):</strong> No unusable administrator account remains.</span>
           </li>
         </ul>
       </td>
@@ -5402,7 +5578,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Postconditions</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Permission Settings Persisted:</strong> Use-case permission settings are updated and persisted in the system.</li>
+          <li><strong>Administrator Invited:</strong> The new account requires a password change at first login and the invitation action is audited.</li>
         </ul>
       </td>
     </tr>
@@ -5410,8 +5586,8 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Special Requirements</td>
       <td style="vertical-align: top;">
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Audit Logging:</strong> Permission changes must be logged for audit purposes.</li>
-          <li><strong>Change Propagation:</strong> Permission changes should take effect immediately or, at minimum, upon the affected user's next session.</li>
+          <li><strong>Credential Safety:</strong> The generated temporary password is delivered only through the configured transactional email channel.</li>
+          <li><strong>Mandatory Rotation:</strong> The invited administrator must change the temporary password at first login.</li>
         </ul>
       </td>
     </tr>
@@ -5425,7 +5601,7 @@ flowchart TD
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Prototype Screen</td>
       <td style="vertical-align: top;">
         <div style="overflow: hidden; width: 100%; max-width: 100%;"><img src="ImageGUI/Admin/P-ADM-04-BF01-roles-and-permissions.png" alt="UC-ADM-05 Basic Flow - Roles and Permissions (shared with UC-ADM-04)" style="max-width: 100%; width: 100%; height: auto; display: block; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px;"></div>
-        <p><em>Figure P-ADM-04-BF01 – Roles and Permissions (reused for use-case permission)</em></p>
+        <p><em>Figure P-ADM-04-BF01 – Role Management (prototype image to be refreshed for administrator invitation)</em></p>
       </td>
     </tr>
   </tbody>
@@ -5456,7 +5632,7 @@ flowchart TD
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>
@@ -5554,7 +5730,7 @@ flowchart TD
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actor(s)</td>
-      <td style="vertical-align: top;">Admin</td>
+      <td style="vertical-align: top;">System Administrator</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Preconditions</td>

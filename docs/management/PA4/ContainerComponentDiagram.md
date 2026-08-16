@@ -56,12 +56,12 @@ flowchart LR
     hf["<span style='font-size:18px'><b>Hugging Face Model Repository</b></span><br/><br/>[External Software System]<br/>HTTPS<br/>Supplies transformer model weights"]
     imageHosts["<span style='font-size:18px'><b>External Image Hosts</b></span><br/><br/>[External Software Systems]<br/>HTTPS<br/>Serve covers and submitted images"]
 
-    visitor -->|"Uses public UI"| browserApp
-    patron -->|"Uses authenticated patron UI"| browserApp
-    librarian -->|"Uses staff UI"| browserApp
-    admin -->|"Uses admin UI"| browserApp
-    browserApp -->|"Requests routes, HTML, and assets [HTTP/HTTPS]"| uiServer
-    browserApp -->|"Calls JSON APIs with optional Bearer JWT [HTTP/HTTPS]"| api
+    visitor --> browserApp
+    patron --> browserApp
+    librarian --> browserApp
+    admin --> browserApp
+    browserApp --> uiServer
+    browserApp -->|"JSON APIs [HTTPS]"| api
     browserApp -->|"Subscribes to authenticated events [Socket.IO over WebSocket/HTTP]"| api
     browserApp -->|"Loads cover images [HTTPS]"| imageHosts
     browserApp -->|"Loads stored media URLs [HTTPS]"| cloudinary
@@ -83,26 +83,19 @@ flowchart LR
     api -->|"Downloads transformer weights when not cached [HTTPS]"| hf
     api -->|"Fetches a user-supplied remote avatar before cropping [HTTPS]"| imageHosts
 
-    subgraph keyL2["Legend"]
-        keyPerson["<span style='font-size:18px'><b>Person</b></span><br/><br/>[Person]<br/>Human actor"]
-        keyContainer["<span style='font-size:18px'><b>Application / Process</b></span><br/><br/>[Container]<br/>Executable runtime boundary"]
-        keyData[("<span style='font-size:18px'><b>Data Store</b></span><br/><br/>[Container: Data Store]<br/>Owned persisted data")]
-        keyExternal["<span style='font-size:18px'><b>External System</b></span><br/><br/>[External Software System]<br/>Outside Modern Library Management System ownership"]
-    end
-
     classDef person fill:#08427b,stroke:#052e56,color:#fff;
     classDef container fill:#1168bd,stroke:#0b4884,color:#fff;
     classDef database fill:#2b78b8,stroke:#0b4884,color:#fff;
     classDef external fill:#666,stroke:#333,color:#fff,stroke-dasharray:5 5;
-    class visitor,patron,librarian,admin,keyPerson person;
-    class uiServer,browserApp,api,inference,retrain,keyContainer container;
-    class postgres,memgraph,policyStore,recFiles,keyData database;
-    class google,gmail,cloudinary,hf,imageHosts,keyExternal external;
+    class visitor,patron,librarian,admin person;
+    class uiServer,browserApp,api,inference,retrain container;
+    class postgres,memgraph,policyStore,recFiles database;
+    class google,gmail,cloudinary,hf,imageHosts external;
 ```
 
 ### 1.1 Main Flow
 
-A user loads the Browser Web Application from Next.js UI Delivery. The browser calls the Backend API for business operations and subscribes to realtime events. The backend reads and writes PostgreSQL, uses Memgraph and the Python processes for recommendations, and calls external services for identity, email, media, and model downloads.
+A visitor or authenticated actor loads the Browser Web Application from Next.js UI Delivery. The browser calls the Backend API for business operations and subscribes to realtime events. Authenticated browser requests use HttpOnly access/refresh cookies with CSRF protection. The backend reads and writes PostgreSQL, uses Memgraph and the Python processes for recommendations, and calls external services for identity, email, media, and model downloads.
 
 ### 1.2 Container Descriptions
 
@@ -149,13 +142,13 @@ flowchart LR
         librarianUI["<span style='font-size:18px'><b>Librarian Operations</b></span><br/><br/>[Component]<br/>React staff dashboard<br/>Catalog, pickup, return, fees, and announcements"]
     end
 
-    webUser -->|"Uses account and profile screens"| accountUI
-    webUser -->|"Searches and browses books"| catalogUI
-    webUser -->|"Manages reservations and loans"| circulationUI
-    webUser -->|"Reserves study rooms"| roomUI
-    webUser -->|"Joins and manages groups"| groupUI
-    webUser -->|"Explores personalized recommendations"| recommendationUI
-    librarian -->|"Runs staff workflows"| librarianUI
+    webUser --> accountUI
+    webUser --> catalogUI
+    webUser --> circulationUI
+    webUser --> roomUI
+    webUser --> groupUI
+    webUser --> recommendationUI
+    librarian --> librarianUI
 
     catalogUI -->|"Starts book reservation"| circulationUI
     accountUI -->|"Calls authentication and profile APIs [JSON over HTTP/HTTPS]"| backend
@@ -276,7 +269,7 @@ flowchart LR
 
 ### 3.1 Main Flow
 
-The browser calls API and Access Control with a Bearer JWT. For a book reservation, the API dispatches the request to Book Circulation, which reads the active policy, checks and updates inventory in PostgreSQL, and writes the reservation. Other requests follow the same entry point and are dispatched to their matching business component.
+The browser calls API and Access Control with the HttpOnly JWT cookie session and a CSRF token on protected state-changing requests. For a book reservation, the API dispatches the request to Book Circulation, which reads the active policy, checks and updates inventory in PostgreSQL, and writes the reservation. Other requests follow the same entry point and are dispatched to their matching business component.
 
 ### 3.2 Backend Core Component Descriptions
 

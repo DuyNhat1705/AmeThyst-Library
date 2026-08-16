@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-# Usecase Diagram
+# Use Case Diagram
+
     Project: Modern Library Management System
     Course: CS300 – CSC13002 – Introduction to Software Engineering
     Group ID: 03
@@ -9,11 +10,11 @@
 
 Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Members | Edited by: Trần Lê Hoàng Gia
 
-## Table of content
+## Table of Contents
 
-- [Usecase Diagram](#usecase-diagram)
-  - [Table of content](#table-of-content)
-  - [Regulation](#regulation)
+- [Use Case Diagram](#use-case-diagram)
+  - [Table of Contents](#table-of-contents)
+  - [Actor Regulation](#actor-regulation)
   - [Authentication](#authentication)
   - [Profile Management](#profile-management)
   - [Books Exploration \& Interaction](#books-exploration--interaction)
@@ -21,30 +22,33 @@ Performed by: Trần Lê Hoàng Gia, Vũ Duy Nhất | Reviewed by: All Other Mem
   - [Study Group](#study-group)
   - [AI Recommendations](#ai-recommendations)
   - [Librarian Administration](#librarian-administration)
-  - [Admin Administration](#admin-administration)
+  - [System Administration](#system-administration)
 
-## Regulation
+## Actor Regulation
 
 ```mermaid
 flowchart RL
-    %% Abstract Parent Actors
-    GeneralUser(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    LoggedUser(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
+    Visitor(["<center>fa:fa-user Visitor</center>"])
+    AuthenticatedUser(["<center>{abstract}<br/>fa:fa-user Authenticated User</center>"])
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Librarian(["<center>fa:fa-user Librarian</center>"])
+    Admin(["<center>fa:fa-user System Administrator</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Member(["<center>fa:fa-user Study Group Member</center>"])
+    Applicant(["<center>fa:fa-user Prospective Member</center>"])
 
-    %% Concrete Actors
-    Guest([fa:fa-user Guest])
-    User([fa:fa-user User])
-    Librarian([fa:fa-user Librarian])
-    Admin([fa:fa-user Admin])
-
-    %% Hierarchy (Child --> Parent)
-    Guest --> GeneralUser
-    LoggedUser --> GeneralUser
-    
-    User --> LoggedUser
-    Librarian --> LoggedUser
-    Admin --> LoggedUser
+    Visitor --> PlatformUser
+    AuthenticatedUser --> PlatformUser
+    Reader --> AuthenticatedUser
+    Librarian --> AuthenticatedUser
+    Admin --> AuthenticatedUser
+    Host --> Reader
+    Member --> Reader
+    Applicant --> Reader
 ```
+
+`Reader (Patron)` maps to the persisted application role `user`. `Authenticated User` is an abstract actor shared by Reader, Librarian, and System Administrator. Contextual study-group actors specialize Reader rather than introducing new application roles.
 
 <div class="page"/>
 
@@ -52,49 +56,37 @@ flowchart RL
 
 ```mermaid
 flowchart LR
-    %% Left Actor
-    ActorGuest(["<center>fa:fa-user Guest</center>"])
-        %% Central System Boundary Subgraph
+    Visitor(["<center>fa:fa-user Visitor</center>"])
+
     subgraph Authentication [Authentication]
-        UC_Reg(["<center>UC-AUTH-01:<br>Register</center>"])
-        UC_OAuth(["<center> UC-AUTH-03:<br>Google OAuth</center>"])
-        UC_Login(["<center>UC-AUTH-04:<br>Login</center>"])
-        UC_Forget(["<center>UC-AUTH-05:<br>Forget Password</center>"])
-        UC_Change(["<center>UC-AUTH-07:<br>Change Password</center>"])
-        UC_VerifyEmail(["<center>UC-AUTH-02:<br>Verify By Email</center>"])
-        UC_VerifyOTP(["<center>UC-AUTH-06:<br>Verify By OTP</center>"])
+        direction TB
+        UC_Register(["<center>UC-AUTH-01:<br/>Register</center>"])
+        UC_VerifyEmail(["<center>UC-AUTH-02:<br/>Verify Email</center>"])
+        UC_OAuth(["<center>UC-AUTH-03:<br/>Google OAuth</center>"])
+        UC_Login(["<center>UC-AUTH-04:<br/>Login</center>"])
+        UC_Forgot(["<center>UC-AUTH-05:<br/>Forgot Password</center>"])
+        UC_VerifyOTP(["<center>UC-AUTH-06:<br/>Verify OTP</center>"])
+        UC_Reset(["<center>UC-AUTH-07:<br/>Reset Password</center>"])
+
+        UC_Register -. "<< include >>" .-> UC_VerifyEmail
+        UC_Forgot -. "<< include >>" .-> UC_VerifyOTP
+        UC_Forgot -. "<< include >>" .-> UC_Reset
     end
 
-    %% Right Actors
-    ActorEmail(["<center>&lt;&lt; service &gt;&gt;<br>fa:fa-envelope Email</center>"])
-    ActorGoogle(["<center>&lt;&lt; service &gt;&gt;<br>fa:fa-id-card Google Client</center>"])
+    Email(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-envelope Email Service</center>"])
+    Google(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-id-card Google Identity</center>"])
 
-    %% -------------------------------------------------------------
-    %% Structural Layout Anchors (Invisible lines to center-align the subgraph)
-    %% -------------------------------------------------------------
-    ActorGuest ~~~ Authentication ~~~ ActorEmail
-    ActorGuest ~~~ Authentication ~~~~ ActorGoogle
+    Visitor ~~~ Authentication ~~~ Email
+    Visitor ~~~ Authentication ~~~~ Google
 
-    %% -------------------------------------------------------------
-    %% Actual Connections (Matching your image exactly)
-    %% -------------------------------------------------------------
-    %% Left Actor Associations
-    ActorGuest --- UC_Reg
-    ActorGuest --- UC_OAuth
-    ActorGuest --- UC_Login
-    ActorGuest --- UC_Forget
+    Visitor --- UC_Register
+    Visitor --- UC_OAuth
+    Visitor --- UC_Login
+    Visitor --- UC_Forgot
+    UC_VerifyEmail --- Email
+    UC_VerifyOTP --- Email
+    UC_OAuth --- Google
 
-    %% Subgraph Internal Include Relationships
-    UC_Reg -. "<< include >>" .-> UC_VerifyEmail
-    UC_Forget -. "<< include >>" .-> UC_VerifyOTP
-    UC_Forget -. "<< include >>" .-> UC_Change
-
-    %% Right Actor Associations
-    UC_VerifyEmail --- ActorEmail
-    UC_OAuth --- ActorGoogle
-    UC_VerifyOTP --- ActorEmail
-
-    %% Styling
     style Authentication fill:#fff,stroke:#333,stroke-width:2px
 ```
 
@@ -104,30 +96,28 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    %% Actors
-    ActorLeft(["<center>{abstract} <br> fa:fa-user Logged User</center>"])
-    ActorRight(["<center>&lt;&lt; service &gt;&gt; <br>fa:fa-images Cloudinary</center>"]) 
+    AuthenticatedUser(["<center>{abstract}<br/>fa:fa-user Authenticated User</center>"])
 
-    %% System Boundary
     subgraph ProfileManagement [Profile Management]
-        UC1(["<center>UC-PROF-01:<br>View Self Profile</center>"])
-        UC2(["<center>UC-PROF-02:<br>Edit Profile</center>"])
-        UC3(["<center>UC-PROF-03:<br>Change Avatar</center>"])
-        UC4(["<center>UC-PROF-04:<br>Change Password</center>"])
-    end
-    
-	ActorLeft ~~~~~ ProfileManagement ~~~ ActorRight
+        direction TB
+        UC_View(["<center>UC-PROF-01:<br/>View Self Profile</center>"])
+        UC_Edit(["<center>UC-PROF-02:<br/>Edit Profile</center>"])
+        UC_Avatar(["<center>UC-PROF-03:<br/>Change Avatar</center>"])
+        UC_Password(["<center>UC-PROF-04:<br/>Change Password</center>"])
 
-    %% Relationships
-    ActorLeft --- UC1
-    ActorLeft --- UC4
-    
-    UC2 -. "<< extend >>" .-> UC1
-    UC3 -. "<< extend >>" .-> UC1
-    
-    UC3 --- ActorRight 
-   
-    %% Styling to make it clean
+        UC_Edit -. "<< extend >>" .-> UC_View
+        UC_Avatar -. "<< extend >>" .-> UC_View
+        UC_Password -. "<< extend >>" .-> UC_View
+    end
+
+    Cloudinary(["<center>&lt;&lt;service&gt;&gt;<br/>fa:fa-images Cloudinary</center>"])
+
+    AuthenticatedUser ~~~~~ ProfileManagement ~~~ Cloudinary
+
+    AuthenticatedUser --- UC_View
+    AuthenticatedUser --- UC_Password
+    UC_Avatar --- Cloudinary
+
     style ProfileManagement fill:#fff,stroke:#333,stroke-width:2px
 ```
 
@@ -137,121 +127,83 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    %% Actors 
-    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% System Boundary Subgraph
-    subgraph BooksSystem [Books]
-        %% Column 1: Search & Filter Features
+    subgraph BooksSystem [Books Exploration & Interaction]
         subgraph SearchBlock [Search Features]
-            UC_StdSearch(["<center>Standard Search</center>"])
-            UC_SemSearch(["<center>Search with context<br>and description</center>"])
-            UC_AbsSearching(["<center>UC-BK-01:<br>Book Searching</center>"])
-            UC_Filter(["<center>UC-BK-02:<br>Filtering Book</center>"])
+            UC_Search(["<center>UC-BK-01:<br/>Book Searching</center>"])
+            UC_Filter(["<center>UC-BK-02:<br/>Filter Books</center>"])
         end
-        
-        %% Column 2: Book Actions
+
         subgraph ActionBlock [Book Actions]
-            UC_ViewDetail(["<center>UC-BK-03:<br>View Book Detail</center>"])
-            UC_AddFav(["<center>UC-BK-04:<br>Add Book Favorite</center>"])
-            UC_Reserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
+            UC_Detail(["<center>UC-BK-03:<br/>View Book Detail</center>"])
+            UC_Wishlist(["<center>UC-BK-04:<br/>Manage Wishlist</center>"])
+            UC_Reserve(["<center>UC-BK-05:<br/>Reserve Book</center>"])
         end
-        
-        %% Column 3: Reservation Management
+
         subgraph ReserveBlock [Reservation Management]
-            UC_CreateReserve(["<center>UC-BK-05:<br>Book Reservation</center>"])
-            UC_CancelReserve(["<center>UC-BK-06:<br>Canceling Book Reservation</center>"])
-            UC_GenPin(["<center>UC-BK-07:<br>Generating Pin</center>"])
+            UC_Cancel(["<center>UC-BK-06:<br/>Cancel Book Reservation</center>"])
+            UC_Pin(["<center>UC-BK-07:<br/>Generate Pickup PIN</center>"])
         end
+
+        UC_Filter -. "<< extend >>" .-> UC_Search
+        UC_Wishlist -. "<< extend >>" .-> UC_Detail
+        UC_Reserve -. "<< extend >>" .-> UC_Detail
     end
 
-    %% Actor Associations
-    Actor1 --- UC_AbsSearching
-    Actor1 --- UC_Filter
-    Actor1 --- UC_ViewDetail
-    Actor2 --- UC_AddFav
-    Actor2 --- UC_Reserve
-    Actor2 --- UC_CancelReserve
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
 
-    %% Valid Generalization (Standard/Semantic ARE types of Search)
-    UC_StdSearch --> UC_AbsSearching
-    UC_SemSearch --> UC_AbsSearching
+    PlatformUser --- UC_Search
+    PlatformUser --- UC_Filter
+    PlatformUser --- UC_Detail
+    Reader --- UC_Wishlist
+    Reader --- UC_Reserve
+    Reader --- UC_Cancel
+    Reader --- UC_Pin
 
-    %% Extend & Include Relationships
-    UC_AddFav -. "<< extend >>" .-> UC_ViewDetail
-    UC_Reserve -. "<< extend >>" .-> UC_ViewDetail
-    
-    %% Generating PIN is an INCLUDED step during reservation creation
-    UC_CreateReserve -. "<< include >>" .-> UC_GenPin
-    UC_Reserve -. "<< include >>" .-> UC_CreateReserve
-
-    %% Styling
     style BooksSystem fill:#fff,stroke:#333,stroke-width:2px
     style SearchBlock fill:none,stroke:none
     style ActionBlock fill:none,stroke:none
     style ReserveBlock fill:none,stroke:none
 ```
+
 <div class="page"/>
 
 ## Study Group Creation & Facility Reservation
 
 ```mermaid
 flowchart LR
-    %% Actors 
-    Actor1(["<center>{abstract} <br> fa:fa-user General User</center>"])
-    Actor2(["<center>fa:fa-user User</center>"])
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% System Boundary Subgraph
-    subgraph LibrarySystem [Library Map & Study Group & Room Reservation]
-        %% Use Cases (using circle style: ([ ]) )
-        UC_ViewMap(["<center>UC-FAC-01:<br>View Library Map</center>"])
-        UC_ViewFacility(["<center>UC-FAC-02:<br>View Facility Information</center>"])
-        
-        UC_AbsReserving(["<center>UC-FAC-03:<br>Room Reservation</center>"])
-        UC_ReservingFreely(["<center>Reserving Room Freely</center>"])
-        UC_ReservingStudyGroup(["<center>Reserving Room<br>for Study Group</center>"])
-        
-        UC_AbsManagingRoom(["<center>{abstract} <br> Managing Room</center>"])
-        UC_CreateReservation(["<center>UC-FAC-03:<br>Creating Room Reservation</center>"])
-        UC_CancelReservation(["<center>UC-FAC-04:<br>Canceling Room Reservation</center>"])
-        
-        UC_AbsManagingStudy(["<center>{abstract}<br>Managing Study Group</center>"])
-        UC_CreateStudyGroup(["<center>UC-FAC-05:<br>Creating Study Group</center>"])
-        UC_CancelStudyGroup(["<center>UC-FAC-06:<br>Canceling Study Group</center>"])
-        UC_UpdateStudyGroup(["<center>UC-FAC-07:<br>Updating Study Group<br>Information</center>"])
+    subgraph FacilitySystem [Library Map & Study Group & Room Reservation]
+        UC_Map(["<center>UC-FAC-01:<br/>View Library Map</center>"])
+        UC_Facility(["<center>UC-FAC-02:<br/>View Facility Information</center>"])
+        UC_Room(["<center>UC-FAC-03:<br/>Reserve Room</center>"])
+        UC_CancelRoom(["<center>UC-FAC-04:<br/>Cancel Room Reservation</center>"])
+        UC_CreateGroup(["<center>UC-FAC-05:<br/>Create Study Group</center>"])
+        UC_Dissolve(["<center>UC-FAC-06:<br/>Dissolve Study Group</center>"])
+        UC_Update(["<center>UC-FAC-07:<br/>Update Study Group</center>"])
+
+        UC_Facility -. "<< extend >>" .-> UC_Map
+        UC_Room -. "<< extend >>" .-> UC_Facility
+        UC_CreateGroup -. "<< extend >>" .-> UC_Facility
+        UC_CreateGroup -. "<< include >>" .-> UC_Room
     end
 
-    %% -------------------------------------------------------------
-    %% Actor Associations
-    %% -------------------------------------------------------------
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Host --> Reader
 
-    Actor1 --- UC_ViewMap
-    Actor2 --- UC_AbsReserving
+    PlatformUser ~~~ FacilitySystem ~~~ Reader
 
-    %% -------------------------------------------------------------
-    %% Extend & Include Relationships 
-    %% -------------------------------------------------------------
-    UC_ViewFacility -. "<< extend >>" .-> UC_ViewMap
-    UC_AbsReserving -. "<< extend >>" .-> UC_ViewFacility
-    UC_AbsReserving -. "<< include >>" .-> UC_AbsManagingRoom
-    UC_ReservingStudyGroup -. "<< include >>" .-> UC_AbsManagingStudy
+    PlatformUser --- UC_Map
+    Reader --- UC_Room
+    Reader --- UC_CancelRoom
+    Reader --- UC_CreateGroup
+    Host --- UC_Dissolve
+    Host --- UC_Update
 
-    %% -------------------------------------------------------------
-    %% Generalization Relationships (pointing Specific -> Abstract)
-    %% -------------------------------------------------------------
-    UC_ReservingFreely --> UC_AbsReserving
-    UC_ReservingStudyGroup --> UC_AbsReserving
-    
-    UC_CreateReservation --> UC_AbsManagingRoom
-    UC_CancelReservation --> UC_AbsManagingRoom
-    
-    UC_CreateStudyGroup --> UC_AbsManagingStudy
-    UC_CancelStudyGroup --> UC_AbsManagingStudy
-    UC_UpdateStudyGroup --> UC_AbsManagingStudy
-
-    %% Styling
-    style LibrarySystem fill:#fff,stroke:#333,stroke-width:2px
+    style FacilitySystem fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 <div class="page"/>
@@ -260,43 +212,51 @@ flowchart LR
 
 ```mermaid
 flowchart TD
- subgraph StudyGroup["Study Group"]
-        UC1(["<center>UC-SG-01:<br>Searching Study Group</center>"])
-        UC2(["<center>UC-SG-02:<br>Filtering Study Group</center>"])
-        UC3(["<center>UC-SG-03:<br>View Study Group Detail</center>"])
-        UC5(["<center>UC-SG-04:<br>Inviting Others into<br>Study Group</center>"])
-        UC4(["<center>{abstract}<br>Interacting with Others</center>"])
-        UC6(["<center>UC-SG-05:<br>Remove Others from<br>Study Group</center>"])
-        UC7(["<center>UC-SG-06:<br>Finding User By Email</center>"])
-        UC8(["<center>UC-SG-07:<br>View Other Profile</center>"])
-        UC9(["<center>{abstract}<br>Interacting with Study Group</center>"])
-        UC10(["<center>{abstract}<br>Managing Join<br>Request</center>"])
-        UC11(["<center>UC-SG-08:<br>Creating Join<br>Request</center>"])
-        UC12(["<center>UC-SG-09:<br>Canceling Join<br>Request</center>"])
-        UC13(["<center>UC-SG-10:<br>Out Study Group</center>"])
-  end
-    StudyGroupCreator(["<center>fa:fa-user Study Group Creator</center>"]) --> User(["<center>{abstract}<br>fa:fa-user Logged User</center>"])
-    OtherUser(["<center>fa:fa-user Other User</center>"]) --> User
-    GeneralUser(["<center>{abstract}<br>fa:fa-user General User</center>"]) ~~~ StudyGroupCreator
-    StudyGroupCreator ~~~ User
-    GeneralUser ~~~~~ StudyGroup
-    GeneralUser --- UC1 & UC2 & UC3
-    StudyGroupCreator --- UC4 & UC9
-    OtherUser --- UC9
+    PlatformUser(["<center>{abstract}<br/>fa:fa-user Platform User</center>"])
 
-    %% Generalization (Specific -> Abstract)
-    UC5 --> UC4
-    UC6 --> UC4
-    UC11 --> UC10
-    UC12 --> UC10
+    subgraph StudyGroupSystem [Study Group]
+        UC_Search(["<center>UC-SG-01:<br/>Search Study Groups</center>"])
+        UC_Filter(["<center>UC-SG-02:<br/>Filter Study Groups</center>"])
+        UC_Detail(["<center>UC-SG-03:<br/>View Study Group Detail</center>"])
+        UC_Invite(["<center>UC-SG-04:<br/>Invite Member</center>"])
+        UC_Remove(["<center>UC-SG-05:<br/>Remove Member</center>"])
+        UC_Find(["<center>UC-SG-06:<br/>Find User by Email</center>"])
+        UC_Profile(["<center>UC-SG-07:<br/>View Other Profile</center>"])
+        UC_Request(["<center>UC-SG-08:<br/>Create Join Request</center>"])
+        UC_Cancel(["<center>UC-SG-09:<br/>Cancel Join Request</center>"])
+        UC_Leave(["<center>UC-SG-10:<br/>Leave Study Group</center>"])
+        UC_Review(["<center>UC-SG-11:<br/>Review Join Request</center>"])
+        UC_Respond(["<center>UC-SG-12:<br/>Respond to Invitation</center>"])
 
-    %% Includes & Extends (Fixed from misuse of generalization)
-    UC5 -. "<< include >>" .-> UC7
-    UC8 -. "<< extend >>" .-> UC4
-    UC10 -. "<< include >>" .-> UC9
-    UC13 -. "<< include >>" .-> UC9
+        UC_Profile -. "<< extend >>" .-> UC_Detail
+        UC_Invite -. "<< include >>" .-> UC_Find
+    end
 
-    style StudyGroup fill:#fff,stroke:#333,stroke-width:2px
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+    Host(["<center>fa:fa-user Study Group Host</center>"])
+    Member(["<center>fa:fa-user Study Group Member</center>"])
+    Applicant(["<center>fa:fa-user Prospective Member</center>"])
+
+    Host --> Reader
+    Member --> Reader
+    Applicant --> Reader
+
+    PlatformUser ~~~~~ StudyGroupSystem
+    PlatformUser ~~~ Host
+
+    PlatformUser --- UC_Search
+    PlatformUser --- UC_Filter
+    PlatformUser --- UC_Detail
+    Reader --- UC_Profile
+    Host --- UC_Invite
+    Host --- UC_Remove
+    Host --- UC_Review
+    Member --- UC_Leave
+    Applicant --- UC_Request
+    Applicant --- UC_Cancel
+    Applicant --- UC_Respond
+
+    style StudyGroupSystem fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 <div class="page"/>
@@ -305,15 +265,18 @@ flowchart TD
 
 ```mermaid
 flowchart LR
- subgraph AIRecommendation["AI Recommendation"]
-        UC1(["<center>UC-BK-04:<br>Add Book Favorite</center>"])
-        UC2(["<center>UC-AIR-01:<br>View Recommended Book</center>"])
-        UC3(["<center>UC-AIR-02:<br>Reset AI Recommend</center>"])
-  end
-    ActorUser(["<center>fa:fa-user User</center>"]) ~~~~ AIRecommendation 
-    ActorUser --- UC2
-    UC1 -. "<< extend >>" .-> UC2
-    UC3 -. "<< extend >>" .-> UC2
+    Reader(["<center>fa:fa-user Reader (Patron)</center>"])
+
+    subgraph AIRecommendation [AI Recommendations]
+        UC_Wishlist(["<center>UC-BK-04:<br/>Manage Wishlist</center>"])
+        UC_View(["<center>UC-AIR-01:<br/>View Recommended Books</center>"])
+        UC_Renew(["<center>UC-AIR-02:<br/>Renew Recommendations</center>"])
+        UC_Wishlist -. "<< extend >>" .-> UC_View
+        UC_Renew -. "<< extend >>" .-> UC_View
+    end
+
+    Reader ~~~~ AIRecommendation
+    Reader --- UC_View
 
     style AIRecommendation fill:#fff,stroke:#333,stroke-width:2px
 ```
@@ -324,52 +287,65 @@ flowchart LR
 
 ```mermaid
 flowchart LR
- subgraph LibrarianAdministration["Librarian Administration"]
-        UC1(["<center>{abstract}<br>Managing Book</center>"])
-        UC2(["<center>UC-LIB-01:<br>Adding Books</center>"])
-        UC3(["<center>UC-LIB-02:<br>Removing Books</center>"])
-        UC4(["<center>UC-LIB-03:<br>Confirming Book Return</center>"])
-        UC5(["<center>UC-LIB-04:<br>Recording Loan</center>"])
-        UC6(["<center>Managing Room</center>"])
-        UC7(["<center>{abstract}<br>Verifying Pin</center>"])
-        UC8(["<center>UC-LIB-05:<br>Confirming Book Borrowed</center>"])
-        UC9(["<center>UC-LIB-06:<br>Confirming Room Checkin</center>"])
-        UC10(["<center>UC-LIB-07:<br>Announcement</center>"])
-  end
-    Librarian(["<center>fa:fa-user Librarian</center>"]) ======= LibrarianAdministration
-    Librarian --- UC1 & UC6 & UC10 & UC8 & UC9 & UC4
-    
-    UC2 --> UC1
-    UC3 --> UC1
+    Librarian(["<center>fa:fa-user Librarian</center>"])
 
-    UC8 -. "<< include >>" .-> UC7
-    UC9 -. "<< include >>" .-> UC7
-    UC5 -. "<< extend >>" .-> UC4
+    subgraph LibrarianAdministration [Librarian Administration]
+        UC_ManageBooks(["<center>{abstract}<br/>Manage Books</center>"])
+        UC_Add(["<center>UC-LIB-01:<br/>Add Books</center>"])
+        UC_Remove(["<center>UC-LIB-02:<br/>Remove Books</center>"])
+        UC_Return(["<center>UC-LIB-03:<br/>Confirm Book Return</center>"])
+        UC_Assess(["<center>UC-LIB-04:<br/>Assess Return and<br/>Penalty</center>"])
+        UC_Borrow(["<center>UC-LIB-05:<br/>Confirm Book Borrowing</center>"])
+        UC_Room(["<center>UC-LIB-06:<br/>Confirm Room Check-in</center>"])
+        UC_Announcement(["<center>UC-LIB-07:<br/>Manage Announcements</center>"])
+        UC_VerifyPin(["<center>Verify PIN</center>"])
+
+        UC_Add --> UC_ManageBooks
+        UC_Remove --> UC_ManageBooks
+        UC_Return -. "<< include >>" .-> UC_VerifyPin
+        UC_Return -. "<< include >>" .-> UC_Assess
+        UC_Borrow -. "<< include >>" .-> UC_VerifyPin
+        UC_Room -. "<< include >>" .-> UC_VerifyPin
+    end
+
+    Librarian ~~~~ LibrarianAdministration
+    Librarian --- UC_ManageBooks
+    Librarian --- UC_Return
+    Librarian --- UC_Borrow
+    Librarian --- UC_Room
+    Librarian --- UC_Announcement
 
     style LibrarianAdministration fill:#fff,stroke:#333,stroke-width:2px
-    linkStyle 0 stroke:transparent
 ```
 
 <div class="page"/>
 
-## Admin Administration
+## System Administration
 
 ```mermaid
 flowchart TD
- subgraph AdminAdministration["Admin Administration"]
-        UC1(["<center>UC-ADM-01:<br>View User Account</center>"])
-        UC2(["<center>UC-ADM-02:<br>Generating CSV Report</center>"])
-        UC3(["<center>UC-ADM-03:<br>Authorization</center>"])
-        UC4(["<center>UC-ADM-04:<br>Role Control</center>"])
-        UC5(["<center>UC-ADM-05:<br>Use-case Permission</center>"])
-        UC6(["<center>UC-ADM-06:<br>System Configuration</center>"])
-        UC7(["<center>UC-ADM-07:<br>View Statistics</center>"])
-  end
-    Admin(["<center>fa:fa-user Admin</center>"]) ~~~~ AdminAdministration
-    Admin --- UC1 & UC3 & UC6 & UC7
-    UC2 -. "<< extend >>" .-> UC1
-    UC4 -. "<< include >>" .-> UC3
-    UC5 -. "<< include >>" .-> UC3
+    Admin(["<center>fa:fa-user System Administrator</center>"])
+
+    subgraph AdminAdministration [System Administration]
+        direction TB
+        UC_Accounts(["<center>UC-ADM-01:<br/>Manage User Accounts</center>"])
+        UC_Export(["<center>UC-ADM-02:<br/>Export User CSV</center>"])
+        UC_Roles(["<center>UC-ADM-03:<br/>Manage Role Assignments</center>"])
+        UC_ChangeRole(["<center>UC-ADM-04:<br/>Promote or Demote<br/>Account</center>"])
+        UC_InviteAdmin(["<center>UC-ADM-05:<br/>Invite Administrator</center>"])
+        UC_Config(["<center>UC-ADM-06:<br/>System Configuration</center>"])
+        UC_Statistics(["<center>UC-ADM-07:<br/>View Statistics</center>"])
+
+        UC_Export -. "<< extend >>" .-> UC_Accounts
+        UC_ChangeRole -. "<< include >>" .-> UC_Roles
+        UC_InviteAdmin -. "<< include >>" .-> UC_Roles
+    end
+
+    Admin ~~~~ AdminAdministration
+    Admin --- UC_Accounts
+    Admin --- UC_Roles
+    Admin --- UC_Config
+    Admin --- UC_Statistics
 
     style AdminAdministration fill:#fff,stroke:#333,stroke-width:2px
 ```

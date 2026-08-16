@@ -44,9 +44,9 @@ The platform covers all core workflows spanning PA1 through PA4, including catal
 flowchart LR
     %% Actors
     Visitor["<b><center> fa:fa-user Visitor</b></center><br/><center>[Person]</center><br/><i>Browses public library catalog and content.</i>"]
-    Readers["<b><center> fa:fa-user Reader (Patron)</b></center><br/><center>[Person]</center><br/><i>Searches catalog, reserves books online, and books study rooms.</i>"]
+    Readers["<b><center> fa:fa-user Reader (Patron)</b></center><br/><center>[Person]</center><br/><i>Searches the catalog and reserves books and study rooms.</i>"]
     Librarian["<b><center>fa:fa-user Librarian</center></b><br><center>[Person]</center><br><i>Verifies reservation PINs, processes checkouts/returns, and manages inventory.</i>"]
-    SysAdmin["<b><center> fa:fa-user System Admin</center></b><br/><center>[Person]</center><br/><i>Manages user accounts, assigns roles, and monitors system analytics.</i>"]
+    SysAdmin["<b><center> fa:fa-user System Administrator</center></b><br/><center>[Person]</center><br/><i>Manages user accounts, assigns roles, and monitors system analytics.</i>"]
 
     %% Core System
     CoreSystem["<b><center> fa:fa-server Modern Library Management System </center></b><br/><center>[Core Software System]</center><br/><i>Central web portal for book reservations, study room booking, recommendations, and library operations.</i>"]
@@ -59,10 +59,10 @@ flowchart LR
     ExternalImages["<b><center> fa:fa-image External Image Hosts</b> </center><br><center>[External Software System]</center><br><i>Serves Open Library cover images and remote avatars.</i>"]
 
     %% Relationships
-    Visitor -->|"Browses public catalog & schedule [HTTPS]"| CoreSystem
+    Visitor -->|"Browses public catalog, map & facility information [HTTPS]"| CoreSystem
     Readers -->|"Reserves resources, joins groups & manages account [HTTPS]"| CoreSystem
     Librarian -->|"Processes checkouts, verifies PINs & updates stock [HTTPS]"| CoreSystem
-    SysAdmin -->|"Configures policy, manages permissions & views metrics [HTTPS]"| CoreSystem
+    SysAdmin -->|"Configures policy, manages accounts and roles & views metrics [HTTPS]"| CoreSystem
 
     CoreSystem -->|"Authenticates users via [OAuth 2.0 / HTTPS]"| GoogleOAuth
     CoreSystem -->|"Sends emails [SMTP / TLS]"| GmailSMTP
@@ -82,7 +82,7 @@ flowchart LR
 
 ### 2.2 Diagram Mainflow Explanation
 
-A **Visitor** or **Reader** accesses the AmeThyst platform to browse books, manage reservations, and organize study group bookings. **Librarians** and **System Administrators** interact with the platform to manage physical inventory, execute checkouts/returns via PIN verification, and analyze operational metrics.
+A **Visitor** accesses AmeThyst to browse public books, facilities, and study groups. A **Reader** additionally manages book and room reservations, recommendations, and study-group participation. **Librarians** handle catalog and circulation operations, while **System Administrators** manage accounts, roles, policy, and operational metrics.
 
 The core system delegates identity checks to **Google Identity**, sends transactional emails via **Gmail SMTP**, hosts media on **Cloudinary**, and downloads transformer embedding model weights from the **Hugging Face Hub** during initialization when uncached locally.
 
@@ -90,8 +90,8 @@ The core system delegates identity checks to **Google Identity**, sends transact
 
 | Person | Description | Key Interactivity |
 | --- | --- | --- |
-| Visitor | Unauthenticated guest user. | Browses public book catalog, views library operating hours, and explores room availability. |
-| Reader (Library Patron) | Registered library user. | Searches catalog, reserves books, retrieves pickup PINs, joins study groups, and receives personalized recommendations. |
+| Visitor | Unauthenticated visitor. | Browses the public book catalog, library map, facility information, and public study-group pages. |
+| Reader (Library Patron) | Registered library user (persisted role: `user`). | Searches the catalog, reserves books and room slots, retrieves PINs, joins study groups, and receives personalized recommendations. |
 | Librarian | Library staff member. | Verifies reader pickup/return PINs, inspects book conditions, manages physical copy inventory, and handles announcements. |
 | System Administrator | Platform manager. | Manages user account roles, configures borrowing policies/limits, and monitors system analytics dashboards. |
 

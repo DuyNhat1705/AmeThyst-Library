@@ -903,7 +903,7 @@ Test case IDs use `TC-<SCOPE>-CSG-<SEQUENCE>`, where `TC` means Test Case, `CSG`
   <thead>
     <tr style="background-color: #1e3a8a; color: #ffffff;">
       <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
-        Test Case: Atomic creation orchestration
+        Test Case: Already-booked slot rejection
       </th>
     </tr>
   </thead>
@@ -911,6 +911,48 @@ Test case IDs use `TC-<SCOPE>-CSG-<SEQUENCE>`, where `TC` means Test Case, `CSG`
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
       <td style="vertical-align: top;"><strong>TC-SRV-CSG-008</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Description</td>
+      <td style="vertical-align: top;">Rejects an already-booked room slot before inserting a reservation or study group.</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Related Use Case</td>
+      <td style="vertical-align: top;">Create Study Group</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Input Data</td>
+      <td style="vertical-align: top;">The selected slot has capacity 4 and `occupied: true` for `availId: 12` on `2099-08-01`.</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Steps</td>
+      <td style="vertical-align: top;">
+        <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          <li>Mock the authoritative slot lookup to return an occupied slot.</li>
+          <li>Invoke `createStudyGroup` with a valid payload.</li>
+          <li>Verify that no reservation or study group insert is attempted.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Expected Output</td>
+      <td style="vertical-align: top;">Rejects with `SLOT_UNAVAILABLE` (409); `findSlotForCreation` receives availability ID, start date, and transaction client; no persistence insert runs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Case: Atomic creation orchestration
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-CSG-009</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Description</td>
@@ -951,7 +993,7 @@ Test case IDs use `TC-<SCOPE>-CSG-<SEQUENCE>`, where `TC` means Test Case, `CSG`
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
-      <td style="vertical-align: top;"><strong>TC-SRV-CSG-009</strong></td>
+      <td style="vertical-align: top;"><strong>TC-SRV-CSG-010</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Description</td>
@@ -991,7 +1033,7 @@ Test case IDs use `TC-<SCOPE>-CSG-<SEQUENCE>`, where `TC` means Test Case, `CSG`
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
-      <td style="vertical-align: top;"><strong>TC-SRV-CSG-010</strong></td>
+      <td style="vertical-align: top;"><strong>TC-SRV-CSG-011</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Description</td>
@@ -1031,7 +1073,7 @@ Test case IDs use `TC-<SCOPE>-CSG-<SEQUENCE>`, where `TC` means Test Case, `CSG`
   <tbody>
     <tr>
       <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
-      <td style="vertical-align: top;"><strong>TC-SRV-CSG-011</strong></td>
+      <td style="vertical-align: top;"><strong>TC-SRV-CSG-012</strong></td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Description</td>

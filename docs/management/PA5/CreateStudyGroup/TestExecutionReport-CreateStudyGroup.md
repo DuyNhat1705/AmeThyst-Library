@@ -15,7 +15,7 @@ Performed by: Nguyễn Lê Hoàng Khải | Reviewed by: Vũ Duy Nhất | Edited 
   - [1. Use Case 1: Create Study Group](#1-use-case-1-create-study-group)
 
 ## I. Test Execution Overview
-This document records 29 uniquely identified test cases for Create Study Group across the Middleware, API/Integration, Controller, and Service layers. Parameterized cases expand to 38 Vitest executions; all 38 passed on the final run on 2026-08-15.
+This document records 30 uniquely identified test cases for Create Study Group across the Middleware, API/Integration, Controller, and Service layers. Parameterized cases expand to 39 Vitest executions; all 39 passed on the final run on 2026-08-16.
 
 ## II. Execution Results
 
@@ -36,7 +36,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -64,7 +64,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -92,7 +92,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -120,7 +120,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -148,7 +148,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -176,7 +176,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -204,7 +204,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -232,7 +232,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -249,7 +249,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-001</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-001</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The request body was normalized exactly as expected, `next()` ran once, and no error response was sent.</td></tr>
   </tbody>
@@ -259,7 +259,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-002</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-002</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The omitted `requirements` field became an empty array and `next()` ran once.</td></tr>
   </tbody>
@@ -269,7 +269,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-003</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-003</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The middleware returned the expected 400 error naming `createdBy` and did not call `next()`.</td></tr>
   </tbody>
@@ -279,7 +279,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-004</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-004</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">All four invalid `availId` values returned the expected 400 validation error without calling `next()`.</td></tr>
   </tbody>
@@ -289,7 +289,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-005</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-005</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The slash-formatted date returned the expected `YYYY-MM-DD` validation error and did not call `next()`.</td></tr>
   </tbody>
@@ -299,7 +299,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
   <thead><tr style="background-color: #1e3a8a; color: #ffffff;"><th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">Test Execution: TC-MID-CSG-006</th></tr></thead>
   <tbody>
     <tr><td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td><td style="vertical-align: top;"><strong>TC-MID-CSG-006</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-15</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-16</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">Six non-empty requirements returned the expected five-item-limit error and did not call `next()`.</td></tr>
   </tbody>
@@ -320,7 +320,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -348,7 +348,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -376,7 +376,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -404,7 +404,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -432,7 +432,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -460,7 +460,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -488,7 +488,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -516,7 +516,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -544,7 +544,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -572,7 +572,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -600,7 +600,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -628,7 +628,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -636,7 +636,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
-      <td style="vertical-align: top;">Output was exactly as expected.</td>
+      <td style="vertical-align: top;">The occupied slot was rejected with `SLOT_UNAVAILABLE` (409) before any reservation or study group insert.</td>
     </tr>
   </tbody>
 </table>
@@ -656,7 +656,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -684,7 +684,7 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
@@ -712,7 +712,35 @@ This document records 29 uniquely identified test cases for Create Study Group a
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
-      <td style="vertical-align: top;">2026-08-15</td>
+      <td style="vertical-align: top;">2026-08-16</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong>Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Output was exactly as expected.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-CSG-012
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-CSG-012</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-16</td>
     </tr>
     <tr>
       <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
