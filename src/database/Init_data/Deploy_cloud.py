@@ -99,24 +99,32 @@ def deploy_to_memgraph_cloud():
 
     print(f"Connecting to Memgraph Cloud instance at {cloud_uri}...")
 
-    # 2. SSL & Protocol Handshake Configuration with Auto-Fallback
+    # 2. SSL & Protocol Handshake Configuration
     auth_tuple = (cloud_user, cloud_password) if (cloud_user and cloud_password) else None
     
     driver = None
     connection_errors = []
     
-    # Attempt unencrypted bolt first, then encrypted if server requires TLS
-    for use_encryption in [False, True]:
+    # 1. Standard driver initialization (natively handles bolt+ssc://, bolt+s://, bolt://, etc.)
+    try:
+        test_driver = GraphDatabase.driver(cloud_uri, auth=auth_tuple)
+        with test_driver.session() as s:
+            s.run("RETURN 1")
+        driver = test_driver
+        print(" -> Connected to Memgraph Cloud successfully.")
+    except Exception as conn_err:
+        connection_errors.append(f"Standard URI setup ({cloud_uri}): {conn_err}")
+
+    # 2. Fallback for plain unencrypted bolt:// or neo4j:// URIs
+    if not driver and (cloud_uri.startswith("bolt://") or cloud_uri.startswith("neo4j://")):
         try:
-            test_kwargs = {"encrypted": use_encryption}
-            test_driver = GraphDatabase.driver(cloud_uri, auth=auth_tuple, **test_kwargs)
+            test_driver = GraphDatabase.driver(cloud_uri, auth=auth_tuple, encrypted=False)
             with test_driver.session() as s:
                 s.run("RETURN 1")
             driver = test_driver
-            print(f" -> Connected to Memgraph Cloud successfully (encryption={use_encryption}).")
-            break
+            print(" -> Connected to Memgraph Cloud successfully (encrypted=False).")
         except Exception as conn_err:
-            connection_errors.append(f"encrypted={use_encryption}: {conn_err}")
+            connection_errors.append(f"encrypted=False: {conn_err}")
 
     if not driver:
         print("[Error] Failed to connect to Memgraph Cloud instance!")
