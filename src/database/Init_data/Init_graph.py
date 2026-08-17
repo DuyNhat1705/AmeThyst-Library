@@ -133,7 +133,7 @@ def run_graph_initialization():
     print("Syncing Books, Authors, and Genres...")
     with pg_conn.cursor() as pg_cursor:
         pg_cursor.execute("""
-            SELECT book_id, title, description, publication_date, num_pages, rating, language_code, embedding, author, genres
+            SELECT book_id, title, publication_date, num_pages, rating, language_code, embedding, author, genres
             FROM books;
         """)
         books = pg_cursor.fetchall()
@@ -143,14 +143,13 @@ def run_graph_initialization():
         book_batch.append({
             "book_id": b[0],
             "title": b[1],
-            "description": b[2] if b[2] else "No description available",
-            "publication": b[3].isoformat() if b[3] else "Unknown",
-            "num_pages": int(b[4]) if b[4] is not None else 0,
-            "rating": float(b[5]) if b[5] is not None else 0.0,
-            "language_code": b[6] if b[6] else "en",
-            "embedding": parse_embedding(b[7]),
-            "authors": [a.strip() for a in b[8] if a and a.strip()] if isinstance(b[8], list) else [],
-            "genres": [g.strip() for g in b[9] if g and g.strip()] if isinstance(b[9], list) else []
+            "publication": b[2].isoformat() if b[2] else "Unknown",
+            "num_pages": int(b[3]) if b[3] is not None else 0,
+            "rating": float(b[4]) if b[4] is not None else 0.0,
+            "language_code": b[5] if b[5] else "en",
+            "embedding": parse_embedding(b[6]),
+            "authors": [a.strip() for a in b[7] if a and a.strip()] if isinstance(b[7], list) else [],
+            "genres": [g.strip() for g in b[8] if g and g.strip()] if isinstance(b[8], list) else []
         })
         
     batch_size = 1000
@@ -161,7 +160,6 @@ def run_graph_initialization():
                 UNWIND $batch AS row
                 MERGE (b:Book { id: row.book_id })
                 SET b.title = row.title,
-                    b.description = row.description,
                     b.publication = row.publication,
                     b.num_pages = row.num_pages,
                     b.rating = row.rating,
