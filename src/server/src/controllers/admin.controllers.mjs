@@ -16,6 +16,11 @@ const sendError = (res, status, code, message) => {
   });
 };
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const validateUserId = (res, userId) => UUID_PATTERN.test(String(userId || ''))
+  ? null
+  : sendError(res, 400, 'INVALID_USER_ID', 'User ID must be a valid UUID.');
+
 const validateQueryParams = (query) => {
   const { role, status, page, limit } = query;
   
@@ -79,9 +84,8 @@ export const getUsersStats = async (req, res) => {
 export const getUserDetails = async (req, res) => {
   try {
     const { userId } = req.params;
-    if (!userId) {
-      return sendError(res, 400, 'BAD_REQUEST', 'User ID parameter is required.');
-    }
+    const invalidUserId = validateUserId(res, userId);
+    if (invalidUserId) return invalidUserId;
     const details = await getUserDetailsService(userId);
     if (!details) {
       return sendError(res, 404, 'USER_NOT_FOUND', 'User not found.');
@@ -101,6 +105,8 @@ export const updateUserRole = async (req, res) => {
     const { userId } = req.params;
     const { role } = req.body;
     const actorId = req.user.userId;
+    const invalidUserId = validateUserId(res, userId);
+    if (invalidUserId) return invalidUserId;
 
     if (!role) {
       return sendError(res, 400, 'ROLE_REQUIRED', 'Role parameter is required in body.');
@@ -136,6 +142,8 @@ export const suspendUser = async (req, res) => {
     const { userId } = req.params;
     const { reason } = req.body;
     const actorId = req.user.userId;
+    const invalidUserId = validateUserId(res, userId);
+    if (invalidUserId) return invalidUserId;
 
     if (!reason || reason.trim() === '') {
       return sendError(res, 400, 'REASON_REQUIRED', 'A suspension reason must be provided.');
@@ -166,6 +174,8 @@ export const unsuspendUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const actorId = req.user.userId;
+    const invalidUserId = validateUserId(res, userId);
+    if (invalidUserId) return invalidUserId;
 
     const result = await unsuspendUserService(actorId, userId);
     return res.status(200).json({

@@ -19,6 +19,7 @@ import {
 } from '../utils/otpHelpers.mjs';
 import { SALT_ROUNDS } from '../utils/authHelpers.mjs';
 import { revokeUserSessions } from './auth-session.services.mjs';
+import { disconnectUserSockets } from '../config/socket.mjs';
 
 
 export const sendOtp = async (email) => {
@@ -62,13 +63,9 @@ export const clearOtp = async (email) => {
 
 export const forgotPassword = async ({ email }) => {
   const user = await findUserByEmail(email);
-  if (!user) {
-    const error = new Error('Email does not exist');
-    error.code = 'EMAIL_NOT_FOUND';
-    throw error;
-  }
+  if (!user) return { message: 'If an account exists for this email, a reset code has been sent.' };
   await sendOtp(email);
-  return { message: 'A reset code has been sent to your email.' };
+  return { message: 'If an account exists for this email, a reset code has been sent.' };
 };
 
 export const resetPassword = async ({ email, newPassword }) => {
@@ -83,7 +80,11 @@ export const resetPassword = async ({ email, newPassword }) => {
     [passwordHash, email]
   );
 
-  if (result.rows[0]) await revokeUserSessions(result.rows[0].user_id, 'password_reset');
+  if (result.rows[0]) {
+    const userId = result.rows[0].user_id;
+    await revokeUserSessions(userId, 'password_reset');
+    disconnectUserSockets(userId);
+  }
 
   await clearOtp(email);
   return { message: 'Password reset successfully' };

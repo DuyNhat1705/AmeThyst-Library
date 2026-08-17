@@ -1,12 +1,18 @@
 import * as notificationServices from '../services/notification.services.mjs';
 
+const internalError = (res) => res.status(500).json({
+  success: false,
+  message: 'An unexpected error occurred.',
+});
+
 export const getNotifications = async (req, res) => {
   try {
     const userId = req.user.userId;
     const result = await notificationServices.getNotifications(userId);
     res.json({ success: true, data: result });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message || 'An unexpected error occurred.' });
+    console.error('getNotifications failed:', error);
+    internalError(res);
   }
 };
 
@@ -29,7 +35,8 @@ export const markAsRead = async (req, res) => {
     }
     res.json(result);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message || 'An unexpected error occurred.' });
+    console.error('markAsRead failed:', error);
+    internalError(res);
   }
 };
 
@@ -39,7 +46,8 @@ export const markAllAsRead = async (req, res) => {
     const result = await notificationServices.markAllAsRead(userId);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message || 'An unexpected error occurred.' });
+    console.error('markAllAsRead failed:', error);
+    internalError(res);
   }
 };
 
@@ -55,6 +63,7 @@ export const migrateLocal = async (req, res) => {
     const result = await notificationServices.migrateLocalReadMarkers(userId, markers);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message || 'An unexpected error occurred.' });
+    console.error('migrateLocal failed:', error);
+    internalError(res);
   }
 };

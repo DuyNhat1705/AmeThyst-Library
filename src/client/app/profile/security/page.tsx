@@ -3,10 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import ProfileTemplate from '../../components/templates/ProfileTemplate';
 import { SecurityFormCard } from '../../components/organisms';
-import { useRequireAuth, getLoggedInUser, logoutUser, updateStoredUser } from '../../utils/user';
+import { useRequireAuth, getLoggedInUser, updateStoredUser } from '../../utils/user';
 import { useI18n } from '../../providers/I18nProvider';
-
-const API = process.env.NEXT_PUBLIC_API_URL;
+import { apiFetch } from '../../utils/apiClient';
 
 export default function SecurityPage() {
   const { t } = useI18n();
@@ -24,27 +23,20 @@ export default function SecurityPage() {
     setAvatarUrl(currentUser?.avatar || '');
     setRole(currentUser?.role || 'user');
 
-    fetch(`${API}/user/profile`, {
-      credentials: 'include',
-    })
-      .then((r) => {
-        if (r.status === 401) {
-          logoutUser();
-          window.location.href = '/login';
-          return;
-        }
-        if (!r.ok) throw new Error('Failed to load profile');
-        return r.json();
-      })
-      .then((data) => {
-        if (!data) return;
+    let cancelled = false;
+    const loadProfile = async () => {
+      const result = await apiFetch<Record<string, any>>('/user/profile');
+      if (cancelled || !result.success || !result.data) return;
+      const data = result.data;
         setUsername(data.username || '');
         setAvatarUrl(data.avatar || '');
         setRole(data.role || 'user');
         setIsGoogleAccount(!!data.isGoogleAccount);
-      })
+    };
+    void loadProfile()
       .catch((err) => console.error(err))
-      .finally(() => setIsLoading(false));
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const handleAvatarUpdate = (newAvatarUrl: string) => {

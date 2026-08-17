@@ -1,5 +1,15 @@
 import * as authorizationService from '../services/authorization.services.mjs';
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const assertUserId = (userId) => {
+  if (!UUID_PATTERN.test(String(userId || ''))) {
+    const error = new Error('User ID must be a valid UUID.');
+    error.code = 'INVALID_USER_ID';
+    error.status = 400;
+    throw error;
+  }
+};
+
 const fail = (res, err) => {
   const statusCode = err.status || 500;
   return res.status(statusCode).json({
@@ -28,6 +38,7 @@ export const getUsers = async (req, res) => {
 export const promote = async (req, res) => {
   try {
     const { userId } = req.params;
+    assertUserId(userId);
     const { targetRole, branchId, sudoPassword } = req.body;
     const data = await authorizationService.promoteUserService({
       actor: req.user,
@@ -45,6 +56,7 @@ export const promote = async (req, res) => {
 export const demote = async (req, res) => {
   try {
     const { userId } = req.params;
+    assertUserId(userId);
     const { targetRole, branchId, sudoPassword } = req.body;
     const data = await authorizationService.demoteUserService({
       actor: req.user,

@@ -2,7 +2,8 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import pool from '../config/postgres.mjs';
 import { withTransaction, SALT_ROUNDS } from '../utils/authHelpers.mjs';
-import { emitAuthorizationChanged } from '../config/socket.mjs';
+import { disconnectUserSockets, emitAuthorizationChanged } from '../config/socket.mjs';
+import { revokeUserSessions } from './auth-session.services.mjs';
 import { sendAdminInviteEmail } from '../utils/mailer.mjs';
 import { findUserByEmail } from '../models/auth.models.mjs';
 import * as authorizationModel from '../models/authorization.models.mjs';
@@ -188,6 +189,7 @@ export const promoteUserService = async ({ actor, userId, targetRole, branchId, 
       prevValue: target.role,
       newValue: normalizedTarget,
     });
+    await revokeUserSessions(userId, 'role_changed', client);
     return { updatedUser: update.rows[0], audit };
   });
 
@@ -201,6 +203,7 @@ export const promoteUserService = async ({ actor, userId, targetRole, branchId, 
     createdAt: result.audit.created_at,
   });
   emitAuthorizationChanged(entry);
+  disconnectUserSockets(userId);
 
   return {
     message: `Account promoted to ${normalizedTarget}. All existing sessions have been terminated; the account must sign in again.`,
@@ -275,6 +278,7 @@ export const demoteUserService = async ({ actor, userId, targetRole, branchId, s
       prevValue: target.role,
       newValue: normalizedTarget,
     });
+    await revokeUserSessions(userId, 'role_changed', client);
     return { updatedUser: update.rows[0], audit };
   });
 
@@ -288,6 +292,7 @@ export const demoteUserService = async ({ actor, userId, targetRole, branchId, s
     createdAt: result.audit.created_at,
   });
   emitAuthorizationChanged(entry);
+  disconnectUserSockets(userId);
 
   return {
     message: `Account demoted to ${normalizedTarget}. All active sessions have been terminated.`,

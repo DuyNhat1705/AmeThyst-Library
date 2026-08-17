@@ -62,9 +62,11 @@ export const getAnnouncementsForManagementController = async (req, res) => {
 export const updateAnnouncementStatusController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, notifyUsersAgain } = req.body;
 
-    const updated = await announcementService.updateAnnouncementStatusService(id, status);
+    const updated = await announcementService.updateAnnouncementStatusService(id, status, {
+      notifyUsersAgain: notifyUsersAgain === true,
+    });
 
     return res.status(200).json({
       success: true,

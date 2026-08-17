@@ -105,21 +105,8 @@ export const forgot = async (req, res) => {
     return res.status(200).json(result);
   } catch (err) {
     console.error('Forgot password error:', err);
-    if (err.code === 'EMAIL_NOT_FOUND') {
-      return res.status(404).json({
-        success: false,
-        error: { code: 'EMAIL_NOT_FOUND', message: err.message },
-      });
-    }
-    if (err.code === 'EMAIL_DELIVERY_FAILED') {
-      return res.status(502).json({
-        success: false,
-        error: { code: 'EMAIL_DELIVERY_FAILED', message: err.message },
-      });
-    }
-    return res.status(500).json({
-      success: false,
-      error: { code: 'FORGOT_PASSWORD_FAILED', message: 'Unable to process password reset request.' },
+    return res.status(200).json({
+      message: 'If an account exists for this email, a reset code has been sent.',
     });
   }
 };

@@ -2,15 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import ProfileTemplate from '../components/templates/ProfileTemplate';
-import { useRequireAuth, updateStoredUser, logoutUser } from '../utils/user';
+import { useRequireAuth, updateStoredUser } from '../utils/user';
 import { apiFetch } from '../utils/apiClient';
 import { useI18n } from '../providers/I18nProvider';
 import { FormField, ProfileSectionCard } from '../components/molecules';
 import { CustomSelect, Label } from '../components/atoms';
 
 import { validateFullName, validatePhone } from '../utils/validation';
-
-const API = process.env.NEXT_PUBLIC_API_URL;
 
 interface ProfileState {
   fullName: string;
@@ -67,20 +65,15 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API}/user/profile`, {
-      credentials: 'include',
-    })
-      .then((r) => {
-        if (r.status === 401) {
-          logoutUser();
-          window.location.href = '/login';
-          return;
-        }
-        if (!r.ok) throw new Error(t('profile.load_profile_failed'));
-        return r.json();
-      })
-      .then((data) => {
-        if (!data) return;
+    let cancelled = false;
+    const loadProfile = async () => {
+      const result = await apiFetch<Record<string, any>>('/user/profile');
+      if (cancelled) return;
+      if (!result.success || !result.data) {
+        setError(result.message || t('profile.load_profile_failed'));
+        return;
+      }
+      const data = result.data;
 
         // Map database response fields (camelCase from SQL aliases)
         const formatBirthDate = data.birthDate
@@ -109,9 +102,11 @@ export default function ProfilePage() {
           email: data.email,
           avatar: data.avatar,
         });
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setIsLoading(false));
+    };
+    void loadProfile()
+      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : t('profile.load_profile_failed')); })
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, [t]);
 
   const handleLocalUpdate = (field: keyof ProfileState, value: any) => {

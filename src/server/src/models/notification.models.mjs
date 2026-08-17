@@ -203,10 +203,16 @@ const markInvitationReceiptRead = async (userId, sourceRefId) => {
 export const markNotificationRead = async (userId, notificationId) => {
   if (UUID_PATTERN.test(notificationId)) return markOwnedReceiptRead(userId, notificationId);
   if (notificationId.startsWith('announcement:')) {
-    return markAnnouncementReceiptRead(userId, notificationId.slice('announcement:'.length));
+    const sourceRefId = notificationId.slice('announcement:'.length);
+    return UUID_PATTERN.test(sourceRefId)
+      ? markAnnouncementReceiptRead(userId, sourceRefId)
+      : { found: false, updated: false };
   }
   if (notificationId.startsWith('study_group_invitation:')) {
-    return markInvitationReceiptRead(userId, notificationId.slice('study_group_invitation:'.length));
+    const sourceRefId = notificationId.slice('study_group_invitation:'.length);
+    return UUID_PATTERN.test(sourceRefId)
+      ? markInvitationReceiptRead(userId, sourceRefId)
+      : { found: false, updated: false };
   }
   return { found: false, updated: false };
 };

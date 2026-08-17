@@ -196,7 +196,11 @@ export const getAnnouncementsForManagementService = async ({ page = 1, limit = 1
  * @param {string} status
  * @returns {Promise<Object>}
  */
-export const updateAnnouncementStatusService = async (announceId, status) => {
+export const updateAnnouncementStatusService = async (
+  announceId,
+  status,
+  { notifyUsersAgain = false } = {},
+) => {
   const allowedStatuses = ['draft', 'active', 'expired'];
   if (!status || !allowedStatuses.includes(status)) {
     const error = new Error('Invalid status.');
@@ -215,10 +219,13 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
   if (updated && previousStatus !== status) {
     const becameActive = previousStatus !== 'active' && status === 'active';
     const action = becameActive ? 'republished' : 'status_changed';
-    if (becameActive) {
+    if (becameActive && notifyUsersAgain === true) {
       await resetAnnouncementReceipts(announceId);
     }
-    emitAnnouncementChanged(action, { ...updated, previousStatus });
+    emitAnnouncementChanged(
+      becameActive && notifyUsersAgain === true ? 'republished_and_renotified' : action,
+      { ...updated, previousStatus },
+    );
   }
   return updated;
 };

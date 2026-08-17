@@ -30,9 +30,14 @@ const ALLOWED_PROFILE_FIELDS = [
   'birthDate',
   'gender',
   'hometown',
-  'description',
-  'avatar'
+  'description'
 ];
+
+const PROFILE_STRING_LIMITS = {
+  occupation: 100,
+  hometown: 100,
+  description: 1000,
+};
 
 const updateProfile = async (req, res) => {
   try {
@@ -51,6 +56,7 @@ const updateProfile = async (req, res) => {
       if (typeof updateData.username !== 'string' || !updateData.username.trim()) {
         return res.status(400).json({ error: 'Username cannot be empty' });
       }
+      updateData.username = updateData.username.trim();
     }
 
     if (updateData.phoneNumber !== undefined && updateData.phoneNumber !== null) {
@@ -61,9 +67,34 @@ const updateProfile = async (req, res) => {
     }
 
     if (updateData.gender !== undefined && updateData.gender !== null) {
+      if (typeof updateData.gender !== 'string') {
+        return res.status(400).json({ error: 'Invalid gender value. Must be male, female, or other.' });
+      }
       const normalizedGender = updateData.gender.toLowerCase();
       if (normalizedGender !== 'male' && normalizedGender !== 'female' && normalizedGender !== 'other') {
         return res.status(400).json({ error: 'Invalid gender value. Must be male, female, or other.' });
+      }
+      updateData.gender = normalizedGender;
+    }
+
+    for (const [field, maxLength] of Object.entries(PROFILE_STRING_LIMITS)) {
+      const value = updateData[field];
+      if (value !== undefined && value !== null && (typeof value !== 'string' || value.length > maxLength)) {
+        return res.status(400).json({ error: `${field} must be a string of at most ${maxLength} characters.` });
+      }
+    }
+
+    if (updateData.birthDate !== undefined && updateData.birthDate !== null) {
+      if (typeof updateData.birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(updateData.birthDate)) {
+        return res.status(400).json({ error: 'Birth date must use YYYY-MM-DD format.' });
+      }
+      const birthDate = new Date(`${updateData.birthDate}T00:00:00.000Z`);
+      if (
+        Number.isNaN(birthDate.getTime())
+        || birthDate.toISOString().slice(0, 10) !== updateData.birthDate
+        || birthDate > new Date()
+      ) {
+        return res.status(400).json({ error: 'Birth date must be a valid date in the past.' });
       }
     }
 
@@ -77,6 +108,9 @@ const updateProfile = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
+    if (typeof currentPassword !== 'string' || currentPassword.length === 0) {
+      return res.status(400).json({ error: 'Current password is required' });
+    }
     const user = await getUserWithPassword(req.user.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
