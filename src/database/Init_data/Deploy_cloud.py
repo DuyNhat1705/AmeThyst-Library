@@ -173,15 +173,17 @@ def deploy_to_memgraph_cloud():
             print("Wiping existing graph on Memgraph instance via instant storage reset...")
             try:
                 session.run("STORAGE MODE IN_MEMORY_ANALYTICAL")
+                session.run("DROP GRAPH")
                 session.run("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
-                print(" -> Instant graph reset via STORAGE MODE completed.")
-            except Exception:
+                print(" -> Instant graph reset via DROP GRAPH completed.")
+            except Exception as drop_err:
+                print(f" Notice on DROP GRAPH: {drop_err}. Running fallback DETACH DELETE...")
                 try:
-                    session.run("DROP GRAPH")
-                    print(" -> Instant graph reset via DROP GRAPH completed.")
+                    session.run("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
                 except Exception:
-                    session.run("MATCH (n) DETACH DELETE n")
-                    print(" -> Fallback DETACH DELETE completed.")
+                    pass
+                session.run("MATCH (n) DETACH DELETE n")
+                print(" -> Fallback DETACH DELETE completed.")
 
             # Separate constraint/index statements from data statements to run indexes first
             index_stmts = []
