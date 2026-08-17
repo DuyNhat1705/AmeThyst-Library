@@ -44,6 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: csrf ? { 'X-CSRF-Token': csrf } : {},
         });
         if (refreshed && refreshed.status === 403) {
+          const forbidden = await readJson(refreshed);
+          if (isUserSuspended(forbidden)) {
+            markSuspended();
+            return;
+          }
           resetCsrfToken();
           csrf = await getCsrfToken();
           refreshed = await safeFetch(`${apiUrl}/auth/refresh`, {
@@ -56,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           resetCsrfToken();
           response = await safeFetch(`${apiUrl}/auth/me`, { credentials: 'include' });
         } else {
+          const refreshError = refreshed ? await readJson(refreshed) : null;
+          if (isUserSuspended(refreshError)) {
+            markSuspended();
+            return;
+          }
           clearSession();
           return;
         }

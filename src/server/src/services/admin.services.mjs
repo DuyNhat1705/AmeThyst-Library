@@ -9,6 +9,9 @@ function escapeSearchWildcards(search) {
   return '%' + trimmed.replace(/[%_\\]/g, '\\$&') + '%';
 }
 
+const isSameUserId = (actorId, targetUserId) =>
+  String(actorId) === String(targetUserId);
+
 function buildUserFilterClause({ search, role, status }, startIndex = 1) {
   const conditions = [];
   const params = [];
@@ -150,7 +153,7 @@ async function checkFinalAdminInvariant(client, targetUserId) {
 }
 
 export const updateUserRoleService = async (actorId, targetUserId, newRole) => {
-  if (actorId === targetUserId) {
+  if (isSameUserId(actorId, targetUserId)) {
     const error = new Error('You cannot change your own role.');
     error.code = 'SELF_MUTATION_BLOCKED';
     throw error;
@@ -201,7 +204,7 @@ export const updateUserRoleService = async (actorId, targetUserId, newRole) => {
 };
 
 export const suspendUserService = async (actorId, targetUserId, reason) => {
-  if (actorId === targetUserId) {
+  if (isSameUserId(actorId, targetUserId)) {
     const error = new Error('You cannot suspend yourself.');
     error.code = 'SELF_MUTATION_BLOCKED';
     throw error;
@@ -261,7 +264,7 @@ export const suspendUserService = async (actorId, targetUserId, reason) => {
 };
 
 export const unsuspendUserService = async (actorId, targetUserId) => {
-  if (actorId === targetUserId) {
+  if (isSameUserId(actorId, targetUserId)) {
     const error = new Error('You cannot modify your own suspension status.');
     error.code = 'SELF_MUTATION_BLOCKED';
     throw error;
