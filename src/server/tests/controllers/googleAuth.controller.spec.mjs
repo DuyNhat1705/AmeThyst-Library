@@ -3,6 +3,15 @@ import { createAuthSession } from '../../src/services/auth-session.services.mjs'
 import { setAuthCookies } from '../../src/utils/authHelpers.mjs';
 import { googleCallback } from '../../src/controllers/auth.controllers.mjs';
 
+vi.mock('../../src/config/passport.mjs', () => ({
+  default: {
+    authenticate: vi.fn((_strategy, _options, callback) => async (req) => {
+      await callback(null, req.user, undefined);
+    }),
+  },
+  googleVerifyCallback: vi.fn(),
+}));
+
 vi.mock('../../src/services/auth-session.services.mjs', () => ({
   createAuthSession: vi.fn(),
   revokeRefreshToken: vi.fn(),
@@ -61,7 +70,7 @@ describe('Google Auth Controller', () => {
 
   describe('Successful redirect mapping', { tags: ['@A_R5', '@A_R6', '@A_R10'] }, () => {
     it('[TC-CTL-GA-001] should create a session, set cookies, and redirect without a query token', async () => {
-      const handler = googleCallback[1];
+      const handler = googleCallback[0];
       const session = {
         accessToken: 'access',
         refreshToken: 'refresh',
@@ -82,7 +91,7 @@ describe('Google Auth Controller', () => {
 
   describe('Security invariants', { tags: ['@A_R7'] }, () => {
     it('[TC-CTL-GA-002] should never leak password_hash in the redirect URL', async () => {
-      const handler = googleCallback[1];
+      const handler = googleCallback[0];
 
       await handler(req, res, next);
 

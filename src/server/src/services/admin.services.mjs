@@ -1,6 +1,6 @@
 import pool from '../config/postgres.mjs';
 import { revokeUserSessions } from '../models/auth-session.models.mjs';
-import { disconnectUserSockets } from '../config/socket.mjs';
+import { disconnectUserSockets, suspendUserSockets } from '../config/socket.mjs';
 
 function escapeSearchWildcards(search) {
   if (!search) return null;
@@ -250,7 +250,7 @@ export const suspendUserService = async (actorId, targetUserId, reason) => {
     `, [actorId, targetUserId, targetUser.status, reason]);
 
     await client.query('COMMIT');
-    disconnectUserSockets(targetUserId);
+    suspendUserSockets(targetUserId);
     return { userId: targetUserId, status: 'suspended', suspendedReason: reason };
   } catch (err) {
     await client.query('ROLLBACK');

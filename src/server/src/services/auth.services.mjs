@@ -18,19 +18,30 @@ import {
   SALT_ROUNDS,
 } from '../utils/authHelpers.mjs';
 
+const REGISTER_RESPONSE = 'If this email can be registered, a verification message will be sent.';
+const RESEND_RESPONSE = 'If a pending registration exists, a verification message will be sent.';
 
-// ─── Register ─────────────────────────────────────────────────────────────────
+const emailDeliveryError = (cause) => {
+  const error = new Error('Verification email could not be delivered. Please try again later.', { cause });
+  error.code = 'EMAIL_DELIVERY_FAILED';
+  return error;
+};
 
 export const registerUser = async ({ email, password, username }) => {
   const existing = await findUserByEmail(email);
-  if (existing) return { message: 'If this email can be registered, a verification message will be sent.' };
+  if (existing?.status === 'suspended') {
+    const error = new Error('Your account has been suspended.');
+    error.code = 'USER_SUSPENDED';
+    throw error;
+  }
+  if (existing) return { message: REGISTER_RESPONSE };
 
   const pendingRow = await getPendingByEmail(email);
   if (pendingRow) {
-    if (new Date() > new Date(pendingRow.expired_at)) {
+    if (new Date() >= new Date(pendingRow.expired_at)) {
       await deletePendingByEmail(email);
     } else {
-      return { message: 'If this email can be registered, a verification message will be sent.' };
+      return { message: REGISTER_RESPONSE };
     }
   }
 
@@ -39,17 +50,20 @@ export const registerUser = async ({ email, password, username }) => {
     replacePendingUser(client, { email, passwordHash, username })
   );
 
-  await sendVerificationEmail(email, token);
-  return { message: 'If this email can be registered, a verification message will be sent.' };
+  try {
+    await sendVerificationEmail(email, token);
+  } catch (err) {
+    console.error('Email delivery failed for registration:', err);
+    throw emailDeliveryError(err);
+  }
+  return { message: REGISTER_RESPONSE };
 };
-
-// ─── Verify Email ─────────────────────────────────────────────────────────────
 
 export const verifyEmail = async ({ token }) => {
   const row = await getPendingByToken(token);
   if (!row) throw new Error('Invalid or expired verification link.');
 
-  if (new Date() > new Date(row.expired_at)) {
+  if (new Date() >= new Date(row.expired_at)) {
     await deletePendingByToken(token);
     throw new Error('Verification link has expired. Please register again.');
   }
@@ -73,12 +87,10 @@ export const verifyEmail = async ({ token }) => {
   return { user: buildUserPayload(user), userRow: user };
 };
 
-// ─── Resend Verification ──────────────────────────────────────────────────────
-
 export const resendVerificationEmailService = async ({ email }) => {
   const pendingRow = await getPendingByEmail(email);
   if (!pendingRow) {
-    return { message: 'If a pending registration exists, a verification message will be sent.' };
+    return { message: RESEND_RESPONSE };
   }
 
   const newToken = await withTransaction((client) =>
@@ -89,20 +101,52 @@ export const resendVerificationEmailService = async ({ email }) => {
     })
   );
 
-  await sendVerificationEmail(email, newToken);
-  return { message: 'If a pending registration exists, a verification message will be sent.' };
+  try {
+    await sendVerificationEmail(email, newToken);
+  } catch (err) {
+    console.error('Email delivery failed for resend:', err);
+    await withTransaction((client) =>
+      replacePendingUser(client, {
+        email,
+        passwordHash: pendingRow.password_hash,
+        username: pendingRow.username,
+        token: pendingRow.token,
+        expiredAt: pendingRow.expired_at,
+      })
+    );
+    throw emailDeliveryError(err);
+  }
+  return { message: RESEND_RESPONSE };
 };
-
-// ─── Login ────────────────────────────────────────────────────────────────────
 
 export const loginUser = async ({ email, password }) => {
   const user = await findUserByEmail(email);
   const fallbackHash = '$2b$10$7EqJtq98hPqEX7fNZaFWoO.HkLXrKYuRpfM8caUVbVQyTgT1nYq2K';
+  
+  if (!user) {
+    const pending = await getPendingByEmail(email);
+    if (pending && new Date() < new Date(pending.expired_at)) {
+      const isMatch = await bcrypt.compare(password, pending.password_hash);
+      if (isMatch) {
+        const error = new Error('Please verify your email address to continue.');
+        error.code = 'USER_UNVERIFIED';
+        throw error;
+      }
+    }
+  }
+
   const isMatch = await bcrypt.compare(password, user?.password_hash || fallbackHash);
   const locked = user?.locked_until && new Date(user.locked_until) > new Date();
-  if (!user || !isMatch || user.status !== 'active' || locked) {
+  const isSuspended = user?.status === 'suspended';
+  if (!user || !isMatch || locked || (!isSuspended && user.status !== 'active')) {
     if (user && !locked) await recordLoginFailure(user.user_id);
     throw new Error('Invalid email or password');
+  }
+
+  if (isSuspended) {
+    const error = new Error('Your account has been suspended.');
+    error.code = 'USER_SUSPENDED';
+    throw error;
   }
 
   await recordLoginSuccess(user.user_id);

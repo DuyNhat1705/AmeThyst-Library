@@ -97,15 +97,15 @@ export const withTransaction = async (callback) => {
   }
 };
 
-export const PENDING_TTL_MS = 5 * 60 * 1000; // 5 minutes
+export const PENDING_TTL_MS = 5 * 60 * 1000;
 
-// Dùng chung cho register, verifyEmail, resendVerification
-// Xóa pending row cũ rồi insert row mới trong cùng transaction
-// Trả về token mới để gửi email
-export const replacePendingUser = async (client, { email, passwordHash, username }) => {
-  const token = crypto.randomUUID();
-  const expiredAt = new Date(Date.now() + PENDING_TTL_MS);
-
+export const replacePendingUser = async (client, {
+  email,
+  passwordHash,
+  username,
+  token = crypto.randomUUID(),
+  expiredAt = new Date(Date.now() + PENDING_TTL_MS),
+}) => {
   await client.query('DELETE FROM pending_users WHERE email = $1', [email]);
   await client.query(
     `INSERT INTO pending_users (token, email, password_hash, username, role, expired_at)

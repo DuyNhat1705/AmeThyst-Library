@@ -57,7 +57,22 @@ export const getIO = () => {
 };
 
 export const disconnectUserSockets = (userId) => {
-  if (io && userId) io.in(`user:${userId}`).disconnectSockets(true);
+  if (io && userId) {
+    io.in(`user:${userId}`).disconnectSockets(true);
+  }
+};
+
+export const suspendUserSockets = (userId) => {
+  if (io && userId) {
+    const userRoom = `user:${userId}`;
+    io.in(userRoom).emit('account:suspended', {
+      code: 'USER_SUSPENDED',
+      message: 'Your account has been suspended. You will be disconnected.'
+    });
+    setTimeout(() => {
+      io.in(userRoom).disconnectSockets(true);
+    }, 500);
+  }
 };
 
 export const emitStudyGroupChanged = (groupId, changeType) => {
@@ -65,7 +80,13 @@ export const emitStudyGroupChanged = (groupId, changeType) => {
 };
 
 export const emitUserNotification = (userId, notification) => {
-  if (io && userId) io.to(`user:${userId}`).emit('notification:new', notification);
+  if (io && userId) {
+    io.to(`user:${userId}`).emit('notification:new', notification);
+  }
+};
+
+export const emitNotificationRead = (userId, notificationId) => {
+  if (io && userId) io.to(`user:${userId}`).emit('notification:read', { notificationId });
 };
 
 export const emitRoomDashboardChanged = (branchId, changeType) => {

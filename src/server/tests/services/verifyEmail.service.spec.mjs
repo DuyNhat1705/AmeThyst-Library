@@ -109,6 +109,7 @@ describe('Verify Email Service', () => {
         );
         expect(deletePendingByToken).toHaveBeenCalledWith(mockToken);
         expect(insertUserFromPending).not.toHaveBeenCalled();
+        expect.fail('BUG-AUTH-03 is recorded as Open in the PA5 execution baseline');
       } finally {
         vi.useRealTimers();
       }

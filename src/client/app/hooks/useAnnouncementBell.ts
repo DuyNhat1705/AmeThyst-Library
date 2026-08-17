@@ -1,21 +1,28 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { apiFetch } from '../utils/apiClient';
-import { useStoredUser, getAuthToken } from '../utils/user';
+import { useStoredUser } from '../utils/user';
 import { useSocket } from '../utils/useSocket';
-import {
-  listStudyGroupInvitations,
-  acceptStudyGroupInvitation,
-  denyStudyGroupInvitation,
-} from '../utils/studyGroup';
+import { acceptStudyGroupInvitation, denyStudyGroupInvitation } from '../utils/studyGroup';
 import type {
   StudyGroupNotificationActor,
   StudyGroupInvitation,
   StudyGroupLifecycleNotification,
 } from '../types/studyGroup';
 
-export interface BellAnnouncement {
+interface ApiNotificationRow {
+  id: string;
+  type: string;
+  source_ref_id: string;
+  payload: Record<string, unknown> | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+interface AnnouncementInboxItem {
+  notificationId: string;
   announceId: string;
   title: string;
   content: string;
@@ -23,431 +30,646 @@ export interface BellAnnouncement {
   expiredDate?: string;
 }
 
-export type {
-  StudyGroupNotificationActor,
-  StudyGroupInvitation,
-  StudyGroupLifecycleNotification,
-} from '../types/studyGroup';
+interface InvitationInboxItem extends StudyGroupInvitation {
+  notificationId: string;
+}
 
-function readSeenIds(userId?: number | string): string[] {
-  if (typeof window === 'undefined' || userId === undefined) return [];
+interface SystemInboxItem extends StudyGroupLifecycleNotification {
+  notificationId: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  category: string;
+  sourceId: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  isRead: boolean;
+  metadata: AnnouncementInboxItem | InvitationInboxItem | SystemInboxItem;
+}
+
+interface NotificationInboxResponse {
+  notifications: ApiNotificationRow[];
+  unreadCount: number;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+
+const asActor = (value: unknown): StudyGroupNotificationActor | undefined => {
+  if (!isRecord(value)) return undefined;
+  return {
+    ...value,
+    userId: value.userId != null
+      ? String(value.userId)
+      : value.user_id != null ? String(value.user_id) : null,
+    username: String(value.username ?? value.fullName ?? 'Unknown'),
+    email: value.email != null ? String(value.email) : null,
+    avatar: value.avatar != null ? String(value.avatar) : null,
+  } as StudyGroupNotificationActor;
+};
+
+const asGroup = (
+  value: unknown,
+  fallbackTitle = 'Study Group',
+): StudyGroupLifecycleNotification['group'] => {
+  const group = isRecord(value) ? value : {};
+  return {
+    ...group,
+    title: String(group.title ?? fallbackTitle),
+    subject: String(group.subject ?? ''),
+    currentMembers: group.currentMembers != null ? Number(group.currentMembers) : undefined,
+    capacity: group.capacity != null ? Number(group.capacity) : undefined,
+    date: String(group.date ?? ''),
+    startTime: String(group.startTime ?? ''),
+    endTime: String(group.endTime ?? ''),
+    roomName: String(group.roomName ?? ''),
+    branchName: String(group.branchName ?? ''),
+    roomId: Number(group.roomId ?? 0),
+    branchId: Number(group.branchId ?? 0),
+  } as StudyGroupLifecycleNotification['group'];
+};
+
+export const isAnnouncementItem = (
+  item: NotificationItem,
+): item is NotificationItem & { metadata: AnnouncementInboxItem } => item.category === 'announcement';
+
+export const isInvitationItem = (
+  item: NotificationItem,
+): item is NotificationItem & { metadata: InvitationInboxItem } =>
+  item.category === 'study_group_invitation';
+
+export const isSystemItem = (
+  item: NotificationItem,
+): item is NotificationItem & { metadata: SystemInboxItem } =>
+  item.category !== 'announcement' && item.category !== 'study_group_invitation';
+
+const setItemReadState = (item: NotificationItem, isRead: boolean): NotificationItem => ({
+  ...item,
+  isRead,
+  metadata: isSystemItem(item) ? { ...item.metadata, read: isRead } : item.metadata,
+});
+
+const mapApiNotifications = (rows: ApiNotificationRow[]): NotificationItem[] => rows.map((row) => {
+  const payload = isRecord(row.payload) ? row.payload : {};
+
+  if (row.type === 'announcement') {
+    const metadata: AnnouncementInboxItem = {
+      notificationId: row.id,
+      announceId: row.source_ref_id,
+      title: String(payload.title ?? ''),
+      content: String(payload.content ?? ''),
+      createdAt: row.created_at,
+      expiredDate: payload.expiredDate != null ? String(payload.expiredDate) : undefined,
+    };
+    return {
+      id: row.id,
+      category: row.type,
+      sourceId: row.source_ref_id,
+      title: metadata.title,
+      description: metadata.content,
+      createdAt: row.created_at,
+      isRead: row.is_read,
+      metadata,
+    };
+  }
+
+  if (row.type === 'study_group_invitation') {
+    const actor = asActor(payload.actor);
+    const storedGroup = isRecord(payload.group) ? payload.group : {};
+    const storedHost = isRecord(storedGroup.host) ? storedGroup.host : {};
+    const requirements = storedGroup.requirements ?? payload.requirements;
+    const metadata: InvitationInboxItem = {
+      notificationId: row.id,
+      requestId: row.source_ref_id,
+      content: payload.content != null ? String(payload.content) : null,
+      invitedAt: row.created_at,
+      actor,
+      group: {
+        ...storedGroup,
+        groupId: String(storedGroup.groupId ?? payload.groupId ?? ''),
+        title: String(storedGroup.title ?? payload.groupName ?? 'Study Group'),
+        subject: String(storedGroup.subject ?? payload.subject ?? ''),
+        description: String(storedGroup.description ?? payload.description ?? ''),
+        requirements: Array.isArray(requirements) ? requirements.map(String) : [],
+        host: {
+          ...storedHost,
+          userId: String(storedHost.userId ?? storedHost.user_id ?? actor?.userId ?? ''),
+          username: String(storedHost.username ?? storedHost.fullName ?? actor?.username ?? 'Someone'),
+          avatar: storedHost.avatar != null ? String(storedHost.avatar) : actor?.avatar ?? null,
+        },
+        reservation: (storedGroup.reservation ?? payload.reservation) as StudyGroupInvitation['group']['reservation'],
+        capacity: Number(storedGroup.capacity ?? payload.capacity ?? 0),
+        currentMembers: Number(storedGroup.currentMembers ?? payload.currentMembers ?? 0),
+        status: String(storedGroup.status ?? 'upcoming'),
+        pendingCount: Number(storedGroup.pendingCount ?? 0),
+        isHost: Boolean(storedGroup.isHost ?? false),
+        currentUserParticipation: storedGroup.currentUserParticipation ?? null,
+        canJoin: Boolean(storedGroup.canJoin ?? false),
+        retryAt: storedGroup.retryAt != null ? String(storedGroup.retryAt) : null,
+        createdAt: String(storedGroup.createdAt ?? row.created_at),
+        updatedAt: String(storedGroup.updatedAt ?? row.created_at),
+      } as StudyGroupInvitation['group'],
+    };
+    return {
+      id: row.id,
+      category: row.type,
+      sourceId: row.source_ref_id,
+      title: metadata.group.title,
+      description: metadata.group.host.username,
+      createdAt: row.created_at,
+      isRead: row.is_read,
+      metadata,
+    };
+  }
+
+  const stored = payload as Partial<StudyGroupLifecycleNotification> & Record<string, unknown>;
+  const metadata = {
+    ...stored,
+    notificationId: row.id,
+    id: typeof stored.id === 'string' ? stored.id : row.source_ref_id,
+    type: row.type as StudyGroupLifecycleNotification['type'],
+    groupId: String(stored.groupId ?? row.source_ref_id),
+    createdAt: row.created_at,
+    read: row.is_read,
+    actor: asActor(stored.actor),
+    destination: isRecord(stored.destination)
+      ? { ...stored.destination } as StudyGroupLifecycleNotification['destination'] : undefined,
+    changedFields: Array.isArray(stored.changedFields) ? stored.changedFields.map(String) : undefined,
+    memberName: stored.memberName != null ? String(stored.memberName) : undefined,
+    group: asGroup(stored.group, String(payload.groupName ?? 'Study Group')),
+  } as SystemInboxItem;
+  return {
+    id: row.id,
+    category: row.type,
+    sourceId: row.source_ref_id,
+    title: metadata.group.title,
+    description: metadata.memberName ?? '',
+    createdAt: row.created_at,
+    isRead: row.is_read,
+    metadata,
+  };
+});
+
+const shouldApplyNotificationResult = (
+  mounted: boolean,
+  aborted: boolean,
+  requestedUserId: number | string,
+  activeUserId: number | string | undefined,
+  requestToken: number,
+  activeRequestToken: number,
+): boolean => mounted && !aborted
+  && requestedUserId === activeUserId
+  && requestToken === activeRequestToken;
+
+type InvitationDeepLinkPlan =
+  | { status: 'none' }
+  | { status: 'unavailable'; requestId: string }
+  | { status: 'open'; requestId: string; item: NotificationItem & { metadata: InvitationInboxItem } };
+
+const planInvitationDeepLink = (
+  requestId: string | null,
+  items: NotificationItem[],
+): InvitationDeepLinkPlan => {
+  if (!requestId) return { status: 'none' };
+  const item = items.find((candidate) => isInvitationItem(candidate)
+    && candidate.metadata.requestId === requestId);
+  return item && isInvitationItem(item)
+    ? { status: 'open', requestId, item }
+    : { status: 'unavailable', requestId };
+};
+
+const consumeInvitationQueryParameter = (href: string): string => {
+  const url = new URL(href);
+  url.searchParams.delete('invitation');
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
+interface LegacyMigrationBatch {
+  key: string;
+  markers: Array<{ category: string; sourceRefIds: string[] }>;
+}
+
+interface StoredValue<T> {
+  present: boolean;
+  valid: boolean;
+  value: T;
+}
+
+const uniqueStrings = (values: string[]) => [...new Set(values.filter(Boolean))];
+
+const readStoredStringArray = (key: string): StoredValue<string[]> => {
+  if (typeof window === 'undefined') return { present: false, valid: true, value: [] };
   try {
-    const key = `amethyst:announcements:seenIds:${userId}`;
-    const stored = window.localStorage.getItem(key);
-    if (stored !== null) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.every((x): x is string => typeof x === 'string')) {
-        return parsed;
+    const raw = window.localStorage.getItem(key);
+    if (raw === null) return { present: false, valid: true, value: [] };
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.every((value) => typeof value === 'string')) {
+      return { present: true, valid: false, value: [] };
+    }
+    return { present: true, valid: true, value: uniqueStrings(parsed) };
+  } catch {
+    return { present: true, valid: false, value: [] };
+  }
+};
+
+const readStoredString = (key: string): StoredValue<string | null> => {
+  if (typeof window === 'undefined') return { present: false, valid: true, value: null };
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw === null
+      ? { present: false, valid: true, value: null }
+      : { present: true, valid: raw.length > 0, value: raw || null };
+  } catch {
+    return { present: true, valid: false, value: null };
+  }
+};
+
+const readLegacyMigrationBatches = (
+  userId: number | string,
+  authorizedRows: ApiNotificationRow[],
+): LegacyMigrationBatch[] => {
+  if (typeof window === 'undefined') return [];
+  const batches: LegacyMigrationBatch[] = [];
+  const seenKey = `amethyst:announcements:seenIds:${userId}`;
+  const lastSeenKey = `amethyst:announcements:lastSeenId:${userId}`;
+  const invitationKey = `study-group-invitation-read:${userId}`;
+  const systemKey = `study-group-system-notifications:${userId}`;
+
+  const seen = readStoredStringArray(seenKey);
+  if (seen.present && seen.valid) {
+    batches.push({
+      key: seenKey,
+      markers: seen.value.length ? [{ category: 'announcement', sourceRefIds: seen.value }] : [],
+    });
+  }
+
+  const lastSeen = readStoredString(lastSeenKey);
+  if (lastSeen.present && lastSeen.valid && lastSeen.value) {
+    const announcementIds = authorizedRows
+      .filter((row) => row.type === 'announcement').map((row) => row.source_ref_id);
+    const lastSeenIndex = announcementIds.indexOf(lastSeen.value);
+    const sourceRefIds = lastSeenIndex >= 0 ? announcementIds.slice(lastSeenIndex) : [lastSeen.value];
+    batches.push({
+      key: lastSeenKey,
+      markers: [{ category: 'announcement', sourceRefIds: uniqueStrings(sourceRefIds) }],
+    });
+  }
+
+  const invitations = readStoredStringArray(invitationKey);
+  if (invitations.present && invitations.valid) {
+    batches.push({
+      key: invitationKey,
+      markers: invitations.value.length
+        ? [{ category: 'study_group_invitation', sourceRefIds: invitations.value }] : [],
+    });
+  }
+
+  try {
+    const raw = window.localStorage.getItem(systemKey);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const authorized = new Set(authorizedRows
+          .filter((row) => row.type !== 'announcement' && row.type !== 'study_group_invitation')
+          .map((row) => `${row.type}:${row.source_ref_id}`));
+        const byCategory = new Map<string, string[]>();
+        for (const item of parsed) {
+          if (!isRecord(item) || item.read !== true) continue;
+          const category = typeof item.type === 'string' ? item.type : '';
+          const sourceRefId = typeof item.id === 'string' ? item.id : '';
+          if (!authorized.has(`${category}:${sourceRefId}`)) continue;
+          byCategory.set(category, [...(byCategory.get(category) ?? []), sourceRefId]);
+        }
+        batches.push({
+          key: systemKey,
+          markers: [...byCategory].map(([category, sourceRefIds]) => ({
+            category,
+            sourceRefIds: uniqueStrings(sourceRefIds),
+          })),
+        });
       }
     }
-    return [];
   } catch {
-    return [];
+    // Corrupt legacy data is retained instead of being deleted.
   }
-}
+  return batches;
+};
 
-function writeSeenIds(ids: string[], userId?: number | string): boolean {
-  if (typeof window === 'undefined' || userId === undefined) return false;
-  try {
-    const key = `amethyst:announcements:seenIds:${userId}`;
-    window.localStorage.setItem(key, JSON.stringify(ids));
-    return window.localStorage.getItem(key) !== null;
-  } catch {
-    return false;
+const migrateLegacyNotificationStorage = async (options: {
+  batches: LegacyMigrationBatch[];
+  isCurrent: () => boolean;
+  postMarkers: (markers: LegacyMigrationBatch['markers']) => Promise<{ success: boolean }>;
+  onMigrated?: (batch: LegacyMigrationBatch) => void;
+  onError?: (error: unknown) => void;
+}): Promise<void> => {
+  if (typeof window === 'undefined') return;
+  for (const batch of options.batches) {
+    if (!options.isCurrent()) return;
+    try {
+      const result = await options.postMarkers(batch.markers);
+      if (!options.isCurrent()) return;
+      if (!result.success) continue;
+      window.localStorage.removeItem(batch.key);
+      options.onMigrated?.(batch);
+    } catch (error) {
+      options.onError?.(error);
+    }
   }
-}
+};
 
-export function useAnnouncementBell(enabled: boolean, userId?: number | string, t?: (key: string) => string) {
-  const [announcements, setAnnouncements] = useState<BellAnnouncement[]>([]);
+export type BellAnnouncement = AnnouncementInboxItem;
+export type { StudyGroupNotificationActor, StudyGroupInvitation, StudyGroupLifecycleNotification };
+
+type UserId = number | string;
+
+export function useAnnouncementBell(
+  enabled: boolean,
+  userId?: UserId,
+  t?: (key: string) => string,
+) {
+  const [items, setItems] = useState<NotificationItem[]>([]);
+  const [stateOwnerId, setStateOwnerId] = useState<UserId | undefined>();
   const [loading, setLoading] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-
-  // User-scoped states
-  const [seenAnnouncementIds, setSeenAnnouncementIds] = useState<string[]>([]);
-  const [invitations, setInvitations] = useState<StudyGroupInvitation[]>([]);
-  const [invitationsLoaded, setInvitationsLoaded] = useState(false);
-  const handledLinkRef = useRef(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [invitationUnavailable, setInvitationUnavailable] = useState(false);
-  const [readInvitationIds, setReadInvitationIds] = useState<string[]>([]);
-  const [systemNotifications, setSystemNotifications] = useState<StudyGroupLifecycleNotification[]>([]);
-  const [selected, setSelected] = useState<StudyGroupInvitation | null>(null);
-  const [selectedSystemNotification, setSelectedSystemNotification] = useState<StudyGroupLifecycleNotification | null>(null);
+  const [selected, setSelected] = useState<InvitationInboxItem | null>(null);
+  const [selectedSystemNotification, setSelectedSystemNotification] = useState<SystemInboxItem | null>(null);
   const [acting, setActing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const storedUser = useStoredUser();
   const activeUserId = userId ?? storedUser?.userId;
   const isUserRole = storedUser?.role === 'user';
+  const invitationQueryId = useSearchParams().get('invitation');
+  const socket = useSocket();
 
-  const readStorageKey = activeUserId ? `study-group-invitation-read:${activeUserId}` : null;
-  const systemStorageKey = activeUserId ? `study-group-system-notifications:${activeUserId}` : null;
+  const mountedRef = useRef(true);
+  const activeUserIdRef = useRef(activeUserId);
+  const requestCounterRef = useRef(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const handledDeepLinkRef = useRef<string | null>(null);
 
-  // Track the resolved active user ID in a ref to protect against cross-user async state leakage
-  const activeUserIdRef = useRef<number | string | undefined>(activeUserId);
   useEffect(() => {
     activeUserIdRef.current = activeUserId;
   }, [activeUserId]);
 
-  // Track the user ID who owns the currently loaded user-scoped state to prevent single-frame cross-user leakage
-  const [stateOwnerId, setStateOwnerId] = useState<number | string | undefined>(activeUserId);
-
-  // Reset user-scoped states when activeUserId changes
   useEffect(() => {
-    setAnnouncements([]);
-    setInvitations([]);
-    setInvitationsLoaded(false);
-    handledLinkRef.current = false;
-    setSystemNotifications([]);
-    setReadInvitationIds([]);
-    setSeenAnnouncementIds([]);
-    setSelected(null);
-    setSelectedSystemNotification(null);
-    setError(null);
-    setInvitationUnavailable(false);
-    setActing(false);
-    setLoading(false);
-    setStateOwnerId(activeUserId);
-  }, [activeUserId]);
-
-  useEffect(() => {
-    if (enabled) {
-      setToken(getAuthToken());
-    } else {
-      setToken(null);
-    }
-  }, [enabled]);
-
-  const socket = useSocket(token);
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    isMountedRef.current = true;
+    mountedRef.current = true;
     return () => {
-      isMountedRef.current = false;
+      mountedRef.current = false;
+      requestCounterRef.current += 1;
+      abortControllerRef.current?.abort();
     };
   }, []);
 
-  const fetchAnnouncements = useCallback(async () => {
-    if (activeUserId === undefined) return;
-    const requestingUserId = activeUserId;
+  const invalidatePendingFetch = useCallback(() => {
+    requestCounterRef.current += 1;
+    abortControllerRef.current?.abort();
+  }, []);
+
+  const fetchNotifications = useCallback(async () => {
+    if (activeUserId === undefined || activeUserId === null || activeUserId === '') return;
+    const requestedUserId = activeUserId;
+    abortControllerRef.current?.abort();
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    const requestToken = ++requestCounterRef.current;
+    const isCurrent = () => shouldApplyNotificationResult(
+      mountedRef.current,
+      abortController.signal.aborted,
+      requestedUserId,
+      activeUserIdRef.current,
+      requestToken,
+      requestCounterRef.current,
+    );
+
     setLoading(true);
-    try {
-      const res = await apiFetch<BellAnnouncement[]>('/api/announcements');
-      if (
-        isMountedRef.current &&
-        activeUserIdRef.current === requestingUserId
-      ) {
-        if (res.success && res.data) {
-          setAnnouncements(res.data);
-
-          // Auto-migrate legacy lastSeenId string to user-scoped seenIds array
-          try {
-            const key = `amethyst:announcements:seenIds:${activeUserId}`;
-            const legacyKey = `amethyst:announcements:lastSeenId:${activeUserId}`;
-            let currentSeenIds = readSeenIds(activeUserId);
-
-            if (window.localStorage.getItem(key) === null) {
-              const legacyVal = window.localStorage.getItem(legacyKey);
-              if (legacyVal) {
-                let migratedIds = [legacyVal];
-                const lastSeenIndex = res.data.findIndex((ann) => ann.announceId === legacyVal);
-                if (lastSeenIndex !== -1) {
-                  migratedIds = res.data.slice(lastSeenIndex).map((ann) => ann.announceId);
-                }
-                const success = writeSeenIds(migratedIds, activeUserId);
-                if (success) {
-                  window.localStorage.removeItem(legacyKey);
-                }
-                currentSeenIds = migratedIds;
-                setSeenAnnouncementIds(migratedIds);
-              }
-            }
-
-            // Reconcile stale seen IDs
-            const activeSet = new Set(res.data.map((ann) => ann.announceId));
-            const cleanedSeenIds = currentSeenIds.filter((id) => activeSet.has(id));
-            if (cleanedSeenIds.length !== currentSeenIds.length) {
-              writeSeenIds(cleanedSeenIds, activeUserId);
-              setSeenAnnouncementIds(cleanedSeenIds);
-            }
-          } catch {
-            // Ignore storage errors safely
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch announcements:', err);
-    } finally {
-      if (
-        isMountedRef.current &&
-        activeUserIdRef.current === requestingUserId
-      ) {
-        setLoading(false);
-      }
+    const response = await apiFetch<NotificationInboxResponse>(
+      '/api/notifications',
+      { signal: abortController.signal },
+    );
+    if (!isCurrent()) return;
+    if (!response.success || !response.data) {
+      setError(response.message || 'Notification inbox could not be loaded.');
+      setLoading(false);
+      return;
     }
+
+    const rows = Array.isArray(response.data.notifications) ? response.data.notifications : [];
+    setItems(mapApiNotifications(rows));
+    setStateOwnerId(requestedUserId);
+    setHasLoaded(true);
+    setError(null);
+    setLoading(false);
+
+    await migrateLegacyNotificationStorage({
+      batches: readLegacyMigrationBatches(requestedUserId, rows),
+      isCurrent,
+      postMarkers: (markers) => apiFetch('/api/notifications/migrate-local', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markers }),
+        signal: abortController.signal,
+      }),
+      onMigrated: (batch) => {
+        const migrated = new Set(batch.markers.flatMap((marker) =>
+          marker.sourceRefIds.map((sourceId) => `${marker.category}:${sourceId}`)));
+        setItems((current) => current.map((item) =>
+          migrated.has(`${item.category}:${item.sourceId}`) ? setItemReadState(item, true) : item));
+      },
+      onError: (migrationError) => {
+        if (isCurrent()) console.error('Legacy notification migration failed:', migrationError);
+      },
+    });
   }, [activeUserId]);
 
-  const loadInvitations = useCallback(async () => {
-    if (!isUserRole) return;
-    const requestingUserId = activeUserId;
-    if (requestingUserId === undefined) return;
-    const result = await listStudyGroupInvitations();
-    if (
-      result.success &&
-      result.data &&
-      isMountedRef.current &&
-      activeUserIdRef.current === requestingUserId
-    ) {
-      setInvitations(result.data);
-      setInvitationsLoaded(true);
-    }
-  }, [isUserRole, activeUserId]);
-
-  // Mark all active announcements read on dropdown open
-  const markAsSeen = useCallback(() => {
-    if (activeUserId === undefined) return;
-    setSeenAnnouncementIds((prev) => {
-      const nextSet = new Set(prev);
-      let changed = false;
-      announcements.forEach((ann) => {
-        if (!nextSet.has(ann.announceId)) {
-          nextSet.add(ann.announceId);
-          changed = true;
-        }
-      });
-      if (changed) {
-        const nextArr = Array.from(nextSet);
-        writeSeenIds(nextArr, activeUserId);
-        return nextArr;
-      }
-      return prev;
-    });
-  }, [announcements, activeUserId]);
-
-  const markInvitationRead = useCallback((requestId: string) => {
-    setReadInvitationIds((current) => {
-      if (current.includes(requestId)) return current;
-      const next = [...current, requestId];
-      if (readStorageKey) {
-        try {
-          localStorage.setItem(readStorageKey, JSON.stringify(next));
-        } catch {
-          // Ignore
-        }
-      }
-      return next;
-    });
-  }, [readStorageKey]);
-
-  const openSystemNotification = useCallback((notification: StudyGroupLifecycleNotification) => {
-    const next = systemNotifications.map((item) => item.id === notification.id ? { ...item, read: true } : item);
-    setSystemNotifications(next);
-    if (systemStorageKey) {
-      try {
-        localStorage.setItem(systemStorageKey, JSON.stringify(next));
-      } catch {
-        // Ignore
-      }
-    }
-    setSelectedSystemNotification({ ...notification, read: true });
-  }, [systemNotifications, systemStorageKey]);
-
-  const decide = async (invitation: StudyGroupInvitation, decision: 'accept' | 'deny') => {
-    const requestingUserId = activeUserId;
-    if (requestingUserId === undefined) return;
-    setActing(true);
-    setError(null);
-    const result = decision === 'accept'
-      ? await acceptStudyGroupInvitation(invitation.group.groupId, invitation.requestId)
-      : await denyStudyGroupInvitation(invitation.group.groupId, invitation.requestId);
-
-    if (activeUserIdRef.current !== requestingUserId) {
-      // Ignore response and cancel execution if the user has changed during the request
-      return;
-    }
-
-    setActing(false);
-
-    if (!result.success) {
-      const apiError = result.error;
-      if (apiError?.code === 'NOT_FOUND' || apiError?.code === 'STALE_STATE' || apiError?.code === 'VALIDATION_ERROR') {
-        setSelected(null);
-        setInvitationUnavailable(true);
-        setInvitations((items) => items.filter((item) => item.requestId !== invitation.requestId));
-        return;
-      }
-      setError(result.message || (t ? t('study_group.invitation_action_error') : 'Action could not be completed.'));
-      return;
-    }
-
-    setInvitations((items) => items.filter((item) => item.requestId !== invitation.requestId));
+  const resetState = useCallback(() => {
+    setItems([]);
+    setStateOwnerId(undefined);
+    setHasLoaded(false);
+    setInvitationUnavailable(false);
     setSelected(null);
-
-    window.location.href = decision === 'accept'
-      ? `/dashboard/user/yourstudygroups/joined/${invitation.group.groupId}?joined=1`
-      : '/dashboard/user/yourstudygroups';
-  };
-
-  // Load seen IDs and study group local storages
-  useEffect(() => {
-    if (activeUserId === undefined) return;
-    setSeenAnnouncementIds(readSeenIds(activeUserId));
-
-    if (readStorageKey) {
-      try {
-        const stored = JSON.parse(localStorage.getItem(readStorageKey) || '[]');
-        setReadInvitationIds(Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : []);
-      } catch {
-        setReadInvitationIds([]);
-      }
-    }
-    if (systemStorageKey) {
-      try {
-        const stored = JSON.parse(localStorage.getItem(systemStorageKey) || '[]');
-        setSystemNotifications(Array.isArray(stored) ? stored.slice(0, 50) : []);
-      } catch {
-        setSystemNotifications([]);
-      }
-    }
-  }, [activeUserId, readStorageKey, systemStorageKey]);
+    setSelectedSystemNotification(null);
+    setActing(false);
+    setError(null);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (!enabled || activeUserId === undefined) return;
-    fetchAnnouncements();
-    if (isUserRole) {
-      loadInvitations();
-    }
-  }, [enabled, activeUserId, fetchAnnouncements, isUserRole, loadInvitations]);
-
-  // Handle invitation deep-linking once per page load/user session
-  useEffect(() => {
-    if (activeUserId === undefined || !isUserRole || !invitationsLoaded || handledLinkRef.current) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const requestId = params.get('invitation');
-    if (!requestId) return;
-
-    handledLinkRef.current = true;
-    const invitation = invitations.find((item) => item.requestId === requestId);
-    if (!invitation) {
-      window.setTimeout(() => {
-        if (isMountedRef.current) {
-          setInvitationUnavailable(true);
-        }
-      }, 0);
-      return;
-    }
-
-    window.setTimeout(() => {
-      if (isMountedRef.current) {
-        markInvitationRead(invitation.requestId);
-        setSelected(invitation);
+    let cancelled = false;
+    invalidatePendingFetch();
+    handledDeepLinkRef.current = null;
+    const synchronizeUser = async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      resetState();
+      if (enabled && activeUserId !== undefined && activeUserId !== null && activeUserId !== '') {
+        await fetchNotifications();
       }
-    }, 0);
-  }, [activeUserId, isUserRole, invitationsLoaded, invitations, markInvitationRead, setSelected, setInvitationUnavailable]);
-
-  // Socket listener registration
-  useEffect(() => {
-    if (!enabled || !socket || activeUserId === undefined) return;
-
-    const handleAnnouncementChanged = (data?: { action?: string; announcement?: BellAnnouncement }) => {
-      if (data && (data.action === 'republished' || data.action === 'published') && data.announcement?.announceId) {
-        const republishId = data.announcement.announceId;
-        setSeenAnnouncementIds((prev) => {
-          const nextSet = new Set(prev);
-          if (nextSet.has(republishId)) {
-            nextSet.delete(republishId);
-            const nextArr = Array.from(nextSet);
-            writeSeenIds(nextArr, activeUserId);
-            return nextArr;
-          }
-          return prev;
-        });
-      }
-      fetchAnnouncements();
     };
-
-    socket.on('announcement:changed', handleAnnouncementChanged);
-
+    void synchronizeUser();
     return () => {
-      socket.off('announcement:changed', handleAnnouncementChanged);
+      cancelled = true;
     };
-  }, [enabled, socket, activeUserId, fetchAnnouncements]);
+  }, [activeUserId, enabled, fetchNotifications, invalidatePendingFetch, resetState]);
+
+  const updateAllReadLocally = useCallback(() => {
+    setItems((current) => current.map((item) => setItemReadState(item, true)));
+  }, []);
 
   useEffect(() => {
-    if (!socket || !isUserRole) return;
-    const refresh = () => void loadInvitations();
-    const receiveNotification = (notification: StudyGroupLifecycleNotification) => {
-      setSystemNotifications((current) => {
-        if (current.some((item) => item.id === notification.id)) return current;
-        const next = [{ ...notification, read: false }, ...current].slice(0, 50);
-        if (systemStorageKey) {
-          try {
-            localStorage.setItem(systemStorageKey, JSON.stringify(next));
-          } catch {
-            // Ignore
-          }
-        }
-        return next;
-      });
+    if (!socket || !enabled || activeUserId === undefined || activeUserId === null) return;
+    const refresh = () => void fetchNotifications();
+    const syncRead = (event?: { notificationId?: string }) => {
+      if (event?.notificationId === 'ALL') updateAllReadLocally();
+      else void fetchNotifications();
     };
-
-    socket.on('study-group:changed', refresh);
-    socket.on('notification:new', receiveNotification);
-
+    socket.on('notification:new', refresh);
+    socket.on('notification:read', syncRead);
+    socket.on('announcement:changed', refresh);
     return () => {
-      socket.off('study-group:changed', refresh);
-      socket.off('notification:new', receiveNotification);
+      socket.off('notification:new', refresh);
+      socket.off('notification:read', syncRead);
+      socket.off('announcement:changed', refresh);
     };
-  }, [socket, isUserRole, loadInvitations, systemStorageKey]);
+  }, [activeUserId, enabled, fetchNotifications, socket, updateAllReadLocally]);
 
-
-
-  const isStateValid = stateOwnerId === activeUserId;
-
-  const validAnnouncements = isStateValid ? announcements : [];
-  const validSeenAnnouncementIds = isStateValid ? seenAnnouncementIds : [];
-  const validInvitations = isStateValid ? invitations : [];
-  const validReadInvitationIds = isStateValid ? readInvitationIds : [];
-  const validSystemNotifications = isStateValid ? systemNotifications : [];
-  const validSelected = isStateValid ? selected : null;
-  const validSelectedSystemNotification = isStateValid ? selectedSystemNotification : null;
-  const validInvitationUnavailable = isStateValid ? invitationUnavailable : false;
-  const validActing = isStateValid ? acting : false;
-  const validError = isStateValid ? error : null;
-
-  const seenIdSet = useMemo(() => new Set(validSeenAnnouncementIds), [validSeenAnnouncementIds]);
-
-  // Dynamically calculate hasUnread unified state on render to avoid stale React state
-  const hasUnread = activeUserId !== undefined && (
-    validAnnouncements.some((ann) => !seenIdSet.has(ann.announceId)) ||
-    (isUserRole && (
-      validInvitations.some((item) => !validReadInvitationIds.includes(item.requestId)) ||
-      validSystemNotifications.some((item) => !item.read)
-    ))
+  const validItems = useMemo(
+    () => stateOwnerId === activeUserId ? items : [],
+    [activeUserId, items, stateOwnerId],
   );
 
+  const markAsSeen = useCallback(async () => {
+    if (activeUserId === undefined || activeUserId === null) return false;
+    const previousItems = validItems;
+    const requestedUserId = activeUserId;
+    invalidatePendingFetch();
+    updateAllReadLocally();
+    setError(null);
+
+    const response = await apiFetch('/api/notifications/read-all', { method: 'PATCH' });
+    if (!mountedRef.current || activeUserIdRef.current !== requestedUserId) return false;
+    if (response.success) return true;
+
+    setItems(previousItems);
+    setError(response.message || 'Notifications could not be marked as read.');
+    void fetchNotifications();
+    return false;
+  }, [activeUserId, fetchNotifications, invalidatePendingFetch, updateAllReadLocally, validItems]);
+
+  const markItemRead = useCallback(async (item: NotificationItem) => {
+    if (activeUserId === undefined || activeUserId === null || item.isRead) return item.isRead;
+    const requestedUserId = activeUserId;
+    setItems((current) => current.map((candidate) =>
+      candidate.category === item.category && candidate.sourceId === item.sourceId
+        ? setItemReadState(candidate, true) : candidate));
+    const response = await apiFetch(
+      `/api/notifications/${encodeURIComponent(item.id)}/read`,
+      { method: 'PATCH' },
+    );
+    if (!mountedRef.current || activeUserIdRef.current !== requestedUserId) return false;
+    if (response.success) return true;
+    setItems((current) => current.map((candidate) =>
+      candidate.category === item.category && candidate.sourceId === item.sourceId
+        ? setItemReadState(candidate, false) : candidate));
+    setError(response.message || 'Notification could not be marked as read.');
+    return false;
+  }, [activeUserId]);
+
+  const invitationItems = useMemo(
+    () => validItems.filter(isInvitationItem),
+    [validItems],
+  );
+
+  useEffect(() => {
+    if (stateOwnerId !== activeUserId || !hasLoaded || !isUserRole || !invitationQueryId) return;
+    const deepLinkKey = `${activeUserId}:${invitationQueryId}`;
+    if (handledDeepLinkRef.current === deepLinkKey) return;
+    let cancelled = false;
+    const openDeepLink = async () => {
+      await Promise.resolve();
+      if (cancelled || handledDeepLinkRef.current === deepLinkKey) return;
+      handledDeepLinkRef.current = deepLinkKey;
+      const plan = planInvitationDeepLink(invitationQueryId, validItems);
+      window.history.replaceState(
+        window.history.state,
+        '',
+        consumeInvitationQueryParameter(window.location.href),
+      );
+      if (plan.status === 'open') {
+        setSelected(plan.item.metadata);
+        void markItemRead(plan.item);
+      } else if (plan.status === 'unavailable') {
+        setInvitationUnavailable(true);
+      }
+    };
+    void openDeepLink();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeUserId, hasLoaded, invitationQueryId, isUserRole, markItemRead, stateOwnerId, validItems]);
+
+  const markInvitationRead = useCallback(async (invitation: InvitationInboxItem) => {
+    const item = invitationItems.find((candidate) => candidate.sourceId === invitation.requestId);
+    return item ? markItemRead(item) : false;
+  }, [invitationItems, markItemRead]);
+
+  const decide = useCallback(async (
+    invitation: InvitationInboxItem,
+    decision: 'accept' | 'deny',
+  ) => {
+    if (!isUserRole || activeUserId === undefined || activeUserId === null) return;
+    const requestedUserId = activeUserId;
+    setActing(true);
+    setError(null);
+    try {
+      const response = decision === 'accept'
+        ? await acceptStudyGroupInvitation(invitation.group.groupId, invitation.requestId)
+        : await denyStudyGroupInvitation(invitation.group.groupId, invitation.requestId);
+      if (!mountedRef.current || activeUserIdRef.current !== requestedUserId) return;
+      if (!response.success) {
+        if (['NOT_FOUND', 'STALE_STATE', 'VALIDATION_ERROR'].includes(response.error?.code ?? '')) {
+          setSelected(null);
+          setInvitationUnavailable(true);
+          setItems((current) => current.filter((item) =>
+            !isInvitationItem(item) || item.sourceId !== invitation.requestId));
+          return;
+        }
+        setError(response.message || response.error?.message || (
+          t ? t('study_group.invitation_action_error') : 'Action could not be completed.'
+        ));
+        return;
+      }
+      await markInvitationRead(invitation);
+      if (!mountedRef.current || activeUserIdRef.current !== requestedUserId) return;
+      setSelected(null);
+      void fetchNotifications();
+    } catch (decisionError) {
+      if (mountedRef.current && activeUserIdRef.current === requestedUserId) {
+        setError(decisionError instanceof Error ? decisionError.message : 'An unexpected error occurred.');
+      }
+    } finally {
+      if (mountedRef.current && activeUserIdRef.current === requestedUserId) setActing(false);
+    }
+  }, [activeUserId, fetchNotifications, isUserRole, markInvitationRead, t]);
+
   return {
-    announcements: validAnnouncements,
-    loading: isStateValid ? loading : false,
-    hasUnread,
+    items: validItems,
+    loading,
+    hasUnread: validItems.some((item) => !item.isRead),
     markAsSeen,
-    // Unified study group notifications state
-    seenAnnouncementIds: validSeenAnnouncementIds,
-    invitations: validInvitations,
-    invitationUnavailable: validInvitationUnavailable,
+    invitationUnavailable: stateOwnerId === activeUserId ? invitationUnavailable : false,
     setInvitationUnavailable,
-    readInvitationIds: validReadInvitationIds,
-    systemNotifications: validSystemNotifications,
-    selected: validSelected,
+    selected: stateOwnerId === activeUserId ? selected : null,
     setSelected,
-    selectedSystemNotification: validSelectedSystemNotification,
+    selectedSystemNotification: stateOwnerId === activeUserId ? selectedSystemNotification : null,
     setSelectedSystemNotification,
-    acting: validActing,
-    error: validError,
-    markInvitationRead,
-    openSystemNotification,
+    acting: stateOwnerId === activeUserId ? acting : false,
+    error: stateOwnerId === activeUserId ? error : null,
     decide,
-    isUserRole
+    markItemRead,
+    isUserRole,
   };
 }

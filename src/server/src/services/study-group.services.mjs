@@ -9,6 +9,59 @@ import {
   sendStudyGroupRequestDeniedEmail,
   sendStudyGroupRequestSubmittedEmail,
 } from '../utils/mailer.mjs';
+import { saveNotification } from './notification.services.mjs';
+
+const lifecycleNotification = (type, groupId, details) => ({
+  id: details.eventId || `${type}:${groupId}:${Date.now()}`,
+  type,
+  groupId,
+  createdAt: new Date().toISOString(),
+  ...(details.memberName ? { memberName: details.memberName } : {}),
+  ...(details.actor ? { actor: details.actor } : {}),
+  ...(details.changedFields ? { changedFields: details.changedFields } : {}),
+  ...(details.destination ? { destination: details.destination } : {}),
+  group: {
+    title: details.title,
+    subject: details.subject,
+    currentMembers: details.currentMembers,
+    capacity: details.capacity,
+    date: details.reservation?.startDate || details.date,
+    startTime: details.reservation?.startTime || details.startTime || details.time?.split(' - ')[0],
+    endTime: details.reservation?.endTime || details.endTime || details.time?.split(' - ')[1],
+    roomName: details.reservation?.room?.roomName || details.roomName,
+    branchName: details.reservation?.room?.branchName || details.branchName,
+    roomId: details.reservation?.room?.roomId || details.roomId,
+    branchId: details.reservation?.room?.branchId || details.branchId,
+  },
+});
+
+const persistLifecycleNotification = async (client, recipientId, type, groupId, details) => {
+  if (!recipientId) return null;
+  const notification = lifecycleNotification(type, groupId, details);
+  const saved = await saveNotification(
+    recipientId,
+    notification.type || 'notification',
+    notification.id,
+    notification,
+    false,
+    client,
+  );
+  const savedPayload = saved?.payload && typeof saved.payload === 'object'
+    ? saved.payload
+    : notification;
+  return {
+    recipientId,
+    notification: {
+      ...savedPayload,
+      id: notification.id,
+      type: notification.type,
+      groupId: notification.groupId,
+      createdAt: saved?.created_at
+        ? new Date(saved.created_at).toISOString()
+        : notification.createdAt,
+    },
+  };
+};
 
 export class StudyGroupError extends Error {
   constructor(code, message, status = 400, details, retryAt) {
@@ -306,16 +359,25 @@ export const editStudyGroup = async (groupId, userId, input) => model.withTransa
   const updateResult = await model.updateGroupMetadata(groupId, metadata, client);
   const detail = await getDetail(groupId, userId, client);
   const recipients = changedFields.length ? await model.listApprovedNotificationRecipients(groupId, userId, client) : [];
+  
+  const notificationDetails = {
+    ...lifecycleEmailDetails(detail),
+    actor: notificationActor(detail.organizerProfile),
+    changedFields,
+    eventId: `group_updated:${groupId}:${new Date(updateResult.notificationEventAt).toISOString()}`,
+    destination: { mode: 'joined', groupId },
+  };
+  
+  const notifications = [];
+  for (const recipient of recipients) {
+    const notif = await persistLifecycleNotification(client, recipient.userId, 'group_updated', groupId, notificationDetails);
+    if (notif) notifications.push(notif);
+  }
+
   return {
     ...detail,
-    notificationRecipients: recipients.map((recipient) => recipient.userId),
-    notificationDetails: {
-      ...lifecycleEmailDetails(detail),
-      actor: notificationActor(detail.organizerProfile),
-      changedFields,
-      eventId: `group_updated:${groupId}:${new Date(updateResult.notificationEventAt).toISOString()}`,
-      destination: { mode: 'joined', groupId },
-    },
+    notifications,
+    notificationDetails
   };
 });
 
@@ -332,32 +394,39 @@ export const approveRequest = async (groupId, requestId, userId) => {
     const participation = await model.setRequestStatus(requestId, 'request', 'pending', 'approved', client);
     const updated = await model.reconcileMemberCount(groupId, 1, client);
     if (!updated) fail('GROUP_FULL', 'The group has no available capacity.', 409);
-    return { group: await getDetail(groupId, userId, client), participation: projectParticipation(participation), requester, creator };
+    const groupDetail = await getDetail(groupId, userId, client);
+    
+    const requesterDetails = {
+      ...lifecycleEmailDetails(groupDetail),
+      actor: notificationActor(groupDetail.organizerProfile),
+      eventId: `join_request_approved:${requestId}`,
+      destination: { mode: 'joined', groupId },
+    };
+    const creatorDetails = {
+      ...lifecycleEmailDetails(groupDetail),
+      actor: notificationActor(requester),
+      memberName: requester?.username || 'A member',
+      eventId: `member_joined:${requestId}`,
+      destination: { mode: 'created', groupId },
+    };
+    
+    const notifications = [];
+    const notif1 = await persistLifecycleNotification(client, requester?.userId, 'join_request_approved', groupId, requesterDetails);
+    if (notif1) notifications.push(notif1);
+    const notif2 = await persistLifecycleNotification(client, creator?.userId, 'member_joined', groupId, creatorDetails);
+    if (notif2) notifications.push(notif2);
+
+    return { group: groupDetail, participation: projectParticipation(participation), requester, creator, requesterDetails, creatorDetails, notifications };
   });
-  const requesterDetails = {
-    ...lifecycleEmailDetails(result.group),
-    actor: notificationActor(result.group.organizerProfile),
-    eventId: `join_request_approved:${requestId}`,
-    destination: { mode: 'joined', groupId },
-  };
-  const creatorDetails = {
-    ...lifecycleEmailDetails(result.group),
-    actor: notificationActor(result.requester),
-    memberName: result.requester?.username || 'A member',
-    eventId: `member_joined:${requestId}`,
-    destination: { mode: 'created', groupId },
-  };
+
   Promise.all([
-    sendLifecycleEmailSafely(sendStudyGroupRequestApprovedEmail, result.requester, requesterDetails, 'request-approved'),
-    sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, creatorDetails, 'member-joined'),
+    sendLifecycleEmailSafely(sendStudyGroupRequestApprovedEmail, result.requester, result.requesterDetails, 'request-approved'),
+    sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, result.creatorDetails, 'member-joined'),
   ]).catch(() => {});
   return {
     group: result.group,
     participation: result.participation,
-    notifications: [
-      { recipientId: result.requester?.userId, type: 'join_request_approved', details: requesterDetails },
-      { recipientId: result.creator?.userId, type: 'member_joined', details: creatorDetails },
-    ].filter((item) => item.recipientId),
+    notifications: result.notifications
   };
 };
 
@@ -369,21 +438,27 @@ export const denyRequest = async (groupId, requestId, userId) => {
     if (!request || request.status !== 'pending' || request.type !== 'request') fail('STALE_STATE', 'The request is no longer pending.', 409);
     const requester = await model.findNotificationUser(request.user_id, client);
     const participation = await model.setRequestStatus(requestId, 'request', 'pending', 'denied', client);
-    return { group: await getDetail(groupId, userId, client), participation: projectParticipation(participation), requester };
+    const groupDetail = await getDetail(groupId, userId, client);
+    
+    const details = {
+      ...lifecycleEmailDetails(groupDetail),
+      actor: notificationActor(groupDetail.organizerProfile),
+      eventId: `join_request_denied:${requestId}`,
+      destination: { mode: 'dashboard' },
+    };
+    
+    const notifications = [];
+    const notif = await persistLifecycleNotification(client, requester?.userId, 'join_request_denied', groupId, details);
+    if (notif) notifications.push(notif);
+
+    return { group: groupDetail, participation: projectParticipation(participation), requester, details, notifications };
   });
-  const details = {
-    ...lifecycleEmailDetails(result.group),
-    actor: notificationActor(result.group.organizerProfile),
-    eventId: `join_request_denied:${requestId}`,
-    destination: { mode: 'dashboard' },
-  };
-  sendLifecycleEmailSafely(sendStudyGroupRequestDeniedEmail, result.requester, details, 'request-denied').catch(() => {});
+  
+  sendLifecycleEmailSafely(sendStudyGroupRequestDeniedEmail, result.requester, result.details, 'request-denied').catch(() => {});
   return {
     group: result.group,
     participation: result.participation,
-    notifications: result.requester?.userId
-      ? [{ recipientId: result.requester.userId, type: 'join_request_denied', details }]
-      : [],
+    notifications: result.notifications
   };
 };
 
@@ -396,16 +471,24 @@ export const removeMember = async (groupId, memberId, userId) => {
     const removed = await model.deleteApprovedMembership(groupId, memberId, client);
     if (!removed) fail('NOT_FOUND', 'Approved member not found.', 404);
     await model.reconcileMemberCount(groupId, -1, client);
-    return { detail: await getDetail(groupId, userId, client), recipient, membershipId: removed.request_id };
+    const detail = await getDetail(groupId, userId, client);
+    
+    const notificationDetails = {
+      ...lifecycleEmailDetails(detail),
+      actor: notificationActor(detail.organizerProfile),
+      eventId: `member_removed:${removed.request_id}`,
+      destination: { mode: 'dashboard' },
+    };
+    
+    const notifications = [];
+    const notif = await persistLifecycleNotification(client, memberId, 'member_removed', groupId, notificationDetails);
+    if (notif) notifications.push(notif);
+
+    return { detail, recipient, membershipId: removed.request_id, notificationDetails, notifications };
   });
-  const notificationDetails = {
-    ...lifecycleEmailDetails(result.detail),
-    actor: notificationActor(result.detail.organizerProfile),
-    eventId: `member_removed:${result.membershipId}`,
-    destination: { mode: 'dashboard' },
-  };
-  sendLifecycleEmailSafely(sendStudyGroupRemovalEmail, result.recipient, notificationDetails, 'member-removal').catch(() => {});
-  return { detail: result.detail, notificationDetails };
+  
+  sendLifecycleEmailSafely(sendStudyGroupRemovalEmail, result.recipient, result.notificationDetails, 'member-removal').catch(() => {});
+  return { detail: result.detail, notificationDetails: result.notificationDetails, notifications: result.notifications };
 };
 
 export const submitJoinRequest = async (groupId, userId, content) => {
@@ -421,35 +504,45 @@ export const submitJoinRequest = async (groupId, userId, content) => {
     await model.deleteDeniedParticipations(groupId, userId, client);
     try {
       const participation = projectParticipation(await model.insertJoinRequest({ groupId, userId, content }, client));
+      const requester = await model.findNotificationUser(userId, client);
+      const creator = await model.findGroupCreatorNotificationUser(groupId, client);
+      const detail = await getDetail(groupId, userId, client);
+      
+      const details = {
+        ...lifecycleEmailDetails(detail),
+        actor: notificationActor(requester),
+        requestId: participation.requestId,
+        eventId: `join_request_submitted:${participation.requestId}`,
+        destination: { mode: 'created', groupId },
+      };
+      
+      const notifications = [];
+      const notif = await persistLifecycleNotification(client, creator?.userId, 'join_request_submitted', groupId, details);
+      if (notif) notifications.push(notif);
+      
       return {
         participation,
-        requester: await model.findNotificationUser(userId, client),
-        creator: await model.findGroupCreatorNotificationUser(groupId, client),
-        detail: await getDetail(groupId, userId, client),
+        requester,
+        creator,
+        detail,
+        details,
+        notifications
       };
     } catch (error) {
       if (error.code === '23505') fail('DUPLICATE_PARTICIPATION', 'A request already exists.', 409);
       throw error;
     }
   });
-  const details = {
-    ...lifecycleEmailDetails(result.detail),
-    actor: notificationActor(result.requester),
-    requestId: result.participation.requestId,
-    eventId: `join_request_submitted:${result.participation.requestId}`,
-    destination: { mode: 'created', groupId },
-  };
-  sendLifecycleEmailSafely(sendStudyGroupRequestSubmittedEmail, result.creator, details, 'request-submitted').catch(() => {});
+  
+  sendLifecycleEmailSafely(sendStudyGroupRequestSubmittedEmail, result.creator, result.details, 'request-submitted').catch(() => {});
   return {
-    ...result.participation,
-    notifications: result.creator?.userId
-      ? [{ recipientId: result.creator.userId, type: 'join_request_submitted', details }]
-      : [],
+    participation: result.participation,
+    notifications: result.notifications
   };
 };
 
-export const cancelRequest = async (groupId, requestId, userId) => {
-  const result = await model.withTransaction(async (client) => {
+export const cancelRequest = async (groupId, requestId, userId) =>
+  model.withTransaction(async (client) => {
     const group = await model.lockGroup(groupId, client);
     if (!group || !['upcoming', 'full'].includes(effectiveStatus(group))) fail('STALE_STATE', 'The request can no longer be cancelled.', 409);
     const detail = await getDetail(groupId, userId, client);
@@ -457,20 +550,20 @@ export const cancelRequest = async (groupId, requestId, userId) => {
     const creator = await model.findGroupCreatorNotificationUser(groupId, client);
     const removed = await model.deletePendingRequest(groupId, requestId, userId, client);
     if (!removed) fail('STALE_STATE', 'The request is no longer pending.', 409);
-    return { detail, requester, creator };
+    const details = {
+      ...lifecycleEmailDetails(detail),
+      actor: notificationActor(requester),
+      eventId: `join_request_cancelled:${requestId}`,
+      destination: { mode: 'created', groupId },
+    };
+    return await persistLifecycleNotification(
+      client,
+      creator?.userId,
+      'join_request_cancelled',
+      groupId,
+      details,
+    ) || { recipientId: null, notification: null };
   });
-  const details = {
-    ...lifecycleEmailDetails(result.detail),
-    actor: notificationActor(result.requester),
-    eventId: `join_request_cancelled:${requestId}`,
-    destination: { mode: 'created', groupId },
-  };
-  return {
-    notifications: result.creator?.userId
-      ? [{ recipientId: result.creator.userId, type: 'join_request_cancelled', details }]
-      : [],
-  };
-};
 
 export const getPendingInvitations = async (userId) => {
   if (!userId) fail('UNAUTHORIZED', 'Authentication required.', 401);
@@ -527,11 +620,11 @@ export const inviteMember = async (groupId, hostUserId, input) => {
     try {
       await model.deletePendingInvitation(created.invitation.requestId);
     } catch (cleanupError) {
-      console.error('Invitation SMTP delivery failed:', error);
+      console.error('Invitation email delivery failed:', error);
       console.error('Invitation cleanup also failed:', cleanupError);
       fail('INVITATION_STATE_INCONSISTENT', 'The invitation email could not be delivered and cleanup failed.', 503);
     }
-    console.error('Invitation SMTP delivery failed:', error);
+    console.error('Invitation email delivery failed:', error);
     fail('EMAIL_DELIVERY_FAILED', 'The invitation email could not be delivered.', 502);
   }
   return { invitation: projectParticipation(created.invitation), group: summary };
@@ -552,45 +645,47 @@ const decideInvitation = async (groupId, requestId, userId, decision) => model.w
     const updated = await model.reconcileMemberCount(groupId, 1, client);
     if (!updated) fail('GROUP_FULL', 'The group has no available capacity.', 409);
     const memberDetail = await getDetail(groupId, userId, client);
+    
+    const details = {
+      ...lifecycleEmailDetails(memberDetail),
+      actor: notificationActor(invitee),
+      memberName: invitee?.username || 'A member',
+      eventId: `member_joined:${requestId}`,
+      destination: { mode: 'created', groupId },
+    };
+    
+    const notif = await persistLifecycleNotification(client, creator?.userId, 'member_joined', groupId, details);
+    
     return {
       group: memberDetail,
       participation: projectParticipation(participation),
       creator,
-      notification: {
-        recipientId: creator?.userId,
-        type: 'member_joined',
-        details: {
-          ...lifecycleEmailDetails(memberDetail),
-          actor: notificationActor(invitee),
-          memberName: invitee?.username || 'A member',
-          eventId: `member_joined:${requestId}`,
-          destination: { mode: 'created', groupId },
-        },
-      },
+      notifications: notif ? [notif] : [],
     };
   }
   const participation = await model.setRequestStatus(requestId, 'invite', 'pending', 'denied', client);
   const detail = await getDetail(groupId, userId, client);
+  
+  const details = {
+    ...lifecycleEmailDetails(detail),
+    actor: notificationActor(invitee),
+    eventId: `invitation_declined:${requestId}`,
+    destination: { mode: 'created', groupId },
+  };
+  
+  const notif = await persistLifecycleNotification(client, creator?.userId, 'invitation_declined', groupId, details);
+  
   return {
     groupId,
     participation: projectParticipation(participation),
-    notification: {
-      recipientId: creator?.userId,
-      type: 'invitation_declined',
-      details: {
-        ...lifecycleEmailDetails(detail),
-        actor: notificationActor(invitee),
-        eventId: `invitation_declined:${requestId}`,
-        destination: { mode: 'created', groupId },
-      },
-    },
+    notifications: notif ? [notif] : [],
   };
 });
 
 export const acceptInvitation = async (groupId, requestId, userId) => {
   const result = await decideInvitation(groupId, requestId, userId, 'approved');
-  if (result.notification?.recipientId) {
-    sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, result.notification.details, 'member-joined').catch(() => {});
+  if (result.notifications?.[0]?.recipientId) {
+    sendLifecycleEmailSafely(sendStudyGroupMemberJoinedEmail, result.creator, result.notifications[0].notification.details, 'member-joined').catch(() => {});
   }
   return result;
 };
@@ -615,22 +710,32 @@ export const leaveGroup = async (groupId, userId) => {
     const removed = await model.deleteApprovedMembership(groupId, userId, client);
     if (!removed) fail('NOT_FOUND', 'Approved membership not found.', 404);
     await model.reconcileMemberCount(groupId, -1, client);
+    
+    const details = {
+      ...lifecycleEmailDetails(detail),
+      memberName: member?.username || 'A member',
+      actor: notificationActor(member),
+      eventId: `member_left:${removed.request_id}`,
+      destination: { mode: 'created', groupId },
+    };
+    
+    const notifications = [];
+    const notif = await persistLifecycleNotification(client, creator?.userId, 'member_left', groupId, details);
+    if (notif) notifications.push(notif);
+
     return {
       creator,
       membershipId: removed.request_id,
-      details: {
-        ...lifecycleEmailDetails(detail),
-        memberName: member?.username || 'A member',
-        actor: notificationActor(member),
-        eventId: `member_left:${removed.request_id}`,
-        destination: { mode: 'created', groupId },
-      },
+      details,
+      notifications
     };
   });
+  
   sendLifecycleEmailSafely(sendStudyGroupMemberLeftEmail, result.creator, result.details, 'member-leave').catch(() => {});
   return {
     notificationRecipient: result.creator?.userId || null,
     notificationDetails: result.details,
+    notifications: result.notifications
   };
 };
 
@@ -649,20 +754,37 @@ export const dissolveStudyGroup = async (groupId, userId) => {
     const recipients = await model.listGroupNotificationRecipients(groupId, userId, client);
     const deleted = await model.dissolveGroup(group, client);
     if (!deleted) fail('STALE_STATE', 'The Study Group could not be dissolved.', 409);
-    return { detail, recipients };
+    
+    const details = {
+      ...lifecycleEmailDetails(detail),
+      actor: notificationActor(detail.organizerProfile),
+      eventId: `group_dissolved:${groupId}`,
+      destination: { mode: 'dashboard' },
+    };
+    
+    const notifications = [];
+    for (const recipient of recipients) {
+      const notif = await persistLifecycleNotification(client, recipient.userId, 'group_dissolved', groupId, details);
+      if (notif) notifications.push(notif);
+    }
+    
+    return {
+      groupId,
+      deleted,
+      recipients,
+      details,
+      notifications
+    };
   });
-  const details = {
-    ...lifecycleEmailDetails(result.detail),
-    actor: notificationActor(result.detail.organizerProfile),
-    eventId: `group_dissolved:${groupId}`,
-    destination: { mode: 'dashboard' },
-  };
-  Promise.all(result.recipients.map((recipient) =>
-    sendLifecycleEmailSafely(sendStudyGroupDissolvedEmail, recipient, details, 'dissolution'))).catch(() => {});
+  
+  for (const recipient of result.recipients) {
+    sendLifecycleEmailSafely(sendStudyGroupDissolvedEmail, recipient, result.details, 'group-dissolve').catch(() => {});
+  }
   return {
-    groupId,
-    deleted: true,
-    notificationRecipients: result.recipients.map((recipient) => recipient.userId),
-    notificationDetails: details,
+    groupId: result.groupId,
+    deleted: result.deleted,
+    notificationRecipients: result.recipients.map((r) => r.userId),
+    notificationDetails: result.details,
+    notifications: result.notifications
   };
 };

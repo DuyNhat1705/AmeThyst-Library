@@ -194,8 +194,8 @@ const confirmReturn = async (req, res) => {
     const { borrow_id, conditions, description, is_lost, expected_configuration_version } = req.body;
     const branchId = req.user.branch_id;
 
-    if (!borrow_id) {
-      return res.status(400).json({ success: false, data: null, message: 'borrow_id is required' });
+    if (!borrow_id || !branchId) {
+      return res.status(400).json({ success: false, data: null, message: 'borrow_id and branch_id are required' });
     }
 
     const result = await confirmReturnService(borrow_id, branchId, conditions || [], description || null, is_lost || false, expected_configuration_version);

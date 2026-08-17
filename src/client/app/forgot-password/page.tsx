@@ -41,7 +41,9 @@ export default function ForgotPasswordPage() {
         let errorMessage = t('auth.something_went_wrong');
         try {
           const errorData = await res.json();
-          errorMessage = errorData.error || errorMessage;
+          errorMessage = typeof errorData.error === 'string'
+            ? errorData.error
+            : errorData.error?.message || errorData.message || errorMessage;
         } catch (_) {
           // fallback to default error message if response is not JSON
         }

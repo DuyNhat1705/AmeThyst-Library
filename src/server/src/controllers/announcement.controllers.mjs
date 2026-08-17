@@ -87,12 +87,14 @@ export const updateAnnouncementStatusController = async (req, res) => {
 export const editAnnouncementDetailsController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, expired_date } = req.body;
+    const { title, content, expired_date, notifyUsersAgain } = req.body;
 
     const updated = await announcementService.editAnnouncementDetailsService(id, {
       title,
       content,
       expiredDate: expired_date
+    }, {
+      notifyUsersAgain: notifyUsersAgain === true,
     });
 
     return res.status(200).json({

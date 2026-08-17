@@ -189,7 +189,9 @@
     "invalid_email_format": "Please enter a valid email address.",
     "resend_verification": "Resend verification email",
     "resend_verification_success": "Verification email has been resent!",
-    "resend_verification_cooldown": "Resend email in {seconds}s"
+    "resend_verification_cooldown": "Resend email in {seconds}s",
+    "account_suspended": "Your account has been suspended.",
+    "account_suspended_close": "Close"
   },
   "profile": {
     "welcome": "Welcome to your profile,",

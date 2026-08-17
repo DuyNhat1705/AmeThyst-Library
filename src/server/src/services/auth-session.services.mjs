@@ -57,6 +57,11 @@ export const rotateAuthSession = async (refreshToken, req) => {
     if (new Date(current.expires_at) <= new Date() || current.status !== 'active') {
       await revokeAuthSession(current.session_id, 'expired_or_inactive', client);
       await client.query('COMMIT');
+      if (current.status === 'suspended') {
+        const error = new Error('Your account has been suspended.');
+        error.code = 'USER_SUSPENDED';
+        throw error;
+      }
       return null;
     }
     await revokeAuthSession(current.session_id, 'rotated', client);

@@ -1,4 +1,5 @@
 import * as announcementModel from '../models/announcement.models.mjs';
+import { resetAnnouncementReceipts } from '../models/notification.models.mjs';
 import { getIO } from '../config/socket.mjs';
 
 const emitAnnouncementChanged = (action, payload) => {
@@ -214,6 +215,9 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
   if (updated && previousStatus !== status) {
     const becameActive = previousStatus !== 'active' && status === 'active';
     const action = becameActive ? 'republished' : 'status_changed';
+    if (becameActive) {
+      await resetAnnouncementReceipts(announceId);
+    }
     emitAnnouncementChanged(action, { ...updated, previousStatus });
   }
   return updated;
@@ -228,7 +232,11 @@ export const updateAnnouncementStatusService = async (announceId, status) => {
  * @param {string|null} details.expiredDate
  * @returns {Promise<Object>}
  */
-export const editAnnouncementDetailsService = async (announceId, { title, content, expiredDate }) => {
+export const editAnnouncementDetailsService = async (
+  announceId,
+  { title, content, expiredDate },
+  { notifyUsersAgain = false } = {},
+) => {
   validateAnnouncementData(title, content);
 
   const announcement = await getAnnouncementOrThrow(announceId);
@@ -247,7 +255,10 @@ export const editAnnouncementDetailsService = async (announceId, { title, conten
   });
 
   if (updated) {
-    emitAnnouncementChanged('updated', updated);
+    if (announcement.status === 'active' && notifyUsersAgain === true) {
+      await resetAnnouncementReceipts(announceId);
+    }
+    emitAnnouncementChanged(notifyUsersAgain ? 'updated_and_renotified' : 'updated', updated);
   }
 
   return updated;

@@ -1,15 +1,19 @@
 "use client";
 
-import React from 'react';
 import Skeleton from '../atoms/Skeleton';
-import type { UnifiedNotificationItem } from './NotificationBell';
+import {
+  isAnnouncementItem,
+  isInvitationItem,
+  isSystemItem,
+  type NotificationItem,
+} from '../../hooks/useAnnouncementBell';
 import { NotificationEventIcon } from '../organisms/NotificationEventVisuals';
 
 interface NotificationDropdownPanelProps {
-  notifications: UnifiedNotificationItem[];
+  notifications: NotificationItem[];
   loading: boolean;
   t: (key: string) => string;
-  onClickItem: (item: UnifiedNotificationItem) => void;
+  onClickItem: (item: NotificationItem) => void;
   formatDate: (value: string) => string;
 }
 
@@ -61,15 +65,16 @@ export default function NotificationDropdownPanel({
       ) : (
         <div className="divide-y divide-neutral-100 dark:divide-neutral-800 pr-1 flex flex-col gap-2">
           {notifications.map((item) => {
-            const isAnnouncement = item.type === 'announcement';
-            const isInvitation = item.type === 'study_group_invitation';
-            const bgClass = item.read
+            const isAnnouncement = isAnnouncementItem(item);
+            const isInvitation = isInvitationItem(item);
+            const systemNotification = isSystemItem(item) ? item.metadata : null;
+            const bgClass = item.isRead
               ? 'bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800/50 opacity-60'
               : 'bg-neutral-50/50 dark:bg-neutral-800/20 hover:bg-neutral-50 dark:hover:bg-neutral-800/40';
 
             return (
               <button
-                key={`${item.type}:${item.id}`}
+                key={`${item.category}:${item.id}`}
                 onClick={() => onClickItem(item)}
                 className={`flex w-full gap-3 rounded-xl px-3 py-3 text-left transition-[background-color,opacity,transform] hover:-translate-y-px ${bgClass}`}
               >
@@ -81,27 +86,40 @@ export default function NotificationDropdownPanel({
                   </div>
                 ) : isInvitation ? (
                   <NotificationEventIcon type="invitation" />
+                ) : systemNotification ? (
+                  <NotificationEventIcon type={systemNotification.type} />
                 ) : (
-                  <NotificationEventIcon type={item.rawItem.type} />
+                  <NotificationEventIcon type="invitation" />
                 )}
 
                 <span className="min-w-0 flex-1">
                   <span className="mb-0.5 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.12em] text-[#D56A4A]">
-                    {!item.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" aria-hidden="true" />}
+                    {!item.isRead && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" aria-hidden="true" />}
                     {isAnnouncement
                       ? t('navbar.announcements_title')
                       : isInvitation
                       ? t('study_group.invitation')
-                      : t(`study_group.notification_${item.rawItem.type}`)}
+                      : systemNotification
+                        ? t(`study_group.notification_${systemNotification.type}`)
+                        : ''}
                   </span>
                   <strong className="block truncate text-sm font-bold text-[#0B1C30] dark:text-white">
                     {item.title}
                   </strong>
                   <span className="block truncate text-xs text-[#686C71] dark:text-neutral-400">
-                    {item.description}
+                    {isInvitation
+                      ? t('study_group.invited_by').replace('{name}', item.metadata.group.host.username)
+                      : isAnnouncement
+                        ? item.description
+                        : systemNotification
+                          ? t(`study_group.notification_${systemNotification.type}_summary`).replace(
+                          '{name}',
+                          systemNotification.memberName || t('study_group.members'),
+                        )
+                          : item.description}
                   </span>
                   <span className="block text-[9px] text-[#8E9399] mt-1">
-                    {formatDate(item.timestamp)}
+                    {formatDate(item.createdAt)}
                   </span>
                 </span>
               </button>

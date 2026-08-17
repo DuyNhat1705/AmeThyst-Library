@@ -23,6 +23,17 @@ const action = (handler) => async (req, res) => {
   try { await handler(req, res); } catch (error) { sendStudyGroupError(res, error); }
 };
 
+const emitNotifications = async (notifications = [], groupId) => {
+  for (const envelope of notifications) {
+    if (envelope && envelope.recipientId && envelope.notification) {
+      emitUserNotification(envelope.recipientId, envelope.notification);
+    }
+  }
+  if (groupId) {
+    emitStudyGroupChanged(groupId, 'updated');
+  }
+};
+
 export const createStudyGroupController = action(async (req, res) => {
   const data = await service.createStudyGroup(currentUserId(req), req.body);
   emitStudyGroupChanged(data.groupId, 'created');
@@ -33,115 +44,77 @@ export const listCreatedStudyGroupsController = action(async (req, res) => { con
 export const listJoinedStudyGroupsController = action(async (req, res) => { const result = await service.getJoinedGroups(currentUserId(req), req.studyGroupQuery || req.query); sendData(res, result.data, 200, result.meta); });
 export const listStudyGroupInvitationsController = action(async (req, res) => sendData(res, await service.getPendingInvitations(currentUserId(req))));
 export const getStudyGroupController = action(async (req, res) => sendData(res, await service.getDetail(req.params.groupId, currentUserId(req))));
-const mutation = (changeType, handler, status = 200) => action(async (req, res) => {
-  const data = await handler(req);
-  emitStudyGroupChanged(req.params.groupId, changeType);
-  sendData(res, data, status);
-});
 
 export const updateStudyGroupController = action(async (req, res) => {
-  const result = await service.editStudyGroup(req.params.groupId, currentUserId(req), req.body);
-  result.notificationRecipients.forEach((recipientId) => emitUserNotification(
-    recipientId,
-    lifecycleNotification('group_updated', req.params.groupId, result.notificationDetails),
-  ));
-  const { notificationRecipients, notificationDetails, ...detail } = result;
-  emitStudyGroupChanged(req.params.groupId, 'updated');
+  const { notifications, ...detail } = await service.editStudyGroup(req.params.groupId, currentUserId(req), req.body);
+  await emitNotifications(notifications, req.params.groupId);
   sendData(res, detail);
 });
+
 export const requestToJoinController = action(async (req, res) => {
-  const result = await service.submitJoinRequest(req.params.groupId, currentUserId(req), req.body.content);
-  emitNotifications(result.notifications, req.params.groupId);
-  const { notifications, ...participation } = result;
-  emitStudyGroupChanged(req.params.groupId, 'request-created');
+  const { notifications, participation } = await service.submitJoinRequest(req.params.groupId, currentUserId(req), req.body.content);
+  await emitNotifications(notifications, req.params.groupId);
   sendData(res, participation, 201);
 });
+
 export const approveJoinRequestController = action(async (req, res) => {
-  const result = await service.approveRequest(req.params.groupId, req.params.requestId, currentUserId(req));
-  emitNotifications(result.notifications, req.params.groupId);
-  const { notifications, ...data } = result;
-  emitStudyGroupChanged(req.params.groupId, 'request-approved');
-  sendData(res, data);
+  const { notifications, group, participation } = await service.approveRequest(req.params.groupId, req.params.requestId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
+  sendData(res, { group, participation });
 });
+
 export const denyJoinRequestController = action(async (req, res) => {
-  const result = await service.denyRequest(req.params.groupId, req.params.requestId, currentUserId(req));
-  emitNotifications(result.notifications, req.params.groupId);
-  const { notifications, ...data } = result;
-  emitStudyGroupChanged(req.params.groupId, 'request-denied');
-  sendData(res, data);
+  const { notifications, group, participation } = await service.denyRequest(req.params.groupId, req.params.requestId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
+  sendData(res, { group, participation });
 });
+
 export const cancelJoinRequestController = action(async (req, res) => {
-  const result = await service.cancelRequest(req.params.groupId, req.params.requestId, currentUserId(req));
-  emitNotifications(result.notifications, req.params.groupId);
-  emitStudyGroupChanged(req.params.groupId, 'request-cancelled');
+  const envelope = await service.cancelRequest(
+    req.params.groupId,
+    req.params.requestId,
+    currentUserId(req),
+  );
+  if (envelope.recipientId && envelope.notification) {
+    emitUserNotification(envelope.recipientId, envelope.notification);
+  }
+  emitStudyGroupChanged(req.params.groupId, 'updated');
   sendMessage(res, 'Join request cancelled.');
 });
-const lifecycleNotification = (type, groupId, details) => ({
-  id: details.eventId || `${type}:${groupId}:${Date.now()}`,
-  type,
-  groupId,
-  createdAt: new Date().toISOString(),
-  ...(details.memberName ? { memberName: details.memberName } : {}),
-  ...(details.actor ? { actor: details.actor } : {}),
-  ...(details.changedFields ? { changedFields: details.changedFields } : {}),
-  ...(details.destination ? { destination: details.destination } : {}),
-  group: {
-    title: details.title,
-    subject: details.subject,
-    currentMembers: details.currentMembers,
-    capacity: details.capacity,
-    date: details.reservation?.startDate || details.date,
-    startTime: details.reservation?.startTime || details.startTime || details.time?.split(' - ')[0],
-    endTime: details.reservation?.endTime || details.endTime || details.time?.split(' - ')[1],
-    roomName: details.reservation?.room?.roomName || details.roomName,
-    branchName: details.reservation?.room?.branchName || details.branchName,
-    roomId: details.reservation?.room?.roomId || details.roomId,
-    branchId: details.reservation?.room?.branchId || details.branchId,
-  },
-});
-
-const emitNotifications = (notifications = [], groupId) => {
-  notifications.forEach(({ recipientId, type, details }) => {
-    if (recipientId) emitUserNotification(recipientId, lifecycleNotification(type, groupId, details));
-  });
-};
 
 export const removeStudyGroupMemberController = action(async (req, res) => {
-  const result = await service.removeMember(req.params.groupId, req.params.userId, currentUserId(req));
-  emitUserNotification(req.params.userId, lifecycleNotification('member_removed', req.params.groupId, result.notificationDetails));
-  emitStudyGroupChanged(req.params.groupId, 'member-removed');
-  sendData(res, result.detail);
+  const { notifications, detail } = await service.removeMember(req.params.groupId, req.params.userId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
+  sendData(res, detail);
 });
+
 export const leaveStudyGroupController = action(async (req, res) => {
-  const result = await service.leaveGroup(req.params.groupId, currentUserId(req));
-  if (result.notificationRecipient) {
-    emitUserNotification(
-      result.notificationRecipient,
-      lifecycleNotification('member_left', req.params.groupId, result.notificationDetails),
-    );
-  }
-  emitStudyGroupChanged(req.params.groupId, 'member-left');
+  const { notifications, ...rest } = await service.leaveGroup(req.params.groupId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
   sendMessage(res, 'You left the Study Group.');
 });
+
 export const dissolveStudyGroupController = action(async (req, res) => {
-  const result = await service.dissolveStudyGroup(req.params.groupId, currentUserId(req));
-  const notification = lifecycleNotification('group_dissolved', req.params.groupId, result.notificationDetails);
-  result.notificationRecipients.forEach((recipientId) => emitUserNotification(recipientId, notification));
+  const { notifications, ...rest } = await service.dissolveStudyGroup(req.params.groupId, currentUserId(req));
+  await emitNotifications(notifications);
   emitStudyGroupChanged(req.params.groupId, 'dissolved');
-  sendData(res, { groupId: result.groupId, deleted: result.deleted });
+  sendData(res, { groupId: rest.groupId, deleted: rest.deleted });
 });
-export const inviteStudyGroupMemberController = mutation('invitation-created', (req) => service.inviteMember(req.params.groupId, currentUserId(req), req.body), 201);
+
+export const inviteStudyGroupMemberController = action(async (req, res) => {
+  const data = await service.inviteMember(req.params.groupId, currentUserId(req), req.body);
+  emitStudyGroupChanged(req.params.groupId, 'invitation-created');
+  sendData(res, data, 201);
+});
+
 export const acceptStudyGroupInvitationController = action(async (req, res) => {
-  const result = await service.acceptInvitation(req.params.groupId, req.params.requestId, currentUserId(req));
-  emitNotifications(result.notification ? [result.notification] : [], req.params.groupId);
-  const { notification, creator, ...data } = result;
-  emitStudyGroupChanged(req.params.groupId, 'invitation-accepted');
-  sendData(res, data);
+  const { notifications, group, participation } = await service.acceptInvitation(req.params.groupId, req.params.requestId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
+  sendData(res, { group, participation });
 });
+
 export const denyStudyGroupInvitationController = action(async (req, res) => {
-  const result = await service.denyInvitation(req.params.groupId, req.params.requestId, currentUserId(req));
-  emitNotifications(result.notification ? [result.notification] : [], req.params.groupId);
-  const { notification, ...data } = result;
-  emitStudyGroupChanged(req.params.groupId, 'invitation-denied');
-  sendData(res, data);
+  const { notifications, participation } = await service.denyInvitation(req.params.groupId, req.params.requestId, currentUserId(req));
+  await emitNotifications(notifications, req.params.groupId);
+  sendData(res, { participation });
 });

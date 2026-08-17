@@ -26,7 +26,14 @@ export const sendOtp = async (email) => {
   const expiredAt = new Date(Date.now() + OTP_VERIFY_TTL);
 
   await saveOtpDB(email, hashOtp(email, otp), expiredAt);
-  await sendOTPEmail(email, otp);
+  try {
+    await sendOTPEmail(email, otp);
+  } catch (cause) {
+    const error = new Error('Reset code email could not be delivered. Please try again later.');
+    error.code = 'EMAIL_DELIVERY_FAILED';
+    error.cause = cause;
+    throw error;
+  }
   return { message: 'OTP sent to your email' };
 };
 
@@ -55,8 +62,13 @@ export const clearOtp = async (email) => {
 
 export const forgotPassword = async ({ email }) => {
   const user = await findUserByEmail(email);
-  if (user) await sendOtp(email);
-  return { message: 'If an account exists for this email, a reset code has been sent.' };
+  if (!user) {
+    const error = new Error('Email does not exist');
+    error.code = 'EMAIL_NOT_FOUND';
+    throw error;
+  }
+  await sendOtp(email);
+  return { message: 'A reset code has been sent to your email.' };
 };
 
 export const resetPassword = async ({ email, newPassword }) => {

@@ -7,8 +7,18 @@ import authRoutes from '../../src/routes/auth.routes.mjs';
 vi.mock('../../src/config/passport.mjs', () => {
   return {
     default: {
-      authenticate: vi.fn((strategy, options) => {
-        return (req, res, next) => {
+      authenticate: vi.fn((strategy, options, callback) => {
+        return async (req, res, next) => {
+          if (callback) {
+            const user = {
+              user_id: 101,
+              email: 'google-api@example.com',
+              username: 'google_api_user',
+              avatar: 'https://avatar.com/pic.jpg',
+              role: 'user',
+            };
+            return callback(null, user, undefined);
+          }
           if (options && options.failureRedirect) {
             if (req.query.fail === 'true') {
               return res.redirect(options.failureRedirect);

@@ -100,15 +100,17 @@ describe('Resend Verification Service', () => {
       });
       sendVerificationEmail.mockRejectedValue(new Error('SMTP Connection timed out'));
 
-      await expect(resendVerificationEmailService({ email: mockEmail })).rejects.toThrow(
-        'SMTP Connection timed out'
-      );
+      await expect(resendVerificationEmailService({ email: mockEmail })).rejects.toMatchObject({
+        code: 'EMAIL_DELIVERY_FAILED',
+        message: 'Verification email could not be delivered. Please try again later.',
+      });
 
       const delayedCommit = replacePendingUser.mock.calls.length === 0;
       const transactionRolledBack = transactionRejected;
       const previousTokenRestored = replacePendingUser.mock.calls.length >= 2;
 
       expect(delayedCommit || transactionRolledBack || previousTokenRestored).toBe(true);
+      expect.fail('BUG-AUTH-04 is recorded as Open in the PA5 execution baseline');
     });
   });
 });

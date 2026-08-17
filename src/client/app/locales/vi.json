@@ -189,7 +189,9 @@
     "invalid_email_format": "Vui lòng nhập địa chỉ email hợp lệ.",
     "resend_verification": "Gửi lại email xác thực",
     "resend_verification_success": "Email xác thực đã được gửi lại!",
-    "resend_verification_cooldown": "Gửi lại sau {seconds} giây"
+    "resend_verification_cooldown": "Gửi lại sau {seconds} giây",
+    "account_suspended": "Tài khoản của bạn đã bị tạm ngưng.",
+    "account_suspended_close": "Đóng"
   },
   "profile": {
     "welcome": "Chào mừng đến trang cá nhân của bạn,",

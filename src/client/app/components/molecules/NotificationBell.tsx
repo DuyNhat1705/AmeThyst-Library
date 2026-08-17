@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BellIcon from '../atoms/BellIcon';
 import NotificationDot from '../atoms/NotificationDot';
 import NotificationDropdownPanel from './NotificationDropdownPanel';
@@ -11,10 +11,12 @@ import StudyGroupInvitationUnavailableModal from '../organisms/StudyGroupInvitat
 import { displayDate } from '../../utils/notificationFormat';
 import { useI18n } from '../../providers/I18nProvider';
 import {
+  isAnnouncementItem,
+  isInvitationItem,
+  isSystemItem,
   useAnnouncementBell,
   type BellAnnouncement,
-  type StudyGroupInvitation,
-  type StudyGroupLifecycleNotification,
+  type NotificationItem,
 } from '../../hooks/useAnnouncementBell';
 
 interface NotificationBellProps {
@@ -23,42 +25,7 @@ interface NotificationBellProps {
   userId?: string;
 }
 
-export type UnifiedNotificationItem =
-  | {
-      id: string;
-      type: 'announcement';
-      title: string;
-      description: string;
-      timestamp: string;
-      read: boolean;
-      rawItem: BellAnnouncement;
-    }
-  | {
-      id: string;
-      type: 'study_group_invitation';
-      title: string;
-      description: string;
-      timestamp: string;
-      read: boolean;
-      rawItem: StudyGroupInvitation;
-    }
-  | {
-      id: string;
-      type: 'study_group_lifecycle';
-      title: string;
-      description: string;
-      timestamp: string;
-      read: boolean;
-      rawItem: StudyGroupLifecycleNotification;
-    };
-
 export { displayDate };
-
-const parseTimestamp = (val: string | undefined | null): number => {
-  if (!val) return 0;
-  const time = Date.parse(val);
-  return isFinite(time) ? time : 0;
-};
 
 export default function NotificationBell({ enabled, t, userId }: NotificationBellProps) {
   const { locale } = useI18n();
@@ -67,16 +34,12 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
-    announcements,
+    items,
     loading,
     hasUnread,
     markAsSeen,
-    seenAnnouncementIds,
-    invitations,
     invitationUnavailable,
     setInvitationUnavailable,
-    readInvitationIds,
-    systemNotifications,
     selected,
     setSelected,
     selectedSystemNotification,
@@ -84,8 +47,7 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
     acting,
     error,
     decide,
-    markInvitationRead,
-    openSystemNotification,
+    markItemRead,
     isUserRole
   } = useAnnouncementBell(enabled, userId, t);
 
@@ -110,22 +72,20 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
   }, [invitationUnavailable, selected, selectedSystemNotification]);
 
   const handleToggle = () => {
-    setIsOpen((prev) => {
-      const next = !prev;
-      if (next) markAsSeen();
-      return next;
-    });
+    const next = !isOpen;
+    setIsOpen(next);
+    if (next) void markAsSeen();
   };
 
-  const handleItemClick = (item: UnifiedNotificationItem) => {
+  const handleItemClick = (item: NotificationItem) => {
     setIsOpen(false);
-    if (item.type === 'announcement') {
-      setSelectedAnnouncement(item.rawItem);
-    } else if (item.type === 'study_group_invitation') {
-      markInvitationRead(item.id);
-      setSelected(item.rawItem);
-    } else if (item.type === 'study_group_lifecycle') {
-      openSystemNotification(item.rawItem);
+    void markItemRead(item);
+    if (isAnnouncementItem(item)) {
+      setSelectedAnnouncement(item.metadata);
+    } else if (isInvitationItem(item)) {
+      setSelected(item.metadata);
+    } else if (isSystemItem(item)) {
+      setSelectedSystemNotification(item.metadata);
     }
   };
 
@@ -136,51 +96,10 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
   };
 
-  const seenAnnouncementIdSet = useMemo(
-    () => new Set(seenAnnouncementIds),
-    [seenAnnouncementIds]
+  const visibleItems = useMemo(
+    () => isUserRole ? items : items.filter(isAnnouncementItem),
+    [isUserRole, items],
   );
-
-  // Compile Unified notifications feed with namespaced keys
-  const unifiedNotifications: UnifiedNotificationItem[] = [
-    ...announcements.map((ann) => {
-      const isRead = seenAnnouncementIdSet.has(ann.announceId);
-
-      return {
-        id: ann.announceId,
-        type: 'announcement' as const,
-        title: ann.title,
-        description: ann.content,
-        timestamp: ann.createdAt,
-        read: isRead,
-        rawItem: ann
-      };
-    }),
-    ...(isUserRole ? invitations.map((invite) => ({
-      id: invite.requestId,
-      type: 'study_group_invitation' as const,
-      title: invite.group.title,
-      description: t('study_group.invited_by').replace('{name}', invite.group.host.username),
-      timestamp: invite.invitedAt,
-      read: readInvitationIds.includes(invite.requestId),
-      rawItem: invite
-    })) : []),
-    ...(isUserRole ? systemNotifications.map((notif) => ({
-      id: notif.id,
-      type: 'study_group_lifecycle' as const,
-      title: notif.group.title,
-      description: t(`study_group.notification_${notif.type}_summary`).replace('{name}', notif.memberName || t('study_group.members')),
-      timestamp: notif.createdAt,
-      read: !!notif.read,
-      rawItem: notif
-    })) : [])
-  ].sort((a, b) => {
-    const diff = parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp);
-    if (diff !== 0) return diff;
-    const keyA = `${a.type}:${a.id}`;
-    const keyB = `${b.type}:${b.id}`;
-    return keyB.localeCompare(keyA);
-  });
 
   return (
     <div className="relative" ref={containerRef}>
@@ -195,7 +114,7 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
 
       {isOpen && (
         <NotificationDropdownPanel
-          notifications={unifiedNotifications}
+          notifications={visibleItems}
           loading={loading}
           t={t}
           onClickItem={handleItemClick}
@@ -213,7 +132,6 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
         />
       )}
 
-      {/* Migrated study group invitation detail modal */}
       {selected && (
         <StudyGroupInvitationModal
           selected={selected}
@@ -225,7 +143,6 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
         />
       )}
 
-      {/* Migrated study group lifecycle details modal */}
       {selectedSystemNotification && (
         <StudyGroupLifecycleModal
           selectedSystemNotification={selectedSystemNotification}
@@ -234,7 +151,6 @@ export default function NotificationBell({ enabled, t, userId }: NotificationBel
         />
       )}
 
-      {/* Migrated study group invitation unavailable modal */}
       {invitationUnavailable && (
         <StudyGroupInvitationUnavailableModal
           onClose={closeUnavailableInvitation}

@@ -92,8 +92,11 @@ const refreshSession = async () => {
     });
   }
   if (!response) return false;
-  if (!response.ok) return false;
   const data = await parseResponse(response);
+  if (!response.ok) {
+    if (data?.error?.code === 'USER_SUSPENDED') return 'USER_SUSPENDED';
+    return false;
+  }
   const user = data?.data?.user;
   if (typeof window !== 'undefined' && user) window.dispatchEvent(new CustomEvent('user-updated', { detail: user }));
   resetCsrfToken();
@@ -111,16 +114,31 @@ export async function apiFetch<T = unknown>(path: string, options: RequestInit =
   if (!response) {
     return { success: false, message: 'Network connection error. Please check your connection and try again.' };
   }
+  let cachedData: any;
   if (response.status === 401 && !retried && !path.startsWith('/auth/')) {
-    if (await refreshSession()) return apiFetch<T>(path, options, true);
+    const preview = await parseResponse(response.clone());
+    if (preview?.error?.code !== 'USER_SUSPENDED') {
+      const refreshResult = await refreshSession();
+      if (refreshResult === true) {
+        return apiFetch<T>(path, options, true);
+      } else if (refreshResult === 'USER_SUSPENDED') {
+        cachedData = { success: false, error: { code: 'USER_SUSPENDED', message: 'Account suspended' } };
+      } else {
+        cachedData = preview;
+      }
+    } else {
+      cachedData = preview;
+    }
   }
-  const data = await parseResponse(response);
+  const data = cachedData ?? await parseResponse(response);
   if (!response.ok || data?.success === false) {
     if (response.status === 403 && data?.error?.code === 'CSRF_INVALID' && !retried) {
       resetCsrfToken();
       return apiFetch<T>(path, options, true);
     }
-    if (response.status === 401 && typeof window !== 'undefined') {
+    if (data?.error?.code === 'USER_SUSPENDED' && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('account-suspended'));
+    } else if (response.status === 401 && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('user-updated', { detail: null }));
       const returnTo = `${window.location.pathname}${window.location.search}`;
       if (!window.location.pathname.startsWith('/login')) window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);

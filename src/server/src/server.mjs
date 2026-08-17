@@ -28,6 +28,7 @@ import { systemConfigurationService } from './services/system-configuration.serv
 import adminRoutes from './routes/admin.routes.mjs';
 import statisticsRoutes from './routes/statistics.routes.mjs';
 import authorizationRoutes from './routes/authorization.routes.mjs';
+import notificationRoutes from './routes/notification.routes.mjs';
 import { getAllowedOrigins, validateEnvironment } from './config/env.mjs';
 import { globalApiLimiter, verifyCsrf } from './middlewares/security.middleware.mjs';
 
@@ -64,6 +65,7 @@ app.use('/api/announcements', announcementRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/statistics', statisticsRoutes);
 app.use('/api/authorization', authorizationRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use(libraryRoutes);
 app.use(searchRoutes);
 app.use(historyRoutes);

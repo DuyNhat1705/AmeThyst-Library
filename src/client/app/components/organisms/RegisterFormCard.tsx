@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../../providers/I18nProvider';
 import { mapServerError } from '../../utils/errors';
+import { apiFetch } from '../../utils/apiClient';
 
 interface FormData {
   fullName: string;
@@ -58,7 +59,7 @@ export default function RegisterFormCard({
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      const result = await apiFetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,10 +69,7 @@ export default function RegisterFormCard({
         })
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || t('auth.register_failed'));
-      }
+      if (!result.success) throw new Error(result.message || t('auth.register_failed'));
 
       setState(prev => ({ ...prev, isLoading: false }));
       router.push(`/check-mail?email=${encodeURIComponent(formData.email)}`);

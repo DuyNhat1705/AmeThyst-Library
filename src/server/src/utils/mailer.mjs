@@ -1,17 +1,36 @@
-import nodemailer from 'nodemailer';
-import '../config/env.mjs';
+import { getEmailConfiguration } from '../config/env.mjs';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+const emailConfiguration = getEmailConfiguration();
+const fromAddress = `"AmeThyst Library" <${emailConfiguration.from}>`;
+
+const transporter = {
+  sendMail: async (options) => {
+    const recipients = typeof options.to === 'string' ? [options.to] : options.to;
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': emailConfiguration.apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { email: emailConfiguration.from, name: 'AmeThyst Library' },
+        to: recipients.map((email) => ({ email })),
+        subject: options.subject,
+        htmlContent: options.html,
+        ...(options.headers ? { headers: options.headers } : {}),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Brevo API error: ${response.status} ${errorBody}`);
+    }
   },
-});
+};
 
 const sendOTPEmail = async (toEmail, otp) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: 'Your OTP Code for Password Reset',
     html: `
@@ -25,11 +44,11 @@ const sendOTPEmail = async (toEmail, otp) => {
 };
 
 const sendVerificationEmail = async (toEmail, token) => {
-  const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+  const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
 
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: 'Verify your AmeThyst Library account',
     html: `
@@ -112,7 +131,7 @@ const sendStudyGroupInvitationEmail = async (toEmail, invitation) => {
   const baseUrl = process.env.CLIENT_URL || 'http://localhost:3000';
   const invitationUrl = `${baseUrl}/dashboard/user/yourstudygroups?invitation=${encodeURIComponent(invitation.requestId)}`;
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[INVITATION · LỜI MỜI] ${invitation.hostName} invited you to ${invitation.title}`,
     headers: {
@@ -176,7 +195,7 @@ const studyGroupDestination = (group, mode = 'dashboard') => {
 
 const sendStudyGroupRequestSubmittedEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[JOIN REQUEST · YÊU CẦU THAM GIA] ${group.actor.username} requested to join ${group.title}`,
     html: studyGroupEmailShell({
@@ -196,7 +215,7 @@ const sendStudyGroupRequestSubmittedEmail = async (toEmail, group) => {
 
 const sendStudyGroupRequestApprovedEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[APPROVED · ĐÃ ĐỒNG Ý] You joined ${group.title}`,
     html: studyGroupEmailShell({
@@ -216,7 +235,7 @@ const sendStudyGroupRequestApprovedEmail = async (toEmail, group) => {
 
 const sendStudyGroupRequestDeniedEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[DECLINED · ĐÃ TỪ CHỐI] Your request for ${group.title}`,
     html: studyGroupEmailShell({
@@ -236,7 +255,7 @@ const sendStudyGroupRequestDeniedEmail = async (toEmail, group) => {
 
 const sendStudyGroupMemberJoinedEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[MEMBER JOINED · THÀNH VIÊN MỚI] ${group.actor.username} joined ${group.title}`,
     html: studyGroupEmailShell({
@@ -256,7 +275,7 @@ const sendStudyGroupMemberJoinedEmail = async (toEmail, group) => {
 
 const sendStudyGroupRemovalEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[MEMBER REMOVED · ĐÃ XÓA] You were removed from ${group.title}`,
     html: studyGroupEmailShell({
@@ -280,7 +299,7 @@ const sendStudyGroupRemovalEmail = async (toEmail, group) => {
 
 const sendStudyGroupMemberLeftEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[MEMBER LEFT · ĐÃ RỜI NHÓM] ${group.memberName} left ${group.title}`,
     html: studyGroupEmailShell({
@@ -304,7 +323,7 @@ const sendStudyGroupMemberLeftEmail = async (toEmail, group) => {
 
 const sendStudyGroupDissolvedEmail = async (toEmail, group) => {
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: `[CANCELLED · ĐÃ HỦY] ${group.title} is no longer available`,
     html: studyGroupEmailShell({
@@ -329,7 +348,7 @@ const sendStudyGroupDissolvedEmail = async (toEmail, group) => {
 const sendAdminInviteEmail = async (toEmail, tempPassword) => {
   const baseUrl = process.env.CLIENT_URL || 'http://localhost:3000';
   await transporter.sendMail({
-    from: `"AmeThyst Library" <${process.env.MAIL_USER}>`,
+    from: fromAddress,
     to: toEmail,
     subject: 'You are invited as an AmeThyst Library Administrator',
     html: `

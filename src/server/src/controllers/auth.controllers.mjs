@@ -26,7 +26,13 @@ export const register = async (req, res) => {
     const result = await registerUser({ email, password, username });
     res.status(201).json(result);
   } catch (err) {
-    const status = err.message.includes('already exists') || err.message.includes('already been sent') ? 409 : 500;
+    if (err.code === 'USER_SUSPENDED') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'USER_SUSPENDED', message: err.message },
+      });
+    }
+    const status = err.code === 'EMAIL_DELIVERY_FAILED' ? 502 : 500;
     res.status(status).json({ error: err.message });
   }
 };
@@ -76,6 +82,18 @@ export const login = async (req, res) => {
       );
     }
   } catch (err) {
+    if (err.code === 'USER_SUSPENDED') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'USER_SUSPENDED', message: 'Your account has been suspended.' },
+      });
+    }
+    if (err.code === 'USER_UNVERIFIED') {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'USER_UNVERIFIED', message: err.message },
+      });
+    }
     res.status(401).json({ error: err.message });
   }
 };
@@ -84,9 +102,25 @@ export const forgot = async (req, res) => {
   try {
     const { email } = req.body;
     const result = await forgotPassword({ email });
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (err) {
-    res.status(200).json({ message: 'If an account exists for this email, a reset code has been sent.' });
+    console.error('Forgot password error:', err);
+    if (err.code === 'EMAIL_NOT_FOUND') {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'EMAIL_NOT_FOUND', message: err.message },
+      });
+    }
+    if (err.code === 'EMAIL_DELIVERY_FAILED') {
+      return res.status(502).json({
+        success: false,
+        error: { code: 'EMAIL_DELIVERY_FAILED', message: err.message },
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      error: { code: 'FORGOT_PASSWORD_FAILED', message: 'Unable to process password reset request.' },
+    });
   }
 };
 
@@ -117,6 +151,9 @@ export const resendVerification = async (req, res) => {
     const result = await resendVerificationEmailService({ email });
     res.status(200).json(result);
   } catch (err) {
+    if (err.code === 'EMAIL_DELIVERY_FAILED') {
+      return res.status(502).json({ error: err.message });
+    }
     res.status(200).json({ message: 'If a pending registration exists, a verification message will be sent.' });
   }
 };
@@ -128,29 +165,43 @@ export const googleAuth = passport.authenticate('google', {
 });
 
 export const googleCallback = [
-  passport.authenticate('google', {
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
-    session: false,
-  }),
-  async (req, res, next) => {
-    try {
-      const session = await createAuthSession(req.user, req);
-      setAuthCookies(res, session);
-      res.redirect(`${process.env.CLIENT_URL}/auth/callback`);
-    } catch (error) {
-      next(error);
-    }
+  (req, res, next) => {
+    passport.authenticate('google', { session: false }, async (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        const isSuspended = info?.message === 'USER_SUSPENDED';
+        return res.redirect(`${process.env.CLIENT_URL}/login${isSuspended ? '?suspended=1' : ''}`);
+      }
+      try {
+        const session = await createAuthSession(user, req);
+        setAuthCookies(res, session);
+        res.redirect(`${process.env.CLIENT_URL}/auth/callback`);
+      } catch (error) {
+        next(error);
+      }
+    })(req, res, next);
   },
 ];
 
 export const refresh = async (req, res) => {
-  const session = await rotateAuthSession(req.cookies?.[REFRESH_COOKIE], req);
-  if (!session) {
+  try {
+    const session = await rotateAuthSession(req.cookies?.[REFRESH_COOKIE], req);
+    if (!session) {
+      clearAuthCookies(res);
+      return res.status(401).json({ success: false, error: { code: 'REFRESH_INVALID', message: 'Session expired.' } });
+    }
+    setAuthCookies(res, session);
+    return res.json({ success: true, data: { user: session.user } });
+  } catch (err) {
     clearAuthCookies(res);
+    if (err.code === 'USER_SUSPENDED') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'USER_SUSPENDED', message: err.message },
+      });
+    }
     return res.status(401).json({ success: false, error: { code: 'REFRESH_INVALID', message: 'Session expired.' } });
   }
-  setAuthCookies(res, session);
-  return res.json({ success: true, data: { user: session.user } });
 };
 
 export const logout = async (req, res) => {
