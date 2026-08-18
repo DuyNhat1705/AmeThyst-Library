@@ -109,6 +109,11 @@ jobs:
         if: ${{ github.event_name == 'schedule' || inputs.deploy_cloud == true }}
         env:
           PYTHONUNBUFFERED: "1"
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
           MEMGRAPH_URI: bolt://127.0.0.1:7687
           MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
