@@ -1,4 +1,4 @@
-# Tasks: AI Recommendation System Infrastructure & Cloud Deployment Pipeline
+# Tasks: AI Recommendation System Infrastructure & Cloud Deployment Pipeline (No Redis)
 
 **Input**: Design documents from `/specs/032-deploy-ai-recommendation/`
 
@@ -14,34 +14,34 @@
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Infrastructure configuration for local containerized Redis service
+**Purpose**: Python environment and environment variable setup for Memgraph & PostgreSQL infrastructure
 
-- [ ] T001 Verify Redis container service definition in `database/docker-compose.yml`
-- [ ] T002 Configure Redis environment secrets (`REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`) in `database/.env` and `server/.env`
+- [X] T001 Verify Python dependencies (`neo4j`, `numpy`, `lightgbm`, `psycopg2-binary`) in `src/database/Init_data/requirements.txt`
+- [X] T002 Configure database environment secrets (`DB_HOST`, `MEMGRAPH_URI`, `MEMGRAPH_HOST`, `MEMGRAPH_PORT`) in `src/database/.env` and `src/server/.env`
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Base client connections and environment libraries required before user story implementation
+**Purpose**: Base database drivers and server connection scripts required before user story implementation
 
-- [ ] T003 Setup Python `redis` and `numpy` dependencies in virtual environment
-- [ ] T004 Create base Redis connection pool helper in `server/src/recommendation/predict_server.py`
+- [X] T003 Verify Memgraph session pool configuration in `src/server/src/config/memgraph.config.mjs`
+- [X] T004 Verify persistent Python socket server initialization in `src/server/src/recommendation/predict_server.py`
 
 ---
 
 ## Phase 3: User Story 1 - Real-Time Low-Latency Recommendation Serving (Priority: P1) 🎯 MVP
 
-**Goal**: Deliver real-time recommendation scoring using Redis feature lookups and socket IPC in under 50ms.
+**Goal**: Deliver real-time recommendation scoring using Memgraph node property lookups / in-memory cache and socket IPC in under 50ms.
 
-**Independent Test**: Execute `npm run test:recommendation` in `server/` to verify latency (< 50ms) and out-of-stock item filtering.
+**Independent Test**: Execute `npm run test:recommendation` in `src/server/` to verify latency (< 50ms) and out-of-stock item filtering.
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Create Redis vector retrieval in `server/src/recommendation/predict_server.py` for batch loading `emb:user:<id>` and `emb:item:<id>`
-- [ ] T006 [US1] Extend LightGBM candidate feature row construction in `server/src/recommendation/predict_server.py` combining embeddings, dot products, and tabular context
-- [ ] T007 [US1] Add inventory availability guard and fallback handling in `server/src/services/recommendation.services.mjs`
-- [ ] T008 [US1] Add test cases for Redis fallback and socket recommendation serving in `server/tests/services/recommendation.services.spec.mjs`
+- [X] T005 [P] [US1] Implement Memgraph node property embedding lookup & in-memory vector cache in `src/server/src/recommendation/predict_server.py`
+- [X] T006 [US1] Extend LightGBM candidate feature row construction in `src/server/src/recommendation/predict_server.py` combining embeddings, dot products, and tabular context
+- [X] T007 [US1] Add inventory availability guard and fallback handling in `src/server/src/services/recommendation.services.mjs`
+- [X] T008 [US1] Add test cases for fallback handling and socket recommendation serving in `src/server/tests/services/recommendation.services.spec.mjs`
 
 **Checkpoint**: User Story 1 is fully functional and independently testable as an MVP increment.
 
@@ -49,15 +49,15 @@
 
 ## Phase 4: User Story 2 - Automated Graph & Feature Synchronization (Priority: P2)
 
-**Goal**: Automate GraphSAGE node embedding export to Cloud Redis and sanitized graph deployment to Memgraph Cloud in CI/CD.
+**Goal**: Automate GraphSAGE node embedding generation and graph snapshot export in CI/CD without Redis dependencies.
 
-**Independent Test**: Run `python database/Init_data/Push_embeddings_redis.py` locally and verify `emb:*` keys in Redis.
+**Independent Test**: Run `python src/database/Init_data/GraphSAGE.py` and `python src/database/Init_data/Model_snapshot.py export` locally and verify snapshot artifact generation.
 
 ### Implementation for User Story 2
 
-- [ ] T009 [P] [US2] Implement standalone Redis bulk export script in `database/Init_data/Push_embeddings_redis.py`
-- [ ] T010 [US2] Integrate `Push_embeddings_redis.py` into GitHub Actions workflow `.github/workflows/action-retrain.yml`
-- [ ] T011 [US2] Update graph deployment script in `database/Init_data/Deploy_cloud.py` with transactional memory trimming (`FREE MEMORY`)
+- [X] T009 [P] [US2] Update GraphSAGE training script in `src/database/Init_data/GraphSAGE.py` to attach feature embeddings directly to Memgraph node properties (`b.features`, `u.features`)
+- [X] T010 [US2] Update automated retraining workflow `.github/workflows/action-retrain.yml` to execute sequential steps: `Init_graph.py`, `GraphSAGE.py`, `LightGBM.py`, and `Model_snapshot.py`
+- [X] T011 [US2] Update snapshot management script in `src/database/Init_data/Model_snapshot.py` to handle graph export and cypher dump fallback
 
 **Checkpoint**: User Story 2 is independently functional for automated model deployment.
 
@@ -71,8 +71,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T012 [P] [US3] Implement progressive skip penalty factor ($0.65^{\text{past\_impressions\_count}}$) in `server/src/services/recommendation.services.mjs`
-- [ ] T013 [US3] Implement epsilon-greedy exploration mixing (20% exploration probability) in `server/src/services/recommendation.services.mjs`
+- [X] T012 [P] [US3] Implement progressive skip penalty factor ($0.65^{\text{past\_impressions\_count}}$) in `src/server/src/services/recommendation.services.mjs`
+- [X] T013 [US3] Implement epsilon-greedy exploration mixing (20% exploration probability) in `src/server/src/services/recommendation.services.mjs`
 
 **Checkpoint**: All user stories complete and independently functional.
 
@@ -82,8 +82,8 @@
 
 **Purpose**: Validation and full test suite regression check
 
-- [ ] T014 [P] Update local quickstart guide in `specs/032-deploy-ai-recommendation/quickstart.md`
-- [ ] T015 Run full backend test suite (`npm test` in `server/`) to verify zero regressions across all services
+- [X] T014 [P] Update local quickstart guide in `src/specs/032-deploy-ai-recommendation/quickstart.md`
+- [X] T015 Run full backend test suite (`npm test` in `src/server/`) to verify zero regressions across all services
 
 ---
 

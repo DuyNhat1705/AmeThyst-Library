@@ -1,6 +1,6 @@
-# Quickstart Guide: AI Recommendation System & Feature Store Pipeline
+# Quickstart Guide: AI Recommendation System Pipeline (Simplified Architecture)
 
-This quickstart guide outlines how to run, verify, and test the AI recommendation pipeline locally and in staging environments.
+This quickstart guide outlines how to run, verify, and test the simplified AI recommendation pipeline locally and in staging environments.
 
 ---
 
@@ -26,11 +26,6 @@ MEMGRAPH_HOST=localhost
 MEMGRAPH_PORT=7687
 MEMGRAPH_URI=bolt://localhost:7687
 
-# Redis Feature Store
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
 # Recommendation Socket Server
 RECOMMENDATION_PORT=5001
 ```
@@ -39,18 +34,11 @@ RECOMMENDATION_PORT=5001
 
 ## 2. Local Container & Infrastructure Execution
 
-Start local PostgreSQL, Memgraph, and Redis instances:
+Start local PostgreSQL and Memgraph instances:
 
 ```bash
-cd src/database
-docker-compose up -d
-```
-
-Verify Redis container status:
-
-```bash
-docker exec -it amethyst_redis redis-cli ping
-# Expected output: PONG
+cd database
+docker compose up -d
 ```
 
 ---
@@ -67,20 +55,11 @@ python src/database/Init_data/Embedding.py
 python src/database/Init_data/Init_graph.py
 ```
 
-### Step 2: Train GraphSAGE & Sync Redis Feature Store
+### Step 2: Train GraphSAGE Link Prediction Model
 
 ```bash
 # Train GraphSAGE weighted topological representations
 python src/database/Init_data/GraphSAGE.py
-
-# Export node embeddings to local Redis container
-python src/database/Init_data/Push_embeddings_redis.py
-```
-
-### Step 3: Inspect Redis Feature Store Keys
-
-```bash
-docker exec -it amethyst_redis redis-cli keys "emb:*"
 ```
 
 ---
@@ -104,7 +83,7 @@ python src/server/src/recommendation/predict_server.py
 
 ## 5. Deployment Verification Checklist
 
-- [ ] Redis container operational and listening on port `6379`.
-- [ ] `Push_embeddings_redis.py` executes without errors and loads `emb:user:*` and `emb:item:*` keys.
-- [ ] Backend `/api/recommendations` endpoint returns ranked recommendation list in under 50ms.
+- [ ] Memgraph container operational and listening on port `7687`.
+- [ ] `Init_graph.py` and `GraphSAGE.py` execute without errors.
+- [ ] Backend `/api/recommendations` endpoint returns ranked recommendation list.
 - [ ] GitHub Actions workflow `.github/workflows/action-retrain.yml` passes with green status.

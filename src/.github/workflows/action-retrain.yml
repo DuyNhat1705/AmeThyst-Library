@@ -1,0 +1,64 @@
+name: Retrain & Deploy AI Recommendation System
+
+on:
+  schedule:
+    - cron: '0 2 * * 0' # Every Sunday at 02:00 UTC
+  workflow_dispatch:
+    inputs:
+      run_graphsage:
+        description: 'Execute weighted GraphSAGE retraining'
+        required: false
+        type: boolean
+        default: true
+      deploy_cloud:
+        description: 'Deploy sanitized graph snapshot to Memgraph Cloud'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  retrain-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r database/Init_data/requirements.txt
+
+      - name: Execute GraphSAGE Weighted Topological Training
+        if: ${{ github.event_name == 'schedule' || inputs.run_graphsage == true }}
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+        run: |
+          echo "Syncing PostgreSQL metadata to Memgraph..."
+          python database/Init_data/Init_graph.py
+          echo "Executing GraphSAGE representation training..."
+          python database/Init_data/GraphSAGE.py
+
+      - name: Deploy Retrained Graph Topology to Memgraph Cloud
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_cloud == true }}
+        env:
+          MEMGRAPH_URI: ${{ secrets.MEMGRAPH_URI }}
+          MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
+          MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
+          MEMGRAPH_URI_SERVER: ${{ secrets.MEMGRAPH_URI_SERVER }}
+          MEMGRAPH_USER_SERVER: ${{ secrets.MEMGRAPH_USER_SERVER }}
+        run: |
+          echo "Deploying graph snapshot to Memgraph Cloud instance..."
+          python database/Init_data/Deploy_cloud.py

@@ -1,57 +1,51 @@
-# Research & Design Decisions: AI Recommendation System Infrastructure & Cloud Deployment Pipeline
+# Research & Design Decisions: AI Recommendation System Infrastructure (No Redis)
 
 ## Feature Context
-This feature establishes the end-to-end infrastructure for serving real-time, low-latency (< 50ms) AI book recommendations and automating the CI/CD retraining pipeline connecting Supabase PostgreSQL, Memgraph Cloud, Cloud Redis Feature Store, and GitHub Actions.
+This feature establishes the end-to-end infrastructure for serving real-time, low-latency (< 50ms) AI book recommendations and automating the CI/CD retraining pipeline connecting PostgreSQL, Memgraph, and GitHub Actions, simplified to operate without external Redis dependencies.
 
 ---
 
 ## Technical Decisions & Rationale
 
-### 1. Feature Store Strategy: Cloud Redis with Binary `float32` Buffers
+### 1. Vector Feature Storage Strategy: Memgraph Node Properties & Python Process Memory
 
-- **Decision**: Store GraphSAGE node embeddings ($z_{\text{user}}, z_{\text{item}}$) in Redis as compact binary byte buffers (`float32` array serialized via NumPy `tobytes()`) under keys `emb:user:<id>` and `emb:item:<id>`.
+- **Decision**: Store GraphSAGE node embeddings directly on Memgraph `Book` and `User` node properties (`n.features` / `n.embedding`) and cache vectors in-memory within the Python socket prediction server (`predict_server.py`).
 - **Rationale**:
-  - String/JSON vector serialization in Redis incurs unnecessary parsing overhead and memory inflation.
-  - Binary `float32` byte strings reduce memory footprint by 70% and allow direct zero-copy byte-array reconstruction in Python via `np.frombuffer()`.
-  - Batch retrieval via `redis.mget()` fetches dozens of candidate item vectors in a single round-trip (< 2ms).
+  - Eliminates the operational complexity, memory overhead, and security maintenance of an external Redis service.
+  - Memgraph natively holds node properties in RAM, enabling fast Cypher vector lookups (`MATCH (b:Book) WHERE b.id IN $ids RETURN b.id, b.features`).
+  - In-memory vector caching in `predict_server.py` allows sub-10ms scoring for active users and candidates during scoring sessions.
 - **Alternatives Considered**:
-  - *PostgreSQL pgvector column lookups during live scoring*: Rejected due to database connection pool limits and higher query latency under concurrent load.
-  - *In-memory Node.js JavaScript Map*: Rejected because embeddings cannot be shared across multiple Node process workers or updated seamlessly by background GitHub Actions retrain jobs.
+  - *Cloud Redis Feature Store*: Rejected per user architectural mandate to avoid extra Redis infrastructure.
+  - *PostgreSQL pgvector lookups during live scoring*: Evaluated, but direct Memgraph query or in-memory array access delivers lower latency for graph candidate scoring.
 
 ---
 
-### 2. Synchronization Pipeline: Offline Batch Push (`Push_embeddings_redis.py`)
+### 2. Synchronization Pipeline: Direct Memgraph GraphSAGE Training (`GraphSAGE.py`)
 
-- **Decision**: Create a dedicated standalone script `Push_embeddings_redis.py` that extracts retrained node features from Memgraph, formats them as binary float buffers, and pushes them in non-blocking pipeline transactions (`r.pipeline()`) to Cloud Redis.
+- **Decision**: `GraphSAGE.py` trains topological representations directly on the Memgraph graph and attaches feature vectors back to node properties in Memgraph.
 - **Rationale**:
-  - Decouples feature store updates from online serving logic.
-  - Bulk pipeline writes enable pushing thousands of vectors in seconds.
-  - Integrates seamlessly into the GitHub Actions retraining workflow (`action-retrain.yml`).
+  - Keeps graph topology and node embedding features strictly synchronized in a single database.
+  - Snapshot export (`Model_snapshot.py`) captures both graph structure and node embeddings seamlessly.
 - **Alternatives Considered**:
-  - *Real-time Memgraph query during online scoring*: Rejected because executing `MATCH (n) WHERE n.id = $id RETURN n.features` per candidate adds 20-50ms to online scoring latency.
+  - *Exporting embeddings to disk CSV/NPY files*: Evaluated, but storing on graph nodes in Memgraph allows unified database backups and query execution.
 
 ---
 
 ### 3. Serving Engine Architecture: Persistent TCP Socket Server + LightGBM
 
-- **Decision**: Retain and extend the persistent Python socket server (`predict_server.py`) running on port `5001`, embedding direct Redis connection pooling for real-time vector retrieval and LightGBM ranking.
+- **Decision**: Retain the persistent Python socket server (`predict_server.py`) on port `5001`, fetching candidate embeddings from Memgraph / in-memory cache and evaluating LightGBM ranking.
 - **Rationale**:
   - Raw TCP socket IPC between Node.js and Python maintains sub-5ms communication latency.
-  - LightGBM booster model (`lgb.Booster`) evaluates candidate feature rows (combining $z_{\text{user}}$, $z_{\text{item}}$, dot-product similarity, session month, and impression penalties) in < 10ms.
-- **Alternatives Considered**:
-  - *Migrating to HTTP FastAPI REST service*: Evaluated dual-mode capability, but raw TCP socket is retained as primary IPC mechanism to avoid HTTP header/JSON parsing overhead.
+  - LightGBM booster model (`lgb.Booster`) evaluates candidate feature rows in < 10ms.
 
 ---
 
-### 4. Continuous Integration & Deployment: Multi-Tiered GitHub Actions Pipeline
+### 4. Continuous Integration & Deployment: Simplified GitHub Actions Workflow
 
 - **Decision**: Configure `.github/workflows/action-retrain.yml` with sequential deployment stages:
-  1. Pull latest relational data from Supabase PostgreSQL into local training container.
-  2. Execute weighted topological GraphSAGE training (`GraphSAGE.py`).
-  3. Export retrained node embeddings to Cloud Redis (`Push_embeddings_redis.py`).
-  4. Restore sanitized Cypher graph topology to Memgraph Cloud (`Deploy_cloud.py`).
+  1. Pull latest relational data from PostgreSQL into local training container.
+  2. Execute GraphSAGE training (`GraphSAGE.py`).
+  3. Execute LightGBM ranker training (`LightGBM.py`).
+  4. Export Memgraph snapshot artifact (`Model_snapshot.py`).
 - **Rationale**:
-  - Ensures atomic deployment where feature store vectors and cloud graph topology update in sync.
-  - Employs transactional batch restoration and explicit memory trimming (`FREE MEMORY`) to run safely on cloud instances.
-- **Alternatives Considered**:
-  - *Separate independent workflows for Redis and Memgraph*: Rejected due to risk of state desynchronization between graph topology and feature store embeddings.
+  - Provides atomic deployment without requiring Redis container setup or feature store synchronization scripts.

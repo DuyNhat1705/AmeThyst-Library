@@ -1,4 +1,4 @@
-# Interface Contract: AI Recommendation Serving & Feature Store Protocol
+# Interface Contract: AI Recommendation Serving Protocol (No Redis)
 
 ## 1. Node.js Backend <-> Python IPC Socket Scoring Contract
 
@@ -59,28 +59,22 @@ Returned as a single JSON line:
 ```json
 {
   "success": false,
-  "error": "Connection to Redis feature store timed out"
+  "error": "Failed to retrieve node embeddings or score candidates"
 }
 ```
 
 ---
 
-## 2. Feature Store Key Schema (Python <-> Redis)
+## 2. Embedding Retrieval Protocol (Memgraph & Process Memory)
 
-- **Engine**: Redis 7.x
-- **Format**: Binary float32 byte buffers
+- **Storage Target**: Memgraph Node Properties (`Book.features`, `User.features`) & In-Memory Dictionary Cache
+- **Lookup Method**: Memgraph Cypher query or Python socket memory cache (`predict_server.py`)
 
-| Key Pattern | Type | Content | Example |
-| :--- | :--- | :--- | :--- |
-| `emb:user:<user_id>` | `String` (Binary Bytes) | 384 x 4 bytes float32 vector | `emb:user:28e1e0be-7a2b-444f-ab9f-5477109a29e5` |
-| `emb:item:<book_id>` | `String` (Binary Bytes) | 384 x 4 bytes float32 vector | `emb:item:1020049` |
+### Cypher Candidate Lookup Example
 
-### Batch Retrieval Protocol (`predict_server.py`)
-
-```python
-# Multi-get item embeddings in a single pipeline round-trip
-item_keys = [f"emb:item:{c['id']}" for c in candidates]
-raw_bytes = redis_client.mget(item_keys)
+```cypher
+MATCH (b:Book) WHERE b.id IN $book_ids 
+RETURN b.id AS id, b.features AS embedding;
 ```
 
 ---
@@ -91,7 +85,5 @@ The automated retrain pipeline expects the following environment secrets configu
 
 | Secret Key | Required By | Purpose |
 | :--- | :--- | :--- |
-| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | `Init_graph.py`, `Embedding.py` | Supabase PostgreSQL relational connection |
-| `MEMGRAPH_URI`, `MEMGRAPH_USER`, `MEMGRAPH_PASSWORD` | `GraphSAGE.py`, `Push_embeddings_redis.py` | Local/Training Memgraph instance |
-| `MEMGRAPH_URI_SERVER`, `MEMGRAPH_USER_SERVER` | `Deploy_cloud.py` | Cloud Memgraph deployment target |
-| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` | `Push_embeddings_redis.py` | Cloud Redis Feature Store |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | `Init_graph.py`, `LightGBM.py` | Supabase PostgreSQL relational connection |
+| `MEMGRAPH_URI`, `MEMGRAPH_USER`, `MEMGRAPH_PASSWORD` | `GraphSAGE.py`, `Model_snapshot.py` | Memgraph instance connection & snapshot export |

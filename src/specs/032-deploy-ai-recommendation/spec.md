@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "read @[draft.md] and specify the step for deploying the AI recommendation"
+**Input**: User description: "032-deploy-ai-reccommedation, modify the specification to avoid using redis."
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -27,15 +27,15 @@ As a library user, I want instant personalized book recommendations on my dashbo
 
 ### User Story 2 - Automated Graph & Feature Synchronization (Priority: P2)
 
-As a system administrator or automated CI/CD pipeline, I want retrained GraphSAGE embeddings and graph topology automatically synchronized to the cloud feature store and Memgraph Cloud instance, so that online serving always utilizes up-to-date model representations without manual deployment steps.
+As a system administrator or automated CI/CD pipeline, I want retrained GraphSAGE embeddings and graph topology automatically synchronized to the Memgraph database instance, so that online serving always utilizes up-to-date model representations without manual deployment steps.
 
-**Why this priority**: Automated synchronization ensures ML model freshness, eliminates manual error-prone deployment steps, and maintains seamless alignment between relational data, graph models, and feature stores.
+**Why this priority**: Automated synchronization ensures ML model freshness, eliminates manual error-prone deployment steps, and maintains seamless alignment between relational data and graph models.
 
-**Independent Test**: Can be tested independently by triggering the automated retraining pipeline via workflow dispatch and verifying that updated binary vector embeddings exist in Redis and graph nodes/relationships are restored in Memgraph Cloud.
+**Independent Test**: Can be tested independently by triggering the automated retraining pipeline via workflow dispatch and verifying that updated node embeddings and graph nodes/relationships are refreshed in Memgraph.
 
 **Acceptance Scenarios**:
 
-1. **Given** a scheduled or manually triggered retraining job in GitHub Actions, **When** GraphSAGE representation training completes, **Then** user and item embedding vectors are exported as compact binary `float32` byte buffers to the Cloud Redis feature store.
+1. **Given** a scheduled or manually triggered retraining job in GitHub Actions, **When** GraphSAGE representation training completes, **Then** user and item embedding vectors are attached directly to graph nodes in Memgraph and cached in the local prediction server memory.
 2. **Given** a validated graph snapshot and retrained model artifacts, **When** the cloud deployment step executes, **Then** the live graph database is updated with transaction safety and memory trimming.
 
 ---
@@ -50,31 +50,31 @@ As an AI scoring service, I want to combine graph node embeddings, real-time dot
 
 **Acceptance Scenarios**:
 
-1. **Given** candidate books retrieved from graph prediction queries, **When** evaluated by the scoring engine alongside user embedding vectors from Redis, **Then** candidates are ranked based on combined vector similarity, session context, and item availability.
+1. **Given** candidate books retrieved from graph prediction queries, **When** evaluated by the scoring engine alongside user embedding vectors retrieved from graph storage or memory cache, **Then** candidates are ranked based on combined vector similarity, session context, and item availability.
 2. **Given** books previously shown to a user but left unclicked across multiple sessions, **When** fresh recommendations are generated, **Then** a progressive skip penalty factor is applied to prevent repetitive recommendations.
 
 ---
 
 ### Edge Cases
 
-- **Cold-Start User / Missing Embedding**: When a new user has no graph interactions or missing Redis embedding vector, the system MUST fallback gracefully to baseline zero-vector representation combined with catalog popularity and rating metrics without failing the API request.
-- **Feature Store Unreachable**: If the Cloud Redis instance is temporarily offline or unreachable, the scoring engine MUST fall back to GCN topological predictions or Postgres trending candidates seamlessly.
+- **Cold-Start User / Missing Embedding**: When a new user has no graph interactions or missing embedding vector, the system MUST fallback gracefully to baseline zero-vector representation combined with catalog popularity and rating metrics without failing the API request.
+- **Graph Database Unreachable**: If the Memgraph instance is temporarily offline or unreachable, the scoring engine MUST fall back to local LightGBM model predictions or Postgres trending candidates seamlessly.
 - **Pipeline Interruption / Network Timeout**: If a deployment step fails during cloud restoration, the pipeline MUST abort safely without leaving the live graph in a corrupted state, emitting clear diagnostic logs.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST maintain a high-performance Feature Store (Redis) to cache binary `float32` byte array embedding vectors for users (`emb:user:<id>`) and items (`emb:item:<id>`).
-- **FR-002**: System MUST provide an automated synchronization script (`Push_embeddings_redis.py`) to extract GraphSAGE node embeddings from Memgraph and push them in bulk pipeline operations to Redis.
-- **FR-003**: Python recommendation scoring engine MUST perform batch vector lookups (`mget`) from the Feature Store and compute dot-product similarity to construct feature matrices for LightGBM ranking.
-- **FR-004**: Automated retraining workflow (`action-retrain.yml`) MUST execute sequential steps: database relational pull, GraphSAGE training, Redis embedding push, and Memgraph Cloud graph restoration.
+- **FR-001**: System MUST store and manage embedding vectors for users and items directly on Memgraph node properties or in-memory vector cache within the prediction server, eliminating any external caching/feature store middleware (such as Redis).
+- **FR-002**: System MUST provide an automated synchronization flow within `Init_graph.py` and `GraphSAGE.py` to extract PostgreSQL relational data and maintain GraphSAGE node embeddings in Memgraph.
+- **FR-003**: Python recommendation scoring engine MUST perform batch vector lookups directly from Memgraph or local memory cache and compute dot-product similarity to construct feature matrices for LightGBM ranking.
+- **FR-004**: Automated retraining workflow (`action-retrain.yml`) MUST execute sequential steps: database relational pull, GraphSAGE training, LightGBM ranker training, and Memgraph snapshot restoration.
 - **FR-005**: Recommendation backend MUST apply impression skip penalties and inventory availability guards to filter out out-of-stock items and avoid repetitive suggestions.
 
 ### Key Entities
 
-- **User Embedding (`emb:user:<user_id>`)**: Binary float32 vector representing the learned GraphSAGE topological representation of a user.
-- **Item Embedding (`emb:item:<book_id>`)**: Binary float32 vector representing the GraphSAGE and semantic text representation of a book.
+- **User Embedding**: Array of float32 values stored on User nodes representing the learned GraphSAGE topological representation of a user.
+- **Item Embedding**: Array of float32 values stored on Book nodes representing the GraphSAGE and semantic text representation of a book.
 - **Recommendation Candidate Payload**: Structure containing candidate book ID, baseline GCN prediction score, session month, available inventory count, and past impression count.
 
 ## Success Criteria *(mandatory)*
@@ -82,12 +82,12 @@ As an AI scoring service, I want to combine graph node embeddings, real-time dot
 ### Measurable Outcomes
 
 - **SC-001**: 95% of recommendation scoring requests execute within low latency (< 15ms for Python socket scoring, < 50ms end-to-end API response).
-- **SC-002**: Automated retraining and deployment pipeline completes full execution (GraphSAGE training, Redis push, Memgraph Cloud restoration) in under 15 minutes.
-- **SC-003**: 100% uptime for recommendation APIs during background deployment and feature store synchronization.
-- **SC-004**: Zero unhandled exceptions or 500 internal server errors when Redis keys are missing or cold-start users request recommendations.
+- **SC-002**: Automated retraining and deployment pipeline completes full execution (GraphSAGE training, LightGBM training, Memgraph restoration) in under 15 minutes.
+- **SC-003**: 100% uptime for recommendation APIs during background deployment and graph synchronization.
+- **SC-004**: Zero unhandled exceptions or 500 internal server errors when node embeddings are missing or cold-start users request recommendations.
 
 ## Assumptions
 
-- Environment secrets (`DB_HOST`, `MEMGRAPH_URI`, `MEMGRAPH_URI_SERVER`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`) are configured in GitHub Repository Secrets and `.env` files.
-- Local Docker environment includes Redis (`redis:7-alpine`) service mapped on port `6379`.
+- Environment secrets (`DB_HOST`, `MEMGRAPH_URI`, `MEMGRAPH_URI_SERVER`) are configured in GitHub Repository Secrets and `.env` files.
+- The system operates without external Redis dependencies, relying on Memgraph node properties and local process memory for fast vector access.
 - Existing TCP socket communication between Node.js server and Python socket script is maintained for low-overhead local IPC.
