@@ -220,10 +220,10 @@ def deploy_to_memgraph_cloud():
                     except Exception as idx_err:
                         print(f" Note on index/constraint: {idx_err}")
 
-            # 2. Batch data restoration statements in large transaction batches (5000)
-            # Avoid in-loop FREE MEMORY calls to prevent network stalling on remote connections
-            BATCH_SIZE = 5000
-            print(f"Restoring {len(data_stmts)} Cypher statements in optimized transaction batches of {BATCH_SIZE}...")
+            # 2. Batch data restoration statements in safe transaction batches (1000)
+            # Safe batch size to prevent hitting Memgraph Cloud query/transaction timeout limits
+            BATCH_SIZE = 1000
+            print(f"Restoring {len(data_stmts)} Cypher statements in safe transaction batches of {BATCH_SIZE}...")
             
             success_count = len(index_stmts)
             tx = session.begin_transaction()
