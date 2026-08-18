@@ -185,7 +185,22 @@ def deploy_to_memgraph_cloud():
                 session.run("MATCH (n) DETACH DELETE n")
                 print(" -> Fallback DETACH DELETE completed.")
 
-            # Separate constraint/index statements from data statements to run indexes first
+            # 1. Apply essential node unique constraints first to ensure hash-indexed O(1) lookups during relationship loading
+            essential_constraints = [
+                "CREATE CONSTRAINT ON (b:Book) ASSERT b.id IS UNIQUE;",
+                "CREATE CONSTRAINT ON (u:User) ASSERT u.id IS UNIQUE;",
+                "CREATE CONSTRAINT ON (a:Author) ASSERT a.id IS UNIQUE;",
+                "CREATE CONSTRAINT ON (g:Genre) ASSERT g.id IS UNIQUE;",
+                "CREATE CONSTRAINT ON (br:Branch) ASSERT br.id IS UNIQUE;"
+            ]
+            print("Applying essential unique constraints for fast O(1) node lookups...")
+            for c_stmt in essential_constraints:
+                try:
+                    session.run(c_stmt)
+                except Exception as c_err:
+                    pass
+
+            # Separate remaining constraint/index statements from data statements
             index_stmts = []
             data_stmts = []
             for stmt in statements:
@@ -197,19 +212,18 @@ def deploy_to_memgraph_cloud():
                 else:
                     data_stmts.append(clean)
 
-            # 1. Run index and constraint statements first
             if index_stmts:
-                print(f"Applying {len(index_stmts)} schema constraints and indexes...")
+                print(f"Applying {len(index_stmts)} additional schema constraints and indexes...")
                 for idx_stmt in index_stmts:
                     try:
                         session.run(idx_stmt)
                     except Exception as idx_err:
                         print(f" Note on index/constraint: {idx_err}")
 
-            # 2. Batch data restoration statements in transactions of BATCH_SIZE (500)
-            # Periodic FREE MEMORY calls after commits trim internal allocator memory back to OS.
-            BATCH_SIZE = 500
-            print(f"Restoring {len(data_stmts)} Cypher statements in transaction batches of {BATCH_SIZE} with periodic memory trimming...")
+            # 2. Batch data restoration statements in large transaction batches (5000)
+            # Avoid in-loop FREE MEMORY calls to prevent network stalling on remote connections
+            BATCH_SIZE = 5000
+            print(f"Restoring {len(data_stmts)} Cypher statements in optimized transaction batches of {BATCH_SIZE}...")
             
             success_count = len(index_stmts)
             tx = session.begin_transaction()
@@ -225,19 +239,17 @@ def deploy_to_memgraph_cloud():
 
                 if batch_count >= BATCH_SIZE:
                     tx.commit()
-                    try:
-                        session.run("FREE MEMORY")
-                    except Exception:
-                        pass
                     tx = session.begin_transaction()
                     batch_count = 0
 
             if batch_count > 0:
                 tx.commit()
-                try:
-                    session.run("FREE MEMORY")
-                except Exception:
-                    pass
+
+            # Execute final memory cleanup once at the end of import
+            try:
+                session.run("FREE MEMORY")
+            except Exception:
+                pass
 
             print(f"Successfully restored {success_count}/{len(statements)} statements.")
 

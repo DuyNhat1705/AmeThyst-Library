@@ -113,7 +113,7 @@ jobs:
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
           MEMGRAPH_URI_SERVER: ${{ secrets.MEMGRAPH_URI_SERVER }}
           MEMGRAPH_USER_SERVER: ${{ secrets.MEMGRAPH_USER_SERVER }}
-          MEMGRAPH_PASSWORD_SERVER: ${{ secrets.MEMGRAPH_PASSWORD_SERVER }}
+          MEMGRAPH_PASSWORD_SERVER: ${{ secrets.MEMGRAPH_PASSWORD }}
         run: |
           if [ -n "$MEMGRAPH_URI_SERVER" ]; then
             echo "Fast-syncing embeddings to Memgraph Cloud..."
