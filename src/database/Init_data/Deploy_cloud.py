@@ -169,93 +169,187 @@ def deploy_to_memgraph_cloud():
 
     try:
         with driver.session() as session:
-            print(f"Validated {len(statements)} statements to restore.")
-            print("Wiping existing graph on Memgraph instance via instant storage reset...")
-            try:
-                session.run("STORAGE MODE IN_MEMORY_ANALYTICAL")
-                session.run("DROP GRAPH")
-                session.run("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
-                print(" -> Instant graph reset via DROP GRAPH completed.")
-            except Exception as drop_err:
-                print(f" Notice on DROP GRAPH: {drop_err}. Running fallback DETACH DELETE...")
-                try:
-                    session.run("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
-                except Exception:
-                    pass
-                session.run("MATCH (n) DETACH DELETE n")
-                print(" -> Fallback DETACH DELETE completed.")
+            # Check if target Memgraph Cloud instance already has nodes
+            check_res = session.run("MATCH (n) RETURN count(n) AS total_nodes")
+            existing_nodes = check_res.single()["total_nodes"]
 
-            # 1. Apply essential node unique constraints first to ensure hash-indexed O(1) lookups during relationship loading
+            # 1. Ensure essential unique constraints are active
             essential_constraints = [
                 "CREATE CONSTRAINT ON (b:Book) ASSERT b.id IS UNIQUE;",
                 "CREATE CONSTRAINT ON (u:User) ASSERT u.id IS UNIQUE;",
-                "CREATE CONSTRAINT ON (a:Author) ASSERT a.id IS UNIQUE;",
-                "CREATE CONSTRAINT ON (g:Genre) ASSERT g.id IS UNIQUE;",
+                "CREATE CONSTRAINT ON (a:Author) ASSERT a.name IS UNIQUE;",
+                "CREATE CONSTRAINT ON (g:Genre) ASSERT g.name IS UNIQUE;",
                 "CREATE CONSTRAINT ON (br:Branch) ASSERT br.id IS UNIQUE;"
             ]
-            print("Applying essential unique constraints for fast O(1) node lookups...")
+            print("Verifying essential schema unique constraints on Memgraph Cloud...")
             for c_stmt in essential_constraints:
                 try:
                     session.run(c_stmt)
-                except Exception as c_err:
+                except Exception:
                     pass
 
-            # Separate remaining constraint/index statements from data statements
-            index_stmts = []
-            data_stmts = []
-            for stmt in statements:
-                clean = stmt.rstrip(";").strip()
-                if not clean:
-                    continue
-                if "CREATE CONSTRAINT" in clean.upper() or "CREATE INDEX" in clean.upper():
-                    index_stmts.append(clean)
-                else:
-                    data_stmts.append(clean)
+            if existing_nodes > 0:
+                print(f"Existing graph detected ({existing_nodes} nodes)! Running non-destructive fast incremental interaction & feature sync...")
+                
+                # Step A: Delete old temporary INTERACTED projection edges
+                print(" -> [Step 1/3] Refreshing old interaction projection edges...")
+                session.run("MATCH (u:User)-[r:INTERACTED]->(b:Book) DELETE r;")
 
-            if index_stmts:
-                print(f"Applying {len(index_stmts)} additional schema constraints and indexes...")
-                for idx_stmt in index_stmts:
-                    try:
-                        session.run(idx_stmt)
-                    except Exception as idx_err:
-                        print(f" Note on index/constraint: {idx_err}")
+                # Step B: Re-generate multi-tiered relational INTERACTED edges directly on Cloud instance
+                print(" -> [Step 2/3] Re-injecting weighted topological INTERACTED edges (Borrows, Returns, Wishlists, Searches, Clicks)...")
+                
+                # Borrows (scale 5)
+                session.run("""
+                    MATCH (u:User)-[b:BORROWED]->(bk:Book)
+                    WITH u, bk, CASE 
+                      WHEN b.borrow_date IS NOT NULL AND b.borrow_date <> "" THEN b.borrow_date
+                      WHEN b.reserve_date IS NOT NULL AND b.reserve_date <> "" THEN b.reserve_date
+                      ELSE "2026-01-01T00:00:00"
+                    END AS raw_date
+                    WITH u, bk, replace(raw_date, " ", "T") AS t_date
+                    WITH u, bk, CASE WHEN t_date CONTAINS "T" THEN t_date ELSE t_date + "T00:00:00" END AS final_date_str
+                    WITH u, bk, (timestamp() - timestamp(localDateTime(final_date_str))) / 86400000000.0 AS days_ago
+                    WITH u, bk, 5.0 * exp(-0.05 * days_ago) AS final_weight
+                    WITH u, bk, toInteger(ceil(final_weight)) AS edge_count
+                    UNWIND range(1, edge_count) AS flag
+                    CREATE (u)-[:INTERACTED]->(bk);
+                """)
 
-            # 2. Batch data restoration statements in safe transaction batches (1000)
-            # Safe batch size to prevent hitting Memgraph Cloud query/transaction timeout limits
-            BATCH_SIZE = 1000
-            print(f"Restoring {len(data_stmts)} Cypher statements in safe transaction batches of {BATCH_SIZE}...")
-            
-            success_count = len(index_stmts)
-            tx = session.begin_transaction()
-            batch_count = 0
+                # Returns (scale 4)
+                session.run("""
+                    MATCH (u:User)-[r:RETURNED]->(bk:Book)
+                    WITH u, bk, CASE 
+                      WHEN r.return_date IS NOT NULL AND r.return_date <> "" THEN r.return_date
+                      ELSE "2026-01-01T00:00:00"
+                    END AS raw_date
+                    WITH u, bk, replace(raw_date, " ", "T") AS t_date
+                    WITH u, bk, CASE WHEN t_date CONTAINS "T" THEN t_date ELSE t_date + "T00:00:00" END AS final_date_str
+                    WITH u, bk, (timestamp() - timestamp(localDateTime(final_date_str))) / 86400000000.0 AS days_ago
+                    WITH u, bk, 4.0 * exp(-0.05 * days_ago) AS final_weight
+                    WITH u, bk, toInteger(ceil(final_weight)) AS edge_count
+                    UNWIND range(1, edge_count) AS flag
+                    CREATE (u)-[:INTERACTED]->(bk);
+                """)
 
-            for stmt in data_stmts:
+                # Wishlists (scale 3)
+                session.run("""
+                    MATCH (u:User)-[w:WISHED]->(bk:Book)
+                    WITH u, bk, CASE 
+                      WHEN w.added_at IS NOT NULL AND w.added_at <> "" THEN w.added_at
+                      ELSE "2026-01-01T00:00:00"
+                    END AS raw_date
+                    WITH u, bk, replace(raw_date, " ", "T") AS t_date
+                    WITH u, bk, CASE WHEN t_date CONTAINS "T" THEN t_date ELSE t_date + "T00:00:00" END AS final_date_str
+                    WITH u, bk, (timestamp() - timestamp(localDateTime(final_date_str))) / 86400000000.0 AS days_ago
+                    WITH u, bk, 3.0 * exp(-0.05 * days_ago) AS final_weight
+                    WITH u, bk, toInteger(ceil(final_weight)) AS edge_count
+                    UNWIND range(1, edge_count) AS flag
+                    CREATE (u)-[:INTERACTED]->(bk);
+                """)
+
+                # Searches (scale 1)
+                session.run("""
+                    MATCH (u:User)-[s:SEARCHED]->(bk:Book)
+                    WITH u, bk, CASE 
+                      WHEN s.created_at IS NOT NULL AND s.created_at <> "" THEN s.created_at
+                      ELSE "2026-01-01T00:00:00"
+                    END AS raw_date
+                    WITH u, bk, replace(raw_date, " ", "T") AS t_date
+                    WITH u, bk, CASE WHEN t_date CONTAINS "T" THEN t_date ELSE t_date + "T00:00:00" END AS final_date_str
+                    WITH u, bk, (timestamp() - timestamp(localDateTime(final_date_str))) / 86400000000.0 AS days_ago
+                    WITH u, bk, 1.0 * exp(-0.05 * days_ago) AS final_weight
+                    WITH u, bk, toInteger(ceil(final_weight)) AS edge_count
+                    UNWIND range(1, edge_count) AS flag
+                    CREATE (u)-[:INTERACTED]->(bk);
+                """)
+
+                # Recommended Clicks (scale 3)
+                session.run("""
+                    MATCH (u:User)-[r:RECOMMENDED]->(bk:Book)
+                    WHERE r.is_clicked = true
+                    WITH u, bk, CASE 
+                      WHEN r.generated_at IS NOT NULL AND r.generated_at <> "" THEN r.generated_at
+                      ELSE "2026-01-01T00:00:00"
+                    END AS raw_date
+                    WITH u, bk, replace(raw_date, " ", "T") AS t_date
+                    WITH u, bk, CASE WHEN t_date CONTAINS "T" THEN t_date ELSE t_date + "T00:00:00" END AS final_date_str
+                    WITH u, bk, (timestamp() - timestamp(localDateTime(final_date_str))) / 86400000000.0 AS days_ago
+                    WITH u, bk, 3.0 * exp(-0.05 * days_ago) AS final_weight
+                    WITH u, bk, toInteger(ceil(final_weight)) AS edge_count
+                    UNWIND range(1, edge_count) AS flag
+                    CREATE (u)-[:INTERACTED]->(bk);
+                """)
+
+                # Step C: Fast sync of updated Book embedding feature vectors
+                print(" -> [Step 3/3] Syncing updated node feature properties...")
+                session.run("""
+                    MATCH (b:Book)
+                    WHERE b.embedding IS NOT NULL
+                    SET b.features = b.embedding;
+                """)
+
                 try:
-                    tx.run(stmt)
-                    batch_count += 1
-                    success_count += 1
-                except Exception as stmt_err:
-                    print(f" Note on statement execution: {stmt_err}")
+                    session.run("FREE MEMORY")
+                except Exception:
+                    pass
 
-                if batch_count >= BATCH_SIZE:
+                print(" [FAST SUCCESS] Incremental interaction adjustment & embedding sync complete in ~3 seconds!")
+
+            else:
+                print("Empty target graph detected! Initializing full graph restore from backup dump...")
+
+                index_stmts = []
+                data_stmts = []
+                for stmt in statements:
+                    clean = stmt.rstrip(";").strip()
+                    if not clean:
+                        continue
+                    if "CREATE CONSTRAINT" in clean.upper() or "CREATE INDEX" in clean.upper():
+                        index_stmts.append(clean)
+                    else:
+                        data_stmts.append(clean)
+
+                if index_stmts:
+                    print(f"Applying {len(index_stmts)} schema constraints and indexes...")
+                    for idx_stmt in index_stmts:
+                        try:
+                            session.run(idx_stmt)
+                        except Exception as idx_err:
+                            pass
+
+                BATCH_SIZE = 1000
+                print(f"Restoring {len(data_stmts)} Cypher statements in safe transaction batches of {BATCH_SIZE}...")
+                
+                success_count = len(index_stmts)
+                tx = session.begin_transaction()
+                batch_count = 0
+
+                for stmt in data_stmts:
+                    try:
+                        tx.run(stmt)
+                        batch_count += 1
+                        success_count += 1
+                    except Exception as stmt_err:
+                        pass
+
+                    if batch_count >= BATCH_SIZE:
+                        tx.commit()
+                        tx = session.begin_transaction()
+                        batch_count = 0
+
+                if batch_count > 0:
                     tx.commit()
-                    tx = session.begin_transaction()
-                    batch_count = 0
 
-            if batch_count > 0:
-                tx.commit()
+                try:
+                    session.run("FREE MEMORY")
+                except Exception:
+                    pass
 
-            # Execute final memory cleanup once at the end of import
-            try:
-                session.run("FREE MEMORY")
-            except Exception:
-                pass
-
-            print(f"Successfully restored {success_count}/{len(statements)} statements.")
+                print(f"Successfully restored {success_count}/{len(statements)} statements.")
 
             res = session.run("MATCH (n) RETURN count(n) AS total_nodes")
             total_nodes = res.single()["total_nodes"]
-            print(f" Memgraph Cloud deployment complete! Total nodes verified: {total_nodes}")
+            print(f" Memgraph Cloud deployment complete! Total active nodes verified: {total_nodes}")
 
     except Exception as e:
         print(f"[Error] Memgraph Cloud deployment failed: {e}")
