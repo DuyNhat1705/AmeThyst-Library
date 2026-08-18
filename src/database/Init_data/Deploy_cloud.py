@@ -136,37 +136,6 @@ def deploy_to_memgraph_cloud():
         print("  2. Memgraph Config: Ensure --bolt-address=0.0.0.0 in memgraph.conf (not 127.0.0.1).")
         sys.exit(1)
 
-    if not os.path.exists(CYPHER_FILE_PATH):
-        print(f"Cypher dump file not found at {CYPHER_FILE_PATH}. Fetching database dump from local Memgraph...")
-        local_uri = os.getenv("MEMGRAPH_URI") or "bolt://localhost:7687"
-        local_user = os.getenv("MEMGRAPH_USER")
-        local_pass = os.getenv("MEMGRAPH_PASSWORD")
-        local_auth = (local_user, local_pass) if (local_user and local_pass) else None
-        
-        try:
-            local_driver = GraphDatabase.driver(local_uri, auth=local_auth, encrypted=False)
-            with local_driver.session() as local_session:
-                res = local_session.run("DUMP DATABASE;")
-                dump_lines = [rec[0] for rec in res if rec and rec[0]]
-            with open(CYPHER_FILE_PATH, "w", encoding="utf-8") as f:
-                f.write("\n".join(dump_lines))
-            print(f"[OK] Fallback dump generated successfully ({len(dump_lines)} statements).")
-            local_driver.close()
-        except Exception as fallback_err:
-            print(f"[Error] Cypher dump file missing and fallback dump failed: {fallback_err}")
-            sys.exit(1)
-
-    print(f"Reading Cypher backup dump from {CYPHER_FILE_PATH}...")
-    with open(CYPHER_FILE_PATH, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    statements = split_cypher_statements(content)
-
-    if not statements or len(statements) == 0:
-        print("[CRITICAL ABORT] Cypher dump file contains 0 valid statements!")
-        print("Aborting deployment immediately to prevent accidental data wipe on Memgraph Cloud.")
-        sys.exit(1)
-
     try:
         with driver.session() as session:
             # Check if target Memgraph Cloud instance already has nodes
@@ -296,7 +265,36 @@ def deploy_to_memgraph_cloud():
                 print(" [FAST SUCCESS] Incremental interaction adjustment & embedding sync complete in ~3 seconds!")
 
             else:
-                print("Empty target graph detected! Initializing full graph restore from backup dump...")
+                print("Empty target graph detected! Checking for backup Cypher dump file...")
+                if not os.path.exists(CYPHER_FILE_PATH):
+                    print(f"Cypher dump file not found at {CYPHER_FILE_PATH}. Fetching database dump from local Memgraph...")
+                    local_uri = os.getenv("MEMGRAPH_URI") or "bolt://localhost:7687"
+                    local_user = os.getenv("MEMGRAPH_USER")
+                    local_pass = os.getenv("MEMGRAPH_PASSWORD")
+                    local_auth = (local_user, local_pass) if (local_user and local_pass) else None
+                    
+                    try:
+                        local_driver = GraphDatabase.driver(local_uri, auth=local_auth, encrypted=False)
+                        with local_driver.session() as local_session:
+                            res = local_session.run("DUMP DATABASE;")
+                            dump_lines = [rec[0] for rec in res if rec and rec[0]]
+                        with open(CYPHER_FILE_PATH, "w", encoding="utf-8") as f:
+                            f.write("\n".join(dump_lines))
+                        print(f"[OK] Fallback dump generated successfully ({len(dump_lines)} statements).")
+                        local_driver.close()
+                    except Exception as fallback_err:
+                        print(f"[Error] Cypher dump file missing and fallback dump failed: {fallback_err}")
+                        sys.exit(1)
+
+                print(f"Reading Cypher backup dump from {CYPHER_FILE_PATH}...")
+                with open(CYPHER_FILE_PATH, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                statements = split_cypher_statements(content)
+
+                if not statements or len(statements) == 0:
+                    print("[CRITICAL ABORT] Cypher dump file contains 0 valid statements!")
+                    sys.exit(1)
 
                 index_stmts = []
                 data_stmts = []
