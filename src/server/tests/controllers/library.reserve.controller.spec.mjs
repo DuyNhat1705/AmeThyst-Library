@@ -53,7 +53,7 @@ describe('library.controller.mjs - reserveBook', () => {
   });
 
   describe('Test 1 - Successful reservation', () => {
-    it('[TC-CTL-LIB-001] should return 201 with the created reservation', async () => {
+    it('[TC-CTL-RES-001] should return 201 with the created reservation', async () => {
       await reserveBook(req, res);
 
       expect(createReservation).toHaveBeenCalledWith('u-001', 'b-001', 1);
@@ -73,7 +73,7 @@ describe('library.controller.mjs - reserveBook', () => {
       });
     });
 
-    it('[TC-CTL-LIB-002] should pass bookId and branchId as-is to the service', async () => {
+    it('[TC-CTL-RES-002] should pass bookId and branchId as-is to the service', async () => {
       req.body = { bookId: 'b-002', branchId: 2 };
       await reserveBook(req, res);
 
@@ -82,7 +82,7 @@ describe('library.controller.mjs - reserveBook', () => {
   });
 
   describe('Test 2 - Missing parameters', () => {
-    it('[TC-CTL-LIB-003] should return 400 MISSING_PARAMETERS when bookId is missing', async () => {
+    it('[TC-CTL-RES-003] should return 400 MISSING_PARAMETERS when bookId is missing', async () => {
       req.body = { branchId: 1 };
 
       await reserveBook(req, res);
@@ -95,7 +95,7 @@ describe('library.controller.mjs - reserveBook', () => {
       expect(createReservation).not.toHaveBeenCalled();
     });
 
-    it('[TC-CTL-LIB-004] should return 400 MISSING_PARAMETERS when branchId is missing', async () => {
+    it('[TC-CTL-RES-004] should return 400 MISSING_PARAMETERS when branchId is missing', async () => {
       req.body = { bookId: 'b-001' };
 
       await reserveBook(req, res);
@@ -108,7 +108,7 @@ describe('library.controller.mjs - reserveBook', () => {
       expect(createReservation).not.toHaveBeenCalled();
     });
 
-    it('[TC-CTL-LIB-005] should return 400 MISSING_PARAMETERS when both bookId and branchId are missing', async () => {
+    it('[TC-CTL-RES-005] should return 400 MISSING_PARAMETERS when both bookId and branchId are missing', async () => {
       req.body = {};
 
       await reserveBook(req, res);
@@ -119,7 +119,7 @@ describe('library.controller.mjs - reserveBook', () => {
   });
 
   describe('Test 3 - Service-level domain errors', () => {
-    it('[TC-CTL-LIB-006] should forward USER_NOT_FOUND error with its status code', async () => {
+    it('[TC-CTL-RES-006] should forward USER_NOT_FOUND error with its status code', async () => {
       createReservation.mockResolvedValue({
         error: { code: 'USER_NOT_FOUND', message: 'User account not found. Please re-login.' },
         statusCode: 404,
@@ -134,7 +134,7 @@ describe('library.controller.mjs - reserveBook', () => {
       });
     });
 
-    it('[TC-CTL-LIB-007] should forward BOOK_UNAVAILABLE error with its status code', async () => {
+    it('[TC-CTL-RES-007] should forward BOOK_UNAVAILABLE error with its status code', async () => {
       createReservation.mockResolvedValue({
         error: { code: 'BOOK_UNAVAILABLE', message: 'No available copies at the selected branch' },
         statusCode: 400,
@@ -149,7 +149,7 @@ describe('library.controller.mjs - reserveBook', () => {
       });
     });
 
-    it('[TC-CTL-LIB-008] should default to status 400 when the service error has no statusCode', async () => {
+    it('[TC-CTL-RES-008] should default to status 400 when the service error has no statusCode', async () => {
       createReservation.mockResolvedValue({
         error: { code: 'UNKNOWN', message: 'Something went wrong' },
       });
@@ -165,7 +165,7 @@ describe('library.controller.mjs - reserveBook', () => {
   });
 
   describe('Test 4 - Unexpected failures', () => {
-    it('[TC-CTL-LIB-009] should return 500 INTERNAL_ERROR when the service throws', async () => {
+    it('[TC-CTL-RES-009] should return 500 INTERNAL_ERROR when the service throws', async () => {
       createReservation.mockRejectedValue(new Error('DB connection lost'));
 
       await reserveBook(req, res);
@@ -179,7 +179,7 @@ describe('library.controller.mjs - reserveBook', () => {
   });
 
   describe('Test 5 - Data-shape invariants', () => {
-    it('[TC-CTL-LIB-010] should never leak raw error messages on unexpected exceptions', async () => {
+    it('[TC-CTL-RES-010] should never leak raw error messages on unexpected exceptions', async () => {
       createReservation.mockRejectedValue(new Error('db password=secret123 leaked'));
 
       await reserveBook(req, res);

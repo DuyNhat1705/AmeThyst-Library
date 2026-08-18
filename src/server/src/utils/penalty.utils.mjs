@@ -31,7 +31,6 @@ export const calculateTotalPenalty = (conditions, bookPrice, overdueDays, policy
 
   const isPerfect = conditions.includes('perfect_condition');
   const hasDamage = conditions.some((condition) => condition !== 'perfect_condition');
-  if (isPerfect && !hasDamage && overdueDays <= 0) return { amount: 0, issue: null };
 
   let amount = hasDamage ? calculateDamageCost(conditions, bookPrice, policy, lostPenaltyAmount) : 0;
   let issue = hasDamage ? 'DAMAGED' : null;
