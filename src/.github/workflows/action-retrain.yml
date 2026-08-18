@@ -100,9 +100,9 @@ jobs:
         with:
           name: recommendation-models
           path: |
-            src/server/src/recommendation/embeddings.npz
             src/database/Init_data/lightgbm_ranker.txt
-            src/server/src/recommendation/lgbm_model.txt
+            database/Init_data/lightgbm_ranker.txt
+          if-no-files-found: ignore
           retention-days: 14
 
       - name: Deploy Embeddings to Memgraph Cloud

@@ -100,14 +100,15 @@ jobs:
         with:
           name: recommendation-models
           path: |
-            src/server/src/recommendation/embeddings.npz
             src/database/Init_data/lightgbm_ranker.txt
-            src/server/src/recommendation/lgbm_model.txt
+            database/Init_data/lightgbm_ranker.txt
+          if-no-files-found: ignore
           retention-days: 14
 
       - name: Deploy Embeddings to Memgraph Cloud
         if: ${{ github.event_name == 'schedule' || inputs.deploy_cloud == true }}
         env:
+          PYTHONUNBUFFERED: "1"
           MEMGRAPH_URI: bolt://127.0.0.1:7687
           MEMGRAPH_USER: ${{ secrets.MEMGRAPH_USER }}
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
