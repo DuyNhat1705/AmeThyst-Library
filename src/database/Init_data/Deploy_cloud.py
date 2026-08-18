@@ -137,24 +137,6 @@ def deploy_to_memgraph_cloud():
         sys.exit(1)
 
     try:
-        # Check if DB_HOST is configured for PostgreSQL sync
-        db_host = os.getenv("DB_HOST")
-        if db_host:
-            print("PostgreSQL connection detected! Syncing latest nodes & base relationships (BORROWED, WISHED, SEARCHED, RETURNED, etc.) to Memgraph Cloud...")
-            # Set Memgraph environment variables to target cloud instance during Init_graph execution
-            os.environ["MEMGRAPH_URI"] = cloud_uri
-            if cloud_user:
-                os.environ["MEMGRAPH_USER"] = cloud_user
-            if cloud_password:
-                os.environ["MEMGRAPH_PASSWORD"] = cloud_password
-
-            try:
-                from Init_graph import run_graph_initialization
-                run_graph_initialization()
-                print(" [OK] Base nodes and interaction relationships synced to Memgraph Cloud.")
-            except Exception as sync_err:
-                print(f" Warning on PostgreSQL sync to Cloud: {sync_err}")
-
         with driver.session() as session:
             # 1. Ensure essential unique constraints are active
             essential_constraints = [
