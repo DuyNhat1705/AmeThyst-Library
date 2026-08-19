@@ -103,17 +103,16 @@ jobs:
         with:
           name: recommendation-models
           path: |
-            src/database/Init_data/lightgbm_ranker.json
             src/database/Init_data/lightgbm_ranker.txt
           if-no-files-found: ignore
           retention-days: 14
 
-      - name: Commit & Push Retrained Model Artifacts (Strategy 1 Vercel Auto-Deploy)
+      - name: Commit & Push Retrained Model Artifacts
         if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(ai): auto-update retrained LightGBM model weights [skip ci]"
-          file_pattern: "src/database/Init_data/lightgbm_ranker.json src/database/Init_data/lightgbm_ranker.txt"
+          file_pattern: "src/database/Init_data/lightgbm_ranker.txt"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
 
