@@ -62,10 +62,38 @@ export const invalidateUserRecommendationCache = (userId) => {
   }
 };
 
+import { LightGBMEvaluator } from '../utils/lightgbmEvaluator.mjs';
+
+const MODEL_JSON_PATH = path.resolve(__dirname, '../../../database/Init_data/lightgbm_ranker.json');
+const jsEvaluator = new LightGBMEvaluator(MODEL_JSON_PATH);
+
 /**
- * Executes model inference by communicating with the persistent Python TCP socket server.
+ * Scores candidates using pure JS LightGBMEvaluator (Vercel serverless mode).
+ */
+const scoreCandidatesServerless = (candidates) => {
+  if (!candidates || candidates.length === 0) return [];
+  return candidates.map(c => {
+    const features = {
+      0: c.session_month || 1,
+      1: c.past_impressions_count || 0,
+      2: c.is_in_wishlist ? 1 : 0,
+      3: c.global_available_copies || 0
+    };
+    const score = jsEvaluator.predict(features);
+    return { ...c, score };
+  }).sort((a, b) => (b.score || 0) - (a.score || 0));
+};
+
+/**
+ * Executes model inference by communicating with the persistent Python TCP socket server,
+ * falling back to in-memory JS LightGBMEvaluator in Vercel serverless environment.
  */
 const runRankerInference = (userId, candidates, retries = 1) => {
+  // Use pure JS evaluator directly on Vercel or if socket daemon disabled
+  if (process.env.VERCEL || process.env.USE_JS_EVALUATOR === 'true') {
+    return Promise.resolve(scoreCandidatesServerless(candidates));
+  }
+
   return new Promise((resolve, reject) => {
     const port = parseInt(process.env.RECOMMENDATION_PORT || '5001', 10);
     const host = '127.0.0.1';
@@ -92,10 +120,10 @@ const runRankerInference = (userId, candidates, retries = 1) => {
           if (parsed.success) {
             resolve(parsed.ranked);
           } else {
-            reject(new Error(parsed.error || 'Python socket server returned success=false'));
+            resolve(scoreCandidatesServerless(candidates));
           }
         } catch (err) {
-          reject(new Error(`Failed to parse prediction output: ${responseStr}. Error: ${err.message}`));
+          resolve(scoreCandidatesServerless(candidates));
         }
       }
     });
@@ -104,7 +132,6 @@ const runRankerInference = (userId, candidates, retries = 1) => {
       client.destroy();
       
       if (err.code === 'ECONNREFUSED' && retries > 0) {
-        // console.log(`[Socket Client] Connection refused. Spawning Python persistent server and retrying...`);
         startPythonServer();
         
         // Wait 1.5 seconds for the socket server to bind
@@ -114,16 +141,17 @@ const runRankerInference = (userId, candidates, retries = 1) => {
           const retryResult = await runRankerInference(userId, candidates, retries - 1);
           resolve(retryResult);
         } catch (retryErr) {
-          reject(retryErr);
+          resolve(scoreCandidatesServerless(candidates));
         }
       } else {
-        reject(err);
+        // Fallback to JS Evaluator on any connection error
+        resolve(scoreCandidatesServerless(candidates));
       }
     });
     
     client.on('timeout', () => {
       client.destroy();
-      reject(new Error('Recommendation socket connection timed out'));
+      resolve(scoreCandidatesServerless(candidates));
     });
   });
 };

@@ -102,3 +102,5 @@ __pycache__/
 .venv/
 venv/
 lightgbm_ranker.txt
+!database/Init_data/lightgbm_ranker.json
+!src/database/Init_data/lightgbm_ranker.json
