@@ -1,7 +1,7 @@
 name: Retrain & Deploy AI Recommendation System
 
 on:
-  push:                                 # 👈 Add this temporarily
+  push:                                 
     branches: 
       - GitHub-action
   schedule:
