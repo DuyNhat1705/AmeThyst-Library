@@ -1,9 +1,6 @@
 name: Retrain & Deploy AI Recommendation System
 
 on:
-  push:                                 
-    branches: 
-      - GitHub-action
   schedule:
     - cron: '0 2 * * 0' # Every Sunday at 02:00 UTC
 
@@ -28,6 +25,8 @@ on:
 jobs:
   retrain-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     # Ephemeral Memgraph container for fast local training on GitHub runners
     services:
