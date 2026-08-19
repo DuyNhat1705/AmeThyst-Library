@@ -4,7 +4,8 @@ on:
   schedule:
     - cron: '0 2 * * 0' # Every Sunday at 02:00 UTC
   push:                                 # 👈 Add this temporarily
-    branches: [GitHub-action]  
+    branches: 
+      - GitHub-action
   workflow_dispatch:
     inputs:
       run_graphsage:
