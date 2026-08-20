@@ -20,10 +20,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install PostgreSQL Client
+      - name: Install PostgreSQL 17 Client
         run: |
+          sudo install -d /etc/apt/keyrings
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/keyrings/postgresql.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client-17
 
       - name: Create PostgreSQL Database Backup
         env:
@@ -47,9 +50,9 @@ jobs:
           TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
           BACKUP_FILENAME="backups/postgres_backup_${PGDATABASE}_${TIMESTAMP}.sql.gz"
           
-          echo "Starting pg_dump for database '${PGDATABASE}' at ${PGHOST}:${PGPORT} (SSLMode: ${PGSSLMODE})..."
+          echo "Starting pg_dump v17 for database '${PGDATABASE}' at ${PGHOST}:${PGPORT} (SSLMode: ${PGSSLMODE})..."
 
-          # 2. Execute pg_dump with pipefail protection
+          # 2. Execute pg_dump v17 with pipefail protection
           if ! pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" \
             --clean --if-exists --no-owner --no-privileges \
             | gzip > "$BACKUP_FILENAME"; then
