@@ -3,6 +3,9 @@ name: Automated PostgreSQL Daily Backup
 on:
   schedule:
     - cron: '0 0 * * *' # Triggers automatically every 24 hours at 00:00 UTC
+  push:
+    branches:
+      - GitHub-action
   workflow_dispatch:
     inputs:
       retention_days:
@@ -32,19 +35,45 @@ jobs:
           PGUSER: ${{ secrets.DB_USER }}
           PGPASSWORD: ${{ secrets.DB_PASSWORD }}
           PGDATABASE: ${{ secrets.DB_NAME }}
+          PGSSLMODE: ${{ secrets.PGSSLMODE || 'require' }}
         run: |
+          set -eo pipefail
+
+          # 1. Validate Secret Variables
+          if [ -z "$PGHOST" ] || [ -z "$PGUSER" ] || [ -z "$PGPASSWORD" ] || [ -z "$PGDATABASE" ]; then
+            echo "❌ Error: One or more required database secrets are missing!"
+            echo "Please ensure DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME are set in Repository Secrets."
+            exit 1
+          fi
+
           mkdir -p backups
           TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
           BACKUP_FILENAME="backups/postgres_backup_${PGDATABASE}_${TIMESTAMP}.sql.gz"
           
-          echo "Starting pg_dump for database: ${PGDATABASE} at ${PGHOST}:${PGPORT}..."
-          
-          pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" \
+          echo "Starting pg_dump for database '${PGDATABASE}' at ${PGHOST}:${PGPORT} (SSLMode: ${PGSSLMODE})..."
+
+          # 2. Execute pg_dump with pipefail protection
+          if ! pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" \
             --clean --if-exists --no-owner --no-privileges \
-            | gzip > "$BACKUP_FILENAME"
+            | gzip > "$BACKUP_FILENAME"; then
             
+            echo "⚠️ pg_dump with SSLMode=require failed. Retrying with SSLMode=prefer..."
+            export PGSSLMODE=prefer
+            pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" \
+              --clean --if-exists --no-owner --no-privileges \
+              | gzip > "$BACKUP_FILENAME"
+          fi
+            
+          # 3. Verify Backup File Quality & Size
+          FILE_BYTES=$(stat -c%s "$BACKUP_FILENAME" 2>/dev/null || stat -f%z "$BACKUP_FILENAME" 2>/dev/null || echo "0")
           BACKUP_SIZE=$(du -h "$BACKUP_FILENAME" | cut -f1)
-          echo "Backup completed successfully!"
+
+          if [ "$FILE_BYTES" -lt 100 ]; then
+            echo "❌ Error: Backup file is empty or corrupted (size: ${FILE_BYTES} bytes)."
+            exit 1
+          fi
+
+          echo "✅ Backup completed successfully!"
           echo "File: ${BACKUP_FILENAME} (${BACKUP_SIZE})"
 
       - name: Upload Backup Artifact to GitHub Actions
