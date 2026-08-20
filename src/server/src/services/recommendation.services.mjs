@@ -62,36 +62,48 @@ export const invalidateUserRecommendationCache = (userId) => {
   }
 };
 
-import { LightGBMEvaluator } from '../utils/lightgbmEvaluator.mjs';
-
-const MODEL_JSON_PATH = path.resolve(__dirname, '../../../database/Init_data/lightgbm_ranker.json');
-const jsEvaluator = new LightGBMEvaluator(MODEL_JSON_PATH);
-
 /**
- * Scores candidates using pure JS LightGBMEvaluator (Vercel serverless mode).
+ * Baseline fallback scoring using GCN graph scores when microservice is unavailable.
  */
-const scoreCandidatesServerless = (candidates) => {
+const fallbackGraphScoring = (candidates) => {
   if (!candidates || candidates.length === 0) return [];
-  return candidates.map(c => {
-    const features = {
-      0: c.session_month || 1,
-      1: c.past_impressions_count || 0,
-      2: c.is_in_wishlist ? 1 : 0,
-      3: c.global_available_copies || 0
-    };
-    const score = jsEvaluator.predict(features);
-    return { ...c, score };
-  }).sort((a, b) => (b.score || 0) - (a.score || 0));
+  return candidates.map(c => ({
+    ...c,
+    score: typeof c.gcn_score === 'number' ? c.gcn_score : 0.0
+  })).sort((a, b) => (b.score || 0) - (a.score || 0));
 };
 
 /**
  * Executes model inference by communicating with the persistent Python TCP socket server,
  * falling back to in-memory JS LightGBMEvaluator in Vercel serverless environment.
  */
-const runRankerInference = (userId, candidates, retries = 1) => {
-  // Use pure JS evaluator directly on Vercel or if socket daemon disabled
+const runRankerInference = async (userId, candidates, retries = 1) => {
+  // Option 1: Remote HTTP Microservice on Render (RECOMMENDATION_SERVICE_URL)
+  const renderServiceUrl = process.env.RECOMMENDATION_SERVICE_URL;
+  if (renderServiceUrl) {
+    try {
+      const endpoint = renderServiceUrl.endsWith('/predict') ? renderServiceUrl : `${renderServiceUrl.replace(/\/$/, '')}/predict`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, candidates })
+      });
+      if (response.ok) {
+        const parsed = await response.json();
+        if (parsed.success && parsed.ranked) {
+          return parsed.ranked;
+        }
+      }
+    } catch (err) {
+      console.error('[Recommendation Service] Render LightGBM API request failed:', err.message);
+    }
+    // Fallback to JS Evaluator if Render HTTP microservice fails
+    return fallbackGraphScoring(candidates);
+  }
+
+  // Option 2: Pure JS evaluator directly on Vercel or if socket daemon disabled
   if (process.env.VERCEL || process.env.USE_JS_EVALUATOR === 'true') {
-    return Promise.resolve(scoreCandidatesServerless(candidates));
+    return Promise.resolve(fallbackGraphScoring(candidates));
   }
 
   return new Promise((resolve, reject) => {
@@ -120,10 +132,10 @@ const runRankerInference = (userId, candidates, retries = 1) => {
           if (parsed.success) {
             resolve(parsed.ranked);
           } else {
-            resolve(scoreCandidatesServerless(candidates));
+            resolve(fallbackGraphScoring(candidates));
           }
         } catch (err) {
-          resolve(scoreCandidatesServerless(candidates));
+          resolve(fallbackGraphScoring(candidates));
         }
       }
     });
@@ -141,17 +153,17 @@ const runRankerInference = (userId, candidates, retries = 1) => {
           const retryResult = await runRankerInference(userId, candidates, retries - 1);
           resolve(retryResult);
         } catch (retryErr) {
-          resolve(scoreCandidatesServerless(candidates));
+          resolve(fallbackGraphScoring(candidates));
         }
       } else {
         // Fallback to JS Evaluator on any connection error
-        resolve(scoreCandidatesServerless(candidates));
+        resolve(fallbackGraphScoring(candidates));
       }
     });
     
     client.on('timeout', () => {
       client.destroy();
-      resolve(scoreCandidatesServerless(candidates));
+      resolve(fallbackGraphScoring(candidates));
     });
   });
 };

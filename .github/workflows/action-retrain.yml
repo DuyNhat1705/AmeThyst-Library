@@ -3,6 +3,7 @@ name: Retrain & Deploy AI Recommendation System
 on:
   schedule:
     - cron: '0 2 * * 0' # Every Sunday at 02:00 UTC
+
   workflow_dispatch:
     inputs:
       run_graphsage:
@@ -20,10 +21,17 @@ on:
         required: false
         type: boolean
         default: true
+      deploy_render:
+        description: 'Trigger deployment on Render service'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   retrain-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     # Ephemeral Memgraph container for fast local training on GitHub runners
     services:
@@ -100,17 +108,16 @@ jobs:
         with:
           name: recommendation-models
           path: |
-            src/database/Init_data/lightgbm_ranker.json
             src/database/Init_data/lightgbm_ranker.txt
           if-no-files-found: ignore
           retention-days: 14
 
-      - name: Commit & Push Retrained Model Artifacts (Strategy 1 Vercel Auto-Deploy)
+      - name: Commit & Push Retrained Model Artifacts
         if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(ai): auto-update retrained LightGBM model weights [skip ci]"
-          file_pattern: "src/database/Init_data/lightgbm_ranker.json src/database/Init_data/lightgbm_ranker.txt"
+          file_pattern: "src/database/Init_data/lightgbm_ranker.txt"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
 
@@ -136,3 +143,11 @@ jobs:
           else
             echo "MEMGRAPH_URI_SERVER not configured. Skipping cloud sync."
           fi
+
+      - name: Trigger Render Service Deployment
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_render == true }}
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL || 'https://api.render.com/deploy/srv-da2thks9v7es73cv5a5g?key=gbAiUSsuDDo' }}
+        run: |
+          echo "Triggering deployment on Render service..."
+          curl -X POST "$RENDER_HOOK"

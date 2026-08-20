@@ -137,15 +137,7 @@ def run_local_training():
     ranker_model.save_model(model_output_path)
     print(f"Success! Initial weights file compiled cleanly to: {model_output_path}")
 
-    # Export lightweight JSON tree structure for Vercel Node.js Evaluator
-    model_dump = ranker_model.dump_model()
-    json_output_path = os.path.join(os.path.dirname(__file__), "lightgbm_ranker.json")
-    with open(json_output_path, "w", encoding="utf-8") as f:
-        json.dump({
-            "feature_names": model_dump.get("feature_names", []),
-            "tree_info": model_dump.get("tree_info", [])
-        }, f, indent=2)
-    print(f"✓ LightGBM JSON tree model exported to: {json_output_path}")
+
 
 if __name__ == "__main__":
     run_local_training()
