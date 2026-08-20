@@ -21,6 +21,11 @@ on:
         required: false
         type: boolean
         default: true
+      deploy_render:
+        description: 'Trigger deployment on Render service'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   retrain-and-deploy:
@@ -138,3 +143,11 @@ jobs:
           else
             echo "MEMGRAPH_URI_SERVER not configured. Skipping cloud sync."
           fi
+
+      - name: Trigger Render Service Deployment
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_render == true }}
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL || 'https://api.render.com/deploy/srv-da2thks9v7es73cv5a5g?key=gbAiUSsuDDo' }}
+        run: |
+          echo "Triggering deployment on Render service..."
+          curl -X POST "$RENDER_HOOK"

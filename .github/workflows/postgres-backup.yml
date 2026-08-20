@@ -1,0 +1,59 @@
+name: Automated PostgreSQL Daily Backup
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Triggers automatically every 24 hours at 00:00 UTC
+  push:
+    branches:
+      - GitHub-action
+  workflow_dispatch:
+    inputs:
+      retention_days:
+        description: 'Artifact retention period in days'
+        required: false
+        type: string
+        default: '30'
+
+jobs:
+  postgres-backup:
+    name: PostgreSQL Database Dump & Backup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create PostgreSQL Database Backup
+        env:
+          PGHOST: ${{ secrets.DB_HOST }}
+          PGPORT: ${{ secrets.DB_PORT || '5432' }}
+          PGUSER: ${{ secrets.DB_USER }}
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          PGDATABASE: ${{ secrets.DB_NAME }}
+        run: |
+          mkdir -p backups
+          TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
+          BACKUP_FILENAME="backups/postgres_backup_${PGDATABASE}_${TIMESTAMP}.sql.gz"
+          
+          echo "Starting pg_dump for database: ${PGDATABASE} at ${PGHOST}:${PGPORT}..."
+          
+          pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" \
+            --clean --if-exists --no-owner --no-privileges \
+            | gzip > "$BACKUP_FILENAME"
+            
+          BACKUP_SIZE=$(du -h "$BACKUP_FILENAME" | cut -f1)
+          echo "Backup completed successfully!"
+          echo "File: ${BACKUP_FILENAME} (${BACKUP_SIZE})"
+
+      - name: Upload Backup Artifact to GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-daily-backup
+          path: backups/
+          if-no-files-found: error
+          retention-days: ${{ github.event.inputs.retention_days || 30 }}

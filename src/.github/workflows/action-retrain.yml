@@ -20,10 +20,17 @@ on:
         required: false
         type: boolean
         default: true
+      deploy_render:
+        description: 'Trigger deployment on Render service'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   retrain-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     # Ephemeral Memgraph container for fast local training on GitHub runners
     services:
@@ -48,7 +55,11 @@ jobs:
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r src/database/Init_data/requirements.txt
+          if [ -f "database/Init_data/requirements.txt" ]; then
+            pip install -r database/Init_data/requirements.txt
+          elif [ -f "src/database/Init_data/requirements.txt" ]; then
+            pip install -r src/database/Init_data/requirements.txt
+          fi
 
       - name: Wait for Local Memgraph Container
         run: |
@@ -79,9 +90,9 @@ jobs:
           MEMGRAPH_PASSWORD: ${{ secrets.MEMGRAPH_PASSWORD }}
         run: |
           echo "Syncing PostgreSQL metadata to local Memgraph..."
-          python src/database/Init_data/Init_graph.py
+          python database/Init_data/Init_graph.py || python src/database/Init_data/Init_graph.py
           echo "Executing GraphSAGE representation training & exporting embeddings.npz..."
-          python src/database/Init_data/GraphSAGE.py
+          python database/Init_data/GraphSAGE.py || python src/database/Init_data/GraphSAGE.py
 
       - name: Retrain LightGBM Ranker
         if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
@@ -93,15 +104,28 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           echo "Training LightGBM model on latest graph embeddings..."
-          python src/database/Init_data/LightGBM.py
+          python database/Init_data/LightGBM.py || python src/database/Init_data/LightGBM.py
+
+      - name: Commit & Push Retrained LightGBM Model
+        if: ${{ github.event_name == 'schedule' || inputs.run_lightgbm == true }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add database/Init_data/lightgbm_ranker.txt src/database/Init_data/lightgbm_ranker.txt 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes in LightGBM model file to commit."
+          else
+            git commit -m "chore(ml): update retrained lightgbm_ranker.txt model weights [skip ci]"
+            git push
+          fi
 
       - name: Upload Serving Model Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: recommendation-models
           path: |
-            src/database/Init_data/lightgbm_ranker.txt
             database/Init_data/lightgbm_ranker.txt
+            src/database/Init_data/lightgbm_ranker.txt
           if-no-files-found: ignore
           retention-days: 14
 
@@ -123,7 +147,15 @@ jobs:
         run: |
           if [ -n "$MEMGRAPH_URI_SERVER" ]; then
             echo "Fast-syncing embeddings to Memgraph Cloud..."
-            python src/database/Init_data/Deploy_cloud.py
+            python database/Init_data/Deploy_cloud.py || python src/database/Init_data/Deploy_cloud.py
           else
             echo "MEMGRAPH_URI_SERVER not configured. Skipping cloud sync."
           fi
+
+      - name: Trigger Render Service Deployment
+        if: ${{ github.event_name == 'schedule' || inputs.deploy_render == true }}
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL || 'https://api.render.com/deploy/srv-da2thks9v7es73cv5a5g?key=gbAiUSsuDDo' }}
+        run: |
+          echo "Triggering deployment on Render service..."
+          curl -X POST "$RENDER_HOOK"
