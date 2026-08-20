@@ -147,7 +147,7 @@ jobs:
       - name: Trigger Render Service Deployment
         if: ${{ github.event_name == 'schedule' || inputs.deploy_render == true }}
         env:
-          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL || 'https://api.render.com/deploy/srv-da2thks9v7es73cv5a5g?key=gbAiUSsuDDo' }}
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           echo "Triggering deployment on Render service..."
           curl -X POST "$RENDER_HOOK"
