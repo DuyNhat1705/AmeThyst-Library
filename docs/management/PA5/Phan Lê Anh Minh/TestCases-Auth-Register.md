@@ -53,7 +53,7 @@ Production changes, unrelated authentication features, real external email deliv
 ### 4. Test schedule and responsibilities
 
 - **Test design and review:** before execution - Phan Lê Anh Minh.
-- **Automated execution:** 2026-08-14 - Phan Lê Anh Minh.
+- **Automated execution:** 2026-08-21 - Phan Lê Anh Minh.
 - **Failure analysis and bug reporting:** after execution - Phan Lê Anh Minh.
 - **Final review:** before PA5 submission - Phan Lê Anh Minh.
 
