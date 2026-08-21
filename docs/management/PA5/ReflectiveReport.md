@@ -40,7 +40,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
     - [1. In PAs Guideline](#1-in-pas-guideline)
     - [2. In Developing Team](#2-in-developing-team)
   - [V. Individual Contributions](#v-individual-contributions)
-    - [1. Trần Lê Hoàng Gia](#1-trần-lê-hoàng-gia)
+    - [1. 24127028 - Trần Lê Hoàng Gia](#1-24127028---trần-lê-hoàng-gia)
     - [2. 24127082 - Phan Lê Anh Minh](#2-24127082---phan-lê-anh-minh)
     - [3. 241270995 - Vũ Duy Nhất](#3-241270995---vũ-duy-nhất)
     - [4. 24127398 - Nguyễn Nhựt Huy](#4-24127398---nguyễn-nhựt-huy)
@@ -148,7 +148,7 @@ Beyond the technical workflow, working with clear specifications also shortened 
 - Encourage automated Git commit hooks that reference Jira issue keys, to reinforce real-world agile tracking across sprint deliverables.
 
 ## V. Individual Contributions
-### 1. Trần Lê Hoàng Gia
+### 1. 24127028 - Trần Lê Hoàng Gia
 - **Personal Contribution:** Served as technical lead for the AI recommendation subsystem (`SCRUM-81`, `SCRUM-74`), designed software architecture and system context diagrams (`SCRUM-99`), set up database schemas (`SCRUM-25`, `SCRUM-44`), and authored the complete Vitest automated test suite (`SCRUM-98`, `SCRUM-113`).
 - **Personal Learning:** Gained practical experience in engineering hybrid architectures integrating relational databases (PostgreSQL), graph databases (Memgraph), and ML rankers over raw TCP sockets. Mastered multi-tier caching with reliable invalidation and applied Specifications-Driven Development (SDD) to enforce inventory guardrails and fault tolerance.
 
