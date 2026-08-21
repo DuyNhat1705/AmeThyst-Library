@@ -71,6 +71,25 @@ describe('Resend Verification API', () => {
       expect(res.body).toEqual({ message: RESEND_GENERIC });
       expect(sendVerificationEmail).toHaveBeenCalledWith(mockEmail, expect.any(String));
       expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
+
+      const insertCall = mockClient.query.mock.calls.find(
+        ([sql]) => typeof sql === 'string' && sql.includes('INSERT INTO pending_users')
+      );
+      expect(insertCall).toBeDefined();
+      expect(insertCall[1]).toEqual(
+        expect.arrayContaining([
+          mockEmail,
+          mockPendingRow.password_hash,
+          mockPendingRow.username,
+        ])
+      );
+      expect(insertCall[1]).toEqual(
+        expect.arrayContaining([
+          expect.any(String),
+          expect.anything(),
+        ])
+      );
+
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
     });
   });
