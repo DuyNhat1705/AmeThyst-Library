@@ -5,7 +5,7 @@
     Group ID: 03
     Group Name: AmeThyst
     Assignment: PA5-2026
-    Version: 1.4
+    Version: 1.6
 
 Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
@@ -19,6 +19,8 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 | 15/08/2026 | 1.2 | Test Execution Result for Register, Google OAuth, Verify Email, Resend Verification | Phan Lê Anh Minh |
 | 16/08/2026 | 1.3 | Test Execution Result for Reserve Book and Verify PIN | Nguyễn Nhựt Huy |
 | 16/08/2026 | 1.4 | Update Execution Result for more test in Create Study Group | Nguyễn Lê Hoàng Khải |
+| 21/08/2026 | 1.5 | Test Execution Result for AI Recommendation | Trần Lê Hoàng Gia |
+| 21/08/2026 | 1.6 | Combine all and Edit | Vũ Duy Nhất |
 
 ## Table of Contents
 
@@ -71,8 +73,8 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
       <td style="vertical-align: top;"><strong>TC-SRV-REG-002</strong></td>
     </tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-14</td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Fail</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The pending record with expired_at equal to now remained active; cleanup was not called. Linked bug: BUG-AUTH-01.</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The exact-boundary pending record was treated as expired, deleted, and registration continued.</td></tr>
   </tbody>
 </table>
 
@@ -91,7 +93,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
     </tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-14</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Fail</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">Pending data remained committed after the verification mailer failed. Linked bug: BUG-AUTH-02.</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">Pending data remained committed after the verification mailer failed. Linked bug: BUG-AUTH-01.</td></tr>
   </tbody>
 </table>
 
@@ -342,7 +344,7 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
     </tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-14</td></tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Fail</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">Replacement token and TTL were committed before failed mail delivery, so the previous values were not preserved. Linked bug: BUG-AUTH-04.</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">Replacement token and TTL were committed before failed mail delivery, so the previous values were not preserved. Linked bug: BUG-AUTH-02.</td></tr>
   </tbody>
 </table>
 
@@ -457,8 +459,8 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
       <td style="vertical-align: top;"><strong>TC-SRV-VE-002</strong></td>
     </tr>
     <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td><td style="vertical-align: top;">2026-08-14</td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Fail</strong></td></tr>
-    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The token with expired_at equal to now was accepted and verification succeeded. Linked bug: BUG-AUTH-03.</td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td><td style="vertical-align: top;"><strong>Pass</strong></td></tr>
+    <tr><td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td><td style="vertical-align: top;">The exact-boundary verification token was rejected as expired, deleted, and no user was promoted.</td></tr>
   </tbody>
 </table>
 
@@ -2697,4 +2699,310 @@ Performed by: All Members | Reviewed by: All Members | Edited by: Vũ Duy Nhất
 
 ## VIII. AI Recommendation
 
-*No execution records were supplied for this feature yet — add them here once the AI Recommendation test cases have been executed (no matching content found in the uploaded source files).*
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-001
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-001</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-12</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Returned 15 items; <code>pool.query</code> executed 1 time total across dual lookups (~4ms). Second invocation served directly from in-memory Map cache.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-003
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-003</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-13</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Database pool connection exception caught gracefully; returned 15 fallback catalog books with default <code>score: 0.0</code> (~8ms). Zero unhandled rejections.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-004
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-004</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-13</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">TCP Socket connected to mock server on port 5999; payload framed and parsed; candidates re-ranked correctly by GCN score (~42ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-005
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-005</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-14</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Primary Memgraph Cypher query returned 5 candidates; secondary cold-start Cypher query automatically invoked (<code>session.run</code> call count = 2, ~35ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-006
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-006</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-14</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Candidate <code>stock-book-0</code> with <code>global_available_copies: 0</code> was successfully pruned from final array by <code>adjustCandidateScores</code> (~18ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-007
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-007</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-15</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Raw GCN score 0.90 with 2 skipped impressions evaluated to exactly 0.38025 (+/- 1e-4) (~12ms). Floating point precision assertion passed.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-008
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-008</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-15</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Initial 1 graph candidate was supplemented with 14 general catalog books to strictly fulfill the 15-item quota (~24ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-009
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-009</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-16</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">PostgreSQL click record updated (<code>is_clicked = TRUE</code>), memory cache evicted, and <code>syncRecommendationClick</code> spied with ISO timestamp (~29ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-010
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-010</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-16</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">REST payload correctly formatted into <code>historyBased</code> (15 items) and <code>trending</code> (6 items) arrays with HTTP 200 status (~15ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-002
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-002</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-12</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">Cache successfully evicted; subsequent <code>getUserRecommendations</code> query count incremented from 1 to 2 (~6ms).</td>
+    </tr>
+  </tbody>
+</table>
+
+<table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #1e3a8a; color: #ffffff;">
+      <th colspan="2" style="text-align: left; padding: 12px; font-size: 16px;">
+        Test Execution: TC-SRV-REC-010
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="22%" style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Test Case ID</td>
+      <td style="vertical-align: top;"><strong>TC-SRV-REC-010</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Execution Date</td>
+      <td style="vertical-align: top;">2026-08-16</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Status</td>
+      <td style="vertical-align: top;"><strong style="color: #16a34a;">Pass</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8fafc; font-weight: bold; vertical-align: top;">Actual Result</td>
+      <td style="vertical-align: top;">REST payload correctly formatted into <code>historyBased</code> (15 items) and <code>trending</code> (6 items) arrays with HTTP 200 status (~15ms).</td>
+    </tr>
+  </tbody>
+</table>

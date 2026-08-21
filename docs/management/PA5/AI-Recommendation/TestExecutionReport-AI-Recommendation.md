@@ -12,32 +12,11 @@ Performed by: Trần Lê Hoàng Gia | Reviewed by: Vũ Duy Nhất | Edited by: T
 
 - [Test Execution Report](#test-execution-report)
   - [Table of Contents](#table-of-contents)
-  - [I. Test Execution Overview](#i-test-execution-overview)
-    - [Execution Summary Table](#execution-summary-table)
-  - [II. Execution Results](#ii-execution-results)
     - [1. Use Case 1: View Recommended Book (UC-AIR-01)](#1-use-case-1-view-recommended-book-uc-air-01)
     - [2. Use Case 2: Reset AI Recommend (UC-AIR-02)](#2-use-case-2-reset-ai-recommend-uc-air-02)
 
 ---
 
-## I. Test Execution Overview
-
-The automated integration test suite `recommendation.services.spec.mjs` for the **AI Personalized Book Recommendation Engine** was executed using the **Vitest** test runner (`v4.1.10`) under Node.js `v20.11.0` in an isolated test environment with mocked database, graph database driver, and TCP micro-ranker socket dependencies.
-
-- **Target Services**: `recommendation.services.mjs` & `recommendation.controllers.mjs`
-- **Use Cases Covered**: `UC-AIR-01` (View Recommended Book) & `UC-AIR-02` (Reset AI Recommend)
-- **Execution Period**: August 12, 2026 – August 16, 2026
-- **Lead QA Engineer**: Trần Lê Hoàng Gia
-
-### Execution Summary Table
-
-| Total Test Cases | Passed | Failed | Pass Rate | Total Execution Time | Target SLA |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| **10** | **10** | **0** | **100%** | **684ms** | $\le 1000\text{ms}$ |
-
----
-
-## II. Execution Results
 
 ### 1. Use Case 1: View Recommended Book (UC-AIR-01)
 
