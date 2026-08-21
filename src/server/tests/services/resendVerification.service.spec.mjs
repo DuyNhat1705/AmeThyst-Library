@@ -107,21 +107,23 @@ describe('Resend Verification Service', () => {
   });
 
   describe('Mail-delivery consistency', { tags: ['@A_R4', '@A_R8', '@A_R9'] }, () => {
-    it('[TC-SRV-RV-003] should preserve the previous token and TTL when replacement email delivery fails', async () => {
+    it('[TC-SRV-RV-003] should keep the previous token and TTL committed until replacement delivery succeeds', async () => {
       const previousPending = {
         ...mockPendingRow,
         token: 'previous-resend-token-uuid',
         expired_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
       };
       let persistedPending = { ...previousPending };
+      let stateObservedByMailer;
+      getPendingByEmail.mockResolvedValue(previousPending);
 
       replacePendingUser.mockImplementation(async (_client, pendingData) => {
         persistedPending = {
           email: pendingData.email,
           password_hash: pendingData.passwordHash,
           username: pendingData.username,
-          token: 'replacement-resend-token-uuid',
-          expired_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+          token: pendingData.token ?? 'replacement-resend-token-uuid',
+          expired_at: pendingData.expiredAt ?? new Date(Date.now() + 10 * 60 * 1000).toISOString(),
         };
         return persistedPending.token;
       });
@@ -136,7 +138,10 @@ describe('Resend Verification Service', () => {
         }
       });
 
-      sendVerificationEmail.mockRejectedValue(new Error('SMTP Connection timed out'));
+      sendVerificationEmail.mockImplementation(async () => {
+        stateObservedByMailer = { ...persistedPending };
+        throw new Error('SMTP Connection timed out');
+      });
 
       await expect(resendVerificationEmailService({ email: mockEmail })).rejects.toMatchObject({
         code: 'EMAIL_DELIVERY_FAILED',
@@ -145,6 +150,8 @@ describe('Resend Verification Service', () => {
 
       expect(persistedPending.token).toBe(previousPending.token);
       expect(persistedPending.expired_at).toBe(previousPending.expired_at);
+      expect(stateObservedByMailer.token).toBe(previousPending.token);
+      expect(stateObservedByMailer.expired_at).toBe(previousPending.expired_at);
     });
   });
 });
